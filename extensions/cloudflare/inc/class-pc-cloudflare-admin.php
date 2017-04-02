@@ -35,7 +35,8 @@ if ( ! class_exists( 'PC_Cloudflare_Admin' ) ):
 			) );
 
 			$this->setup();
-			if ( ! ( $this->get_option( 'email' ) ) && ! ( $this->get_option( 'api_key' ) ) ) {
+
+			if ( $this->get_option( 'email' ) && $this->get_option( 'api_key' ) ) {
 				$this->api = new PC_Cloudflare_Api( $this->get_option( 'email' ), $this->get_option( 'api_key' ) );
 			}
 
@@ -48,7 +49,7 @@ if ( ! class_exists( 'PC_Cloudflare_Admin' ) ):
 		 */
 		function setup() {
 			parent::setup();
-			add_action( 'load-powered-cache_page_' . $this->plugin_id, array( $this, 'flush_cache' ) );
+			add_action( 'load-powered-cache_page_pc_' . $this->plugin_id, array( $this, 'flush_cache' ) );
 		}
 
 		/**
@@ -108,15 +109,14 @@ if ( ! class_exists( 'PC_Cloudflare_Admin' ) ):
 		}
 
 
-
-
-		public function flush_url(){
+		public function flush_url() {
 			$url = add_query_arg( array(
-				'page' => 'cloudflare',
+				'page'                         => 'pc_cloudflare',
 				'action'                       => 'purge_cf_cache',
 				'wp_http_referer'              => urlencode( wp_unslash( $_SERVER['REQUEST_URI'] ) ),
 				'powered_cache_settings_nonce' => wp_create_nonce( 'powered_cache_update_settings' ),
 			), admin_url( 'admin.php' ) );
+
 			return $url;
 		}
 
