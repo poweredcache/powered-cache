@@ -59,7 +59,7 @@ Build-in extensions (aka add-ons) are comes with Powered Cache to provide more f
 
 
 = Contributing & Bug Report =
-Bug reports and pull requests are welcome on [Github](https://github.com/skopco/powered-cache) Feedbacks are welcome, but we won’t promise to implement them. So please consider before sending PR.
+Bug reports and pull requests are welcome on [Github](https://github.com/skopco/powered-cache). Some of our features are premium only, please consider before sending PR.
 
 = Documentation =
 Our knowledge base is available on [docs.poweredcache.com](http://docs.poweredcache.com/)
