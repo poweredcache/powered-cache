@@ -76,6 +76,10 @@ if ( ! class_exists( 'Powered_Cache' ) ) :
 				define( 'PC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 			}
 
+			if ( ! defined( 'PC_PREMIUM_DIR' ) ) {
+				define( 'PC_PREMIUM_DIR', PC_PLUGIN_DIR . 'premium/' );
+			}
+
 			if ( ! defined( 'PC_CACHE_DIR' ) ) {
 				define( 'PC_CACHE_DIR', WP_CONTENT_DIR . '/cache/' );
 			}
@@ -112,8 +116,8 @@ if ( ! class_exists( 'Powered_Cache' ) ) :
 			require_once PC_INC_DIR . 'class-pc-advanced-cache.php';
 			require_once PC_INC_DIR . 'class-pc-object-cache.php';
 
-			if ( file_exists( PC_PLUGIN_DIR . 'premium/loader.php' ) ) {
-				require_once PC_PLUGIN_DIR . 'premium/loader.php';
+			if ( file_exists( PC_PREMIUM_DIR . 'loader.php' ) ) {
+				require_once PC_PREMIUM_DIR . 'loader.php';
 			}
 
 			if ( is_admin() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
