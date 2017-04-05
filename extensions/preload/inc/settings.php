@@ -29,16 +29,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<td>
 			<label><input size="4" id="pc_preload_interval" type="text" value="<?php esc_attr_e( $this->get_option( 'interval' ), 'powered-cache' ); ?>" name="preload[interval]" /> <?php _e( 'minutes', 'powered-cache' ); ?></label>
 			<br>
-			<span class="description"><?php echo __( '0 to disable, minimum 30 minutes', 'powered-cache' ); ?></span>
+			<span class="description"><?php echo __( '0 to disable, recommended at least 30 mins', 'powered-cache' ); ?></span>
 		</td>
 	</tr>
 
-<!--	<tr>-->
-<!--		<th scope="row"><label for="pc_preload_homepage">--><?php //_e( 'Homepage', 'powered-cache' ); ?><!--</label></th>-->
-<!--		<td>-->
-<!--			<label><input type="checkbox" id="pc_preload_homepage" name="preload[homepage]" --><?php //checked( $this->get_option( 'homepage' ), 1 ); ?><!-- value="1" />--><?php //_e( 'Preload internal links that located on homepage', 'powered-cache' ); ?><!--</label>-->
-<!--		</td>-->
-<!--	</tr>-->
 
 	<tr>
 		<th scope="row"><label for="pc_clear_cache"><?php _e( 'Preload Now', 'powered-cache' ); ?></label></th>

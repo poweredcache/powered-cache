@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Powered Cache 1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/powered-cache\n"
-"POT-Creation-Date: 2017-04-02 16:36:28+00:00\n"
-"PO-Revision-Date: 2017-04-02 19:39+0300\n"
+"POT-Creation-Date: 2017-04-05 17:30:13+00:00\n"
+"PO-Revision-Date: 2017-04-05 20:31+0300\n"
 "Last-Translator: Mustafa Uysal <EMAIL@ADDRESS>\n"
 "Language-Team: TR LANGUAGE <LL@li.org>\n"
 "Language: tr\n"
@@ -24,15 +24,15 @@ msgstr "Powered Cache için Cloudflare eklentisi."
 msgid "Cloudflare"
 msgstr "Cloudflare"
 
-#: extensions/cloudflare/inc/class-pc-cloudflare-admin.php:67
+#: extensions/cloudflare/inc/class-pc-cloudflare-admin.php:68
 msgid "Purge Cache"
 msgstr "Önbelleği Temizle"
 
-#: extensions/cloudflare/inc/class-pc-cloudflare-admin.php:86
+#: extensions/cloudflare/inc/class-pc-cloudflare-admin.php:87
 msgid "Cloudflare cache flushed!"
 msgstr "Cloudflare önbelleği temizlendi!"
 
-#: extensions/cloudflare/inc/class-pc-cloudflare-admin.php:88
+#: extensions/cloudflare/inc/class-pc-cloudflare-admin.php:89
 msgid "Problem with Cloudflare cache clean!"
 msgstr "Cloudflare önbelleğini temizleme sırasında sorun oluştu!"
 
@@ -255,14 +255,14 @@ msgid "minutes"
 msgstr "dakika"
 
 #: extensions/preload/inc/settings.php:32
-msgid "0 to disable, minimum 30 minutes"
-msgstr "0 kapatır, en az 30 dakika belirtmelisiniz"
+msgid "0 to disable, recommended at least 30 mins"
+msgstr "0 kapatır, en az 30 dakika belirlemenizi önerilir"
 
-#: extensions/preload/inc/settings.php:44
+#: extensions/preload/inc/settings.php:38
 msgid "Preload Now"
 msgstr "Önyüklemeyi şimdi başlat"
 
-#: extensions/preload/inc/settings.php:48
+#: extensions/preload/inc/settings.php:42
 msgid "Manually start preload process"
 msgstr "Önyükleme işlemini elle başlat"
 
@@ -368,20 +368,20 @@ msgstr "JavaScript"
 msgid "CSS"
 msgstr "CSS"
 
-#: includes/admin/class-pc-admin.php:128 includes/admin/class-pc-admin.php:134
+#: includes/admin/class-pc-admin.php:123 includes/admin/class-pc-admin.php:129
 msgid "Powered Cache Settings"
 msgstr "Powered Cache Ayarları"
 
-#: includes/admin/class-pc-admin.php:134
+#: includes/admin/class-pc-admin.php:129
 #: includes/admin/extension-settings.php:11
 msgid "Settings"
 msgstr "Ayarlar"
 
-#: includes/admin/class-pc-admin.php:160
+#: includes/admin/class-pc-admin.php:155
 msgid "<a href=\"%s\">Settings</a>"
 msgstr "<a href=\"%s\">Ayarlar</a>"
 
-#: includes/admin/class-pc-admin.php:162
+#: includes/admin/class-pc-admin.php:157
 msgid "<a href=\"%s\" style=\"color: red;\">Get Premium</a>"
 msgstr "<a href=\"%s\" style=\"color: red;\">Premium Ol</a>"
 
@@ -401,11 +401,11 @@ msgstr ""
 msgid "Deactivate"
 msgstr "Etkisizleştir"
 
-#: includes/admin/notices.php:93
+#: includes/admin/notices.php:97
 msgid "<code>%s</code> is not in wp-config.php."
 msgstr "<code>%s</code> wp-config.php dosyasında tanımlanmamış."
 
-#: includes/admin/notices.php:97
+#: includes/admin/notices.php:101
 msgid ""
 "<code>%s</code> file was edited or deleted. You can re-create correct "
 "configuration files by saving settings."
@@ -413,7 +413,7 @@ msgstr ""
 "<code>%s</code> dosya değiştirilmiş veya silinmiş. Ayarları tekrar "
 "kaydederek dosyayı yeniden oluşturabilirsiniz."
 
-#: includes/admin/notices.php:102
+#: includes/admin/notices.php:106
 msgid ""
 "Powered Cache could not access dropin. Please check <code>%s</code> exist "
 "and accessible on your server."
@@ -421,11 +421,11 @@ msgstr ""
 "Powered Cache dropin dosyasına ulaşamadı. Lütfen, <code>%s</code> dosyasının "
 "mevcut ve sunucu tarafından erişilebilir olduğundan emin olun."
 
-#: includes/admin/notices.php:113
+#: includes/admin/notices.php:117
 msgid "Page Caching feature could not work because:"
 msgstr "Sayfa önbellekleme özelliği çalışamadı çünkü:"
 
-#: includes/admin/notices.php:139
+#: includes/admin/notices.php:143
 msgid ""
 "Powered Cache could not access object cache backend. Please check <code>%s</"
 "code> exist and accessible on your server."
@@ -433,7 +433,7 @@ msgstr ""
 "Powered Cache obje önbelleğinin arka ucuna erişemedi. Lütfen <code>%s</code> "
 "dosyasının mevcut ve sunucu tarafından erişilebilir olduğundan emin olun."
 
-#: includes/admin/notices.php:142
+#: includes/admin/notices.php:146
 #: premium/includes/class-pc-license-page.php:189
 #: premium/includes/premium-functions.php:417
 msgid "Powered Cache:"
@@ -795,15 +795,15 @@ msgstr "Obje önbelleği başarılı bir şekilde silindi!"
 msgid "This feature available only premium users"
 msgstr "Bu özellik yalnızca premium kullanıcılara özel"
 
-#: powered-cache.php:198 powered-cache.php:206
+#: powered-cache.php:202 powered-cache.php:210
 msgid "Cheatin&#8217; huh?"
 msgstr "Hile mi yapıyorsunuz?"
 
-#: powered-cache.php:267
+#: powered-cache.php:271
 msgid "Your site does not support Powered Cache."
 msgstr "Siteniz Powered Cache'i desteklemiyor."
 
-#: powered-cache.php:269
+#: powered-cache.php:273
 msgid ""
 "Your site is currently running WordPress version %1$s, while Powered Cache "
 "requires version %2$s or greater."
@@ -811,7 +811,7 @@ msgstr ""
 "Kullanmakta olduğunuz WordPress sürümu %1$s, Powered Cache için  %2$s veya "
 "daha üst bir sürüm kullanmalısınız."
 
-#: powered-cache.php:271
+#: powered-cache.php:275
 msgid "Please update your WordPress or deactivate Powered Cache."
 msgstr ""
 "Lütfen WordPress sürümünüzü güncelleyin veya Powered Cache'i etkisizleştirin."
@@ -928,11 +928,11 @@ msgstr "Non-blocking (async kullanarak)"
 msgid "Non-blocking using defer"
 msgstr "Non-blocking (defer kullanarak)"
 
-#: premium/extensions/minifier/inc/class-pc-minifier-helper.php:596
+#: premium/extensions/minifier/inc/class-pc-minifier-helper.php:602
 msgid "Minifier could not create cache directory"
 msgstr "Minifier önbellek dizini oluşturamadı"
 
-#: premium/extensions/minifier/inc/class-pc-minifier-helper.php:598
+#: premium/extensions/minifier/inc/class-pc-minifier-helper.php:604
 msgid ""
 "Please make sure root caching directory writable by plugin. If you defined "
 "custom %s in config  please make sure it exist."
