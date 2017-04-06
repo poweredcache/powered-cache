@@ -3,8 +3,8 @@
  * Plugin Name:   Powered Cache
  * Plugin URI:    https://poweredcache.com
  * Description:   Comprehensive caching and performance plugin for WordPress.
- * Author:        Powered Cache Team
- * Author URI:    https://poweredcache.com
+ * Author:        SKOP, Mustafa Uysal
+ * Author URI:    http://skop.co/
  * Version:       1.0
  * Text Domain:   powered-cache
  * Domain Path:   /languages/
