@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Powered Cache 1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/powered-cache\n"
-"POT-Creation-Date: 2017-04-05 17:30:13+00:00\n"
+"POT-Creation-Date: 2017-04-06 18:25:48+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -376,7 +376,7 @@ msgid "Powered Cache Settings"
 msgstr ""
 
 #: includes/admin/class-pc-admin.php:129
-#: includes/admin/extension-settings.php:11
+#: includes/admin/extension-settings.php:10
 msgid "Settings"
 msgstr ""
 
@@ -388,7 +388,7 @@ msgstr ""
 msgid "<a href=\"%s\" style=\"color: red;\">Get Premium</a>"
 msgstr ""
 
-#: includes/admin/extension-settings.php:45 includes/admin/settings.php:74
+#: includes/admin/extension-settings.php:44 includes/admin/settings.php:74
 msgid "Save Changes"
 msgstr ""
 
