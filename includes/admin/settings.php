@@ -136,7 +136,7 @@ if ( in_array( $current_section, array( 'extensions', 'premium', 'support' ) ) )
 						<p>
 							<?php _e( 'We are offering direct support to premium users only, free users welcome on WordPress.org forums.', 'powered-cache' ); ?>
 							<br>
-							<?php echo sprintf( __( 'Please check our <a href="%s">support policy</a>', 'powered-cache' ), '#' ); ?>
+							<?php echo sprintf( __( 'Please check our <a href="%s">support policy</a>', 'powered-cache' ), 'https://poweredcache.com/support-policy/' ); ?>
 						</p>
 					</div>
 
