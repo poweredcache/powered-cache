@@ -38,8 +38,8 @@ if ( ! class_exists( 'PC_Lazy_Load_Admin' ) ):
 			);
 
 			parent::__construct( array(
-				'plugin_id'   => 'lazyload',
-				'plugin_name' => __( 'Lazy Load', 'powered-cache' ),
+				'extension_id'   => 'lazyload',
+				'extension_name' => __( 'Lazy Load', 'powered-cache' ),
 			) );
 
 

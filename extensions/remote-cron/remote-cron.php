@@ -1,12 +1,12 @@
 <?php
 /**
- * Plugin Name: Remote Cron
- * Plugin URI: https://poweredcache.com/extensions/remote-cron
+ * Extension Name: Remote Cron
+ * Extension URI: https://poweredcache.com/extensions/remote-cron
  * Description: Trigger WordPress cron remotely
  * Author: Powered Cache Team
  * Version: 1.0
  * Author URI: https://poweredcache.com
- * Plugin Image: extension-image.png
+ * Extension Image: extension-image.png
  * License: GPLv2 (or later)
  * Premium: true
  *

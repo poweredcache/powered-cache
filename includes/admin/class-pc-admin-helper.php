@@ -129,7 +129,7 @@ class PC_Admin_Helper {
 		$url = add_query_arg( array(
 			'page'                         => esc_attr( 'powered-cache' ),
 			'section'                      => 'extensions',
-			'plugin'                       => $plugin_id,
+			'extension'                    => $plugin_id,
 			'status'                       => $action,
 			'wp_http_referer'              => urlencode( wp_unslash( $_SERVER['REQUEST_URI'] ) ),
 			'action'                       => 'powered_cache_update_settings',

@@ -1,12 +1,12 @@
 <?php
 /**
- * Plugin Name: Varnish
- * Plugin URI: https://poweredcache.com/extensions/varnish
+ * Extension Name: Varnish
+ * Extension URI: https://poweredcache.com/extensions/varnish
  * Description: Varnish extension for Powered Cache
  * Author: Powered Cache Team
  * Version: 1.0
  * Author URI: https://poweredcache.com
- * Plugin Image: extension-image.png
+ * Extension Image: extension-image.png
  * License: GPLv2 (or later)
  * Premium: true
  *

@@ -26,8 +26,8 @@ if ( ! class_exists( 'PC_Preload_Process' ) ):
 
 		public function cron_schedules( $schedules ) {
 
-			if ( pc_get_plugin_option('preload', 'interval' ) > 0 ) {
-				$interval =  pc_get_plugin_option('preload', 'interval' ) * 60;
+			if ( pc_get_extension_option('preload', 'interval' ) > 0 ) {
+				$interval =  pc_get_extension_option('preload', 'interval' ) * 60;
 
 				$schedules['pc_preload_interval'] = array(
 					'interval' => apply_filters( 'pc_preload_interval', $interval ),
@@ -75,7 +75,7 @@ if ( ! class_exists( 'PC_Preload_Process' ) ):
 			}
 
 
-			$value = pc_get_plugin_option( 'preload', 'post_count' );
+			$value = pc_get_extension_option( 'preload', 'post_count' );
 			if ( $value > 0 && false === $timestamp ) {
 				wp_schedule_single_event( time() + 10, 'pc_preload_hook' );
 			}
@@ -90,7 +90,7 @@ if ( ! class_exists( 'PC_Preload_Process' ) ):
 		public function setup_child_process() {
 			$timestamp = wp_next_scheduled( 'pc_preload_child_process' );
 
-			if ( true !== pc_get_option( 'enable_page_caching' ) || 0 == pc_get_plugin_option( 'preload', 'interval' ) ) {
+			if ( true !== pc_get_option( 'enable_page_caching' ) || 0 == pc_get_extension_option( 'preload', 'interval' ) ) {
 				wp_unschedule_event( $timestamp, 'pc_preload_child_process' );
 
 				return;
@@ -119,8 +119,8 @@ if ( ! class_exists( 'PC_Preload_Process' ) ):
 
 			$post_count = $runtime_option['post_count'];
 
-			if ( pc_get_plugin_option('preload', 'post_count' ) > $post_count ) {
-				if ( true === pc_get_plugin_option( 'preload', 'taxonomies' ) ) {
+			if ( pc_get_extension_option('preload', 'post_count' ) > $post_count ) {
+				if ( true === pc_get_extension_option( 'preload', 'taxonomies' ) ) {
 					$this->preload_taxonomies();
 				}
 
@@ -138,7 +138,7 @@ if ( ! class_exists( 'PC_Preload_Process' ) ):
 					wp_clear_scheduled_hook( 'pc_preload_child_process' );
 				}
 
-				$cron_interval = (int) pc_get_plugin_option('preload', 'interval' );
+				$cron_interval = (int) pc_get_extension_option('preload', 'interval' );
 				if ( $cron_interval > 0 ) {
 					// re-schedule main cron
 					wp_schedule_single_event( time() + ( $cron_interval * 60 ), 'pc_preload_hook' );

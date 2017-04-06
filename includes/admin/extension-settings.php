@@ -5,10 +5,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 
-<?php //PC_Admin_Helper::get_flash_message(); ?>
 <div class="wrap">
 	<h1>
-		<?php printf( '%s %s', $this->plugin_name, __( 'Settings', 'powered-cache' ) ); ?>
+		<?php printf( '%s %s', $this->extension_name, __( 'Settings', 'powered-cache' ) ); ?>
 	</h1>
 
 
@@ -24,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 								<?php wp_nonce_field( 'powered_cache_update_settings', 'powered_cache_settings_nonce' ); ?>
 								<input type="hidden" name="action" value="pc_update_extension_settings" />
-								<input type="hidden" name="extension" value="<?php echo esc_attr( $this->plugin_id ); ?>" />
+								<input type="hidden" name="extension" value="<?php echo esc_attr( $this->extension_id ); ?>" />
 								<input type="hidden" name="wp_http_referer" value="<?php echo esc_attr( wp_unslash( $_SERVER['REQUEST_URI'] ) ); ?>'" />
 
 								<?php

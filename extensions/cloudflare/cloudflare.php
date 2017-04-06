@@ -1,12 +1,12 @@
 <?php
 /**
- * Plugin Name: Cloudflare
- * Plugin URI: https://poweredcache.com/extensions/cloudflare
+ * Extension Name: Cloudflare
+ * Extension URI: https://poweredcache.com/extensions/cloudflare
  * Description: Cloudflare extension for Powered Cache
  * Author: Powered Cache Team
  * Version: 1.0
  * Author URI: https://poweredcache.com
- * Plugin Image: extension-image.png
+ * Extension Image: extension-image.png
  * License: GPLv2 (or later)
  */
 
@@ -39,8 +39,8 @@ if ( is_admin() ) {
  * @return array|bool|mixed|object|string
  */
 function pc_cloudflare_purge_cache() {
-	$api  = new PC_Cloudflare_Api( pc_get_plugin_option( 'cloudflare', 'email' ), pc_get_plugin_option( 'cloudflare', 'api_key' ) );
-	$zone = pc_get_plugin_option( 'cloudflare', 'zone' );
+	$api  = new PC_Cloudflare_Api( pc_get_extension_option( 'cloudflare', 'email' ), pc_get_extension_option( 'cloudflare', 'api_key' ) );
+	$zone = pc_get_extension_option( 'cloudflare', 'zone' );
 	if ( $zone ) {
 		return $api->purge( $zone );
 	}

@@ -17,8 +17,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="pc-extension-page">
 	<?php foreach ( $extentions as $extension_id => $extention ): ?>
 		<div class="pc-extension"><h3 class="pc-extension-title"><?php echo $extention['Name']; ?></h3>
-			<a href="<?php echo $extention['PluginURI']; ?>" title="<?php echo $extention['Name']; ?>">
-				<img width="320" height="160" src="<?php echo $extention['PluginImage']; ?>"></a>
+			<a href="<?php echo $extention['ExtensionURI']; ?>" title="<?php echo $extention['Name']; ?>">
+				<img width="320" height="160" src="<?php echo $extention['ExtensionImage']; ?>"></a>
 
 			<p><?php echo __( $extention['Description'], 'powered-cache' ); ?></p>
 

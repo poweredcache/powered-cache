@@ -1,12 +1,12 @@
 <?php
 /**
- * Plugin Name: Minifier
- * Plugin URI: https://poweredcache.com/extensions/minifier
+ * Extension Name: Minifier
+ * Extension URI: https://poweredcache.com/extensions/minifier
  * Description: Reduce size of HTML,CSS,JS files by compressing and concatenating them.
  * Author: Powered Cache Team
  * Version: 1.0
  * Author URI: https://poweredcache.com
- * Plugin Image: extension-image.png
+ * Extension Image: extension-image.png
  * License: GPLv2 (or later)
  * Premium: true
  *

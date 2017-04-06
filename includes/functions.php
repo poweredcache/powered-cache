@@ -90,7 +90,7 @@ function pc_save_settings( $old_settings, $new_settings ) {
 
 	do_action( 'pc_settings_saved', $settings );
 
-	unset( $settings['plugin_settings'] );
+	unset( $settings['extension_settings'] );
 	PC_Config::factory()->save_to_file( $settings );
 
 }
@@ -250,19 +250,19 @@ function pc_delete_page_cache( $url ) {
  * Get all settings for plugin
  *
  * @since 1.0
- * @param $plugin_id
+ * @param $extension_id
  *
  * @return bool
  */
-function pc_get_plugin_settings( $plugin_id ) {
-	$plugin_settings = pc_get_option( 'plugin_settings' );
+function pc_get_extension_settings( $extension_id ) {
+	$extension_settings = pc_get_option( 'extension_settings' );
 
-	if ( ! is_array( $plugin_settings ) ) {
+	if ( ! is_array( $extension_settings ) ) {
 		return false;
 	}
 
-	if ( array_key_exists( $plugin_id, $plugin_settings ) ) {
-		return $plugin_settings[ $plugin_id ];
+	if ( array_key_exists( $extension_id, $extension_settings ) ) {
+		return $extension_settings[ $extension_id ];
 	}
 
 	return false;
@@ -270,21 +270,21 @@ function pc_get_plugin_settings( $plugin_id ) {
 
 
 /**
- * Update options of plugin
+ * Update options of extension
  * @since 1.0
- * @param       $plugin_id
+ * @param       $extension_id
  * @param array $settings
  *
  * @return bool
  */
-function pc_update_plugin_option( $plugin_id, $settings = array() ) {
+function pc_update_extension_option( $extension_id, $settings = array() ) {
 	$options = get_option( 'powered_cache_settings' );
 
-	$options['plugin_settings'][ $plugin_id ] = $settings;
+	$options['extension_settings'][ $extension_id ] = $settings;
 
 	$options_updated = update_option( 'powered_cache_settings', $options );
 
-	do_action( 'pc_plugin_option_updated', $options );
+	do_action( 'pc_extension_option_updated', $options );
 
 	return $options_updated;
 }
@@ -294,14 +294,14 @@ function pc_update_plugin_option( $plugin_id, $settings = array() ) {
  * Get single option of plugin. Generally used for fields
  *
  * @since 1.0
- * @param            $plugin_id
+ * @param            $extension_id
  * @param string     $option_name
  * @param bool|false $default
  *
  * @return bool
  */
-function pc_get_plugin_option( $plugin_id, $option_name = '', $default = false ) {
-	$option = pc_get_plugin_settings( $plugin_id );
+function pc_get_extension_option( $extension_id, $option_name = '', $default = false ) {
+	$option = pc_get_extension_settings( $extension_id );
 
 	if ( is_array( $option ) && array_key_exists( $option_name, $option ) ) {
 		return $option[ $option_name ];

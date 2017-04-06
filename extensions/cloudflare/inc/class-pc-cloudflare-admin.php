@@ -29,9 +29,9 @@ if ( ! class_exists( 'PC_Cloudflare_Admin' ) ):
 			);
 
 			parent::__construct( array(
-				'plugin_id'   => 'cloudflare',
-				'plugin_name' => __( 'Cloudflare', 'powered-cache' ),
-				'admin_bar_menu'  => true,
+				'extension_id'   => 'cloudflare',
+				'extension_name' => __( 'Cloudflare', 'powered-cache' ),
+				'admin_bar_menu' => true,
 			) );
 
 			$this->setup();
@@ -49,7 +49,7 @@ if ( ! class_exists( 'PC_Cloudflare_Admin' ) ):
 		 */
 		function setup() {
 			parent::setup();
-			add_action( 'load-powered-cache_page_pc_' . $this->plugin_id, array( $this, 'flush_cache' ) );
+			add_action( 'load-powered-cache_page_pc_' . $this->extension_id, array( $this, 'flush_cache' ) );
 		}
 
 		/**
@@ -67,7 +67,7 @@ if ( ! class_exists( 'PC_Cloudflare_Admin' ) ):
 				'id'     => 'cf-purge-cache',
 				'title'  => __('Purge Cache','powered-cache'),
 				'href'   => $this->flush_url(),
-				'parent' => $this->plugin_id,
+				'parent' => $this->extension_id,
 			) );
 		}
 

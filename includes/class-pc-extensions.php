@@ -45,14 +45,14 @@ class PC_Extensions {
 		$extension_info = array();
 
 		$default_headers = array(
-			'Name'        => 'Plugin Name',
-			'PluginURI'   => 'Plugin URI',
-			'Version'     => 'Version',
-			'Description' => 'Description',
-			'Author'      => 'Author',
-			'AuthorURI'   => 'Author URI',
-			'PluginImage' => 'Plugin Image',
-			'Premium'     => 'Premium'
+			'Name'           => 'Extension Name',
+			'ExtensionURI'   => 'Extension URI',
+			'Version'        => 'Version',
+			'Description'    => 'Description',
+			'Author'         => 'Author',
+			'AuthorURI'      => 'Author URI',
+			'ExtensionImage' => 'Extension Image',
+			'Premium'        => 'Premium',
 		);
 
 		foreach ( $extentions as $id => $extention ) {
@@ -60,8 +60,8 @@ class PC_Extensions {
 			if ( $wp_filesystem->exists( $extention ) ) {
 
 				$header_data = get_file_data( $extention, $default_headers );
-				if ( ! empty( $header_data['PluginImage'] ) && $wp_filesystem->exists( plugin_dir_path( $extention ) . $header_data['PluginImage'] ) ) {
-					$header_data['PluginImage'] = plugin_dir_url( $extention ) . $header_data['PluginImage'];
+				if ( ! empty( $header_data['ExtensionImage'] ) && $wp_filesystem->exists( plugin_dir_path( $extention ) . $header_data['ExtensionImage'] ) ) {
+					$header_data['ExtensionImage'] = plugin_dir_url( $extention ) . $header_data['ExtensionImage'];
 				}
 
 				$extension_info[ $id ] = $header_data;
@@ -84,17 +84,17 @@ class PC_Extensions {
 
 		do_action( 'pc_before_extension_load' );
 
-		$activated_plugins = pc_get_option('active_plugins');
+		$activated_extensions = pc_get_option('active_extensions');
 
-		if ( is_array( $activated_plugins ) ) {
+		if ( is_array( $activated_extensions ) ) {
 			$extensions = $this->get_extentions();
 
-			foreach ( $activated_plugins as $plugin ) {
-				if ( isset( $extensions[ $plugin ] ) && $wp_filesystem->exists( $extensions[ $plugin ]['path'] ) ) {
-					include_once $extensions[ $plugin ]['path'];
+			foreach ( $activated_extensions as $extension ) {
+				if ( isset( $extensions[ $extension ] ) && $wp_filesystem->exists( $extensions[ $extension ]['path'] ) ) {
+					include_once $extensions[ $extension ]['path'];
 
 					// fire after extension loaded
-					do_action( 'pc_extension_' . $plugin . '_loaded', $plugin );
+					do_action( 'pc_extension_' . $extension . '_loaded', $extension );
 				}
 			}
 
@@ -105,19 +105,19 @@ class PC_Extensions {
 	}
 
 	/**
-	 * Check powered cache's plugin active
+	 * Check powered cache's extension active
 	 *
 	 * @since 1.0
 	 *
-	 * @param string $plugin_id
+	 * @param string $extension_id
 	 *
 	 * @return bool
 	 */
-	public function is_active( $plugin_id ) {
+	public function is_active( $extension_id ) {
 		$options = get_option( 'powered_cache_settings' );
-		if ( is_array( $options ) && isset( $options['active_plugins'] )
-		     && is_array( $options['active_plugins'] )
-		     && in_array( $plugin_id, $options['active_plugins'] )
+		if ( is_array( $options ) && isset( $options['active_extensions'] )
+		     && is_array( $options['active_extensions'] )
+		     && in_array( $extension_id, $options['active_extensions'] )
 		) {
 			return true;
 		}
@@ -126,44 +126,44 @@ class PC_Extensions {
 	}
 
 
-	public function activate( $plugin_id ) {
+	public function activate( $extension_id ) {
 
-		if ( $this->is_active( $plugin_id ) ) {
+		if ( $this->is_active( $extension_id ) ) {
 			// bail if already active
 			return false;
 		}
 
 		$old_options = $new_options = pc_get_settings();
 
-		if ( isset( $old_options['active_plugins'] ) && is_array( $old_options['active_plugins'] ) ) {
-			$new_options['active_plugins'] = array_merge( $old_options['active_plugins'], array( $plugin_id ) );
+		if ( isset( $old_options['active_extensions'] ) && is_array( $old_options['active_extensions'] ) ) {
+			$new_options['active_extensions'] = array_merge( $old_options['active_extensions'], array( $extension_id ) );
 		} else {
-			$new_options['active_plugins'][] = $plugin_id;
+			$new_options['active_extensions'][] = $extension_id;
 		}
 
-		do_action( 'pc_extension_activate_' . $plugin_id );
+		do_action( 'pc_extension_activate_' . $extension_id );
 		pc_save_settings( $old_options, $new_options );
 
 		return true;
 	}
 
-	public function deactivate( $plugin_id ) {
+	public function deactivate( $extension_id ) {
 
-		if (! $this->is_active( $plugin_id ) ) {
+		if ( ! $this->is_active( $extension_id ) ) {
 			// bail if already deactive
 			return false;
 		}
 
 		$old_options = $new_options = pc_get_settings();
 
-		$key = array_search( $plugin_id, $old_options['active_plugins'] );
+		$key = array_search( $extension_id, $old_options['active_extensions'] );
 
 		if ( false !== $key ) {
-			unset( $new_options['active_plugins'][ $key ] );
+			unset( $new_options['active_extensions'][ $key ] );
 		}
 
 
-		do_action( 'pc_extension_deactivate_' . $plugin_id );
+		do_action( 'pc_extension_deactivate_' . $extension_id );
 		pc_save_settings( $old_options, $new_options );
 
 		return true;

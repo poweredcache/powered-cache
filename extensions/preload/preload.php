@@ -1,12 +1,12 @@
 <?php
 /**
- * Plugin Name: Preloader
- * Plugin URI: https://poweredcache.com/extensions/preload
+ * Extension Name: Preloader
+ * Extension URI: https://poweredcache.com/extensions/preload
  * Description: Preload extension for Powered Cache
  * Author: Powered Cache Team
  * Version: 1.0
  * Author URI: https://poweredcache.com
- * Plugin Image: extension-image.png
+ * Extension Image: extension-image.png
  * License: GPLv2 (or later)
 */
 

@@ -65,16 +65,16 @@ class PC_Admin_Actions {
 
 				break;
 			case 'extensions':
-				$plugin = sanitize_text_field( $_REQUEST['plugin'] );
+				$extension = sanitize_text_field( $_REQUEST['extension'] );
 
-				if ( ! empty( $plugin ) && isset( $_REQUEST['status'] ) ) {
+				if ( ! empty( $extension ) && isset( $_REQUEST['status'] ) ) {
 					if ( 'activate' === $_REQUEST['status'] ) {
-						PC_Extensions::factory()->activate( $plugin );
+						PC_Extensions::factory()->activate( $extension );
 
 						$msg = __( 'Extension activated', 'powered-cache' );
 						PC_Admin_Helper::set_flash_message( $msg );
 					} elseif ( 'deactivate' === $_REQUEST['status'] ) {
-						PC_Extensions::factory()->deactivate( $plugin );
+						PC_Extensions::factory()->deactivate( $extension );
 
 						$msg = __( 'Extension deactivated', 'powered-cache' );
 						PC_Admin_Helper::set_flash_message( $msg );

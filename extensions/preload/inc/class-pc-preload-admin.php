@@ -64,8 +64,8 @@ if ( ! class_exists( 'PC_Preload_Admin' ) ):
 			);
 
 			parent::__construct( array(
-				'plugin_id'   => 'preload',
-				'plugin_name' => __( 'Preload', 'powered-cache' ),
+				'extension_id'   => 'preload',
+				'extension_name' => __( 'Preload', 'powered-cache' ),
 			) );
 
 			add_action( 'admin_notices', array( $this, 'admin_notice' ) );
