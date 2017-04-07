@@ -12,10 +12,8 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-?>
-<?php
 
-$object_cache_methods = PC_Admin_Helper::available_object_caches();
+$object_cache_methods = Powered_Cache_Admin_Helper::available_object_caches();
 $current_section      = isset( $_GET['section'] ) ? $_GET['section'] : 'basic-options';
 $show_submit          = true;
 
@@ -32,12 +30,12 @@ if ( in_array( $current_section, array( 'extensions', 'premium', 'support' ) ) )
 
 <div id="poststuff" class="powered-cache-settings-page">
 
-	<div id="post-body" class="metabox-holder columns-<?php echo( is_powered_cache_premium() ? '1' : '2' ); ?>">
+	<div id="post-body" class="metabox-holder columns-<?php echo( powered_cache_is_premium() ? '1' : '2' ); ?>">
 
-	<h2 class="nav-tab-wrapper pc-settings-nav">
+	<h2 class="nav-tab-wrapper powered-cache-settings-nav">
 		<?php
 
-			$sections = PC_Admin_Helper::admin_sections();
+			$sections = Powered_Cache_Admin_Helper::admin_sections();
 			foreach ($sections as $section => $title ): ?>
 				<a
 					href="<?php echo esc_url( admin_url( add_query_arg( array( 'page' => 'powered-cache', 'section' => $section ), 'admin.php' ) ) ); ?>"
@@ -59,11 +57,11 @@ if ( in_array( $current_section, array( 'extensions', 'premium', 'support' ) ) )
 				<input type="hidden" name="wp_http_referer" value="<?php echo esc_attr( wp_unslash( $_SERVER['REQUEST_URI'] ) ); ?>'" />
 
 				<?php
-				$page = PC_ADMIN_DIR . 'settings/' . $current_section . '.php';
+				$page = POWERED_CACHE_ADMIN_DIR . 'settings/' . $current_section . '.php';
 				if ( file_exists( $page ) ) {
-					do_action( 'pc_before_load_settings_template_' . $current_section );
+					do_action( 'powered_cache_before_load_settings_template_' . $current_section );
 					include $page;
-					do_action( 'pc_after_load_settings_template_' . $current_section );
+					do_action( 'powered_cache_after_load_settings_template_' . $current_section );
 				}
 				?>
 
@@ -79,7 +77,7 @@ if ( in_array( $current_section, array( 'extensions', 'premium', 'support' ) ) )
 		</div>
 		<!-- post-body-content -->
 
-		<?php if ( ! is_powered_cache_premium() ): ?>
+		<?php if ( ! powered_cache_is_premium() ): ?>
 		<!-- sidebar -->
 		<div id="postbox-container-1" class="postbox-container">
 
@@ -89,7 +87,7 @@ if ( in_array( $current_section, array( 'extensions', 'premium', 'support' ) ) )
 
 
 					<div class="inside">
-						<h3 class="pc-sidebar-title"><span><?php _e( "Rate Us!", "powered-cache" ); ?></span> <span class="pc-sidebar-icon dashicons dashicons-heart"></span> </h3>
+						<h3 class="powered-cache-sidebar-title"><span><?php _e( "Rate Us!", "powered-cache" ); ?></span> <span class="powered-cache-sidebar-icon dashicons dashicons-heart"></span> </h3>
 						<?php echo sprintf(
 							__( 'We would like to hear your thoughts about our plugin. Please review on <a target="_blank" href="%s">WordPress.org</a>',
 								'powered-cache' ),
@@ -99,7 +97,7 @@ if ( in_array( $current_section, array( 'extensions', 'premium', 'support' ) ) )
 					<br>
 
 					<div class="inside">
-						<h3 class="pc-sidebar-title"><span><?php _e( "Become a Premium User", "powered-cache" ); ?></span><span class="pc-sidebar-icon dashicons dashicons-awards"></span></h3>
+						<h3 class="powered-cache-sidebar-title"><span><?php _e( "Become a Premium User", "powered-cache" ); ?></span><span class="powered-cache-sidebar-icon dashicons dashicons-awards"></span></h3>
 						<?php _e( 'Premium users will reach more goodies', 'powered-cache' ); ?>
 						<ul class="premium-benefits">
 							<li>
@@ -132,7 +130,7 @@ if ( in_array( $current_section, array( 'extensions', 'premium', 'support' ) ) )
 					</div>
 
 					<div class="inside">
-						<h3 class="pc-sidebar-title"><span><?php _e( "Support", "powered-cache" ); ?></span><span class="pc-sidebar-icon dashicons dashicons-sos"></span></h3>
+						<h3 class="powered-cache-sidebar-title"><span><?php _e( "Support", "powered-cache" ); ?></span><span class="powered-cache-sidebar-icon dashicons dashicons-sos"></span></h3>
 						<p>
 							<?php _e( 'We are offering direct support to premium users only, free users welcome on WordPress.org forums.', 'powered-cache' ); ?>
 							<br>

@@ -1,4 +1,4 @@
-function clone_cdn_item() {
+function powered_cache_clone_cdn_item() {
 
 	var $html = jQuery('.primary-cdn-zone').clone();
 	$html.removeClass('primary-cdn-zone');
@@ -12,7 +12,7 @@ function clone_cdn_item() {
 	return false;
 }
 
-function remove_cdn_item() {
+function powered_cache_remove_cdn_item() {
 	console.log('tikladim');
 	var el = jQuery(this).parents('.cdn-zone');
 	console.log(el);
@@ -25,7 +25,7 @@ jQuery(document).ready(function ($) {
 		$(this).parent().remove();
 	});
 
-	$('#pc_mobile_cache').change(function () {
+	$('#powered_cache_mobile_cache').change(function () {
 		if (this.checked) {
 			$('#separate-mobile-cache').fadeIn('slow');
 		} else {
@@ -34,20 +34,20 @@ jQuery(document).ready(function ($) {
 	});
 
 
-	$("#pc-support-btn").click(function () {
+	$("#powered-cache-support-btn").click(function () {
 		var serialized_data = $('#powered-cache-settings-form').serializeArray();
-		var $submit_btn = $("#pc-support-btn");
+		var $submit_btn = $("#powered-cache-support-btn");
 
 		$submit_btn.attr('disabled', 'disabled');
 
 		var data = {
-			action   : 'pc_support_request',
-			nonce    : pc_vars.nonce,
+			action   : 'powered_cache_support_request',
+			nonce    : powered_cache_vars.nonce,
 			form_data: serialized_data
 		};
 
 		//the_ajax_script.ajaxurl is a variable that will contain the url to the ajax processing file
-		$.post(pc_vars.ajaxurl, data, function (response) {
+		$.post( powered_cache_vars.ajaxurl, data, function (response) {
 			resp = JSON.parse(response);
 			$submit_btn.removeAttr('disabled');
 

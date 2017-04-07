@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 
-class PC_Admin {
+class Powered_Cache_Admin {
 
 	/**
 	 * Change by using powered_cache_cap filter
@@ -28,11 +28,11 @@ class PC_Admin {
 	 * @since 1.0
 	 */
 	function setup() {
-		$this->capability = apply_filters( 'pc_cap', $this->capability );
+		$this->capability = apply_filters( 'powered_cache_cap', $this->capability );
 
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 		add_action( 'admin_bar_menu', array( $this, 'admin_bar_menu' ), '9999' );
-		add_filter( 'plugin_action_links_' . plugin_basename( PC_PLUGIN_FILE ), array( $this, 'action_links' ) );
+		add_filter( 'plugin_action_links_' . plugin_basename( POWERED_CACHE_PLUGIN_FILE ), array( $this, 'action_links' ) );
 		add_action( 'load-toplevel_page_powered-cache', array( $this, 'update_options' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'load_scripts' ) );
 		add_action( 'admin_post_deactivate_plugin', array( $this, 'deactivate_plugin' ) );
@@ -51,28 +51,28 @@ class PC_Admin {
 	 */
 	public function update_options() {
 
-		PC_Admin_Helper::check_cap_and_nonce( $this->capability );
+		Powered_Cache_Admin_Helper::check_cap_and_nonce( $this->capability );
 
 		if ( ! empty( $_REQUEST['action'] ) ) {
 
-			$action = apply_filters( 'pc_update_options', $_REQUEST['action'] );
+			$action = apply_filters( 'powered_cache_update_options', $_REQUEST['action'] );
 
 			switch ( $action ) {
 				case 'powered_cache_update_settings':
-					PC_Admin_Actions::update_settings();
+					Powered_Cache_Admin_Actions::update_settings();
 					break;
 				case 'purge_cache':
-					PC_Admin_Actions::purge_cache();
+					Powered_Cache_Admin_Actions::purge_cache();
 					break;
 				case 'reset_settings':
-					PC_Admin_Actions::reset_settings();
+					Powered_Cache_Admin_Actions::reset_settings();
 					break;
 				case 'export_settings':
-					PC_Admin_Actions::export_settings();
+					Powered_Cache_Admin_Actions::export_settings();
 					break;
 			}
 
-			do_action( 'pc_update_options', $action );
+			do_action( 'powered_cache_update_options', $action );
 
 		}
 
@@ -88,16 +88,16 @@ class PC_Admin {
 	public function load_scripts( $hook ) {
 		global $powered_cache_settings_page;
 
-		wp_enqueue_style( 'powered-cache-admin', plugins_url( '/assets/css/admin.css', PC_PLUGIN_FILE ) );
+		wp_enqueue_style( 'powered-cache-admin', plugins_url( '/assets/css/admin.css', POWERED_CACHE_PLUGIN_FILE ) );
 
 		if ( $hook != $powered_cache_settings_page ) {
 			return;
 		}
 
-		wp_enqueue_script( 'powered-cache-admin', plugins_url( '/assets/js/admin.js', PC_PLUGIN_FILE ) );
-		wp_localize_script( 'powered-cache-admin', 'pc_vars', array(
+		wp_enqueue_script( 'powered-cache-admin', plugins_url( '/assets/js/admin.js', POWERED_CACHE_PLUGIN_FILE ) );
+		wp_localize_script( 'powered-cache-admin', 'powered_cache_vars', array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),
-			'nonce'   => wp_create_nonce( 'pc-ajax-nonce' ),
+			'nonce'   => wp_create_nonce( 'powered-cache-ajax-nonce' ),
 		) );
 
 	}
@@ -110,7 +110,7 @@ class PC_Admin {
 	 */
 	public function settings_page() {
 		// load settings template
-		require_once PC_ADMIN_DIR . 'settings.php';
+		require_once POWERED_CACHE_ADMIN_DIR . 'settings.php';
 	}
 
 	/**
@@ -153,7 +153,7 @@ class PC_Admin {
 	function action_links( $actions ) {
 
 		$actions['powered_settings'] = sprintf( __( '<a href="%s">Settings</a>', 'powered-cache' ), esc_url( admin_url( 'admin.php?page=powered-cache' ) ) );
-		if ( ! is_powered_cache_premium() ) {
+		if ( ! powered_cache_is_premium() ) {
 			$actions['get_premium'] = sprintf( __( '<a href="%s" style="color: red;">Get Premium</a>', 'powered-cache' ), esc_url( 'https://poweredcache.com' ) );
 		}
 
@@ -181,7 +181,7 @@ class PC_Admin {
 	 * Return an instance of the current class
 	 *
 	 * @since 1.0
-	 * @return PC_Admin
+	 * @return Powered_Cache_Admin
 	 */
 	public static function factory() {
 		static $instance = false;

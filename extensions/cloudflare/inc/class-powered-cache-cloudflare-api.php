@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 
-class PC_Cloudflare_Api {
+class Powered_Cache_Cloudflare_Api {
 
 	private $end_point = 'https://api.cloudflare.com/client/v4';
 	private $api_key;

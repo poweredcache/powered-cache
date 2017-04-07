@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class PC_Admin_Helper {
+class Powered_Cache_Admin_Helper {
 	/**
 	 * Register admin sections
 	 *
@@ -23,7 +23,7 @@ class PC_Admin_Helper {
 			'support'          => __( 'Support', 'powered-cache' ),
 		);
 
-		return apply_filters( 'pc_admin_settings_sections', $sections );
+		return apply_filters( 'powered_cache_admin_settings_sections', $sections );
 	}
 
 
@@ -67,12 +67,12 @@ class PC_Admin_Helper {
 	public static function object_cache_dropins() {
 
 		$object_caches = array(
-			'memcache'  => PC_DROPIN_DIR . 'memcache-object-cache.php',
-			'memcached' => PC_DROPIN_DIR . 'memcached-object-cache.php',
-			'redis'     => PC_DROPIN_DIR . 'redis-object-cache.php',
+			'memcache'  => POWERED_CACHE_DROPIN_DIR . 'memcache-object-cache.php',
+			'memcached' => POWERED_CACHE_DROPIN_DIR . 'memcached-object-cache.php',
+			'redis'     => POWERED_CACHE_DROPIN_DIR . 'redis-object-cache.php',
 		);
 
-		return apply_filters( 'pc_object_cache_dropins', $object_caches );
+		return apply_filters( 'powered_cache_object_cache_dropins', $object_caches );
 	}
 
 
@@ -118,7 +118,7 @@ class PC_Admin_Helper {
 	 */
 	public static function plugin_button( $plugin_id ) {
 
-		if ( true === PC_Extensions::factory()->is_active( $plugin_id ) ) {
+		if ( true === Powered_Cache_Extensions::factory()->is_active( $plugin_id ) ) {
 			$action = 'deactivate';
 			$button = __( 'Dectivate', 'powered-cache' );
 		} else {
@@ -243,7 +243,7 @@ class PC_Admin_Helper {
 			'css'   => __( 'CSS', 'powered-cache' ),
 		);
 
-		return apply_filters( 'pc_admin_cdn_zones', $zones );
+		return apply_filters( 'powered_cache_admin_cdn_zones', $zones );
 	}
 
 
@@ -256,11 +256,11 @@ class PC_Admin_Helper {
 	 * @param string $section tab of settings
 	 */
 	public static function load_settings_template( $section ) {
-		$page = PC_ADMIN_DIR . 'settings/' . $section . '.php';
+		$page = POWERED_CACHE_ADMIN_DIR . 'settings/' . $section . '.php';
 		if ( file_exists( $page ) ) {
-			do_action( 'pc_before_load_settings_template_' . $section );
+			do_action( 'powered_cache_before_load_settings_template_' . $section );
 			include $page;
-			do_action( 'pc_after_load_settings_template_' . $section );
+			do_action( 'powered_cache_after_load_settings_template_' . $section );
 		}
 	}
 

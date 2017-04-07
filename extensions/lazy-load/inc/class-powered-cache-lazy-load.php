@@ -4,9 +4,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! class_exists( 'PC_Lazy_Load' ) ):
+if ( ! class_exists( 'Powered_Cache_Lazy_Load' ) ):
 
-	class PC_Lazy_Load {
+	class Powered_Cache_Lazy_Load {
 
 		function __construct() {
 			add_action( 'wp', array( $this, 'init' ), 9999 ); // run this as late as possible
@@ -24,10 +24,10 @@ if ( ! class_exists( 'PC_Lazy_Load' ) ):
 
 
 			self::compat();
-			do_action( 'pc_lazy_load_compat' );
+			do_action( 'powered_cache_lazy_load_compat' );
 
 
-			$enabled = apply_filters( 'pc_lazy_load_enabled', true );
+			$enabled = apply_filters( 'powered_cache_lazy_load_enabled', true );
 
 			if ( $enabled ) {
 				add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
@@ -42,7 +42,7 @@ if ( ! class_exists( 'PC_Lazy_Load' ) ):
 		 */
 		protected function compat() {
 
-			$dirname = trailingslashit( PC_LAZY_LOAD_DIR ) . 'compat';
+			$dirname = trailingslashit( POWERED_CACHE_LAZY_LOAD_DIR ) . 'compat';
 			$d       = dir( $dirname );
 			if ( $d ) {
 				while ( $entry = $d->read() ) {
@@ -59,10 +59,10 @@ if ( ! class_exists( 'PC_Lazy_Load' ) ):
 		 */
 		public function enqueue_scripts() {
 
-			wp_enqueue_script( 'PCLL', plugins_url( 'lazy-load/assets/js/lazy-load.min.js', PC_LAZY_LOAD_DIR ), null, false, true );
+			wp_enqueue_script( 'PCLL', plugins_url( 'lazy-load/assets/js/lazy-load.min.js', POWERED_CACHE_LAZY_LOAD_DIR ), null, false, true );
 
 
-			$threshold = apply_filters( 'pc_lazy_load_threshold', 200 );
+			$threshold = apply_filters( 'powered_cache_lazy_load_threshold', 200 );
 
 			if ( 200 !== (int) $threshold ) {
 				wp_localize_script( 'PCLL', 'PCLL_options', array( 'threshold' => $threshold ) );
@@ -74,31 +74,31 @@ if ( ! class_exists( 'PC_Lazy_Load' ) ):
 		 */
 		protected function _setup_filtering() {
 
-			if ( true === apply_filters( 'pc_lazy_load_images', pc_get_extension_option( 'lazyload', 'image', true ) ) ) {
-				add_filter( 'pc_lazy_load_filter', array( __CLASS__, 'filter_images' ) );
+			if ( true === apply_filters( 'powered_cache_lazy_load_images', powered_cache_get_extension_option( 'lazyload', 'image', true ) ) ) {
+				add_filter( 'powered_cache_lazy_load_filter', array( __CLASS__, 'filter_images' ) );
 			}
 
-			if ( true === apply_filters( 'pc_lazy_load_iframes', pc_get_extension_option( 'lazyload', 'iframe', true ) ) ) {
-				add_filter( 'pc_lazy_load_filter', array( __CLASS__, 'filter_iframes' ) );
+			if ( true === apply_filters( 'powered_cache_lazy_load_iframes', powered_cache_get_extension_option( 'lazyload', 'iframe', true ) ) ) {
+				add_filter( 'powered_cache_lazy_load_filter', array( __CLASS__, 'filter_iframes' ) );
 			}
 
-			if ( true === apply_filters( 'pc_lazy_load_post_content', pc_get_extension_option( 'lazyload', 'post_content', true ) ) ) {
+			if ( true === apply_filters( 'powered_cache_lazy_load_post_content', powered_cache_get_extension_option( 'lazyload', 'post_content', true ) ) ) {
 				add_filter( 'the_content', array( __CLASS__, 'filter' ), 200 );
 			}
 
-			if ( true === apply_filters( 'pc_lazy_load_widget_text', pc_get_extension_option( 'lazyload', 'widget_text', true ) ) ) {
+			if ( true === apply_filters( 'powered_cache_lazy_load_widget_text', powered_cache_get_extension_option( 'lazyload', 'widget_text', true ) ) ) {
 				add_filter( 'widget_text', array( __CLASS__, 'filter' ), 200 );
 			}
 
-			if ( true === apply_filters( 'pc_lazy_load_post_thumbnail', pc_get_extension_option( 'lazyload', 'post_thumbnail', true ) ) ) {
+			if ( true === apply_filters( 'powered_cache_lazy_load_post_thumbnail', powered_cache_get_extension_option( 'lazyload', 'post_thumbnail', true ) ) ) {
 				add_filter( 'post_thumbnail_html', array( __CLASS__, 'filter' ), 200 );
 			}
 
-			if ( true === apply_filters( 'pc_lazy_load_avatar', pc_get_extension_option( 'lazyload', 'avatar', true ) ) ) {
+			if ( true === apply_filters( 'powered_cache_lazy_load_avatar', powered_cache_get_extension_option( 'lazyload', 'avatar', true ) ) ) {
 				add_filter( 'get_avatar', array( __CLASS__, 'filter' ), 200 );
 			}
 
-			add_filter( 'pc_lazy_load_html', array( __CLASS__, 'filter' ) );
+			add_filter( 'powered_cache_lazy_load_html', array( __CLASS__, 'filter' ) );
 		}
 
 		/**
@@ -111,7 +111,7 @@ if ( ! class_exists( 'PC_Lazy_Load' ) ):
 		public static function filter( $content ) {
 
 			// Last chance to bail out before running the filter
-			$run_filter = apply_filters( 'pc_lazy_load_run_filter', true );
+			$run_filter = apply_filters( 'powered_cache_lazy_load_run_filter', true );
 			if ( ! $run_filter ) {
 				return $content;
 			}
@@ -121,7 +121,7 @@ if ( ! class_exists( 'PC_Lazy_Load' ) ):
 			 *
 			 * @param string $content The HTML string to filter
 			 */
-			$content = apply_filters( 'pc_lazy_load_filter', $content );
+			$content = apply_filters( 'powered_cache_lazy_load_filter', $content );
 
 			return $content;
 		}
@@ -136,7 +136,7 @@ if ( ! class_exists( 'PC_Lazy_Load' ) ):
 		 */
 		public static function filter_images( $content ) {
 
-			$placeholder_url = apply_filters( 'pc_lazy_load_placeholder_url', 'data:image/gif;base64,R0lGODdhAQABAPAAAP///wAAACwAAAAAAQABAEACAkQBADs=' );
+			$placeholder_url = apply_filters( 'powered_cache_lazy_load_placeholder_url', 'data:image/gif;base64,R0lGODdhAQABAPAAAP///wAAACwAAAAAAQABAEACAkQBADs=' );
 
 			$match_content = self::_get_content_haystack( $content );
 
@@ -188,7 +188,7 @@ if ( ! class_exists( 'PC_Lazy_Load' ) ):
 		 */
 		public static function filter_iframes( $content ) {
 
-			$placeholder_url = apply_filters( 'pc_lazy_load_placeholder_url', 'data:image/gif;base64,R0lGODdhAQABAPAAAP///wAAACwAAAAAAQABAEACAkQBADs=' );
+			$placeholder_url = apply_filters( 'powered_cache_lazy_load_placeholder_url', 'data:image/gif;base64,R0lGODdhAQABAPAAAP///wAAACwAAAAAAQABAEACAkQBADs=' );
 
 			$match_content = self::_get_content_haystack( $content );
 
@@ -286,7 +286,7 @@ if ( ! class_exists( 'PC_Lazy_Load' ) ):
 			 * @param array  $skip_classes The current classes to skip
 			 * @param string $content_type The current content type
 			 */
-			$skip_classes = apply_filters( 'pc_lazy_load_skip_classes', array( 'lazy' ), $content_type );
+			$skip_classes = apply_filters( 'powered_cache_lazy_load_skip_classes', array( 'lazy' ), $content_type );
 
 			return $skip_classes;
 		}

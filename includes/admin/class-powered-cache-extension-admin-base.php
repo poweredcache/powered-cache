@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class PC_Extension_Admin_Base {
+class Powered_Cache_Extension_Admin_Base {
 
 	public $extension_id;
 	public $extension_name;
@@ -18,8 +18,8 @@ class PC_Extension_Admin_Base {
 			$this->$key = $value;
 		}
 
-		$this->options = pc_get_extension_settings( $this->extension_id );
-		$this->is_premium = is_powered_cache_premium();
+		$this->options = powered_cache_get_extension_settings( $this->extension_id );
+		$this->is_premium = powered_cache_is_premium();
 	}
 
 	/**
@@ -28,13 +28,13 @@ class PC_Extension_Admin_Base {
 	 * @since 1.0
 	 */
 	protected function setup() {
-		$this->capability = apply_filters( 'pc_cap', $this->capability, $this->extension_id );
+		$this->capability = apply_filters( 'powered_cache_cap', $this->capability, $this->extension_id );
 
 		add_action( 'admin_menu', array( $this, 'admin_menu' ), 999 );
 		if ( property_exists( $this, 'admin_bar_menu' ) ) {
 			add_action( 'admin_bar_menu', array( $this, 'admin_bar_menu' ), 999 );
 		}
-		add_action( 'load-powered-cache_page_pc_' . $this->extension_id, array( $this, 'update_options' ) );
+		add_action( 'load-powered-cache_page_powered-cache-extension-' . $this->extension_id, array( $this, 'update_options' ) );
 	}
 
 	/**
@@ -44,7 +44,7 @@ class PC_Extension_Admin_Base {
 	 */
 	public function admin_menu() {
 		global $powered_cache_plugin_pages;
-		$powered_cache_plugin_pages[ $this->extension_id ] = add_submenu_page( 'powered-cache', $this->extension_name, $this->extension_name, $this->capability,'pc_'. $this->extension_id, array( $this, 'settings_page' ) );
+		$powered_cache_plugin_pages[ $this->extension_id ] = add_submenu_page( 'powered-cache', $this->extension_name, $this->extension_name, $this->capability,'powered-cache-extension-'. $this->extension_id, array( $this, 'settings_page' ) );
 	}
 
 	public function admin_bar_menu( $wp_admin_bar ) {
@@ -52,7 +52,7 @@ class PC_Extension_Admin_Base {
 			$wp_admin_bar->add_menu( array(
 				'id'     => $this->extension_id,
 				'title'  => $this->extension_name,
-				'href'   => admin_url( 'admin.php?page=' . $this->extension_id ),
+				'href'   => admin_url( 'admin.php?page=powered-cache-extension-' . $this->extension_id ),
 				'parent' => 'powered-cache',
 			) );
 		}
@@ -60,7 +60,7 @@ class PC_Extension_Admin_Base {
 
 	public function settings_template( $settings_files = array() ) {
 		$this->settings_files = $settings_files;
-		require_once PC_ADMIN_DIR . 'extension-settings.php';
+		require_once POWERED_CACHE_ADMIN_DIR . 'extension-settings.php';
 	}
 
 	public function get_option( $key ) {
@@ -86,11 +86,11 @@ class PC_Extension_Admin_Base {
 
 	public function update_options() {
 
-		if ( ! defined( 'PC_SAVING_OPTIONS' ) ) {
-			define( 'PC_SAVING_OPTIONS', true );
+		if ( ! defined( 'POWERED_CACHE_SAVING_OPTIONS' ) ) {
+			define( 'POWERED_CACHE_SAVING_OPTIONS', true );
 		}
 
-		PC_Admin_Helper::check_cap_and_nonce( $this->capability );
+		Powered_Cache_Admin_Helper::check_cap_and_nonce( $this->capability );
 
 		if ( isset( $_REQUEST['extension'] ) && ( $_REQUEST['extension'] === $this->extension_id ) ) {
 			$_post = $_POST[ $this->extension_id ];
@@ -109,14 +109,14 @@ class PC_Extension_Admin_Base {
 			}
 
 
-			if ( isset( $options ) && ( pc_update_extension_option( $this->extension_id, $options ) ) ) {
+			if ( isset( $options ) && ( powered_cache_update_extension_option( $this->extension_id, $options ) ) ) {
 				// update runtime values
 				$this->options = $options;
 			}
 
 			$msg = __( 'Options updated', 'powered-cache' );
-			PC_Admin_Helper::set_flash_message( $msg );
-			PC_Admin_Actions::exit_with_redirect();
+			Powered_Cache_Admin_Helper::set_flash_message( $msg );
+			Powered_Cache_Admin_Actions::exit_with_redirect();
 		}
 	}
 

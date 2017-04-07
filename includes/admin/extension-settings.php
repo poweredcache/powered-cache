@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	</h1>
 
 
-	<div id="pc-admin-page-wrapper" class="powered-cache-settings-page">
+	<div id="powered-cache-admin-page-wrapper" class="powered-cache-settings-page">
 
 		<div id="post-body">
 			<!-- main content -->
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<div class="inside">
 
 								<?php wp_nonce_field( 'powered_cache_update_settings', 'powered_cache_settings_nonce' ); ?>
-								<input type="hidden" name="action" value="pc_update_extension_settings" />
+								<input type="hidden" name="action" value="powered_cache_update_extension_settings" />
 								<input type="hidden" name="extension" value="<?php echo esc_attr( $this->extension_id ); ?>" />
 								<input type="hidden" name="wp_http_referer" value="<?php echo esc_attr( wp_unslash( $_SERVER['REQUEST_URI'] ) ); ?>'" />
 

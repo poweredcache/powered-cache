@@ -4,9 +4,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! class_exists( 'PC_Lazy_Load_Admin' ) ):
+if ( ! class_exists( 'Powered_Cache_Lazy_Load_Admin' ) ):
 
-	class PC_Lazy_Load_Admin extends PC_Extension_Admin_Base {
+	class Powered_Cache_Lazy_Load_Admin extends Powered_Cache_Extension_Admin_Base {
 		public $fields;
 
 		function __construct() {
@@ -56,7 +56,7 @@ if ( ! class_exists( 'PC_Lazy_Load_Admin' ) ):
 		 * Return an instance of the current class
 		 *
 		 * @since 1.0
-		 * @return PC_Preload_Admin
+		 * @return Powered_Cache_Lazy_Load_Admin
 		 */
 		public static function factory() {
 			static $instance = false;

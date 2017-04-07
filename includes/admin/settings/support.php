@@ -21,16 +21,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<h1><?php _e( 'PoweredCache Support', 'powered-cache' ); ?></h1>
 			<hr>
 
-			<div id="pc-premium-support">
+			<div id="powered-cache-premium-support">
 
-				<div id="pc-support-general-info">
+				<div id="powered-cache-support-general-info">
 					<?php echo sprintf( __( 'Welcome to Powered Cache support line. Direct support exclusive to paid users.
 					If you are free user, please use community support on <a target="_blank" href="%s">WordPress.org</a> forums.', 'powered-cache' ), 'https://wordpress.org/support/plugin/powered-cache' ); ?>
 				</div>
 				<div id="form-message-placeholder"></div>
 
 				<table class="form-table" id="support-form-table">
-					<?php maybe_require_powered_cache_premium_html(); ?>
+					<?php powered_cache_maybe_require_premium_html(); ?>
 
 					<tbody>
 					<tr>
@@ -44,7 +44,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</tr>
 
 					<tr>
-						<th scope="row" style="vertical-align: middle"><label for="pc_caching_status"><?php _e( 'Description', 'powered-cache' ); ?></label></th>
+						<th scope="row" style="vertical-align: middle"><label for="powered_cache_caching_status"><?php _e( 'Description', 'powered-cache' ); ?></label></th>
 						<td>
 							<label>
 								<textarea id="support_description"  name="support_description" cols="70" rows="10">
@@ -74,7 +74,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<tr>
 						<td></td>
 						<td>
-							<button id="pc-support-btn" class="button button-secondary" type="button" ><?php _e( 'Open new support ticket', 'powered-cache' ); ?></button>
+							<button id="powered-cache-support-btn" class="button button-secondary" type="button" ><?php _e( 'Open new support ticket', 'powered-cache' ); ?></button>
 						</td>
 					</tr>
 					</tbody>

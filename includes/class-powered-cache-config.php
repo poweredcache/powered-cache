@@ -4,14 +4,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class PC_Config {
+class Powered_Cache_Config {
 
 
 	/**
 	 * Return an instance of the current class
 	 *
 	 * @since 1.0
-	 * @return PC_Config
+	 * @return Powered_Cache_Config
 	 */
 	public static function factory() {
 		static $instance = false;
@@ -54,7 +54,7 @@ class PC_Config {
 			'ssl_cache'                  => false,
 			'gzip_compression'           => false,
 			'cache_timeout'              => 1440,
-			'cache_location'             => pc_get_cache_dir(),
+			'cache_location'             => powered_cache_get_cache_dir(),
 			// advanced options
 			'rejected_user_agents'       => '',
 			'rejected_cookies'           => '',
@@ -71,7 +71,7 @@ class PC_Config {
 		);
 
 
-		return apply_filters( 'pc_default_settings', $settings );
+		return apply_filters( 'powered_cache_default_settings', $settings );
 	}
 
 	/**
@@ -88,7 +88,7 @@ class PC_Config {
 
 		$file_string = '';
 
-		if ( true === pc_get_option( 'enable_page_caching' ) ) {
+		if ( true === powered_cache_get_option( 'enable_page_caching' ) ) {
 			$file_string = $this->advanced_cache_file_content();
 		}
 
@@ -149,9 +149,9 @@ class PC_Config {
 			$status = true;
 		}
 
-		PC_Config::factory()->generate_advanced_cache_file();
-		PC_Config::factory()->define_wp_cache( $status );
-		PC_Config::factory()->configure_htaccess( $status );
+		Powered_Cache_Config::factory()->generate_advanced_cache_file();
+		Powered_Cache_Config::factory()->define_wp_cache( $status );
+		Powered_Cache_Config::factory()->configure_htaccess( $status );
 
 		return true;
 	}
@@ -162,7 +162,7 @@ class PC_Config {
 	 *
 	 * @since 1.0
 	 * @param $backend
-	 * @see PC_Admin_Helper::object_cache_dropins
+	 * @see Powered_Cache_Admin_Helper::object_cache_dropins
 	 *
 	 * @return mixed|void
 	 */
@@ -172,7 +172,7 @@ class PC_Config {
 		$string .= "define( 'POWERED_OBJECT_CACHE', true );" . "\n";
 		$string .= "if ( ! @file_exists( WP_CONTENT_DIR . '/pc-config/config-' . \$_SERVER['HTTP_HOST'] . '.php' ) ) { return; }" . "\n";
 
-		$object_caches = PC_Admin_Helper::object_cache_dropins();
+		$object_caches = Powered_Cache_Admin_Helper::object_cache_dropins();
 
 		$string .= "\$GLOBALS['powered_cache_options'] = include( WP_CONTENT_DIR . '/pc-config/config-' . \$_SERVER['HTTP_HOST'] . '.php' );" . "\n\n";
 
@@ -182,7 +182,7 @@ class PC_Config {
 		$string .= "\t" . 'define( \'POWERED_OBJECT_CACHE_HAS_PROBLEM\', true );' . "\n";
 		$string .= '}';
 
-		return apply_filters( 'pc_object_cache_file_content', $string );
+		return apply_filters( 'powered_cache_object_cache_file_content', $string );
 	}
 
 
@@ -196,7 +196,7 @@ class PC_Config {
 
 		$string = '<?php ' . PHP_EOL;
 		$string .= "defined( 'ABSPATH' ) || exit;" . PHP_EOL;
-		$string .= "define( 'POWERED_PAGE_CACHE', true );" . PHP_EOL;
+		$string .= "define( 'POWERED_CACHE_PAGE_CACHING', true );" . PHP_EOL;
 
 		$string .= "\$config_file = WP_CONTENT_DIR . '/pc-config/config-' . \$_SERVER['HTTP_HOST'];" . PHP_EOL . PHP_EOL;
 
@@ -212,17 +212,17 @@ class PC_Config {
 		// get config file
 		$string .= "\$GLOBALS['powered_cache_options'] = include( \$config_file );" . PHP_EOL . PHP_EOL;
 		// mobile cache varibales
-		$string .= '$powered_cache_mobile_browsers = ' . var_export( pc_mobile_browsers(), true ) . ";" . PHP_EOL;
-		$string .= '$powered_cache_mobile_prefixes = ' . var_export( pc_mobile_prefixes(), true ) . ";" . PHP_EOL;
+		$string .= '$powered_cache_mobile_browsers = ' . var_export( powered_cache_mobile_browsers(), true ) . ";" . PHP_EOL;
+		$string .= '$powered_cache_mobile_prefixes = ' . var_export( powered_cache_mobile_prefixes(), true ) . ";" . PHP_EOL;
 
-		$string .= 'if ( @file_exists( \'' . PC_DROPIN_DIR . 'page-cache.php' . '\' ) ) {' . PHP_EOL;
-		$string .= "\t" . 'include( \'' . PC_DROPIN_DIR . 'page-cache.php' . '\' );' . PHP_EOL;
+		$string .= 'if ( @file_exists( \'' . POWERED_CACHE_DROPIN_DIR . 'page-cache.php' . '\' ) ) {' . PHP_EOL;
+		$string .= "\t" . 'include( \'' . POWERED_CACHE_DROPIN_DIR . 'page-cache.php' . '\' );' . PHP_EOL;
 		$string .= '} else {' . PHP_EOL;
-		$string .= "\t" . 'define( \'POWERED_PAGE_CACHE_HAS_PROBLEM\', true );' . PHP_EOL;
+		$string .= "\t" . 'define( \'POWERED_CACHE_PAGE_CACHING_HAS_PROBLEM\', true );' . PHP_EOL;
 		$string .= '}';
 
 
-		return apply_filters( 'pc_advanced_cache_file_content', $string );
+		return apply_filters( 'powered_cache_advanced_cache_file_content', $string );
 	}
 
 	/**
@@ -347,7 +347,7 @@ class PC_Config {
 
 		$config_file = $config_dir . '/config-' . $config_file_name . '.php';
 
-		$configuration['cache_location'] = pc_get_cache_dir();
+		$configuration['cache_location'] = powered_cache_get_cache_dir();
 
 		$wp_filesystem->mkdir( $config_dir );
 
@@ -374,7 +374,7 @@ class PC_Config {
 		if ( $wp_filesystem->is_writable( $htaccess_file ) ) {
 			$contents = $wp_filesystem->get_contents( $htaccess_file );
 
-			$rules .= apply_filters( 'pc_pre_htaccess', '', $contents );
+			$rules .= apply_filters( 'powered_cache_pre_htaccess', '', $contents );
 
 			//clean up
 			$contents = preg_replace( '/# BEGIN POWERED CACHE(.*)# END POWERED CACHE/is', '', $contents );
@@ -386,7 +386,7 @@ class PC_Config {
 			$rules .= '# BEGIN POWERED CACHE' . PHP_EOL;
 
 			// todo set option here.
-			if ( apply_filters( 'pc_browser_cache', true ) ) {
+			if ( apply_filters( 'powered_cache_browser_cache', true ) ) {
 				$wp_mime_types = wp_get_mime_types();
 				$mime_types    = array_flip( $wp_mime_types );
 				//mimes
@@ -426,9 +426,9 @@ class PC_Config {
 					 */
 
 					if ( in_array( $mime_type, array( 'text/css', 'application/javascript' ) ) ) {
-						$expiry_time = apply_filters( 'pc_browser_cache_assets_lifespan', 'access plus 1 year' );
+						$expiry_time = apply_filters( 'powered_cache_browser_cache_assets_lifespan', 'access plus 1 year' );
 					} else {
-						$expiry_time = apply_filters( 'pc_browser_cache_default_lifespan', 'access plus 1 month' );
+						$expiry_time = apply_filters( 'powered_cache_browser_cache_default_lifespan', 'access plus 1 month' );
 					}
 					$rules .= '    ExpiresByType '.$mime_type.'                 "'.$expiry_time.'"' . PHP_EOL;
 				}
@@ -459,9 +459,9 @@ class PC_Config {
 
 			// rewrite
 
-			$env_pc_ua = '';
-			$env_pc_ssl = '';
-			$env_pc_enc = '';
+			$env_powered_cache_ua = '';
+			$env_powered_cache_ssl = '';
+			$env_powered_cache_enc = '';
 
 
 			$rewrite_base = network_home_url( '', 'relative' );
@@ -469,36 +469,36 @@ class PC_Config {
 				$rewrite_base = '/';
 			}
 
-			$cache_dir = pc_get_cache_dir();
+			$cache_dir = powered_cache_get_cache_dir();
 
 			$rules .= '<IfModule mod_rewrite.c>' . PHP_EOL;
 			$rules .= '    RewriteEngine On' . PHP_EOL;
 			$rules .= '    RewriteBase ' . $rewrite_base . PHP_EOL;
 
 
-			if ( true === pc_get_option( 'cache_mobile' ) && true === pc_get_option( 'cache_mobile_separate_file' ) ) {
-				$mobile_browsers = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', pc_mobile_browsers() ) ), ' ' );
-				$mobile_prefixes = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', pc_mobile_prefixes() ) ), ' ' );
+			if ( true === powered_cache_get_option( 'cache_mobile' ) && true === powered_cache_get_option( 'cache_mobile_separate_file' ) ) {
+				$mobile_browsers = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', powered_cache_mobile_browsers() ) ), ' ' );
+				$mobile_prefixes = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', powered_cache_mobile_prefixes() ) ), ' ' );
 				// mobile env set
 				$rules .= "    RewriteCond %{HTTP_USER_AGENT} (" . $mobile_browsers . ") [NC]" . PHP_EOL;
 				$rules .= "    RewriteRule .* - [E=PC_UA:-mobile]" . PHP_EOL;
 				$rules .= "    RewriteCond %{HTTP_USER_AGENT} ^(" . $mobile_prefixes . ") [NC]" . PHP_EOL;
 				$rules .= "    RewriteRule .* - [E=PC_UA:-mobile]" . PHP_EOL;
-				$env_pc_ua = '%{ENV:PC_UA}';
+				$env_powered_cache_ua = '%{ENV:PC_UA}';
 			}
 
-			if ( true === pc_get_option( 'ssl_cache' ) ) {
+			if ( true === powered_cache_get_option( 'ssl_cache' ) ) {
 				$rules .= "    RewriteCond %{HTTPS} =on" . PHP_EOL;
 				$rules .= "    RewriteRule .* - [E=W3TC_SSL:-https]" . PHP_EOL;
 				$rules .= "    RewriteCond %{SERVER_PORT} =443" . PHP_EOL;
 				$rules .= "    RewriteRule .* - [E=PC_SSL:-https]" . PHP_EOL;
-				$env_pc_ssl = '%{ENV:PC_SSL}';
+				$env_powered_cache_ssl = '%{ENV:PC_SSL}';
 			}
 
-			if ( true === pc_get_option( 'gzip_compression' ) ) {
+			if ( true === powered_cache_get_option( 'gzip_compression' ) ) {
 				$rules .= "    RewriteCond %{HTTP:Accept-Encoding} gzip" . PHP_EOL;
 				$rules .= "    RewriteRule .* - [E=PC_ENC:_gzip]" . PHP_EOL;
-				$env_pc_enc = '%{ENV:PC_ENC}';
+				$env_powered_cache_enc = '%{ENV:PC_ENC}';
 			}
 
 			$rules .= "    RewriteCond %{REQUEST_METHOD} !=POST" . PHP_EOL;
@@ -517,8 +517,8 @@ class PC_Config {
 
 
 			// reject user agent
-			if ( false !== pc_get_option( 'rejected_user_agents' ) ) {
-				$rejected_user_agents = preg_split( '#(\r\n|\n|\r)#', pc_get_option( 'rejected_user_agents' ) );
+			if ( false !== powered_cache_get_option( 'rejected_user_agents' ) ) {
+				$rejected_user_agents = preg_split( '#(\r\n|\n|\r)#', powered_cache_get_option( 'rejected_user_agents' ) );
 				if ( ! empty( $rejected_user_agents ) ) {
 					$rules .= '    RewriteCond %{HTTP_USER_AGENT} !^(' . implode( '|', $rejected_user_agents ) . ').* [NC]' . PHP_EOL;
 				}
@@ -526,8 +526,8 @@ class PC_Config {
 
 
 			// ignore cookies
-			if ( false !== pc_get_option( 'rejected_uri' ) ) {
-				$cookies = preg_split( '#(\n|\r)#', pc_get_option( 'rejected_uri' ) );
+			if ( false !== powered_cache_get_option( 'rejected_uri' ) ) {
+				$cookies = preg_split( '#(\n|\r)#', powered_cache_get_option( 'rejected_uri' ) );
 			}
 			$wp_cookies = array( 'wordpressuser_', 'wordpresspass_', 'wordpress_sec_', 'wordpress_logged_in_' );
 			if ( ! empty( $cookies ) ) {
@@ -539,7 +539,7 @@ class PC_Config {
 			$rules .= '    RewriteCond %{HTTP_USER_AGENT} !^(facebookexternalhit).* [NC]'.PHP_EOL;
 
 
-			$cache_location = pc_get_cache_dir();
+			$cache_location = powered_cache_get_cache_dir();
 			$cache_location = untrailingslashit( $cache_location ) . '/powered-cache/';
 			if ( strpos( ABSPATH, $cache_location ) === false ) {
 				// clean doc root
@@ -549,12 +549,12 @@ class PC_Config {
 			}
 
 
-			if ( apply_filters( 'pc_maybe_1and1_hosting', ( 0 === strpos( $_SERVER['DOCUMENT_ROOT'], '/kunden/homepage/' ) ) ) ) {
-				$rules .= '    RewriteCond "' . str_replace( '/kunden/homepage/', '/', $cache_location ) . '%{HTTP_HOST}' . '%{REQUEST_URI}/index' . $env_pc_ssl . $env_pc_ua . '.html' . $env_pc_enc . '" -f' . PHP_EOL;
+			if ( apply_filters( 'powered_cache_maybe_1and1_hosting', ( 0 === strpos( $_SERVER['DOCUMENT_ROOT'], '/kunden/homepage/' ) ) ) ) {
+				$rules .= '    RewriteCond "' . str_replace( '/kunden/homepage/', '/', $cache_location ) . '%{HTTP_HOST}' . '%{REQUEST_URI}/index' . $env_powered_cache_ssl . $env_powered_cache_ua . '.html' . $env_powered_cache_enc . '" -f' . PHP_EOL;
 			} else {
-				$rules .= '    RewriteCond "%{DOCUMENT_ROOT}/' . ltrim( $cache_path, '/' ) . '%{HTTP_HOST}' . '%{REQUEST_URI}/index' . $env_pc_ssl . $env_pc_ua . '.html' . $env_pc_enc . '" -f' . PHP_EOL;
+				$rules .= '    RewriteCond "%{DOCUMENT_ROOT}/' . ltrim( $cache_path, '/' ) . '%{HTTP_HOST}' . '%{REQUEST_URI}/index' . $env_powered_cache_ssl . $env_powered_cache_ua . '.html' . $env_powered_cache_enc . '" -f' . PHP_EOL;
 			}
-			$rules .= '    RewriteRule .* "' . $cache_path . '%{HTTP_HOST}' . '%{REQUEST_URI}/index' . $env_pc_ssl . $env_pc_ua . '.html' . $env_pc_enc . '" [L]' . PHP_EOL;
+			$rules .= '    RewriteRule .* "' . $cache_path . '%{HTTP_HOST}' . '%{REQUEST_URI}/index' . $env_powered_cache_ssl . $env_powered_cache_ua . '.html' . $env_powered_cache_enc . '" [L]' . PHP_EOL;
 			$rules .= '</IfModule>' . PHP_EOL;
 			$rules .= '# END POWERED CACHE' . PHP_EOL;
 

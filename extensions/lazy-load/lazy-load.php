@@ -18,16 +18,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! defined( 'PC_LAZY_LOAD_DIR' ) ) {
-	define( 'PC_LAZY_LOAD_DIR', plugin_dir_path( __FILE__ ) );
+if ( ! defined( 'POWERED_CACHE_LAZY_LOAD_DIR' ) ) {
+	define( 'POWERED_CACHE_LAZY_LOAD_DIR', plugin_dir_path( __FILE__ ) );
 }
 
-require_once 'inc/class-pc-lazy-load.php';
-new PC_Lazy_Load();
+require_once 'inc/class-powered-cache-lazy-load.php';
+new Powered_Cache_Lazy_Load();
 
 if ( is_admin() ) {
-	require_once 'inc/class-pc-lazy-load-admin.php';
-	PC_Lazy_Load_Admin::factory();
+	require_once 'inc/class-powered-cache-lazy-load-admin.php';
+	Powered_Cache_Lazy_Load_Admin::factory();
 }
 
 // make description translatable

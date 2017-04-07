@@ -4,13 +4,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class PC_Advanced_Cache {
+class Powered_Cache_Advanced_Cache {
 
 	/**
 	 * Return an instance of the current class
 	 *
 	 * @since 1.0
-	 * @return PC_Advanced_Cache
+	 * @return Powered_Cache_Advanced_Cache
 	 */
 	public static function factory() {
 
@@ -31,7 +31,7 @@ class PC_Advanced_Cache {
 	 */
 	public function setup() {
 		add_action( 'admin_bar_menu', array( $this, 'admin_bar_menu' ) );
-		add_action( 'admin_post_pc_purge_page_cache', array( $this, 'purge_page_cache' ) );
+		add_action( 'admin_post_powered_cache_purge_page_cache', array( $this, 'purge_page_cache' ) );
 
 		add_action( 'pre_post_update', array( $this, 'purge_on_post_update' ), 10, 1 );
 		add_action( 'save_post', array( $this, 'purge_on_post_update' ), 10, 1 );
@@ -49,7 +49,7 @@ class PC_Advanced_Cache {
 		$wp_admin_bar->add_menu( array(
 			'id'     => 'advanced-cache-purge',
 			'title'  => __( 'Purge Page Cache', 'powered-cache' ),
-			'href'   => wp_nonce_url( admin_url( 'admin-post.php?action=pc_purge_page_cache' ), 'pc_purge_page_cache' ),
+			'href'   => wp_nonce_url( admin_url( 'admin-post.php?action=powered_cache_purge_page_cache' ), 'powered_cache_purge_page_cache' ),
 			'parent' => 'powered-cache',
 		) );
 	}
@@ -60,12 +60,12 @@ class PC_Advanced_Cache {
 	 * @since 1.0
 	 */
 	public function purge_page_cache() {
-		if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'pc_purge_page_cache' ) ) {
+		if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'powered_cache_purge_page_cache' ) ) {
 			wp_nonce_ays( '' );
 		}
 
-		pc_clean_page_cache_dir();
-		PC_Admin_Helper::set_flash_message( __( 'Page cache deleted successfully!', 'powered-cache' ) );
+		powered_cache_clean_page_cache_dir();
+		Powered_Cache_Admin_Helper::set_flash_message( __( 'Page cache deleted successfully!', 'powered-cache' ) );
 
 		wp_safe_redirect( wp_get_referer() );
 		die();
@@ -85,16 +85,16 @@ class PC_Advanced_Cache {
 		$urls = array();
 
 		if ( in_array( $current_post_status, array( "publish", "trash" ) ) ) {
-			$urls = pc_get_post_related_urls( $post_id );
+			$urls = powered_cache_get_post_related_urls( $post_id );
 
-			$urls = apply_filters( 'pc_advanced_cache_purge_urls', $urls, $post_id );
+			$urls = apply_filters( 'powered_cache_advanced_cache_purge_urls', $urls, $post_id );
 
 			foreach ( $urls as $url ) {
-				pc_delete_page_cache( $url );
+				powered_cache_delete_page_cache( $url );
 			}
 		}
 
-		do_action( 'pc_advanced_cache_purge_post', $post_id, $urls );
+		do_action( 'powered_cache_advanced_cache_purge_post', $post_id, $urls );
 	}
 
 	/**
@@ -108,7 +108,7 @@ class PC_Advanced_Cache {
 	public function purge_post_on_comment_status_change( $comment_ID, $comment_status ) {
 		$comment = get_comment( $comment_ID );
 		$post_id = $comment->comment_post_ID;
-		pc_delete_page_cache( get_permalink( $post_id ) );
+		powered_cache_delete_page_cache( get_permalink( $post_id ) );
 	}
 
 	/**
@@ -121,7 +121,7 @@ class PC_Advanced_Cache {
 	 */
 	public function set_comment_cookie( $comment, $user ) {
 		$post_id = $comment->comment_post_ID;
-		setcookie( 'pc_commented_posts[' . $post_id . ']', parse_url( get_permalink( $post_id ), PHP_URL_PATH ), ( time() + HOUR_IN_SECONDS * 24 * 30 ) );
+		setcookie( 'powered_cache_commented_posts[' . $post_id . ']', parse_url( get_permalink( $post_id ), PHP_URL_PATH ), ( time() + HOUR_IN_SECONDS * 24 * 30 ) );
 	}
 
 }

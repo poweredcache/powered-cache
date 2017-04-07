@@ -4,13 +4,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class PC_CDN {
+class Powered_Cache_CDN {
 
 	/**
 	 * Return an instance of the current class
 	 *
 	 * @since 1.0
-	 * @return PC_CDN
+	 * @return Powered_Cache_CDN
 	 */
 	public static function factory() {
 		static $instance = false;
@@ -45,7 +45,7 @@ class PC_CDN {
 		add_filter( 'widget_text', array( $this, 'cdn_images' ), 9999 );
 
 
-		do_action( 'pc_cdn_setup' );
+		do_action( 'powered_cache_cdn_setup' );
 	}
 
 
@@ -139,7 +139,7 @@ class PC_CDN {
 		$ext = strtolower( end( $ext ) );
 
 		$zone = 'all';
-		$image_extensions = apply_filters( 'pc_cdn_image_extensions', array( 'jpg', 'jpeg', 'gif', 'png', 'bmp', 'ico' ) );
+		$image_extensions = apply_filters( 'powered_cache_cdn_image_extensions', array( 'jpg', 'jpeg', 'gif', 'png', 'bmp', 'ico' ) );
 
 		if ( in_array( $ext, $image_extensions ) ) {
 			$zone = 'image';
@@ -169,7 +169,7 @@ class PC_CDN {
 		global $powered_cache_cdn_addresses;
 
 		if ( ! isset( $powered_cache_cdn_addresses ) ) {
-			$powered_cache_cdn_addresses = pc_cdn_addresses();
+			$powered_cache_cdn_addresses = powered_cache_cdn_addresses();
 		}
 
 		if ( isset( $powered_cache_cdn_addresses[ $zone ] ) && is_array( $powered_cache_cdn_addresses[ $zone ] ) ) {

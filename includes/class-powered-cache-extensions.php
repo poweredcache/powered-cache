@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 
-class PC_Extensions {
+class Powered_Cache_Extensions {
 
 	public $core_extension_dir;
 
@@ -21,7 +21,7 @@ class PC_Extensions {
 	 *
 	 */
 	private function setup() {
-		$this->core_extension_dir = apply_filters( 'pc_extensions_dir', PC_PLUGIN_DIR . 'extensions/' );
+		$this->core_extension_dir = apply_filters( 'powered_cache_extensions_dir', POWERED_CACHE_PLUGIN_DIR . 'extensions/' );
 	}
 
 	/**
@@ -40,7 +40,7 @@ class PC_Extensions {
 		);
 
 
-		do_action_ref_array( 'pc_register_extensions', array( $this->core_extension_dir, &$extentions ) );
+		do_action_ref_array( 'powered_cache_register_extensions', array( $this->core_extension_dir, &$extentions ) );
 
 		$extension_info = array();
 
@@ -70,7 +70,7 @@ class PC_Extensions {
 		}
 
 
-		return apply_filters( 'pc_extension_info', $extension_info );
+		return apply_filters( 'powered_cache_extension_info', $extension_info );
 	}
 
 
@@ -82,9 +82,9 @@ class PC_Extensions {
 	public function load_extentions() {
 		global $wp_filesystem;
 
-		do_action( 'pc_before_extension_load' );
+		do_action( 'powered_cache_before_extension_load' );
 
-		$activated_extensions = pc_get_option('active_extensions');
+		$activated_extensions = powered_cache_get_option('active_extensions');
 
 		if ( is_array( $activated_extensions ) ) {
 			$extensions = $this->get_extentions();
@@ -94,14 +94,14 @@ class PC_Extensions {
 					include_once $extensions[ $extension ]['path'];
 
 					// fire after extension loaded
-					do_action( 'pc_extension_' . $extension . '_loaded', $extension );
+					do_action( 'powered_cache_extension_' . $extension . '_loaded', $extension );
 				}
 			}
 
 		}
 
 		// get active extensions and load
-		do_action( 'pc_extensions_loaded' );
+		do_action( 'powered_cache_extensions_loaded' );
 	}
 
 	/**
@@ -133,7 +133,7 @@ class PC_Extensions {
 			return false;
 		}
 
-		$old_options = $new_options = pc_get_settings();
+		$old_options = $new_options = powered_cache_get_settings();
 
 		if ( isset( $old_options['active_extensions'] ) && is_array( $old_options['active_extensions'] ) ) {
 			$new_options['active_extensions'] = array_merge( $old_options['active_extensions'], array( $extension_id ) );
@@ -141,8 +141,8 @@ class PC_Extensions {
 			$new_options['active_extensions'][] = $extension_id;
 		}
 
-		do_action( 'pc_extension_activate_' . $extension_id );
-		pc_save_settings( $old_options, $new_options );
+		do_action( 'powered_cache_extension_activate_' . $extension_id );
+		powered_cache_save_settings( $old_options, $new_options );
 
 		return true;
 	}
@@ -154,7 +154,7 @@ class PC_Extensions {
 			return false;
 		}
 
-		$old_options = $new_options = pc_get_settings();
+		$old_options = $new_options = powered_cache_get_settings();
 
 		$key = array_search( $extension_id, $old_options['active_extensions'] );
 
@@ -163,8 +163,8 @@ class PC_Extensions {
 		}
 
 
-		do_action( 'pc_extension_deactivate_' . $extension_id );
-		pc_save_settings( $old_options, $new_options );
+		do_action( 'powered_cache_extension_deactivate_' . $extension_id );
+		powered_cache_save_settings( $old_options, $new_options );
 
 		return true;
 	}
@@ -172,9 +172,10 @@ class PC_Extensions {
 
 	/**
 	 * Return an instance of the current class
+
 	 *
-	 * @since 1.0
-	 * @return PC_Extensions
+*@since 1.0
+	 * @return Powered_Cache_Extensions
 	 */
 	public static function factory() {
 

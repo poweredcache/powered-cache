@@ -43,7 +43,7 @@ if ( ! empty( $GLOBALS['powered_cache_options']['rejected_user_agents'] ) ) {
 
 
 // Don't cache SSL
-if ( is_pc_ssl() && ( ! isset( $GLOBALS['powered_cache_options']['ssl_cache'] ) || false === $GLOBALS['powered_cache_options']['ssl_cache'] ) ) {
+if ( powered_cache_is_ssl() && ( ! isset( $GLOBALS['powered_cache_options']['ssl_cache'] ) || false === $GLOBALS['powered_cache_options']['ssl_cache'] ) ) {
 	return;
 }
 
@@ -80,8 +80,8 @@ if ( ! empty( $_COOKIE ) ) {
 	}
 
 
-	if ( ! empty( $_COOKIE['pc_commented_posts'] ) ) {
-		foreach ( $_COOKIE['pc_commented_posts'] as $path ) {
+	if ( ! empty( $_COOKIE['powered_cache_commented_posts'] ) ) {
+		foreach ( $_COOKIE['powered_cache_commented_posts'] as $path ) {
 			if ( rtrim( $path, '/') === rtrim( $_SERVER['REQUEST_URI'], '/' ) ) {
 				// User commented on this post
 				return;
@@ -156,9 +156,9 @@ if ( ! empty( $_GET ) && isset( $accepted_query_strings ) && is_array( $accepted
 
 
 
-pc_serve_cache();
+powered_cache_serve_cache();
 
-ob_start( 'pc_page_buffer' );
+ob_start( 'powered_cache_page_buffer' );
 
 /**
  * Cache output before it goes to the browser
@@ -168,7 +168,7 @@ ob_start( 'pc_page_buffer' );
  * @since  1.0
  * @return string
  */
-function pc_page_buffer( $buffer, $flags ) {
+function powered_cache_page_buffer( $buffer, $flags ) {
 	if ( strlen( $buffer ) < 255 ) {
 		return $buffer;
 	}
@@ -185,7 +185,7 @@ function pc_page_buffer( $buffer, $flags ) {
 	}
 
 	// plugins might want to use filter
-	if ( true !== apply_filters( 'pc_page_cache_enable', true ) ) {
+	if ( true !== apply_filters( 'powered_cache_page_cache_enable', true ) ) {
 		return $buffer;
 	}
 
@@ -197,27 +197,27 @@ function pc_page_buffer( $buffer, $flags ) {
 	$filesystem = new WP_Filesystem_Direct( new StdClass() );
 
 	// Make sure we can read/write files and that proper folders exist
-	if ( ! $filesystem->exists( untrailingslashit( pc_get_cache_dir() ) ) ) {
-		if ( ! $filesystem->mkdir( untrailingslashit( pc_get_cache_dir() ) ) ) {
+	if ( ! $filesystem->exists( untrailingslashit( powered_cache_get_cache_dir() ) ) ) {
+		if ( ! $filesystem->mkdir( untrailingslashit( powered_cache_get_cache_dir() ) ) ) {
 			// Can not cache!
 			return $buffer;
 		}
 	}
 
-	if ( ! $filesystem->exists( pc_get_page_cache_dir() ) ) {
-		if ( ! $filesystem->mkdir( pc_get_page_cache_dir() ) ) {
+	if ( ! $filesystem->exists( powered_cache_get_page_cache_dir() ) ) {
+		if ( ! $filesystem->mkdir( powered_cache_get_page_cache_dir() ) ) {
 			// Can not cache!
 			return $buffer;
 		}
 	}
 
-	$buffer = apply_filters( 'pc_page_cache_buffer', $buffer );
+	$buffer = apply_filters( 'powered_cache_page_caching_buffer', $buffer );
 
-	$url_path = pc_get_url_path();
+	$url_path = powered_cache_get_url_path();
 
 	$dirs = explode( '/', $url_path );
 
-	$path = untrailingslashit( pc_get_page_cache_dir() );
+	$path = untrailingslashit( powered_cache_get_page_cache_dir() );
 
 	foreach ( $dirs as $dir ) {
 		if ( ! empty( $dir ) ) {
@@ -240,7 +240,7 @@ function pc_page_buffer( $buffer, $flags ) {
 		}
 	}
 
-	$index_name = pc_index_file();
+	$index_name = powered_cache_index_file();
 
 	if ( $GLOBALS['powered_cache_options']['gzip_compression'] && function_exists( 'gzencode' ) ) {
 		$filesystem->put_contents( $path . '/' . $index_name, gzencode( $buffer, 3 ), FS_CHMOD_FILE );
@@ -255,7 +255,7 @@ function pc_page_buffer( $buffer, $flags ) {
 	header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s', $modified_time ) . ' GMT' );
 
 
-	do_action( 'pc_page_cached', $buffer );
+	do_action( 'powered_cache_page_cached', $buffer );
 
 	if ( function_exists( 'ob_gzhandler' ) && $GLOBALS['powered_cache_options']['gzip_compression'] ) {
 		return ob_gzhandler( $buffer, $flags );
@@ -270,15 +270,15 @@ function pc_page_buffer( $buffer, $flags ) {
  *
  * @since 1.0
  */
-function pc_serve_cache() {
+function powered_cache_serve_cache() {
 
 	if ( function_exists( 'gzencode' ) && $GLOBALS['powered_cache_options']['gzip_compression'] ) {
 		header( 'Content-Encoding: gzip' );
 	}
 
-	$file_name = pc_index_file();
+	$file_name = powered_cache_index_file();
 
-	$path = rtrim( $GLOBALS['powered_cache_options']['cache_location'], '/' ) . '/powered-cache/' . rtrim( pc_get_url_path(), '/' ) . '/' . $file_name;
+	$path = rtrim( $GLOBALS['powered_cache_options']['cache_location'], '/' ) . '/powered-cache/' . rtrim( powered_cache_get_url_path(), '/' ) . '/' . $file_name;
 
 	$modified_time = (int) @filemtime( $path );
 
@@ -302,7 +302,7 @@ function pc_serve_cache() {
  * @since  1.0
  * @return string
  */
-function pc_get_url_path() {
+function powered_cache_get_url_path() {
 
 	$host = ( isset( $_SERVER['HTTP_HOST'] ) ) ? $_SERVER['HTTP_HOST'] : '';
 
@@ -310,7 +310,7 @@ function pc_get_url_path() {
 	return rtrim( $host, '/' ) . $_SERVER['REQUEST_URI'];
 }
 
-function pc_get_user_cookie() {
+function powered_cache_get_user_cookie() {
 	if ( empty( $_COOKIE ) ) {
 		return false;
 	}
@@ -330,10 +330,10 @@ function pc_get_user_cookie() {
  * @since 1.0
  * @return string
  */
-function pc_index_file() {
+function powered_cache_index_file() {
 	$file_name = 'index';
 
-	if ( is_pc_ssl() ) {
+	if ( powered_cache_is_ssl() ) {
 		$file_name .= '-https';
 	}
 
@@ -359,7 +359,7 @@ function pc_index_file() {
 	if ( isset( $GLOBALS['powered_cache_options']['loggedin_user_cache'] )
 	     && true === $GLOBALS['powered_cache_options']['loggedin_user_cache']
 	) {
-		$usr_cookie = pc_get_user_cookie();
+		$usr_cookie = powered_cache_get_user_cookie();
 		if ( false !== $usr_cookie ) {
 			$cookie_info = explode( '|', $usr_cookie );
 
@@ -384,7 +384,7 @@ function pc_index_file() {
  *
  * @return bool
  */
-function is_pc_ssl() {
+function powered_cache_is_ssl() {
 	if ( isset( $_SERVER['HTTPS'] ) ) {
 		if ( 'on' == strtolower( $_SERVER['HTTPS'] ) ) {
 			return true;

@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-define( 'PC_REQUIRED_WP_VERSION', '4.1' );
+define( 'POWERED_CACHE_REQUIRED_WP_VERSION', '4.1' );
 
 
 if ( ! class_exists( 'Powered_Cache' ) ) :
@@ -64,40 +64,40 @@ if ( ! class_exists( 'Powered_Cache' ) ) :
 		 */
 		private function setup_constants() {
 
-			if ( ! defined( 'PC_PLUGIN_FILE' ) ) {
-				define( 'PC_PLUGIN_FILE', __FILE__ );
+			if ( ! defined( 'POWERED_CACHE_PLUGIN_FILE' ) ) {
+				define( 'POWERED_CACHE_PLUGIN_FILE', __FILE__ );
 			}
 
-			if ( ! defined( 'PC_PLUGIN_VERSION' ) ) {
-				define( 'PC_PLUGIN_VERSION', '1.0' );
+			if ( ! defined( 'POWERED_CACHE_PLUGIN_VERSION' ) ) {
+				define( 'POWERED_CACHE_PLUGIN_VERSION', '1.0' );
 			}
 
-			if ( ! defined( 'PC_PLUGIN_DIR' ) ) {
-				define( 'PC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+			if ( ! defined( 'POWERED_CACHE_PLUGIN_DIR' ) ) {
+				define( 'POWERED_CACHE_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 			}
 
-			if ( ! defined( 'PC_PREMIUM_DIR' ) ) {
-				define( 'PC_PREMIUM_DIR', PC_PLUGIN_DIR . 'premium/' );
+			if ( ! defined( 'POWERED_CACHE_PREMIUM_DIR' ) ) {
+				define( 'POWERED_CACHE_PREMIUM_DIR', POWERED_CACHE_PLUGIN_DIR . 'premium/' );
 			}
 
-			if ( ! defined( 'PC_CACHE_DIR' ) ) {
-				define( 'PC_CACHE_DIR', WP_CONTENT_DIR . '/cache/' );
+			if ( ! defined( 'POWERED_CACHE_CACHE_DIR' ) ) {
+				define( 'POWERED_CACHE_CACHE_DIR', WP_CONTENT_DIR . '/cache/' );
 			}
 
-			if ( ! defined( 'PC_INC_DIR' ) ) {
-				define( 'PC_INC_DIR', PC_PLUGIN_DIR . 'includes/' );
+			if ( ! defined( 'POWERED_CACHE_INC_DIR' ) ) {
+				define( 'POWERED_CACHE_INC_DIR', POWERED_CACHE_PLUGIN_DIR . 'includes/' );
 			}
 
-			if ( ! defined( 'PC_DROPIN_DIR' ) ) {
-				define( 'PC_DROPIN_DIR', PC_INC_DIR . 'dropins/' );
+			if ( ! defined( 'POWERED_CACHE_DROPIN_DIR' ) ) {
+				define( 'POWERED_CACHE_DROPIN_DIR', POWERED_CACHE_INC_DIR . 'dropins/' );
 			}
 
-			if ( ! defined( 'PC_ADMIN_DIR' ) ) {
-				define( 'PC_ADMIN_DIR', PC_INC_DIR . 'admin/' );
+			if ( ! defined( 'POWERED_CACHE_ADMIN_DIR' ) ) {
+				define( 'POWERED_CACHE_ADMIN_DIR', POWERED_CACHE_INC_DIR . 'admin/' );
 			}
 
-			if ( ! defined( 'PC_PLUGIN_URL' ) ) {
-				define( 'PC_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+			if ( ! defined( 'POWERED_CACHE_PLUGIN_URL' ) ) {
+				define( 'POWERED_CACHE_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 			}
 		}
 
@@ -108,24 +108,24 @@ if ( ! class_exists( 'Powered_Cache' ) ) :
 		 * @since 1.0
 		 */
 		private function includes() {
-			require_once PC_INC_DIR . 'functions.php';
-			require_once PC_INC_DIR . 'class-pc-config.php';
-			require_once PC_INC_DIR . 'class-pc-cdn.php';
-			require_once PC_INC_DIR . 'class-pc-extensions.php';
-			require_once PC_INC_DIR . 'class-pc-cron.php';
-			require_once PC_INC_DIR . 'class-pc-advanced-cache.php';
-			require_once PC_INC_DIR . 'class-pc-object-cache.php';
+			require_once POWERED_CACHE_INC_DIR . 'functions.php';
+			require_once POWERED_CACHE_INC_DIR . 'class-powered-cache-config.php';
+			require_once POWERED_CACHE_INC_DIR . 'class-powered-cache-cdn.php';
+			require_once POWERED_CACHE_INC_DIR . 'class-powered-cache-extensions.php';
+			require_once POWERED_CACHE_INC_DIR . 'class-powered-cache-cron.php';
+			require_once POWERED_CACHE_INC_DIR . 'class-powered-cache-advanced-cache.php';
+			require_once POWERED_CACHE_INC_DIR . 'class-powered-cache-object-cache.php';
 
-			if ( file_exists( PC_PREMIUM_DIR . 'loader.php' ) ) {
-				require_once PC_PREMIUM_DIR . 'loader.php';
+			if ( file_exists( POWERED_CACHE_PREMIUM_DIR . 'loader.php' ) ) {
+				require_once POWERED_CACHE_PREMIUM_DIR . 'loader.php';
 			}
 
 			if ( is_admin() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
-				require_once PC_ADMIN_DIR . 'notices.php';
-				require_once PC_ADMIN_DIR . 'class-pc-extension-admin-base.php';
-				require_once PC_ADMIN_DIR . 'class-pc-admin-actions.php';
-				require_once PC_ADMIN_DIR . 'class-pc-admin-helper.php';
-				require_once PC_ADMIN_DIR . 'class-pc-admin.php';
+				require_once POWERED_CACHE_ADMIN_DIR . 'notices.php';
+				require_once POWERED_CACHE_ADMIN_DIR . 'class-powered-cache-extension-admin-base.php';
+				require_once POWERED_CACHE_ADMIN_DIR . 'class-powered-cache-admin-actions.php';
+				require_once POWERED_CACHE_ADMIN_DIR . 'class-powered-cache-admin-helper.php';
+				require_once POWERED_CACHE_ADMIN_DIR . 'class-powered-cache-admin.php';
 			}
 
 
@@ -138,7 +138,7 @@ if ( ! class_exists( 'Powered_Cache' ) ) :
 		 */
 		private function setup_globals() {
 			global $powered_cache_options;
-			$powered_cache_options = pc_get_settings();
+			$powered_cache_options = powered_cache_get_settings();
 		}
 
 
@@ -149,31 +149,31 @@ if ( ! class_exists( 'Powered_Cache' ) ) :
 		private function setup() {
 			add_action( 'plugins_loaded', array( self::$instance, 'load_textdomain' ) );
 
-			PC_Config::factory();
+			Powered_Cache_Config::factory();
 
 			// load activated extensions
-			PC_Extensions::factory()->load_extentions();
+			Powered_Cache_Extensions::factory()->load_extentions();
 
 			// setup cron
-			PC_Cron::factory();
+			Powered_Cache_Cron::factory();
 
 			// init admin
-			if ( is_admin() && class_exists( 'PC_Admin' ) ) {
-				PC_Admin::factory();
+			if ( is_admin() && class_exists( 'Powered_Cache_Admin' ) ) {
+				Powered_Cache_Admin::factory();
 			}
 
-			if ( true === pc_get_option( 'enable_page_caching' ) ) {
-				PC_Advanced_Cache::factory();
+			if ( true === powered_cache_get_option( 'enable_page_caching' ) ) {
+				Powered_Cache_Advanced_Cache::factory();
 			}
 
-			if ( 'off' !== pc_get_option( 'object_cache' ) ) {
-				PC_Object_Cache::factory();
+			if ( 'off' !== powered_cache_get_option( 'object_cache' ) ) {
+				Powered_Cache_Object_Cache::factory();
 			}
 
 			// setup CDN
-			if ( true === pc_get_option( 'cdn_status' ) ) {
-				if ( ! is_ssl() || ( is_ssl() && false === pc_get_option( 'cdn_ssl_disable' ) ) ) {
-					PC_CDN::factory();
+			if ( true === powered_cache_get_option( 'cdn_status' ) ) {
+				if ( ! is_ssl() || ( is_ssl() && false === powered_cache_get_option( 'cdn_ssl_disable' ) ) ) {
+					Powered_Cache_CDN::factory();
 				}
 			}
 
@@ -188,8 +188,8 @@ if ( ! class_exists( 'Powered_Cache' ) ) :
 		 * @return void
 		 */
 		public function load_textdomain() {
-			$powered_lang_dir = dirname( plugin_basename( PC_PLUGIN_FILE ) ) . '/languages/';
-			$powered_lang_dir = apply_filters( 'pc_lang_dir', $powered_lang_dir );
+			$powered_lang_dir = dirname( plugin_basename( POWERED_CACHE_PLUGIN_FILE ) ) . '/languages/';
+			$powered_lang_dir = apply_filters( 'powered_cache_lang_dir', $powered_lang_dir );
 			load_plugin_textdomain( 'powered-cache', false, $powered_lang_dir );
 		}
 
@@ -221,10 +221,10 @@ register_deactivation_hook( __FILE__, 'powered_cache_deactivation' );
 function powered_cache_deactivation() {
 	global $wp_filesystem;
 
-	pc_flush();
+	powered_cache_flush();
 	if ( ! is_multisite() ) {
-		PC_Config::factory()->define_wp_cache( false );
-		PC_Config::factory()->configure_htaccess( false );
+		Powered_Cache_Config::factory()->define_wp_cache( false );
+		Powered_Cache_Config::factory()->configure_htaccess( false );
 
 
 		// delete object cache file
@@ -238,13 +238,13 @@ function powered_cache_deactivation() {
 		}
 	}
 
-	delete_option( 'pc_preload_runtime_option' );
+	delete_option( 'powered_cache_preload_runtime_option' );
 
 
 	// remove cron tasks
-	wp_clear_scheduled_hook( 'pc_preload_hook' );
-	wp_clear_scheduled_hook( 'pc_preload_child_process' );
-	wp_clear_scheduled_hook( 'pc_purge_cache' );
+	wp_clear_scheduled_hook( 'powered_cache_preload_hook' );
+	wp_clear_scheduled_hook( 'powered_cache_preload_child_process' );
+	wp_clear_scheduled_hook( 'powered_cache_purge_cache' );
 }
 
 /**
@@ -261,7 +261,7 @@ function powered_cache() {
 /**
  * Check requirement
  */
-function pc_requirements_notice() {
+function powered_cache_requirements_notice() {
 	if ( ! current_user_can( 'update_core' ) ) {
 		return;
 	}
@@ -270,7 +270,7 @@ function pc_requirements_notice() {
 	<div id="message" class="error notice">
 		<p><strong><?php esc_html_e( 'Your site does not support Powered Cache.', 'powered-cache' ); ?></strong></p>
 
-		<p><?php printf( esc_html__( 'Your site is currently running WordPress version %1$s, while Powered Cache requires version %2$s or greater.', 'powered-cache' ), esc_html( get_bloginfo( 'version' ) ), PC_REQUIRED_WP_VERSION ); ?></p>
+		<p><?php printf( esc_html__( 'Your site is currently running WordPress version %1$s, while Powered Cache requires version %2$s or greater.', 'powered-cache' ), esc_html( get_bloginfo( 'version' ) ), POWERED_CACHE_REQUIRED_WP_VERSION ); ?></p>
 
 		<p><?php esc_html_e( 'Please update your WordPress or deactivate Powered Cache.', 'powered-cache' ); ?></p>
 	</div>
@@ -278,9 +278,9 @@ function pc_requirements_notice() {
 	<?php
 }
 
-if ( version_compare( get_bloginfo( 'version' ), PC_REQUIRED_WP_VERSION, '<' ) ) {
-	add_action( 'admin_notices', 'pc_requirements_notice' );
-	add_action( 'network_admin_notices', 'pc_requirements_notice' );
+if ( version_compare( get_bloginfo( 'version' ), POWERED_CACHE_REQUIRED_WP_VERSION, '<' ) ) {
+	add_action( 'admin_notices', 'powered_cache_requirements_notice' );
+	add_action( 'network_admin_notices', 'powered_cache_requirements_notice' );
 
 	return;
 }

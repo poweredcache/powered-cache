@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 
-class PC_Admin_Actions {
+class Powered_Cache_Admin_Actions {
 
 	/**
 	 * Save settings to database and file
@@ -16,14 +16,14 @@ class PC_Admin_Actions {
 		global $powered_cache_options, $wp_filesystem;
 
 
-		if ( ! defined( 'PC_SAVING_OPTIONS' ) ) {
-			define( 'PC_SAVING_OPTIONS', true );
+		if ( ! defined( 'POWERED_CACHE_SAVING_OPTIONS' ) ) {
+			define( 'POWERED_CACHE_SAVING_OPTIONS', true );
 		}
 
 		$old_options = $powered_cache_options;
 
 		$new_options = array();
-		$_post = ( isset( $_POST['pc_settings'] ) ? $_POST['pc_settings'] : array() );
+		$_post = ( isset( $_POST['powered_cache_settings'] ) ? $_POST['powered_cache_settings'] : array() );
 
 		if ( ! isset( $_REQUEST['section'] ) ) {
 			$_REQUEST['section'] = 'basic-options';
@@ -69,15 +69,15 @@ class PC_Admin_Actions {
 
 				if ( ! empty( $extension ) && isset( $_REQUEST['status'] ) ) {
 					if ( 'activate' === $_REQUEST['status'] ) {
-						PC_Extensions::factory()->activate( $extension );
+						Powered_Cache_Extensions::factory()->activate( $extension );
 
 						$msg = __( 'Extension activated', 'powered-cache' );
-						PC_Admin_Helper::set_flash_message( $msg );
+						Powered_Cache_Admin_Helper::set_flash_message( $msg );
 					} elseif ( 'deactivate' === $_REQUEST['status'] ) {
-						PC_Extensions::factory()->deactivate( $extension );
+						Powered_Cache_Extensions::factory()->deactivate( $extension );
 
 						$msg = __( 'Extension deactivated', 'powered-cache' );
-						PC_Admin_Helper::set_flash_message( $msg );
+						Powered_Cache_Admin_Helper::set_flash_message( $msg );
 					}
 
 					self::exit_with_redirect();
@@ -102,12 +102,12 @@ class PC_Admin_Actions {
 					if ( $import_file && ! isset( $import_file['error'] ) ) {
 						$imported_options = $wp_filesystem->get_contents( $import_file['file'] );
 						$imported_options = unserialize( $imported_options );
-						$imported_options['cache_location'] = pc_get_cache_dir();
+						$imported_options['cache_location'] = powered_cache_get_cache_dir();
 						$wp_filesystem->delete( $import_file['file'] );
 						update_option( 'powered_cache_settings', $imported_options );
 						$new_options = get_option( 'powered_cache_settings' );
 					} else {
-						PC_Admin_Helper::set_flash_message( $import_file['error'], 'error' );
+						Powered_Cache_Admin_Helper::set_flash_message( $import_file['error'], 'error' );
 					}
 
 				} else {
@@ -115,10 +115,10 @@ class PC_Admin_Actions {
 				}
 		}
 
-		pc_save_settings( $old_options, $new_options );
+		powered_cache_save_settings( $old_options, $new_options );
 
 		$msg = __( 'Options updated', 'powered-cache' );
-		PC_Admin_Helper::set_flash_message( $msg );
+		Powered_Cache_Admin_Helper::set_flash_message( $msg );
 
 		self::exit_with_redirect();
 	}
@@ -130,10 +130,10 @@ class PC_Admin_Actions {
 	 */
 	public static function purge_cache() {
 		// purge cache stuff
-		pc_flush();
+		powered_cache_flush();
 
 		$msg = __( 'Cache flushed successfully', 'powered-cache' );
-		PC_Admin_Helper::set_flash_message( $msg );
+		Powered_Cache_Admin_Helper::set_flash_message( $msg );
 
 		self::exit_with_redirect();
 	}
@@ -145,14 +145,14 @@ class PC_Admin_Actions {
 	 */
 	public static function reset_settings() {
 		// purge cache stuff
-		pc_flush();
+		powered_cache_flush();
 		delete_option( 'powered_cache_settings' );
 
 		global $powered_cache_options;
 		$powered_cache_options = array();
 
 		$msg = __( 'All settings cleaned!', 'powered-cache' );
-		PC_Admin_Helper::set_flash_message( $msg );
+		Powered_Cache_Admin_Helper::set_flash_message( $msg );
 
 		self::exit_with_redirect();
 	}

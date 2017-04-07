@@ -14,10 +14,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-require_once 'inc/class-pc-cloudflare-ip-rewrite.php';
-require_once 'inc/class-pc-cloudflare-api.php';
+require_once 'inc/class-powered-cache-cloudflare-ip-rewrite.php';
+require_once 'inc/class-powered-cache-cloudflare-api.php';
 
-$ip_rewrite = new PC_Cloudflare_IP_Rewrite();
+$ip_rewrite = new Powered_Cache_Cloudflare_IP_Rewrite();
 $is_cf      = $ip_rewrite->isCloudFlare();
 if ( $is_cf ) {
 	// Fixes Flexible SSL
@@ -27,8 +27,8 @@ if ( $is_cf ) {
 }
 
 if ( is_admin() ) {
-	require_once 'inc/class-pc-cloudflare-admin.php';
-	PC_Cloudflare_Admin::factory();
+	require_once 'inc/class-powered-cache-cloudflare-admin.php';
+	Powered_Cache_Cloudflare_Admin::factory();
 }
 
 
@@ -38,11 +38,19 @@ if ( is_admin() ) {
  * @since 1.0
  * @return array|bool|mixed|object|string
  */
-function pc_cloudflare_purge_cache() {
-	$api  = new PC_Cloudflare_Api( pc_get_extension_option( 'cloudflare', 'email' ), pc_get_extension_option( 'cloudflare', 'api_key' ) );
-	$zone = pc_get_extension_option( 'cloudflare', 'zone' );
-	if ( $zone ) {
-		return $api->purge( $zone );
+function powered_cache_cloudflare_purge_cache() {
+	$email   = powered_cache_get_extension_option( 'cloudflare', 'email' );
+	$api_key = powered_cache_get_extension_option( 'cloudflare', 'api_key' );
+	if ( $email && $api_key ) {
+		var_dump($email);
+		var_dump($api_key);
+		exit;
+		$api = new Powered_Cache_Cloudflare_Api( $email, $api_key );
+
+		$zone = powered_cache_get_extension_option( 'cloudflare', 'zone' );
+		if ( $zone ) {
+			return $api->purge( $zone );
+		}
 	}
 
 	return false;

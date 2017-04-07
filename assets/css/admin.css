@@ -8,24 +8,24 @@
 	display: block;
 }
 
-.pc-left {
+.powered-cache-left {
 	float: left;
 }
 
-.pc-right {
+.powered-cache-right {
 	float: right;
 }
 
-.pc-clearfix{
+.powered-cache-clearfix{
 	clear: both;
 }
 
-h2.pc-settings-nav{
+h2.powered-cache-settings-nav{
 	padding: 0!important;
 	margin:0 0 15px!important;
 }
 
-.pc-extension {
+.powered-cache-extension {
 	background: #fff;
 	border: 1px solid #ccc;
 	float: left;
@@ -55,7 +55,7 @@ h2.pc-settings-nav{
 	line-height: 25px;
 }
 
-#pc-admin-page-wrapper{
+#powered-cache-admin-page-wrapper{
 	padding-top: 10px;
 	min-width: 763px;
 }
@@ -206,17 +206,17 @@ a.upgrade-now {
 	color: #006505;
 }
 
-#pc-support-general-info{
+#powered-cache-support-general-info{
 	padding:10px;
 	font-size: 16px;
 }
 
-.pc-sidebar-title{
+.powered-cache-sidebar-title{
 	padding: 0!important;
 	margin: 0!important;
 }
 
-.pc-sidebar-icon {
+.powered-cache-sidebar-icon {
 	font-size: 30px;
 	vertical-align: middle;
 	display: inline;

@@ -4,26 +4,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-add_action( 'admin_notices', 'pc_flash_messages' );
+add_action( 'admin_notices', 'powered_cache_flash_messages' );
 
 /**
  * Display flash messages
  *
  * @since 1.0
  */
-function pc_flash_messages() {
-	PC_Admin_Helper::get_flash_message();
+function powered_cache_flash_messages() {
+	Powered_Cache_Admin_Helper::get_flash_message();
 }
 
 
-add_action( 'admin_notices', 'pc_plugin_compatability_notices' );
+add_action( 'admin_notices', 'powered_cache_plugin_compatability_notices' );
 
 /**
  * Display incompatible plugins
  *
  * @since 1.0
  */
-function pc_plugin_compatability_notices() {
+function powered_cache_plugin_compatability_notices() {
 
 	$plugins = array(
 		'w3-total-cache'                             => 'w3-total-cache/w3-total-cache.php',
@@ -56,7 +56,7 @@ function pc_plugin_compatability_notices() {
 
 	$plugins = array_filter( $plugins, 'is_plugin_active' );
 
-	if ( count( $plugins ) > 0 && current_user_can( apply_filters( 'pc_cap', 'manage_options' ) ) ) { ?>
+	if ( count( $plugins ) > 0 && current_user_can( apply_filters( 'powered_cache_cap', 'manage_options' ) ) ) { ?>
 		<div class="error">
 			<h2><?php _e( 'Powered Cache', 'powered-cache' ); ?></h2>
 
@@ -74,20 +74,20 @@ function pc_plugin_compatability_notices() {
 	}
 }
 
-add_action( 'admin_notices', 'pc_advanced_cache_notices' );
+add_action( 'admin_notices', 'powered_cache_advanced_cache_notices' );
 
 /**
  * Show notices about page cache
  *
  * @since 1.0
  */
-function pc_advanced_cache_notices() {
+function powered_cache_advanced_cache_notices() {
 
-	if ( pc_is_saving_options() ) {
+	if ( powered_cache_is_saving_options() ) {
 		return;
 	}
 
-	if ( true !== pc_get_option( 'enable_page_caching' ) ) {
+	if ( true !== powered_cache_get_option( 'enable_page_caching' ) ) {
 		return;
 	}
 
@@ -97,13 +97,13 @@ function pc_advanced_cache_notices() {
 		$err['wp_cache'] = sprintf( __( '<code>%s</code> is not in wp-config.php.', 'powered-cache' ), 'define("WP_CACHE", true);' );
 	}
 
-	if ( ! defined( 'POWERED_PAGE_CACHE' ) || true !== POWERED_PAGE_CACHE ) {
-		$err['pc_page_cache'] = sprintf( __( '<code>%s</code> file was edited or deleted. You can re-create correct configuration files by saving settings.', 'powered-cache' ), basename( WP_CONTENT_DIR ) . '/advanced-cache.php' );
+	if ( ! defined( 'POWERED_CACHE_PAGE_CACHING' ) || true !== POWERED_CACHE_PAGE_CACHING ) {
+		$err['powered_cache_page_cache'] = sprintf( __( '<code>%s</code> file was edited or deleted. You can re-create correct configuration files by saving settings.', 'powered-cache' ), basename( WP_CONTENT_DIR ) . '/advanced-cache.php' );
 	}
 
 
-	if ( defined( 'POWERED_PAGE_CACHE_HAS_PROBLEM' ) && true === POWERED_PAGE_CACHE_HAS_PROBLEM ) {
-		$err['pc_page_cache_has_problem'] = sprintf( __( 'Powered Cache could not access dropin. Please check <code>%s</code> exist and accessible on your server.', 'powered-cache' ), PC_DROPIN_DIR . 'page-cache.php' );
+	if ( defined( 'POWERED_CACHE_PAGE_CACHING_HAS_PROBLEM' ) && true === POWERED_CACHE_PAGE_CACHING_HAS_PROBLEM ) {
+		$err['powered_cache_page_cache_has_problem'] = sprintf( __( 'Powered Cache could not access dropin. Please check <code>%s</code> exist and accessible on your server.', 'powered-cache' ), POWERED_CACHE_DROPIN_DIR . 'page-cache.php' );
 	}
 
 	// everything ok
@@ -125,19 +125,19 @@ function pc_advanced_cache_notices() {
 
 }
 
-add_action( 'admin_notices', 'pc_object_cache_notices' );
+add_action( 'admin_notices', 'powered_cache_object_cache_notices' );
 
 /**
  * Display object cache broken msg
  *
  * @since 1.0
  */
-function pc_object_cache_notices() {
+function powered_cache_object_cache_notices() {
 	if ( defined( 'POWERED_OBJECT_CACHE_HAS_PROBLEM' ) && true === POWERED_OBJECT_CACHE_HAS_PROBLEM ) {
-		$object_caches = PC_Admin_Helper::object_cache_dropins();
+		$object_caches = Powered_Cache_Admin_Helper::object_cache_dropins();
 		$broken_file   = untrailingslashit( WP_CONTENT_DIR ) . '/object-cache.php';
-		if ( isset( $object_caches[ pc_get_option( 'object_cache' ) ] ) ) {
-			$broken_file = $object_caches[ pc_get_option( 'object_cache' ) ];
+		if ( isset( $object_caches[ powered_cache_get_option( 'object_cache' ) ] ) ) {
+			$broken_file = $object_caches[ powered_cache_get_option( 'object_cache' ) ];
 		}
 
 		$message = sprintf( __( 'Powered Cache could not access object cache backend. Please check <code>%s</code> exist and accessible on your server.', 'powered-cache' ), $broken_file );

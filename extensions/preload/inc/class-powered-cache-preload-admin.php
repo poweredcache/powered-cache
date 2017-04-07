@@ -4,9 +4,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! class_exists( 'PC_Preload_Admin' ) ):
+if ( ! class_exists( 'Powered_Cache_Preload_Admin' ) ):
 
-	class PC_Preload_Admin extends PC_Extension_Admin_Base {
+	class Powered_Cache_Preload_Admin extends Powered_Cache_Extension_Admin_Base {
 		public $options;
 		public $fields;
 		public $interval_options;
@@ -69,7 +69,7 @@ if ( ! class_exists( 'PC_Preload_Admin' ) ):
 			) );
 
 			add_action( 'admin_notices', array( $this, 'admin_notice' ) );
-			add_action( 'admin_post_pc_preload', array( $this, 'update_preloader_status' ) );
+			add_action( 'admin_post_powered-cache-do-preload', array( $this, 'update_preloader_status' ) );
 
 			$this->setup();
 		}
@@ -83,7 +83,7 @@ if ( ! class_exists( 'PC_Preload_Admin' ) ):
 
 
 		public function admin_notice() {
-			if ( true !== pc_get_option( 'enable_page_caching' ) ) {
+			if ( true !== powered_cache_get_option( 'enable_page_caching' ) ) {
 				?>
 				<div id="setting-error-settings_updated" class="error notice">
 					<p><?php printf( __( '<b>%s:</b> You need enable page cache for preload feature.', 'powered-cache' ), __( 'Powered Cache', 'powered-cache' ) ) ?></strong></p>
@@ -98,31 +98,18 @@ if ( ! class_exists( 'PC_Preload_Admin' ) ):
 		 * Probably we should check runtime option
 		 */
 		public function is_running() {
-			if ( get_option( 'pc_preload_runtime_option' ) ) {
+			if ( get_option( 'powered_cache_preload_runtime_option' ) ) {
 				return true;
 			}
 
 			return false;
 		}
 
-		public function preload_url() {
-			$url = add_query_arg( array(
-				'page'                         => 'preload',
-				'action'                       => 'preload_now',
-				'wp_http_referer'              => urlencode( wp_unslash( $_SERVER['REQUEST_URI'] ) ),
-				'powered_cache_settings_nonce' => wp_create_nonce( 'powered_cache_update_settings' ),
-			), admin_url( 'admin.php' ) );
-
-			return $url;
-		}
-
 
 		public function preload_cache_button() {
 
-			$url  = $this->preload_url();
-
 			$action = ( $this->is_running() ? 'stop' : 'start' );
-			$url = wp_nonce_url( admin_url( 'admin-post.php?action=pc_preload&preload-status=' . $action ), 'pc_preload' );
+			$url = wp_nonce_url( admin_url( 'admin-post.php?action=powered-cache-do-preload&preload-status=' . $action ), 'powered-cache-do-preload' );
 
 			$text = ( $this->is_running() ? esc_html__( 'Stop Preload', 'powered-cache' ) : esc_html__( 'Start Preload', 'powered-cache' ) );
 			$html = '<a href="' . esc_url( $url ) . '" class="button" >' . $text . '</a>';
@@ -131,19 +118,16 @@ if ( ! class_exists( 'PC_Preload_Admin' ) ):
 		}
 
 		public function update_preloader_status() {
-			if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'pc_preload' ) ) {
+			if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'powered-cache-do-preload' ) ) {
 				wp_nonce_ays( '' );
 			}
 
-			deactivate_plugins( $_GET['plugin'] );
-
-
 			if ( isset( $_REQUEST['preload-status'] ) && 'start' === $_REQUEST['preload-status'] ) {
-				PC_Preload_Process::factory()->schedule_events();
-				PC_Admin_Helper::set_flash_message( __( 'Preload starting in 10 seconds.', 'powered-cache' ) );
+				Powered_Cache_Preload_Process::factory()->schedule_events();
+				Powered_Cache_Admin_Helper::set_flash_message( __( 'Preload starting in 10 seconds.', 'powered-cache' ) );
 			} else {
-				PC_Preload_Process::factory()->unschedule_events();
-				PC_Admin_Helper::set_flash_message( __( 'Preloading process stopped', 'powered-cache' ) );
+				Powered_Cache_Preload_Process::factory()->unschedule_events();
+				Powered_Cache_Admin_Helper::set_flash_message( __( 'Preloading process stopped', 'powered-cache' ) );
 			}
 
 			wp_safe_redirect( wp_get_referer() );
@@ -154,7 +138,7 @@ if ( ! class_exists( 'PC_Preload_Admin' ) ):
 		 * Return an instance of the current class
 		 *
 		 * @since 1.0
-		 * @return PC_Preload_Admin
+		 * @return Powered_Cache_Preload_Admin
 		 */
 		public static function factory() {
 			static $instance = false;

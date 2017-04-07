@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class PC_Cron {
+class Powered_Cache_Cron {
 
 	/**
 	 * Placeholder constructer
@@ -17,7 +17,7 @@ class PC_Cron {
 	 * @since 1.0
 	 */
 	private function setup() {
-		add_action( 'pc_purge_cache', array( $this, 'purge_cache' ) );
+		add_action( 'powered_cache_purge_cache', array( $this, 'purge_cache' ) );
 		add_action( 'init', array( $this, 'schedule_events' ) );
 		add_filter( 'cron_schedules', array( $this, 'cron_schedules' ) );
 	}
@@ -31,10 +31,10 @@ class PC_Cron {
 	 * @return array $schedules
 	 */
 	public function cron_schedules( $schedules ) {
-		$interval = pc_get_option( 'cache_timeout' ) * 60;
+		$interval = powered_cache_get_option( 'cache_timeout' ) * 60;
 
 		$schedules['powered_cache'] = array(
-			'interval' => apply_filters( 'pc_cache_purge_interval', $interval ),
+			'interval' => apply_filters( 'powered_cache_cache_purge_interval', $interval ),
 			'display'  => esc_html__( 'Powered Cache Purge Interval', 'powered-cache' ),
 		);
 
@@ -47,9 +47,9 @@ class PC_Cron {
 	 * @since  1.0
 	 */
 	public function unschedule_events() {
-		$timestamp = wp_next_scheduled( 'pc_purge_cache' );
+		$timestamp = wp_next_scheduled( 'powered_cache_purge_cache' );
 
-		wp_unschedule_event( $timestamp, 'pc_purge_cache' );
+		wp_unschedule_event( $timestamp, 'powered_cache_purge_cache' );
 	}
 
 	/**
@@ -59,24 +59,24 @@ class PC_Cron {
 	 */
 	public function schedule_events() {
 
-		$timestamp = wp_next_scheduled( 'pc_purge_cache' );
+		$timestamp = wp_next_scheduled( 'powered_cache_purge_cache' );
 
 		// we don't need when page cache off
-		if ( true !== pc_get_option( 'enable_page_caching' ) ) {
-			wp_unschedule_event( $timestamp, 'pc_purge_cache' );
+		if ( true !== powered_cache_get_option( 'enable_page_caching' ) ) {
+			wp_unschedule_event( $timestamp, 'powered_cache_purge_cache' );
 
 			return;
 		}
 
 		// Expire cache never
-		if ( intval( pc_get_option( 'cache_timeout' ) ) === 0 ) {
-			wp_unschedule_event( $timestamp, 'pc_purge_cache' );
+		if ( intval( powered_cache_get_option( 'cache_timeout' ) ) === 0 ) {
+			wp_unschedule_event( $timestamp, 'powered_cache_purge_cache' );
 
 			return;
 		}
 
 		if ( ! $timestamp ) {
-			wp_schedule_event( time(), 'powered_cache', 'pc_purge_cache' );
+			wp_schedule_event( time(), 'powered_cache', 'powered_cache_purge_cache' );
 		}
 	}
 
@@ -87,11 +87,11 @@ class PC_Cron {
 	 */
 	public function purge_cache() {
 		// Do nothing, caching is turned off
-		if ( true !== pc_get_option( 'enable_page_caching' ) ) {
+		if ( true !== powered_cache_get_option( 'enable_page_caching' ) ) {
 			return;
 		}
 
-		pc_flush();
+		powered_cache_flush();
 	}
 
 	/**

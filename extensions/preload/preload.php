@@ -10,14 +10,14 @@
  * License: GPLv2 (or later)
 */
 
-require_once 'inc/class-pc-preload-process.php';
+require_once 'inc/class-powered-cache-preload-process.php';
 
 
-PC_Preload_Process::factory();
+Powered_Cache_Preload_Process::factory();
 
 if ( is_admin() ) {
-	require_once 'inc/class-pc-preload-admin.php';
-	PC_Preload_Admin::factory();
+	require_once 'inc/class-powered-cache-preload-admin.php';
+	Powered_Cache_Preload_Admin::factory();
 }
 
 

@@ -16,15 +16,15 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 1.0
  * @return mixed|void
  */
-function pc_get_settings() {
+function powered_cache_get_settings() {
 	$settings = get_option( 'powered_cache_settings' );
 
 	if ( empty( $settings ) ) {
-		$settings = PC_Config::factory()->default_settings();
+		$settings = Powered_Cache_Config::factory()->default_settings();
 		update_option( 'powered_cache_settings', $settings );
 	}
 
-	return apply_filters( 'pc_get_settings', $settings );
+	return apply_filters( 'powered_cache_get_settings', $settings );
 }
 
 
@@ -37,12 +37,12 @@ function pc_get_settings() {
  *
  * @return mixed|void
  */
-function pc_get_option( $key = '', $default = false ) {
+function powered_cache_get_option( $key = '', $default = false ) {
 	global $powered_cache_options;
 	$value = ! empty( $powered_cache_options[ $key ] ) ? $powered_cache_options[ $key ] : $default;
-	$value = apply_filters( 'pc_get_option', $value, $key, $default );
+	$value = apply_filters( 'powered_cache_get_option', $value, $key, $default );
 
-	return apply_filters( 'pc_get_option_' . $key, $value, $key, $default );
+	return apply_filters( 'powered_cache_get_option_' . $key, $value, $key, $default );
 }
 
 
@@ -51,12 +51,12 @@ function pc_get_option( $key = '', $default = false ) {
  *
  * @since 1.0
  */
-function pc_flush() {
+function powered_cache_flush() {
 	if ( function_exists( 'wp_cache_flush' ) ) {
 		wp_cache_flush();
 	}
-	pc_clean_page_cache_dir();
-	do_action( 'pc_flushed' );
+	powered_cache_clean_page_cache_dir();
+	do_action( 'powered_cache_flushed' );
 }
 
 
@@ -67,7 +67,7 @@ function pc_flush() {
  * @param $old_settings array
  * @param $new_settings array
  */
-function pc_save_settings( $old_settings, $new_settings ) {
+function powered_cache_save_settings( $old_settings, $new_settings ) {
 	global $powered_cache_options;
 	$settings  = array_merge( $old_settings, $new_settings );
 
@@ -82,16 +82,16 @@ function pc_save_settings( $old_settings, $new_settings ) {
 	}
 
 	if ( isset( $changed_settings['enable_page_caching'] ) ) {
-		pc_clean_page_cache_dir();
+		powered_cache_clean_page_cache_dir();
 	}
 
-	PC_Config::factory()->setup_object_cache( $settings['object_cache'] );
-	PC_Config::factory()->setup_page_cache( $settings['enable_page_caching'] );
+	Powered_Cache_Config::factory()->setup_object_cache( $settings['object_cache'] );
+	Powered_Cache_Config::factory()->setup_page_cache( $settings['enable_page_caching'] );
 
-	do_action( 'pc_settings_saved', $settings );
+	do_action( 'powered_cache_settings_saved', $settings );
 
 	unset( $settings['extension_settings'] );
-	PC_Config::factory()->save_to_file( $settings );
+	Powered_Cache_Config::factory()->save_to_file( $settings );
 
 }
 
@@ -101,11 +101,11 @@ function pc_save_settings( $old_settings, $new_settings ) {
  * @since 1.0
  * @return mixed|void
  */
-function pc_mobile_browsers_regex(){
-	$browsers = pc_mobile_browsers();
+function powered_cache_mobile_browsers_regex(){
+	$browsers = powered_cache_mobile_browsers();
 	$regex_str = addcslashes( implode( '|', explode( ',', $browsers ) ),' ');
 
-	return apply_filters( 'pc_mobile_browsers_regex', $regex_str, $browsers );
+	return apply_filters( 'powered_cache_mobile_browsers_regex', $regex_str, $browsers );
 }
 
 /**
@@ -114,11 +114,11 @@ function pc_mobile_browsers_regex(){
  * @since 1.0
  * @return mixed|void
  */
-function pc_mobile_prefixes_regex(){
-	$prefixes = pc_mobile_prefixes();
+function powered_cache_mobile_prefixes_regex(){
+	$prefixes = powered_cache_mobile_prefixes();
 	$regex_str = addcslashes( implode( '|', explode( ',', $prefixes ) ),' ');
 
-	return apply_filters( 'pc_mobile_prefixes_regex', $regex_str, $prefixes );
+	return apply_filters( 'powered_cache_mobile_prefixes_regex', $regex_str, $prefixes );
 }
 
 /**
@@ -127,10 +127,10 @@ function pc_mobile_prefixes_regex(){
  * @since 1.0
  * @return mixed|void
  */
-function pc_mobile_browsers() {
+function powered_cache_mobile_browsers() {
 	$mobile_browsers = '2.0 MMP, 240x320, 400X240, AvantGo, BlackBerry, Blazer, Cellphone, Danger, DoCoMo, Elaine/3.0, EudoraWeb, Googlebot-Mobile, hiptop, IEMobile, KYOCERA/WX310K, LG/U990, MIDP-2., MMEF20, MOT-V, NetFront, Newt, Nintendo Wii, Nitro, Nokia, Opera Mini, Palm, PlayStation Portable, portalmmm, Proxinet, ProxiNet, SHARP-TQ-GX10, SHG-i900, Small, SonyEricsson, Symbian OS, SymbianOS, TS21i-10, UP.Browser, UP.Link, webOS, Windows CE, WinWAP, YahooSeeker/M1A1-R2D2, iPhone, iPod, Android, BlackBerry9530, LG-TU915 Obigo, LGE VX, webOS, Nokia5800';
 
-	return apply_filters( 'pc_mobile_browsers', $mobile_browsers );
+	return apply_filters( 'powered_cache_mobile_browsers', $mobile_browsers );
 }
 
 
@@ -140,10 +140,10 @@ function pc_mobile_browsers() {
  * @since 1.0
  * @return mixed|void
  */
-function pc_mobile_prefixes() {
+function powered_cache_mobile_prefixes() {
 	$mobile_prefixes = 'w3c , w3c-, acs-, alav, alca, amoi, audi, avan, benq, bird, blac, blaz, brew, cell, cldc, cmd-, dang, doco, eric, hipt, htc_, inno, ipaq, ipod, jigs, kddi, keji, leno, lg-c, lg-d, lg-g, lge-, lg/u, maui, maxo, midp, mits, mmef, mobi, mot-, moto, mwbp, nec-, newt, noki, palm, pana, pant, phil, play, port, prox, qwap, sage, sams, sany, sch-, sec-, send, seri, sgh-, shar, sie-, siem, smal, smar, sony, sph-, symb, t-mo, teli, tim-, tosh, tsm-, upg1, upsi, vk-v, voda, wap-, wapa, wapi, wapp, wapr, webc, winw, winw, xda , xda-';
 
-	return apply_filters( 'pc_mobile_prefixes', $mobile_prefixes );
+	return apply_filters( 'powered_cache_mobile_prefixes', $mobile_prefixes );
 }
 
 
@@ -153,7 +153,7 @@ function pc_mobile_prefixes() {
  * @since 1.0
  * @return mixed|void
  */
-function pc_cdn_addresses() {
+function powered_cache_cdn_addresses() {
 	global $powered_cache_options;
 
 	$hostnames = $powered_cache_options['cdn_hostname'];
@@ -166,7 +166,7 @@ function pc_cdn_addresses() {
 		}
 	}
 
-	return apply_filters( 'pc_cdn_addresses', $cdn_addresses );
+	return apply_filters( 'powered_cache_cdn_addresses', $cdn_addresses );
 }
 
 
@@ -177,7 +177,7 @@ function pc_cdn_addresses() {
  * @since 1.0
  * @return bool
  */
-function is_powered_cache_premium() {
+function powered_cache_is_premium() {
 	if ( defined( 'POWERED_CACHE_PREMIUM' ) && true === POWERED_CACHE_PREMIUM ) {
 		return true;
 	}
@@ -186,10 +186,10 @@ function is_powered_cache_premium() {
 }
 
 
-function maybe_require_powered_cache_premium_html() {
+function powered_cache_maybe_require_premium_html() {
 
-	if ( ! is_powered_cache_premium() ) {?>
-		<div class="<?php echo( ! is_powered_cache_premium() ? 'need-upgrade' : '' ); ?>">
+	if ( ! powered_cache_is_premium() ) {?>
+		<div class="<?php echo( ! powered_cache_is_premium() ? 'need-upgrade' : '' ); ?>">
 			<span class="upgrade-msg"><?php echo __( 'This feature available only premium users', 'powered-cache' ); ?></span>
 		</div>
 	<?php
@@ -205,15 +205,15 @@ function maybe_require_powered_cache_premium_html() {
  *
  * @return string
  */
-function pc_get_page_cache_dir( $url = false ) {
+function powered_cache_get_page_cache_dir( $url = false ) {
 	if ( $url ) {
 		$url_info = parse_url( $url );
 		$sub_dir  = $url_info['host'] . $url_info['path'];
 
-		return pc_get_cache_dir() . 'powered-cache/' . ltrim( $sub_dir, '/' );
+		return powered_cache_get_cache_dir() . 'powered-cache/' . ltrim( $sub_dir, '/' );
 	}
 
-	return pc_get_cache_dir() . 'powered-cache/';
+	return powered_cache_get_cache_dir() . 'powered-cache/';
 }
 
 /**
@@ -224,9 +224,9 @@ function pc_get_page_cache_dir( $url = false ) {
  * @since 1.0
  * @return bool  true when found cache dir, otherwhise false
  */
-function pc_delete_page_cache( $url ) {
+function powered_cache_delete_page_cache( $url ) {
 
-	$dir = trailingslashit( pc_get_page_cache_dir( $url ) );
+	$dir = trailingslashit( powered_cache_get_page_cache_dir( $url ) );
 
 	if ( is_dir( $dir ) ) {
 		$files = scandir( $dir );
@@ -254,8 +254,8 @@ function pc_delete_page_cache( $url ) {
  *
  * @return bool
  */
-function pc_get_extension_settings( $extension_id ) {
-	$extension_settings = pc_get_option( 'extension_settings' );
+function powered_cache_get_extension_settings( $extension_id ) {
+	$extension_settings = powered_cache_get_option( 'extension_settings' );
 
 	if ( ! is_array( $extension_settings ) ) {
 		return false;
@@ -277,14 +277,14 @@ function pc_get_extension_settings( $extension_id ) {
  *
  * @return bool
  */
-function pc_update_extension_option( $extension_id, $settings = array() ) {
+function powered_cache_update_extension_option( $extension_id, $settings = array() ) {
 	$options = get_option( 'powered_cache_settings' );
 
 	$options['extension_settings'][ $extension_id ] = $settings;
 
 	$options_updated = update_option( 'powered_cache_settings', $options );
 
-	do_action( 'pc_extension_option_updated', $options );
+	do_action( 'powered_cache_extension_option_updated', $options );
 
 	return $options_updated;
 }
@@ -300,8 +300,8 @@ function pc_update_extension_option( $extension_id, $settings = array() ) {
  *
  * @return bool
  */
-function pc_get_extension_option( $extension_id, $option_name = '', $default = false ) {
-	$option = pc_get_extension_settings( $extension_id );
+function powered_cache_get_extension_option( $extension_id, $option_name = '', $default = false ) {
+	$option = powered_cache_get_extension_settings( $extension_id );
 
 	if ( is_array( $option ) && array_key_exists( $option_name, $option ) ) {
 		return $option[ $option_name ];
@@ -317,9 +317,9 @@ function pc_get_extension_option( $extension_id, $option_name = '', $default = f
  * @since 1.0
  * @return string path
  */
-function pc_get_cache_dir() {
-	if ( defined( 'PC_CACHE_DIR' ) ) {
-		return PC_CACHE_DIR;
+function powered_cache_get_cache_dir() {
+	if ( defined( 'POWERED_CACHE_CACHE_DIR' ) ) {
+		return POWERED_CACHE_CACHE_DIR;
 	}
 
 	return WP_CONTENT_DIR . '/cache/';
@@ -332,10 +332,10 @@ function pc_get_cache_dir() {
  * @since 1.0
  * @return mixed
  */
-function pc_clean_page_cache_dir() {
+function powered_cache_clean_page_cache_dir() {
 	global $wp_filesystem;
 
-	return $wp_filesystem->rmdir( untrailingslashit( pc_get_cache_dir() ) . '/powered-cache', true );
+	return $wp_filesystem->rmdir( untrailingslashit( powered_cache_get_cache_dir() ) . '/powered-cache', true );
 }
 
 
@@ -348,7 +348,7 @@ function pc_clean_page_cache_dir() {
  *
  * @return array
  */
-function pc_get_post_related_urls( $post_id ) {
+function powered_cache_get_post_related_urls( $post_id ) {
 
 	$current_post_status = get_post_status( $post_id );
 
@@ -423,7 +423,7 @@ function pc_get_post_related_urls( $post_id ) {
  * @since 1.0
  * @return array
  */
-function pc_get_debug_info() {
+function powered_cache_get_debug_info() {
 	global $wpdb;
 	if ( ! function_exists( 'get_plugins' ) ) {
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
@@ -474,8 +474,8 @@ function pc_get_debug_info() {
  * @since 1.0
  * @return bool
  */
-function pc_is_saving_options() {
-	if ( defined( 'PC_SAVING_OPTIONS' ) && true === PC_SAVING_OPTIONS ) {
+function powered_cache_is_saving_options() {
+	if ( defined( 'POWERED_CACHE_SAVING_OPTIONS' ) && true === POWERED_CACHE_SAVING_OPTIONS ) {
 		return true;
 	}
 

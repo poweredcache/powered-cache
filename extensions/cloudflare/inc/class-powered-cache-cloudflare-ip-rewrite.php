@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @see https://github.com/cloudflare/Cloudflare-WordPress/blob/master/vendor/cloudflare/cf-ip-rewrite/src/CloudFlare/IpRewrite.php
  * Class PC_Cloudflare_IP_Rewrite
  */
-class PC_Cloudflare_IP_Rewrite {
+class Powered_Cache_Cloudflare_IP_Rewrite {
 	private $is_loaded = false;
 	private $original_ip = null;
 	private $rewritten_ip = null;
