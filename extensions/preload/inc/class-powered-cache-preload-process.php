@@ -26,8 +26,8 @@ if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ):
 
 		public function cron_schedules( $schedules ) {
 
-			if ( powered_cache_get_extension_option('preload', 'interval' ) > 0 ) {
-				$interval =  powered_cache_get_extension_option('preload', 'interval' ) * 60;
+			if ( powered_cache_get_extension_option( 'preload', 'interval', 60 ) > 0 ) {
+				$interval = powered_cache_get_extension_option( 'preload', 'interval', 60 ) * 60;
 
 				$schedules['powered_cache_preload_interval'] = array(
 					'interval' => apply_filters( 'powered_cache_preload_interval', $interval ),
@@ -74,7 +74,7 @@ if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ):
 				return;
 			}
 
-			$value = powered_cache_get_extension_option( 'preload', 'post_count' );
+			$value = powered_cache_get_extension_option( 'preload', 'post_count', 1000 );
 
 			if ( $value > 0 && false === $timestamp ) {
 				wp_schedule_single_event( time() + 10, 'powered_cache_preload_hook' );
@@ -90,7 +90,7 @@ if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ):
 		public function setup_child_process() {
 			$timestamp = wp_next_scheduled( 'powered_cache_preload_child_process' );
 
-			if ( true !== powered_cache_get_option( 'enable_page_caching' ) || 0 == powered_cache_get_extension_option( 'preload', 'interval' ) ) {
+			if ( true !== powered_cache_get_option( 'enable_page_caching' ) || 0 == powered_cache_get_extension_option( 'preload', 'interval', 60 ) ) {
 				wp_unschedule_event( $timestamp, 'powered_cache_preload_child_process' );
 
 				return;
@@ -119,8 +119,8 @@ if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ):
 
 			$post_count = $runtime_option['post_count'];
 
-			if ( powered_cache_get_extension_option('preload', 'post_count' ) > $post_count ) {
-				if ( true === powered_cache_get_extension_option( 'preload', 'taxonomies' ) ) {
+			if ( powered_cache_get_extension_option( 'preload', 'post_count', 1000 ) > $post_count ) {
+				if ( true === powered_cache_get_extension_option( 'preload', 'taxonomies', true ) ) {
 					$this->preload_taxonomies();
 				}
 
@@ -138,7 +138,7 @@ if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ):
 					wp_clear_scheduled_hook( 'powered_cache_preload_child_process' );
 				}
 
-				$cron_interval = (int) powered_cache_get_extension_option('preload', 'interval' );
+				$cron_interval = (int) powered_cache_get_extension_option( 'preload', 'interval', 60 );
 				if ( $cron_interval > 0 ) {
 					// re-schedule main cron
 					wp_schedule_single_event( time() + ( $cron_interval * 60 ), 'powered_cache_preload_hook' );
