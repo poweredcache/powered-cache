@@ -18,14 +18,20 @@ class Powered_Cache_Extensions {
 	public function __construct() {}
 
 	/**
+	 * Setup $core_extension_dir
 	 *
+	 * @since 1.0
 	 */
 	private function setup() {
-		$this->core_extension_dir = apply_filters( 'powered_cache_extensions_dir', POWERED_CACHE_PLUGIN_DIR . 'extensions/' );
+		$this->core_extension_dir = apply_filters( 'powered_cache_extension_dir', POWERED_CACHE_PLUGIN_DIR . 'extensions/' );
 	}
 
 	/**
-	 * @return array
+	 * Get extension info
+	 *
+	 * @see   load_extentions() method gets extension path from here!
+	 * @since 1.0
+	 * @return mixed|void|array
 	 */
 	public function get_extentions() {
 		global $wp_filesystem;
@@ -126,6 +132,14 @@ class Powered_Cache_Extensions {
 	}
 
 
+	/**
+	 * Activates extension
+	 *
+	 * @param $extension_id
+	 *
+	 * @since 1.0
+	 * @return bool
+	 */
 	public function activate( $extension_id ) {
 
 		if ( $this->is_active( $extension_id ) ) {
@@ -147,6 +161,14 @@ class Powered_Cache_Extensions {
 		return true;
 	}
 
+	/**
+	 * Deactivate given extension
+	 *
+	 * @param $extension_id
+	 *
+	 * @since 1.0
+	 * @return bool
+	 */
 	public function deactivate( $extension_id ) {
 
 		if ( ! $this->is_active( $extension_id ) ) {
@@ -172,9 +194,8 @@ class Powered_Cache_Extensions {
 
 	/**
 	 * Return an instance of the current class
-
 	 *
-*@since 1.0
+	 * @since 1.0
 	 * @return Powered_Cache_Extensions
 	 */
 	public static function factory() {
