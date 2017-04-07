@@ -37,10 +37,6 @@ class Powered_Cache_Admin {
 		add_action( 'admin_enqueue_scripts', array( $this, 'load_scripts' ) );
 		add_action( 'admin_post_deactivate_plugin', array( $this, 'deactivate_plugin' ) );
 
-		// flash messages use session
-		if ( ! session_id() && ! headers_sent() ) {
-			session_start();
-		}
 	}
 
 

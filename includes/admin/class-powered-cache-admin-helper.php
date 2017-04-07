@@ -32,12 +32,13 @@ class Powered_Cache_Admin_Helper {
 	 *
 	 * @since 1.0
 	 *
-	 * @param $msg string
+	 * @param $msg   string
 	 * @param $class string
 	 */
 	public static function set_flash_message( $msg, $class = 'updated' ) {
 		if ( ! empty( $msg ) ) {
-			$_SESSION['powered_flash_msg'] = array( 'message' => $msg, 'class' => $class );
+			$message_data = array( 'message' => $msg, 'class' => $class );
+			set_site_transient( 'powered_cache_flash_msg', $message_data, 30 );
 		}
 	}
 
@@ -47,13 +48,16 @@ class Powered_Cache_Admin_Helper {
 	 * @since 1.0
 	 */
 	public static function get_flash_message() {
-		if ( ! empty( $_SESSION['powered_flash_msg'] ) ) {
-			$html = '<div id="setting-error-settings_updated" class="' . esc_attr( $_SESSION['powered_flash_msg']['class'] ) . ' notice is-dismissible">
-						<p><strong>' . esc_attr( $_SESSION['powered_flash_msg']['message'] ) . '</strong></p>
-						<button type="button" class="notice-dismiss"><span class="screen-reader-text">' . __( 'Dismiss this notice', 'simple-cache', 'powered-cache' ) . '</span></button>
+		$flash_message = get_site_transient( 'powered_cache_flash_msg' );
+
+		if ( $flash_message && is_array( $flash_message ) ) {
+			$html = '<div id="setting-error-settings_updated" class="' . esc_attr( $flash_message['class'] ) . ' notice is-dismissible">
+						<p><strong>' . esc_attr( $flash_message['message'] ) . '</strong></p>
+						<button type="button" class="notice-dismiss"><span class="screen-reader-text">' . __( 'Dismiss this notice', 'powered-cache' ) . '</span></button>
 					</div>';
 			echo $html;
-			unset( $_SESSION['powered_flash_msg'] );
+			//destroy transient
+			delete_site_transient( 'powered_cache_flash_msg' );
 		}
 	}
 
