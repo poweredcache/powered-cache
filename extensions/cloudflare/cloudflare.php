@@ -14,16 +14,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-require_once 'inc/class-powered-cache-cloudflare-ip-rewrite.php';
 require_once 'inc/class-powered-cache-cloudflare-api.php';
 
-$ip_rewrite = new Powered_Cache_Cloudflare_IP_Rewrite();
-$is_cf      = $ip_rewrite->isCloudFlare();
-if ( $is_cf ) {
-	// Fixes Flexible SSL
-	if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' ) {
-		$_SERVER['HTTPS'] = 'on';
-	}
+// Fixes Flexible SSL
+if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' ) {
+	$_SERVER['HTTPS'] = 'on';
+}
+
+// real user ip
+if ( isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) {
+	$_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_CF_CONNECTING_IP'];
 }
 
 if ( is_admin() ) {
@@ -42,9 +42,6 @@ function powered_cache_cloudflare_purge_cache() {
 	$email   = powered_cache_get_extension_option( 'cloudflare', 'email' );
 	$api_key = powered_cache_get_extension_option( 'cloudflare', 'api_key' );
 	if ( $email && $api_key ) {
-		var_dump($email);
-		var_dump($api_key);
-		exit;
 		$api = new Powered_Cache_Cloudflare_Api( $email, $api_key );
 
 		$zone = powered_cache_get_extension_option( 'cloudflare', 'zone' );
