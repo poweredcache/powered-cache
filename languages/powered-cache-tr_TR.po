@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Powered Cache 1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/powered-cache\n"
-"POT-Creation-Date: 2017-04-06 18:25:48+00:00\n"
-"PO-Revision-Date: 2017-04-06 21:26+0300\n"
+"POT-Creation-Date: 2017-04-08 19:33:37+00:00\n"
+"PO-Revision-Date: 2017-04-08 22:33+0300\n"
 "Last-Translator: Mustafa Uysal <EMAIL@ADDRESS>\n"
 "Language-Team: TR LANGUAGE <LL@li.org>\n"
 "Language: tr\n"
@@ -16,29 +16,29 @@ msgstr ""
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SearchPath-0: ..\n"
 
-#: extensions/cloudflare/cloudflare.php:52
+#: extensions/cloudflare/cloudflare.php:57
 msgid "Cloudflare extension for Powered Cache"
 msgstr "Powered Cache için Cloudflare eklentisi."
 
-#: extensions/cloudflare/inc/class-pc-cloudflare-admin.php:33
+#: extensions/cloudflare/inc/class-powered-cache-cloudflare-admin.php:33
 msgid "Cloudflare"
 msgstr "Cloudflare"
 
-#: extensions/cloudflare/inc/class-pc-cloudflare-admin.php:68
+#: extensions/cloudflare/inc/class-powered-cache-cloudflare-admin.php:69
 msgid "Purge Cache"
 msgstr "Önbelleği Temizle"
 
-#: extensions/cloudflare/inc/class-pc-cloudflare-admin.php:87
+#: extensions/cloudflare/inc/class-powered-cache-cloudflare-admin.php:89
 msgid "Cloudflare cache flushed!"
 msgstr "Cloudflare önbelleği temizlendi!"
 
-#: extensions/cloudflare/inc/class-pc-cloudflare-admin.php:89
+#: extensions/cloudflare/inc/class-powered-cache-cloudflare-admin.php:91
 msgid "Problem with Cloudflare cache clean!"
 msgstr "Cloudflare önbelleğini temizleme sırasında sorun oluştu!"
 
-#: extensions/cloudflare/inc/class-pc-cloudflare-admin.php:132
+#: extensions/cloudflare/inc/class-powered-cache-cloudflare-admin.php:134
 #: extensions/cloudflare/inc/settings.php:41
-#: includes/admin/class-pc-admin-helper.php:167
+#: includes/admin/class-powered-cache-admin-helper.php:171
 #: includes/admin/settings/misc.php:32
 msgid "Clear Cache"
 msgstr "Önbelleği Temizle"
@@ -55,11 +55,15 @@ msgstr "API Anahtarı"
 msgid "Domain"
 msgstr "Domain"
 
+#: extensions/cloudflare/inc/settings.php:31
+msgid "Select domain"
+msgstr "Domain seçin"
+
 #: extensions/cloudflare/inc/settings.php:45
 msgid "Deletes all Cloudflare cache"
 msgstr "Tüm Cloudflare önbelleğini temizler"
 
-#: extensions/lazy-load/inc/class-pc-lazy-load-admin.php:42
+#: extensions/lazy-load/inc/class-powered-cache-lazy-load-admin.php:42
 msgid "Lazy Load"
 msgstr "Lazy Load"
 
@@ -72,7 +76,7 @@ msgid "Enable for post content."
 msgstr "Yazı içerikleri için etkinleştir."
 
 #: extensions/lazy-load/inc/settings.php:21
-#: includes/admin/class-pc-admin-helper.php:241
+#: includes/admin/class-powered-cache-admin-helper.php:245
 msgid "Images"
 msgstr "Resimler"
 
@@ -121,43 +125,43 @@ msgid "Reduce size of HTML,CSS,JS files by compressing and concatenating them."
 msgstr ""
 "HTML,CSS,JS dosyalarınızı sıkıştırarak ve birleştirerek boyutunu düşürür."
 
-#: extensions/preload/inc/class-pc-preload-admin.php:17
+#: extensions/preload/inc/class-powered-cache-preload-admin.php:17
 msgid "No delay"
 msgstr "Gecikme yok"
 
-#: extensions/preload/inc/class-pc-preload-admin.php:18
+#: extensions/preload/inc/class-powered-cache-preload-admin.php:18
 msgid "100ms"
 msgstr "100ms"
 
-#: extensions/preload/inc/class-pc-preload-admin.php:19
+#: extensions/preload/inc/class-powered-cache-preload-admin.php:19
 msgid "250ms"
 msgstr "250ms"
 
-#: extensions/preload/inc/class-pc-preload-admin.php:20
+#: extensions/preload/inc/class-powered-cache-preload-admin.php:20
 msgid "500ms"
 msgstr "500ms"
 
-#: extensions/preload/inc/class-pc-preload-admin.php:21
+#: extensions/preload/inc/class-powered-cache-preload-admin.php:21
 msgid "750ms"
 msgstr "750ms"
 
-#: extensions/preload/inc/class-pc-preload-admin.php:22
+#: extensions/preload/inc/class-powered-cache-preload-admin.php:22
 msgid "1s"
 msgstr "1s"
 
-#: extensions/preload/inc/class-pc-preload-admin.php:23
+#: extensions/preload/inc/class-powered-cache-preload-admin.php:23
 msgid "2s"
 msgstr "2s"
 
-#: extensions/preload/inc/class-pc-preload-admin.php:24
+#: extensions/preload/inc/class-powered-cache-preload-admin.php:24
 msgid "3s"
 msgstr "3s"
 
-#: extensions/preload/inc/class-pc-preload-admin.php:68
+#: extensions/preload/inc/class-powered-cache-preload-admin.php:68
 msgid "Preload"
 msgstr "Preload"
 
-#: extensions/preload/inc/class-pc-preload-admin.php:89
+#: extensions/preload/inc/class-powered-cache-preload-admin.php:89
 msgid "<b>%s:</b> You need enable page cache for preload feature."
 msgstr ""
 "<b>%s:</b> Önyükleme özelliği için sayfa önbelleklemesinin açık olması "
@@ -167,23 +171,23 @@ msgstr ""
 msgid "Powered Cache"
 msgstr "Powered Cache"
 
-#: extensions/preload/inc/class-pc-preload-admin.php:127
+#: extensions/preload/inc/class-powered-cache-preload-admin.php:114
 msgid "Stop Preload"
 msgstr "Önyüklemeyi durdur"
 
-#: extensions/preload/inc/class-pc-preload-admin.php:127
+#: extensions/preload/inc/class-powered-cache-preload-admin.php:114
 msgid "Start Preload"
 msgstr "Önyüklemeyi başlat"
 
-#: extensions/preload/inc/class-pc-preload-admin.php:143
+#: extensions/preload/inc/class-powered-cache-preload-admin.php:127
 msgid "Preload starting in 10 seconds."
 msgstr "Önyükleme 10 saniye içerisinde başlayacak"
 
-#: extensions/preload/inc/class-pc-preload-admin.php:146
+#: extensions/preload/inc/class-powered-cache-preload-admin.php:130
 msgid "Preloading process stopped"
 msgstr "Önyükleme işlemi durduruldu"
 
-#: extensions/preload/inc/class-pc-preload-process.php:34
+#: extensions/preload/inc/class-powered-cache-preload-process.php:34
 #: extensions/preload/inc/settings.php:28
 msgid "Preload interval"
 msgstr "Önyükleme aralığı"
@@ -278,114 +282,116 @@ msgstr "WordPress cron'u uzaktan tetikler"
 msgid "Varnish extension for Powered Cache"
 msgstr "Powered Cache için Varnish eklentisi."
 
-#: includes/admin/class-pc-admin-actions.php:74
+#: includes/admin/class-powered-cache-admin-actions.php:74
 msgid "Extension activated"
 msgstr "Eklenti aktifleştirildi"
 
-#: includes/admin/class-pc-admin-actions.php:79
+#: includes/admin/class-powered-cache-admin-actions.php:79
 msgid "Extension deactivated"
 msgstr "Eklenti pasifleştirildi"
 
-#: includes/admin/class-pc-admin-actions.php:120
-#: includes/admin/class-pc-extension-admin-base.php:117
+#: includes/admin/class-powered-cache-admin-actions.php:120
+#: includes/admin/class-powered-cache-extension-admin-base.php:117
 msgid "Options updated"
 msgstr "Ayarlar guncellendi"
 
-#: includes/admin/class-pc-admin-actions.php:135
+#: includes/admin/class-powered-cache-admin-actions.php:135
 msgid "Cache flushed successfully"
 msgstr "Önbellek başarılı bir şekilde temizlendi"
 
-#: includes/admin/class-pc-admin-actions.php:154
+#: includes/admin/class-powered-cache-admin-actions.php:154
 msgid "All settings cleaned!"
 msgstr "Tüm ayarlar temizlendi!"
 
-#: includes/admin/class-pc-admin-helper.php:17
+#: includes/admin/class-powered-cache-admin-helper.php:17
 msgid "Basic Options"
 msgstr "Temel Seçenekler"
 
-#: includes/admin/class-pc-admin-helper.php:18
+#: includes/admin/class-powered-cache-admin-helper.php:18
 msgid "Advanced Options"
 msgstr "Gelişmiş Seçenekler"
 
-#: includes/admin/class-pc-admin-helper.php:19
+#: includes/admin/class-powered-cache-admin-helper.php:19
 #: includes/admin/settings/cdn.php:25
 msgid "CDN"
 msgstr "CDN"
 
-#: includes/admin/class-pc-admin-helper.php:20
+#: includes/admin/class-powered-cache-admin-helper.php:20
 msgid "Extensions"
 msgstr "Eklentiler"
 
-#: includes/admin/class-pc-admin-helper.php:21
+#: includes/admin/class-powered-cache-admin-helper.php:21
 msgid "Misc"
 msgstr "Çeşitli"
 
-#: includes/admin/class-pc-admin-helper.php:22
+#: includes/admin/class-powered-cache-admin-helper.php:22
 msgid "Go Premium"
 msgstr "Premium Ol"
 
-#: includes/admin/class-pc-admin-helper.php:23 includes/admin/settings.php:135
+#: includes/admin/class-powered-cache-admin-helper.php:23
+#: includes/admin/settings.php:133
 msgid "Support"
 msgstr "Destek"
 
-#: includes/admin/class-pc-admin-helper.php:53
+#: includes/admin/class-powered-cache-admin-helper.php:56
 msgid "Dismiss this notice"
 msgstr "Bu bildirimi yoksay"
 
-#: includes/admin/class-pc-admin-helper.php:123
+#: includes/admin/class-powered-cache-admin-helper.php:127
 msgid "Dectivate"
 msgstr "Etkisizleştir"
 
-#: includes/admin/class-pc-admin-helper.php:126
+#: includes/admin/class-powered-cache-admin-helper.php:130
 msgid "Activate"
 msgstr "Etkinleştir"
 
-#: includes/admin/class-pc-admin-helper.php:146
+#: includes/admin/class-powered-cache-admin-helper.php:150
 msgid "Upgrade Now"
 msgstr "Şimdi Yükselt"
 
-#: includes/admin/class-pc-admin-helper.php:188
+#: includes/admin/class-powered-cache-admin-helper.php:192
 msgid "Download Settings"
 msgstr "Ayarları İndir"
 
-#: includes/admin/class-pc-admin-helper.php:210
+#: includes/admin/class-powered-cache-admin-helper.php:214
 msgid "Reset Settings"
 msgstr "Ayarları Sıfırla"
 
-#: includes/admin/class-pc-admin-helper.php:227
+#: includes/admin/class-powered-cache-admin-helper.php:231
 msgid "Cheatin, uh?"
 msgstr "Hile mi yapıyorsunuz?"
 
-#: includes/admin/class-pc-admin-helper.php:240
+#: includes/admin/class-powered-cache-admin-helper.php:244
 msgid "All files"
 msgstr "Tüm dosyalar"
 
-#: includes/admin/class-pc-admin-helper.php:242
+#: includes/admin/class-powered-cache-admin-helper.php:246
 msgid "JavaScript"
 msgstr "JavaScript"
 
-#: includes/admin/class-pc-admin-helper.php:243
+#: includes/admin/class-powered-cache-admin-helper.php:247
 msgid "CSS"
 msgstr "CSS"
 
-#: includes/admin/class-pc-admin.php:123 includes/admin/class-pc-admin.php:129
+#: includes/admin/class-powered-cache-admin.php:119
+#: includes/admin/class-powered-cache-admin.php:125
 msgid "Powered Cache Settings"
 msgstr "Powered Cache Ayarları"
 
-#: includes/admin/class-pc-admin.php:129
+#: includes/admin/class-powered-cache-admin.php:125
 #: includes/admin/extension-settings.php:10
 msgid "Settings"
 msgstr "Ayarlar"
 
-#: includes/admin/class-pc-admin.php:155
+#: includes/admin/class-powered-cache-admin.php:151
 msgid "<a href=\"%s\">Settings</a>"
 msgstr "<a href=\"%s\">Ayarlar</a>"
 
-#: includes/admin/class-pc-admin.php:157
+#: includes/admin/class-powered-cache-admin.php:153
 msgid "<a href=\"%s\" style=\"color: red;\">Get Premium</a>"
 msgstr "<a href=\"%s\" style=\"color: red;\">Premium Ol</a>"
 
-#: includes/admin/extension-settings.php:44 includes/admin/settings.php:74
+#: includes/admin/extension-settings.php:44 includes/admin/settings.php:72
 msgid "Save Changes"
 msgstr "Değişiklikleri Kaydet"
 
@@ -434,7 +440,7 @@ msgstr ""
 "dosyasının mevcut ve sunucu tarafından erişilebilir olduğundan emin olun."
 
 #: includes/admin/notices.php:146
-#: premium/includes/class-pc-license-page.php:189
+#: premium/includes/class-powered-cache-license-page.php:189
 #: premium/includes/premium-functions.php:417
 msgid "Powered Cache:"
 msgstr "Powered Cache:"
@@ -487,7 +493,7 @@ msgid "Object Caching"
 msgstr "Obje Önbelleği"
 
 #: includes/admin/settings/basic-options.php:37
-#: premium/includes/class-pc-license-page.php:127
+#: premium/includes/class-powered-cache-license-page.php:127
 msgid "Off"
 msgstr "Kapalı"
 
@@ -650,11 +656,11 @@ msgstr "Premium Destek: "
 msgid "We are providing top-notch premium support to premium users"
 msgstr "Premium kullanıcılar için direkt destek"
 
-#: includes/admin/settings/premium.php:52 includes/admin/settings.php:127
+#: includes/admin/settings/premium.php:52 includes/admin/settings.php:125
 msgid "No Ads"
 msgstr "Reklamsız"
 
-#: includes/admin/settings/premium.php:56 includes/admin/settings.php:130
+#: includes/admin/settings/premium.php:56 includes/admin/settings.php:128
 msgid "Buy Powered Cache Premium"
 msgstr "Powered Cache Premium'u Satın Al"
 
@@ -719,11 +725,11 @@ msgstr ""
 msgid "Open new support ticket"
 msgstr "Yeni destek talebi gönder"
 
-#: includes/admin/settings.php:92
+#: includes/admin/settings.php:90
 msgid "Rate Us!"
 msgstr "Bizi Değerlendirin!"
 
-#: includes/admin/settings.php:94
+#: includes/admin/settings.php:92
 msgid ""
 "We would like to hear your thoughts about our plugin. Please review on <a "
 "target=\"_blank\" href=\"%s\">WordPress.org</a>"
@@ -731,35 +737,35 @@ msgstr ""
 "Eklentimiz hakkında görüşlerinizi almayı isteriz. Lütfen <a target=\"_blank"
 "\" href=\"%s\">WordPress.org</a> üzerinden yorum bırakın."
 
-#: includes/admin/settings.php:102
+#: includes/admin/settings.php:100
 msgid "Become a Premium User"
 msgstr "Premium Kullanıcı Olun"
 
-#: includes/admin/settings.php:103
+#: includes/admin/settings.php:101
 msgid "Premium users will reach more goodies"
 msgstr "Premium kullanıcılar daha çok özelliğe erişebilecektir"
 
-#: includes/admin/settings.php:107
+#: includes/admin/settings.php:105
 msgid "Premium Features"
 msgstr "Premium Özellikler"
 
-#: includes/admin/settings.php:111
+#: includes/admin/settings.php:109
 msgid "Premium Extensions"
 msgstr "Premium Eklentiler"
 
-#: includes/admin/settings.php:115
+#: includes/admin/settings.php:113
 msgid "Friendly Bots"
 msgstr "Yardımcı Botlar"
 
-#: includes/admin/settings.php:119
+#: includes/admin/settings.php:117
 msgid "WP-CLI commands"
 msgstr "WP-CLI komutları"
 
-#: includes/admin/settings.php:123
+#: includes/admin/settings.php:121
 msgid "Premium Support"
 msgstr "Premium Destek"
 
-#: includes/admin/settings.php:137
+#: includes/admin/settings.php:135
 msgid ""
 "We are offering direct support to premium users only, free users welcome on "
 "WordPress.org forums."
@@ -767,27 +773,27 @@ msgstr ""
 "Doğrudan desteği sadece premium kullanıcılarımıza sunuyoruz, ücretsiz "
 "kullanıcılarımız WordPress.org forumlarından destek alabilirler."
 
-#: includes/admin/settings.php:139
+#: includes/admin/settings.php:137
 msgid "Please check our <a href=\"%s\">support policy</a>"
 msgstr "Lütfen <a href=\"%s\">destek politikamızı</a> okuyunuz"
 
-#: includes/class-pc-advanced-cache.php:51
+#: includes/class-powered-cache-advanced-cache.php:51
 msgid "Purge Page Cache"
 msgstr "Sayfa Önbelleğini Temizle"
 
-#: includes/class-pc-advanced-cache.php:68
+#: includes/class-powered-cache-advanced-cache.php:68
 msgid "Page cache deleted successfully!"
 msgstr "Sayfa önbelleği başarılı bir şekilde silindi!"
 
-#: includes/class-pc-cron.php:38
+#: includes/class-powered-cache-cron.php:38
 msgid "Powered Cache Purge Interval"
 msgstr "Powered Cache Temizleme Aralığı"
 
-#: includes/class-pc-object-cache.php:49
+#: includes/class-powered-cache-object-cache.php:49
 msgid "Purge Object Cache"
 msgstr "Obje Önbelleğini Temizle"
 
-#: includes/class-pc-object-cache.php:70
+#: includes/class-powered-cache-object-cache.php:70
 msgid "Object cache deleted successfully!"
 msgstr "Obje önbelleği başarılı bir şekilde silindi!"
 
@@ -912,27 +918,27 @@ msgstr ""
 msgid "Varnish purge request sent for: %s"
 msgstr "Varnish temizleme isteği gönderildi: %s"
 
-#: premium/extensions/minifier/inc/class-pc-minifier-admin.php:49
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:49
 msgid "Minifier"
 msgstr "Minifier"
 
-#: premium/extensions/minifier/inc/class-pc-minifier-admin.php:63
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:63
 msgid "Blocking – (default)"
 msgstr "Blocking – (varsayılan)"
 
-#: premium/extensions/minifier/inc/class-pc-minifier-admin.php:64
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:64
 msgid "Non-blocking using async"
 msgstr "Non-blocking (async kullanarak)"
 
-#: premium/extensions/minifier/inc/class-pc-minifier-admin.php:65
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:65
 msgid "Non-blocking using defer"
 msgstr "Non-blocking (defer kullanarak)"
 
-#: premium/extensions/minifier/inc/class-pc-minifier-helper.php:602
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-helper.php:602
 msgid "Minifier could not create cache directory"
 msgstr "Minifier önbellek dizini oluşturamadı"
 
-#: premium/extensions/minifier/inc/class-pc-minifier-helper.php:604
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-helper.php:604
 msgid ""
 "Please make sure root caching directory writable by plugin. If you defined "
 "custom %s in config  please make sure it exist."
@@ -980,11 +986,11 @@ msgstr "Hariç tutulacak CSS dosyaları"
 msgid "JS files to exclude"
 msgstr "Hariç tutulacak JS dosyaları"
 
-#: premium/extensions/remote-cron/inc/class-pc-remote-cron-admin.php:21
+#: premium/extensions/remote-cron/inc/class-powered-cache-remote-cron-admin.php:21
 msgid "Remote Cron"
 msgstr "Remote Cron"
 
-#: premium/extensions/remote-cron/inc/class-pc-remote-cron-admin.php:48
+#: premium/extensions/remote-cron/inc/class-powered-cache-remote-cron-admin.php:48
 msgid "You need define %s true for remote cron functionality."
 msgstr ""
 "Bu özellik için %s sabitini true olarak wp-config.php dosyanıza tanımlamanız "
@@ -1000,15 +1006,15 @@ msgstr ""
 "Etkinleştirdiğinizde, cron botumuz WordPress cron dosyasını (wp-cron.php) "
 "periyodik olarak çalıştıracak."
 
-#: premium/extensions/varnish/inc/class-pc-varnish-admin.php:20
+#: premium/extensions/varnish/inc/class-powered-cache-varnish-admin.php:20
 msgid "Varnish"
 msgstr "Varnish"
 
-#: premium/extensions/varnish/inc/class-pc-varnish-purger.php:107
+#: premium/extensions/varnish/inc/class-powered-cache-varnish-purger.php:107
 msgid "Varnish cache purged!"
 msgstr "Varnish önbelleği temizlendi!"
 
-#: premium/extensions/varnish/inc/class-pc-varnish-purger.php:117
+#: premium/extensions/varnish/inc/class-powered-cache-varnish-purger.php:117
 msgid ""
 "Varnish HTTP Purge requires you to use custom permalinks. Please go to the "
 "<a href=\"%1$s\">Permalinks Options Page</a> to configure them."
@@ -1016,8 +1022,8 @@ msgstr ""
 "Varnish icin özel kalıcı bağlantıları kullanmalısınız. Lütfen <a href=\"%1$s"
 "\">kalıcı bağlantılar sayfasından</a> ayarlayın."
 
-#: premium/extensions/varnish/inc/class-pc-varnish-purger.php:141
-#: premium/extensions/varnish/inc/class-pc-varnish-purger.php:145
+#: premium/extensions/varnish/inc/class-powered-cache-varnish-purger.php:141
+#: premium/extensions/varnish/inc/class-powered-cache-varnish-purger.php:145
 msgid "Purge Varnish"
 msgstr "Varnish önbelleğı temizle"
 
@@ -1032,63 +1038,63 @@ msgstr ""
 "<code>VHP_VARNISH_IP</code> sabiti tanımlıysa buradan ayarlama yapmanıza "
 "gerek yok"
 
-#: premium/includes/class-pc-license-page.php:50
+#: premium/includes/class-powered-cache-license-page.php:50
 msgid "Powered Cache License"
 msgstr "Powered Cache Lisans"
 
-#: premium/includes/class-pc-license-page.php:51
+#: premium/includes/class-powered-cache-license-page.php:51
 msgid "License"
 msgstr "Lisans"
 
-#: premium/includes/class-pc-license-page.php:71
+#: premium/includes/class-powered-cache-license-page.php:71
 msgid "License Management"
 msgstr "Lisans Yönetimi"
 
-#: premium/includes/class-pc-license-page.php:90
+#: premium/includes/class-powered-cache-license-page.php:90
 msgid "License Key"
 msgstr "Lisans Anahtarı"
 
-#: premium/includes/class-pc-license-page.php:95
+#: premium/includes/class-powered-cache-license-page.php:95
 msgid "Enter your license key"
 msgstr "Lisans anahtarıni giriniz"
 
-#: premium/includes/class-pc-license-page.php:112
+#: premium/includes/class-powered-cache-license-page.php:112
 msgid "License Info"
 msgstr "Lisans Bilgisi"
 
-#: premium/includes/class-pc-license-page.php:118
+#: premium/includes/class-powered-cache-license-page.php:118
 msgid "License status:"
 msgstr "Lisans durumu:"
 
-#: premium/includes/class-pc-license-page.php:122
+#: premium/includes/class-powered-cache-license-page.php:122
 msgid "Expiry date:"
 msgstr "Son kullanma tarihi:"
 
-#: premium/includes/class-pc-license-page.php:126
+#: premium/includes/class-powered-cache-license-page.php:126
 msgid "Development mode:"
 msgstr "Geliştirme modu:"
 
-#: premium/includes/class-pc-license-page.php:127
+#: premium/includes/class-powered-cache-license-page.php:127
 msgid "On"
 msgstr "Açık"
 
-#: premium/includes/class-pc-license-page.php:132
+#: premium/includes/class-powered-cache-license-page.php:132
 msgid "Manage License"
 msgstr "Lisansı Yönet"
 
-#: premium/includes/class-pc-license-page.php:169
+#: premium/includes/class-powered-cache-license-page.php:169
 msgid "License key does not exist"
 msgstr "Lisans anahtarı mevcut değil"
 
-#: premium/includes/class-pc-license-page.php:172
+#: premium/includes/class-powered-cache-license-page.php:172
 msgid "License key does not active"
 msgstr "Lisans anahtarı aktif değil"
 
-#: premium/includes/class-pc-license-page.php:175
+#: premium/includes/class-powered-cache-license-page.php:175
 msgid "License key has been expired"
 msgstr "Lisansınızın süresi dolmuş"
 
-#: premium/includes/class-pc-license-page.php:178
+#: premium/includes/class-powered-cache-license-page.php:178
 msgid ""
 "Unregistered domain address, if you want to assing your license to another "
 "domain visit our website"
@@ -1132,7 +1138,7 @@ msgstr ""
 "Lütfen lisans anahtarınızı <a href=\"%s\">lisans sayfasından</a>,  giriniz "
 "veya  <code>%s</code> sabiti ile wp-config.php dosyasında tanımlayınız."
 
-#. Author URI of the plugin/theme
+#. Plugin URI of the plugin/theme
 msgid "https://poweredcache.com"
 msgstr "https://poweredcache.com"
 
@@ -1141,8 +1147,15 @@ msgid "Comprehensive caching and performance plugin for WordPress."
 msgstr "WordPress için kapsamlı önbellekleme ve performans eklentisi."
 
 #. Author of the plugin/theme
-msgid "Powered Cache Team"
-msgstr "Powered Cache Team"
+msgid "SKOP, Mustafa Uysal"
+msgstr "SKOP, Mustafa Uysal"
+
+#. Author URI of the plugin/theme
+msgid "http://skop.co/"
+msgstr "http://skop.co/"
+
+#~ msgid "Powered Cache Team"
+#~ msgstr "Powered Cache Team"
 
 #~ msgid "When enabled, our Cron Bot takes over WordPress cron features."
 #~ msgstr ""
