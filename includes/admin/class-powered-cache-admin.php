@@ -84,13 +84,13 @@ class Powered_Cache_Admin {
 	public function load_scripts( $hook ) {
 		global $powered_cache_settings_page;
 
-		wp_enqueue_style( 'powered-cache-admin', plugins_url( '/assets/css/admin.css', POWERED_CACHE_PLUGIN_FILE ) );
+		wp_enqueue_style( 'powered-cache-admin', plugins_url( '/assets/css/admin.css', POWERED_CACHE_PLUGIN_FILE ), array(), POWERED_CACHE_PLUGIN_VERSION );
 
 		if ( $hook != $powered_cache_settings_page ) {
 			return;
 		}
 
-		wp_enqueue_script( 'powered-cache-admin', plugins_url( '/assets/js/admin.js', POWERED_CACHE_PLUGIN_FILE ) );
+		wp_enqueue_script( 'powered-cache-admin', plugins_url( '/assets/js/admin.js', POWERED_CACHE_PLUGIN_FILE ), array( 'jquery' ), POWERED_CACHE_PLUGIN_VERSION );
 		wp_localize_script( 'powered-cache-admin', 'powered_cache_vars', array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),
 			'nonce'   => wp_create_nonce( 'powered-cache-ajax-nonce' ),
