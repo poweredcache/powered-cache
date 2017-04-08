@@ -4,7 +4,7 @@ Contributors:  skopco, m_uysl
 Tags: cache, caching, powered cache, cdn, performance, optimisation, SEO
 Requires at least:  4.1
 Tested up to:  4.7
-Stable tag:  trunk
+Stable tag:  1.0
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
