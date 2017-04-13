@@ -101,8 +101,6 @@ if ( ! empty( $_COOKIE ) ) {
 }
 
 
-
-
 // Deal with optional cache exceptions
 if ( ! empty( $GLOBALS['powered_cache_options']['rejected_uri'] ) ) {
 	$exceptions = preg_split( '#(\n|\r)#', $GLOBALS['powered_cache_options']['rejected_uri'] );
@@ -112,34 +110,15 @@ if ( ! empty( $GLOBALS['powered_cache_options']['rejected_uri'] ) ) {
 			continue;
 		}
 
-		$exception = trim( $exception );
-
+		// full url exception
 		if ( preg_match( '#^https?://#', $exception ) ) {
-
-			$exception = rtrim( $exception, '/' );
-			$url = rtrim( 'http' . ( isset( $_SERVER['HTTPS'] ) ? 's' : '' ) . '://' . "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}", '/' );
-
-			if ( strtolower( $exception ) === strtolower( $url ) ) {
-				// Exception match!
-				return;
-			}
-
-		} elseif ( preg_match( '#^/#', $exception ) ) {
-			$path = $_SERVER['REQUEST_URI'];
-
-			if ( '/' !== $path ) {
-				$path = rtrim( $path, '/' );
-			}
-
-			if ( '/' !== $exception ) {
-				$exception = rtrim( $exception, '/' );
-			}
-
-			if ( strtolower( $exception ) === strtolower( $path ) ) {
-				// Exception match!
-				return;
-			}
+			$exception = parse_url( $exception, PHP_URL_PATH );
 		}
+
+		if ( preg_match( '#^(' . $exception . ')$#', $_SERVER['REQUEST_URI'] ) ) {
+			return;
+		}
+
 	}
 }
 
