@@ -272,10 +272,6 @@ function powered_cache_page_buffer( $buffer, $flags ) {
  */
 function powered_cache_serve_cache() {
 
-	if ( function_exists( 'gzencode' ) && $GLOBALS['powered_cache_options']['gzip_compression'] ) {
-		header( 'Content-Encoding: gzip' );
-	}
-
 	$file_name = powered_cache_index_file();
 
 	$path = rtrim( $GLOBALS['powered_cache_options']['cache_location'], '/' ) . '/powered-cache/' . rtrim( powered_cache_get_url_path(), '/' ) . '/' . $file_name;
@@ -290,6 +286,11 @@ function powered_cache_serve_cache() {
 	}
 
 	if ( @file_exists( $path ) && @is_readable( $path ) ) {
+
+		if ( function_exists( 'gzencode' ) && $GLOBALS['powered_cache_options']['gzip_compression'] ) {
+			header( 'Content-Encoding: gzip' );
+		}
+
 		@readfile( $path );
 
 		exit;
