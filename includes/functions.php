@@ -64,12 +64,15 @@ function powered_cache_flush() {
  * Save powered cache settings, update global settings variable and write to file
  *
  * @since 1.0
+ *
  * @param $old_settings array
  * @param $new_settings array
+ *
+ * @return bool depends on writing settings to file
  */
 function powered_cache_save_settings( $old_settings, $new_settings ) {
 	global $powered_cache_options;
-	$settings  = array_merge( $old_settings, $new_settings );
+	$settings = array_merge( $old_settings, $new_settings );
 
 	$powered_cache_options = $settings;
 
@@ -91,8 +94,8 @@ function powered_cache_save_settings( $old_settings, $new_settings ) {
 	do_action( 'powered_cache_settings_saved', $settings );
 
 	unset( $settings['extension_settings'] );
-	Powered_Cache_Config::factory()->save_to_file( $settings );
 
+	return Powered_Cache_Config::factory()->save_to_file( $settings );
 }
 
 /**

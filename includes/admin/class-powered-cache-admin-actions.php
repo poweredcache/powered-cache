@@ -115,10 +115,16 @@ class Powered_Cache_Admin_Actions {
 				}
 		}
 
-		powered_cache_save_settings( $old_options, $new_options );
+		if ( powered_cache_save_settings( $old_options, $new_options ) ) {
+			$msg = __( 'Options updated', 'powered-cache' );
+			Powered_Cache_Admin_Helper::set_flash_message( $msg );
 
-		$msg = __( 'Options updated', 'powered-cache' );
-		Powered_Cache_Admin_Helper::set_flash_message( $msg );
+			self::exit_with_redirect();
+		}
+
+		// false message
+		$msg = __( 'Something went wrong, we could not save settings to file. Please make sure the configuration file writable.', 'powered-cache' );
+		Powered_Cache_Admin_Helper::set_flash_message( $msg, 'error' );
 
 		self::exit_with_redirect();
 	}
