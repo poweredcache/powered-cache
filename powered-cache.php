@@ -5,7 +5,7 @@
  * Description:   Comprehensive caching and performance plugin for WordPress.
  * Author:        SKOP, Mustafa Uysal
  * Author URI:    http://skop.co/
- * Version:       1.0
+ * Version:       1.0.1
  * Text Domain:   powered-cache
  * Domain Path:   /languages/
  * License:       GPLv2 (or later)
