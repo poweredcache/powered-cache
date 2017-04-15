@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Powered Cache 1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/powered-cache\n"
-"POT-Creation-Date: 2017-04-08 19:33:37+00:00\n"
-"PO-Revision-Date: 2017-04-08 22:33+0300\n"
+"POT-Creation-Date: 2017-04-15 13:25:24+00:00\n"
+"PO-Revision-Date: 2017-04-15 16:28+0300\n"
 "Last-Translator: Mustafa Uysal <EMAIL@ADDRESS>\n"
 "Language-Team: TR LANGUAGE <LL@li.org>\n"
 "Language: tr\n"
@@ -290,16 +290,24 @@ msgstr "Eklenti aktifleştirildi"
 msgid "Extension deactivated"
 msgstr "Eklenti pasifleştirildi"
 
-#: includes/admin/class-powered-cache-admin-actions.php:120
+#: includes/admin/class-powered-cache-admin-actions.php:119
 #: includes/admin/class-powered-cache-extension-admin-base.php:117
 msgid "Options updated"
-msgstr "Ayarlar guncellendi"
+msgstr "Ayarlar güncellendi"
 
-#: includes/admin/class-powered-cache-admin-actions.php:135
+#: includes/admin/class-powered-cache-admin-actions.php:126
+msgid ""
+"Something went wrong, we could not save settings to file. Please make sure "
+"the configuration file writable."
+msgstr ""
+"Bir şeyler ters gitti ve ayarları dosyaya kaydedemedik. Lütfen yapılandırma "
+"dosyasının yazılabilir olduğundan emin olunuz."
+
+#: includes/admin/class-powered-cache-admin-actions.php:141
 msgid "Cache flushed successfully"
 msgstr "Önbellek başarılı bir şekilde temizlendi"
 
-#: includes/admin/class-powered-cache-admin-actions.php:154
+#: includes/admin/class-powered-cache-admin-actions.php:160
 msgid "All settings cleaned!"
 msgstr "Tüm ayarlar temizlendi!"
 
@@ -441,7 +449,7 @@ msgstr ""
 
 #: includes/admin/notices.php:146
 #: premium/includes/class-powered-cache-license-page.php:189
-#: premium/includes/premium-functions.php:417
+#: premium/includes/premium-functions.php:422
 msgid "Powered Cache:"
 msgstr "Powered Cache:"
 
@@ -797,7 +805,7 @@ msgstr "Obje Önbelleğini Temizle"
 msgid "Object cache deleted successfully!"
 msgstr "Obje önbelleği başarılı bir şekilde silindi!"
 
-#: includes/functions.php:193
+#: includes/functions.php:196
 msgid "This feature available only premium users"
 msgstr "Bu özellik yalnızca premium kullanıcılara özel"
 
@@ -898,7 +906,7 @@ msgstr "%s zaten etkisiz"
 msgid "%s deactivated successfully"
 msgstr "%s başarılı bir şekilde etkisizleştirildi"
 
-#: premium/bin/wp-cli.php:238
+#: premium/bin/wp-cli.php:237
 msgid ""
 "Nothing happened! If you need help, try to run this command: `wp help "
 "powered-cache extension`"
@@ -906,7 +914,7 @@ msgstr ""
 "Hiçbir şey olmadı! Yardıma ihtiyacınız varsa şu komutu çalıştırın: `wp help "
 "powered-cache extension`"
 
-#: premium/bin/wp-cli.php:255
+#: premium/bin/wp-cli.php:254
 msgid ""
 "You need enable to Varnish extension of Powered Cache for executing this "
 "command!"
@@ -914,7 +922,7 @@ msgstr ""
 "Bu komutu çalıştırabilmeniz için Varnish eklentisini etkinleştirmeniz "
 "gerekmektedir!"
 
-#: premium/bin/wp-cli.php:267
+#: premium/bin/wp-cli.php:266
 msgid "Varnish purge request sent for: %s"
 msgstr "Varnish temizleme isteği gönderildi: %s"
 
@@ -1130,7 +1138,7 @@ msgstr ""
 "Siteniz hakkında detay bilgi paylaşmak istemiyorsanız, direkt %s adresinden "
 "destek alabilirsiniz."
 
-#: premium/includes/premium-functions.php:418
+#: premium/includes/premium-functions.php:423
 msgid ""
 "Please enter your license key at the <a href=\"%s\">license page</a>, or you "
 "can define <code>%s</code> in wp-config.php file."
