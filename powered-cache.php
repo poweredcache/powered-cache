@@ -69,7 +69,7 @@ if ( ! class_exists( 'Powered_Cache' ) ) :
 			}
 
 			if ( ! defined( 'POWERED_CACHE_PLUGIN_VERSION' ) ) {
-				define( 'POWERED_CACHE_PLUGIN_VERSION', '1.0' );
+				define( 'POWERED_CACHE_PLUGIN_VERSION', '1.0.1' );
 			}
 
 			if ( ! defined( 'POWERED_CACHE_PLUGIN_DIR' ) ) {
