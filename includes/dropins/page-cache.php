@@ -266,6 +266,8 @@ function powered_cache_serve_cache() {
 
 	if ( @file_exists( $path ) && @is_readable( $path ) ) {
 
+		header( 'X-Powered-Cache: true' );
+
 		if ( function_exists( 'gzencode' ) && $GLOBALS['powered_cache_options']['gzip_compression'] ) {
 			header( 'Content-Encoding: gzip' );
 		}
