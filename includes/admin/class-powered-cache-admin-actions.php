@@ -39,7 +39,30 @@ class Powered_Cache_Admin_Actions {
 				$new_options['loggedin_user_cache']        = ( isset( $_post['loggedin_user_cache'] ) && 1 == $_post['loggedin_user_cache'] ? true : false );
 				$new_options['ssl_cache']                  = ( isset( $_post['ssl_cache'] ) && 1 == $_post['ssl_cache'] ? true : false );
 				$new_options['gzip_compression']           = ( isset( $_post['gzip_compression'] ) && 1 == $_post['gzip_compression'] ? true : false );
-				$new_options['cache_timeout']              = ( isset( $_post['cache_timeout'] ) ? intval( $_post['cache_timeout'] ) : 1440 );
+
+				/**
+				 * Calculate timeout with given interval, saving as minutes.
+				 *
+				 * @since 1.1
+				 */
+				$cache_timeout = ( isset( $_post['cache_timeout'] ) ? intval( $_post['cache_timeout'] ) : 1440 );
+
+				if ( $cache_timeout > 0 && isset( $_post['cache_timeout_interval'] ) ) {
+					switch ( $_post['cache_timeout_interval'] ) {
+						case 'DAY':
+							$cache_timeout = $cache_timeout * 1440;
+							break;
+						case 'HOUR':
+							$cache_timeout = $cache_timeout * 60;
+							break;
+						case 'MINUTE':
+						default:
+							$cache_timeout = $cache_timeout * 1;
+					}
+				}
+
+				$new_options['cache_timeout'] = $cache_timeout;
+
 				break;
 			case 'advanced-options':
 				$new_options['rejected_user_agents']   = ( strlen( trim( $_post['rejected_user_agents'] ) ) > 0 ? wp_kses_post( $_post['rejected_user_agents'] ) : '' );

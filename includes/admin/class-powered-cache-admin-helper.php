@@ -268,6 +268,37 @@ class Powered_Cache_Admin_Helper {
 		}
 	}
 
+	/**
+	 * convert minutes to possible time format
+	 *
+	 * @param int $timeout_in_minutes
+	 *
+	 * @since 1.1
+	 * @return array
+	 */
+	public static function get_timeout_interval( $timeout_in_minutes ) {
+		$cache_timeout     = $timeout_in_minutes;
+		$selected_interval = 'MINUTE';
+
+		if ( $cache_timeout > 0 ) {
+			if ( 0 === (int) ( $cache_timeout % 1440 ) ) {
+				$cache_timeout     = $cache_timeout / 1440;
+				$selected_interval = 'DAY';
+			} elseif ( 0 === (int) ( $cache_timeout % 60 ) ) {
+				$cache_timeout     = $cache_timeout / 60;
+				$selected_interval = 'HOUR';
+			}
+		}
+
+		return array(
+			$cache_timeout,
+			$selected_interval,
+		);
+	}
+
+
+
+
 }
 
 

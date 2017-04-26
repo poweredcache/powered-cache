@@ -85,7 +85,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<tr>
 					<th scope="row"><label for="powered_cache_cache_timeout"><?php _e( 'Cache Timeout', 'powered-cache' ); ?></label></th>
 					<td>
-						<label><input size="5" id="powered_cache_cache_timeout" type="text" value="<?php echo powered_cache_get_option( 'cache_timeout' ); ?>" name="powered_cache_settings[cache_timeout]"> <?php _e( 'minutes', 'powered-cache' ); ?></label>
+						<?php
+						$cache_timeout_in_minutes = powered_cache_get_option( 'cache_timeout' );
+						list( $cache_timeout, $selected_interval ) = Powered_Cache_Admin_Helper::get_timeout_interval( $cache_timeout_in_minutes );
+						?>
+						<label><input size="5" id="powered_cache_cache_timeout" type="text" value="<?php echo $cache_timeout; ?>" name="powered_cache_settings[cache_timeout]"> </label>
+						<label>
+							<select name="powered_cache_settings[cache_timeout_interval]" id="powered_cache_cache_timeout_interval">
+								<option <?php selected( 'MINUTE', $selected_interval ); ?> value="MINUTE"><?php echo __( 'Minute' ); ?></option>
+								<option <?php selected( 'HOUR', $selected_interval ); ?> value="HOUR"><?php echo __( 'Hour' ); ?></option>
+								<option <?php selected( 'DAY', $selected_interval ); ?> value="DAY"><?php echo __( 'Day' ); ?></option>
+							</select>
+						</label>
 						(<a target="_blank" href="http://docs.poweredcache.com/article/10-cache-timeout">?</a>)
 					</td>
 				</tr>
