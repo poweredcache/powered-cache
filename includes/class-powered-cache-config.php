@@ -489,7 +489,7 @@ class Powered_Cache_Config {
 
 			if ( true === powered_cache_get_option( 'ssl_cache' ) ) {
 				$rules .= "    RewriteCond %{HTTPS} =on" . PHP_EOL;
-				$rules .= "    RewriteRule .* - [E=W3TC_SSL:-https]" . PHP_EOL;
+				$rules .= "    RewriteRule .* - [E=PC_SSL:-https]" . PHP_EOL;
 				$rules .= "    RewriteCond %{SERVER_PORT} =443" . PHP_EOL;
 				$rules .= "    RewriteRule .* - [E=PC_SSL:-https]" . PHP_EOL;
 				$env_powered_cache_ssl = '%{ENV:PC_SSL}';
