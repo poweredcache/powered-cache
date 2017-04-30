@@ -52,6 +52,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 						(<a target="_blank" href="http://docs.poweredcache.com/article/11-advanced-caching-options#allowed-query-strings">?</a>)
 					</td>
 				</tr>
+				<tr>
+					<th scope="row"><label for="powered_cache_purge_additional_pages"><?php _e( 'Purge Additional Pages', 'powered-cache' ); ?></label></th>
+					<td>
+						<textarea id="powered_cache_purge_additional_pages" name="powered_cache_settings[purge_additional_pages]" cols="50" rows="5"><?php echo powered_cache_get_option( 'purge_additional_pages' ); ?></textarea><br>
+						<span class="description"><?php _e( 'Enter pages line by line.', 'powered-cache' ); ?></span>
+						(<a target="_blank" href="http://docs.poweredcache.com/article/11-advanced-caching-options#purge-additional-pages">?</a>)
+					</td>
+				</tr>
 
 				</tbody>
 			</table>

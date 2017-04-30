@@ -38,6 +38,7 @@ class Powered_Cache_Advanced_Cache {
 		add_action( 'wp_trash_post', array( $this, 'purge_on_post_update' ), 10, 1 );
 		add_action( 'wp_set_comment_status', array( $this, 'purge_post_on_comment_status_change' ), 10, 2 );
 		add_action( 'set_comment_cookies', array( $this, 'set_comment_cookie' ), 10, 2 );
+		add_filter( 'powered_cache_post_related_urls', array( $this, 'powered_cache_post_related_urls' ) );
 	}
 
 	/**
@@ -122,6 +123,37 @@ class Powered_Cache_Advanced_Cache {
 	public function set_comment_cookie( $comment, $user ) {
 		$post_id = $comment->comment_post_ID;
 		setcookie( 'powered_cache_commented_posts[' . $post_id . ']', parse_url( get_permalink( $post_id ), PHP_URL_PATH ), ( time() + HOUR_IN_SECONDS * 24 * 30 ) );
+	}
+
+
+	/**
+	 * Adds custom pages to post related urls
+	 *
+	 * @since 1.1
+	 *
+	 * @param array $urls
+	 *
+	 * @return array urls
+	 */
+	public function powered_cache_post_related_urls( $urls ) {
+		$additional_pages = powered_cache_get_option( 'purge_additional_pages' );
+
+		if ( empty( $additional_pages ) ) {
+			return $urls;
+		}
+
+		// we only need relative path
+		$additional_pages      = str_replace( site_url(), '', $additional_pages );
+		$additional_page_paths = explode( PHP_EOL, $additional_pages );
+		$additional_urls       = array();
+
+		foreach ( $additional_page_paths as $page ) {
+			$additional_urls[] = site_url( $page );
+		}
+
+		$urls = array_merge( $urls, $additional_urls );
+
+		return $urls;
 	}
 
 }

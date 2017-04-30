@@ -229,7 +229,7 @@ function powered_cache_get_page_cache_dir( $url = false ) {
  */
 function powered_cache_delete_page_cache( $url ) {
 
-	$dir = trailingslashit( powered_cache_get_page_cache_dir( $url ) );
+	$dir = trailingslashit( powered_cache_get_page_cache_dir( trim( $url ) ) );
 
 	if ( is_dir( $dir ) ) {
 		$files = scandir( $dir );
@@ -347,6 +347,8 @@ function powered_cache_clean_page_cache_dir() {
  * Collect post related urls
  *
  * @since 1.0
+ * @since 1.1 powered_cache_post_related_urls filter added
+ *
  * @param $post_id
  *
  * @return array
@@ -415,6 +417,8 @@ function powered_cache_get_post_related_urls( $post_id ) {
 			}
 		}
 	}
+
+	$related_urls = apply_filters( 'powered_cache_post_related_urls', $related_urls );
 
 	return $related_urls;
 }

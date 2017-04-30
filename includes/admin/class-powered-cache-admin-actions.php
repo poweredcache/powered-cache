@@ -69,6 +69,7 @@ class Powered_Cache_Admin_Actions {
 				$new_options['rejected_cookies']       = ( strlen( trim( $_post['rejected_cookies'] ) ) > 0 ? wp_kses_post( $_post['rejected_cookies'] ) : '' );
 				$new_options['rejected_uri']           = ( strlen( trim( $_post['rejected_uri'] ) ) > 0 ? wp_kses_post( $_post['rejected_uri'] ) : '' );
 				$new_options['accepted_query_strings'] = ( strlen( trim( $_post['accepted_query_strings'] ) ) > 0 ? wp_kses_post( $_post['accepted_query_strings'] ) : '' );
+				$new_options['purge_additional_pages'] = ( strlen( trim( $_post['purge_additional_pages'] ) ) > 0 ? wp_kses_post( $_post['purge_additional_pages'] ) : '' );
 				break;
 			case 'cdn':
 				$new_options['cdn_status']     = ( isset( $_post['cdn_status'] ) && 1 == $_post['cdn_status'] ? true : false );

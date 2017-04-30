@@ -60,6 +60,7 @@ class Powered_Cache_Config {
 			'rejected_cookies'           => '',
 			'rejected_uri'               => '',
 			'accepted_query_strings'     => '',
+			'purge_additional_pages'     => '',
 			// cdn
 			'cdn_status'                 => false,
 			'cdn_hostname'               => array(),
