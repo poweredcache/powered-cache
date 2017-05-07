@@ -36,6 +36,7 @@ class Powered_Cache_Admin {
 		add_action( 'load-toplevel_page_powered-cache', array( $this, 'update_options' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'load_scripts' ) );
 		add_action( 'admin_post_deactivate_plugin', array( $this, 'deactivate_plugin' ) );
+		add_action( 'admin_post_powered_cache_download_rewrite_settings', array( $this, 'download_rewrite_config' ) );
 
 	}
 
@@ -172,6 +173,25 @@ class Powered_Cache_Admin {
 		wp_safe_redirect( wp_get_referer() );
 		die();
 	}
+
+
+	/**
+	 * Downloads proper configuration file
+	 *
+	 * @since 1.1
+	 */
+	public function download_rewrite_config() {
+		if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'powered_cache_download_rewrite' ) ) {
+			wp_nonce_ays( '' );
+		}
+
+		$server = $_GET['server'];
+		Powered_Cache_Config::factory()->download_rewrite_rules( $server );
+
+		wp_safe_redirect( wp_get_referer() );
+		die();
+	}
+
 
 	/**
 	 * Return an instance of the current class

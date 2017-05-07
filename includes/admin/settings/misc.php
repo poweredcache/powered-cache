@@ -36,7 +36,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<span class="description"><?php _e( 'Clear all cache, including object cache', 'powered-cache' ); ?></span>
 					</td>
 				</tr>
-
+				<tr>
+					<th scope="row"><label for="powered_cache_rewrite"><?php _e( 'Download Configuration', 'powered-cache' ); ?></label></th>
+					<td>
+						<a href="<?php echo wp_nonce_url( admin_url( 'admin-post.php?action=powered_cache_download_rewrite_settings&server=apache' ), 'powered_cache_download_rewrite' ); ?>" class="button-secondary">
+							<?php _e( '.htaccess configuration', 'powered-cache' ); ?>
+						</a>
+						<a href="<?php echo wp_nonce_url( admin_url( 'admin-post.php?action=powered_cache_download_rewrite_settings&server=nginx' ), 'powered_cache_download_rewrite' ); ?>" class="button-secondary">
+							<?php _e( 'nginx configuration', 'powered-cache' ); ?>
+						</a>
+						<br>
+						<span class="description"><?php _e( 'Download configuration file for your server', 'powered-cache' ); ?></span>
+					</td>
+				</tr>
 				<tr>
 					<th scope="row"><label for="powered_cache_clear_cache"><?php _e( 'Reset All Settings', 'powered-cache' ); ?></label></th>
 					<td>

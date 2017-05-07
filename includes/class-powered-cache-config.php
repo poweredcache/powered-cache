@@ -369,13 +369,10 @@ class Powered_Cache_Config {
 	 */
 	public function configure_htaccess( $enable = true ) {
 		global $wp_filesystem;
-		$rules         = '';
 		$htaccess_file = get_home_path() . '.htaccess';
 
 		if ( $wp_filesystem->is_writable( $htaccess_file ) ) {
 			$contents = $wp_filesystem->get_contents( $htaccess_file );
-
-			$rules .= apply_filters( 'powered_cache_pre_htaccess', '', $contents );
 
 			//clean up
 			$contents = preg_replace( '/# BEGIN POWERED CACHE(.*)# END POWERED CACHE/is', '', $contents );
@@ -384,181 +381,7 @@ class Powered_Cache_Config {
 				return $wp_filesystem->put_contents( $htaccess_file, $contents, FS_CHMOD_FILE );
 			}
 
-			$rules .= '# BEGIN POWERED CACHE' . PHP_EOL;
-
-			// todo set option here.
-			if ( apply_filters( 'powered_cache_browser_cache', true ) ) {
-				$wp_mime_types = wp_get_mime_types();
-				$mime_types    = array_flip( $wp_mime_types );
-				//mimes
-				$rules .= '<IfModule mod_mime.c>' . PHP_EOL;
-					foreach ( $mime_types as $mime_type => $ext ) {
-						$ext_str = '.' . str_replace( '|', ' .', $ext );
-						$rules .= "    AddType " . $mime_type . " " . $ext_str . PHP_EOL;
-					}
-				$rules .= "</IfModule>" . PHP_EOL;
-
-				// set expire time
-
-				$rules .= '<IfModule mod_expires.c>' . PHP_EOL;
-				$rules .= "    ExpiresActive On".PHP_EOL;
-				$rules .= '    ExpiresByType  text/html            "access plus 0 seconds"'. PHP_EOL;
-				$rules .= '    ExpiresByType  text/richtext        "access plus 0 seconds"'. PHP_EOL;
-				$rules .= '    ExpiresByType  image/svg+xml        "access plus 0 seconds"'. PHP_EOL;
-				$rules .= '    ExpiresByType  text/plain           "access plus 0 seconds"'. PHP_EOL;
-				$rules .= '    ExpiresByType  text/xsd             "access plus 0 seconds"'. PHP_EOL;
-				$rules .= '    ExpiresByType  text/xsl             "access plus 0 seconds"'. PHP_EOL;
-				$rules .= '    ExpiresByType  text/xml             "access plus 0 seconds"'. PHP_EOL;
-				$rules .= '    ExpiresByType  text/cache-manifest  "access plus 0 seconds"'. PHP_EOL;
-
-
-				foreach ( $mime_types as $mime_type => $ext ) {
-
-
-					if ( in_array( $mime_type, array( 'text/html', 'text/richtext', 'image/svg+xml', 'text/plain', 'text/xsd', 'text/xsl', 'text/xml', 'text/cache-manifest' ) ) ) {
-						continue;
-					}
-
-					/**
-					 * Apache allow both format like A2592000 => "access plus 1 month"
-					 * A => access, M => Modified
-					 *
-					 * @see http://httpd.apache.org/docs/current/mod/mod_expires.html
-					 */
-
-					if ( in_array( $mime_type, array( 'text/css', 'application/javascript' ) ) ) {
-						$expiry_time = apply_filters( 'powered_cache_browser_cache_assets_lifespan', 'access plus 1 year' );
-					} else {
-						$expiry_time = apply_filters( 'powered_cache_browser_cache_default_lifespan', 'access plus 1 month' );
-					}
-					$rules .= '    ExpiresByType '.$mime_type.'                 "'.$expiry_time.'"' . PHP_EOL;
-				}
-				$rules .= "</IfModule>" . PHP_EOL;
-
-			}
-
-
-			// gzip
-			$rules .= '<IfModule mod_deflate.c>' . PHP_EOL;
-			$rules .= '  <IfModule mod_headers.c>' . PHP_EOL;
-			$rules .= '    Header append Vary User-Agent env=!dont-vary' . PHP_EOL;
-			$rules .= '  </IfModule>' . PHP_EOL;
-			$rules .= '    AddOutputFilterByType DEFLATE text/css text/x-component application/x-javascript application/javascript text/javascript text/x-js text/html text/richtext image/svg+xml text/plain text/xsd text/xsl text/xml image/bmp application/java application/msword application/vnd.ms-fontobject application/x-msdownload image/x-icon application/json application/vnd.ms-access application/vnd.ms-project application/x-font-otf application/vnd.ms-opentype application/vnd.oasis.opendocument.database application/vnd.oasis.opendocument.chart application/vnd.oasis.opendocument.formula application/vnd.oasis.opendocument.graphics application/vnd.oasis.opendocument.presentation application/vnd.oasis.opendocument.spreadsheet application/vnd.oasis.opendocument.text audio/ogg application/pdf application/vnd.ms-powerpoint application/x-shockwave-flash image/tiff application/x-font-ttf application/vnd.ms-opentype audio/wav application/vnd.ms-write application/font-woff application/font-woff2 application/vnd.ms-excel' . PHP_EOL;
-			$rules .= '  <IfModule mod_mime.c>' . PHP_EOL;
-			$rules .= '    AddOutputFilter DEFLATE js css htm html xml' . PHP_EOL;
-			$rules .= '  </IfModule>' . PHP_EOL;
-			$rules .= '</IfModule>' . PHP_EOL;
-
-
-
-
-			// remove etag
-			$rules .= '<IfModule mod_headers.c>' . PHP_EOL;
-			$rules .= 'Header unset ETag' . PHP_EOL;
-			$rules .= '</IfModule>' . PHP_EOL . PHP_EOL;
-
-
-			// rewrite
-
-			$env_powered_cache_ua = '';
-			$env_powered_cache_ssl = '';
-			$env_powered_cache_enc = '';
-
-
-			$rewrite_base = network_home_url( '', 'relative' );
-			if ( empty( $rewrite_base ) ) {
-				$rewrite_base = '/';
-			}
-
-			$cache_dir = powered_cache_get_cache_dir();
-
-			$rules .= '<IfModule mod_rewrite.c>' . PHP_EOL;
-			$rules .= '    RewriteEngine On' . PHP_EOL;
-			$rules .= '    RewriteBase ' . $rewrite_base . PHP_EOL;
-
-
-			if ( true === powered_cache_get_option( 'cache_mobile' ) && true === powered_cache_get_option( 'cache_mobile_separate_file' ) ) {
-				$mobile_browsers = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', powered_cache_mobile_browsers() ) ), ' ' );
-				$mobile_prefixes = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', powered_cache_mobile_prefixes() ) ), ' ' );
-				// mobile env set
-				$rules .= "    RewriteCond %{HTTP_USER_AGENT} (" . $mobile_browsers . ") [NC]" . PHP_EOL;
-				$rules .= "    RewriteRule .* - [E=PC_UA:-mobile]" . PHP_EOL;
-				$rules .= "    RewriteCond %{HTTP_USER_AGENT} ^(" . $mobile_prefixes . ") [NC]" . PHP_EOL;
-				$rules .= "    RewriteRule .* - [E=PC_UA:-mobile]" . PHP_EOL;
-				$env_powered_cache_ua = '%{ENV:PC_UA}';
-			}
-
-			if ( true === powered_cache_get_option( 'ssl_cache' ) ) {
-				$rules .= "    RewriteCond %{HTTPS} =on" . PHP_EOL;
-				$rules .= "    RewriteRule .* - [E=PC_SSL:-https]" . PHP_EOL;
-				$rules .= "    RewriteCond %{SERVER_PORT} =443" . PHP_EOL;
-				$rules .= "    RewriteRule .* - [E=PC_SSL:-https]" . PHP_EOL;
-				$env_powered_cache_ssl = '%{ENV:PC_SSL}';
-			}
-
-			if ( true === powered_cache_get_option( 'gzip_compression' ) ) {
-				$rules .= "    RewriteCond %{HTTP:Accept-Encoding} gzip" . PHP_EOL;
-				$rules .= "    RewriteRule .* - [E=PC_ENC:_gzip]" . PHP_EOL;
-				$env_powered_cache_enc = '%{ENV:PC_ENC}';
-			}
-
-			$rules .= "    RewriteCond %{REQUEST_METHOD} !=POST" . PHP_EOL;
-			$rules .= '    RewriteCond %{QUERY_STRING} =""' . PHP_EOL;
-
-			if ( substr( get_option( 'permalink_structure' ), - 1 ) == '/' ) {
-				$rules .= '    RewriteCond %{REQUEST_URI} \/$' . PHP_EOL;
-			}
-
-				// Get root base
-			$home_root = parse_url( home_url() );
-			$home_root = isset( $home_root['path'] ) ? trailingslashit($home_root['path']) : '/';
-
-			$site_root = parse_url( site_url() );
-			$site_root = isset( $site_root['path'] ) ? trailingslashit($site_root['path']) : '';
-
-
-			// reject user agent
-			if ( false !== powered_cache_get_option( 'rejected_user_agents' ) ) {
-				$rejected_user_agents = preg_split( '#(\r\n|\n|\r)#', powered_cache_get_option( 'rejected_user_agents' ) );
-				if ( ! empty( $rejected_user_agents ) ) {
-					$rules .= '    RewriteCond %{HTTP_USER_AGENT} !^(' . implode( '|', $rejected_user_agents ) . ').* [NC]' . PHP_EOL;
-				}
-			}
-
-
-			// ignore cookies
-			if ( false !== powered_cache_get_option( 'rejected_uri' ) ) {
-				$cookies = preg_split( '#(\n|\r)#', powered_cache_get_option( 'rejected_uri' ) );
-			}
-			$wp_cookies = array( 'wordpressuser_', 'wordpresspass_', 'wordpress_sec_', 'wordpress_logged_in_' );
-			if ( ! empty( $cookies ) ) {
-				$wp_cookies = array_merge( $cookies, $wp_cookies );
-			}
-			$rules .= '    RewriteCond %{HTTP:Cookie} !(' . implode( '|', $wp_cookies ) . ') [NC]' . PHP_EOL;
-
-			// dont cache fbexternal
-			$rules .= '    RewriteCond %{HTTP_USER_AGENT} !^(facebookexternalhit).* [NC]'.PHP_EOL;
-
-
-			$cache_location = powered_cache_get_cache_dir();
-			$cache_location = untrailingslashit( $cache_location ) . '/powered-cache/';
-			if ( strpos( ABSPATH, $cache_location ) === false ) {
-				// clean doc root
-				$cache_path = str_replace( $_SERVER['DOCUMENT_ROOT'], '', $cache_location );
-			} else {
-				$cache_path = $site_root . str_replace( ABSPATH, '', $cache_location );
-			}
-
-
-			if ( apply_filters( 'powered_cache_maybe_1and1_hosting', ( 0 === strpos( $_SERVER['DOCUMENT_ROOT'], '/kunden/homepage/' ) ) ) ) {
-				$rules .= '    RewriteCond "' . str_replace( '/kunden/homepage/', '/', $cache_location ) . '%{HTTP_HOST}' . '%{REQUEST_URI}/index' . $env_powered_cache_ssl . $env_powered_cache_ua . '.html' . $env_powered_cache_enc . '" -f' . PHP_EOL;
-			} else {
-				$rules .= '    RewriteCond "%{DOCUMENT_ROOT}/' . ltrim( $cache_path, '/' ) . '%{HTTP_HOST}' . '%{REQUEST_URI}/index' . $env_powered_cache_ssl . $env_powered_cache_ua . '.html' . $env_powered_cache_enc . '" -f' . PHP_EOL;
-			}
-			$rules .= '    RewriteRule .* "' . $cache_path . '%{HTTP_HOST}' . '%{REQUEST_URI}/index' . $env_powered_cache_ssl . $env_powered_cache_ua . '.html' . $env_powered_cache_enc . '" [L]' . PHP_EOL;
-			$rules .= '</IfModule>' . PHP_EOL;
-			$rules .= '# END POWERED CACHE' . PHP_EOL;
-
+			$rules    = $this->htaccess_rules();
 			$contents = $rules . $contents;
 
 			// Update the .htacces file
@@ -570,6 +393,303 @@ class Powered_Cache_Config {
 		}
 
 		return false;
+	}
+
+
+	/**
+	 * Prepares .htaccess rules for the caching
+	 *
+	 * @since 1.1
+	 * @return string $rules
+	 */
+	public function htaccess_rules() {
+		$rules = '';
+
+		/**
+		 * @since 1.1 $contents parameter removed
+		 */
+		$rules .= apply_filters( 'powered_cache_pre_htaccess', '' );
+
+		$rules .= '# BEGIN POWERED CACHE' . PHP_EOL;
+
+		// todo set option here.
+		if ( apply_filters( 'powered_cache_browser_cache', true ) ) {
+			$wp_mime_types = wp_get_mime_types();
+			$mime_types    = array_flip( $wp_mime_types );
+			//mimes
+			$rules .= '<IfModule mod_mime.c>' . PHP_EOL;
+			foreach ( $mime_types as $mime_type => $ext ) {
+				$ext_str = '.' . str_replace( '|', ' .', $ext );
+				$rules .= "    AddType " . $mime_type . " " . $ext_str . PHP_EOL;
+			}
+			$rules .= "</IfModule>" . PHP_EOL;
+
+			// set expire time
+
+			$rules .= '<IfModule mod_expires.c>' . PHP_EOL;
+			$rules .= "    ExpiresActive On" . PHP_EOL;
+			$rules .= '    ExpiresByType  text/html            "access plus 0 seconds"' . PHP_EOL;
+			$rules .= '    ExpiresByType  text/richtext        "access plus 0 seconds"' . PHP_EOL;
+			$rules .= '    ExpiresByType  image/svg+xml        "access plus 0 seconds"' . PHP_EOL;
+			$rules .= '    ExpiresByType  text/plain           "access plus 0 seconds"' . PHP_EOL;
+			$rules .= '    ExpiresByType  text/xsd             "access plus 0 seconds"' . PHP_EOL;
+			$rules .= '    ExpiresByType  text/xsl             "access plus 0 seconds"' . PHP_EOL;
+			$rules .= '    ExpiresByType  text/xml             "access plus 0 seconds"' . PHP_EOL;
+			$rules .= '    ExpiresByType  text/cache-manifest  "access plus 0 seconds"' . PHP_EOL;
+
+			foreach ( $mime_types as $mime_type => $ext ) {
+
+				if ( in_array( $mime_type, array( 'text/html', 'text/richtext', 'image/svg+xml', 'text/plain', 'text/xsd', 'text/xsl', 'text/xml', 'text/cache-manifest' ) ) ) {
+					continue;
+				}
+
+				/**
+				 * Apache allow both format like A2592000 => "access plus 1 month"
+				 * A => access, M => Modified
+				 *
+				 * @see http://httpd.apache.org/docs/current/mod/mod_expires.html
+				 */
+				if ( in_array( $mime_type, array( 'text/css', 'application/javascript' ) ) ) {
+					$expiry_time = apply_filters( 'powered_cache_browser_cache_assets_lifespan', 'access plus 1 year' );
+				} else {
+					$expiry_time = apply_filters( 'powered_cache_browser_cache_default_lifespan', 'access plus 1 month' );
+				}
+				$rules .= '    ExpiresByType ' . $mime_type . '                 "' . $expiry_time . '"' . PHP_EOL;
+			}
+			$rules .= "</IfModule>" . PHP_EOL;
+
+		}
+
+
+		// gzip
+		$rules .= '<IfModule mod_deflate.c>' . PHP_EOL;
+		$rules .= '  <IfModule mod_headers.c>' . PHP_EOL;
+		$rules .= '    Header append Vary User-Agent env=!dont-vary' . PHP_EOL;
+		$rules .= '  </IfModule>' . PHP_EOL;
+		$rules .= '    AddOutputFilterByType DEFLATE text/css text/x-component application/x-javascript application/javascript text/javascript text/x-js text/html text/richtext image/svg+xml text/plain text/xsd text/xsl text/xml image/bmp application/java application/msword application/vnd.ms-fontobject application/x-msdownload image/x-icon application/json application/vnd.ms-access application/vnd.ms-project application/x-font-otf application/vnd.ms-opentype application/vnd.oasis.opendocument.database application/vnd.oasis.opendocument.chart application/vnd.oasis.opendocument.formula application/vnd.oasis.opendocument.graphics application/vnd.oasis.opendocument.presentation application/vnd.oasis.opendocument.spreadsheet application/vnd.oasis.opendocument.text audio/ogg application/pdf application/vnd.ms-powerpoint application/x-shockwave-flash image/tiff application/x-font-ttf application/vnd.ms-opentype audio/wav application/vnd.ms-write application/font-woff application/font-woff2 application/vnd.ms-excel' . PHP_EOL;
+		$rules .= '  <IfModule mod_mime.c>' . PHP_EOL;
+		$rules .= '    AddOutputFilter DEFLATE js css htm html xml' . PHP_EOL;
+		$rules .= '  </IfModule>' . PHP_EOL;
+		$rules .= '</IfModule>' . PHP_EOL;
+
+
+		// remove etag
+		$rules .= '<IfModule mod_headers.c>' . PHP_EOL;
+		$rules .= 'Header unset ETag' . PHP_EOL;
+		$rules .= '</IfModule>' . PHP_EOL . PHP_EOL;
+
+
+		// rewrite
+
+		$env_powered_cache_ua  = '';
+		$env_powered_cache_ssl = '';
+		$env_powered_cache_enc = '';
+
+
+		$rewrite_base = network_home_url( '', 'relative' );
+		if ( empty( $rewrite_base ) ) {
+			$rewrite_base = '/';
+		}
+
+		$rules .= '<IfModule mod_rewrite.c>' . PHP_EOL;
+		$rules .= '    RewriteEngine On' . PHP_EOL;
+		$rules .= '    RewriteBase ' . $rewrite_base . PHP_EOL;
+
+
+		if ( true === powered_cache_get_option( 'cache_mobile' ) && true === powered_cache_get_option( 'cache_mobile_separate_file' ) ) {
+			$mobile_browsers = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', powered_cache_mobile_browsers() ) ), ' ' );
+			$mobile_prefixes = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', powered_cache_mobile_prefixes() ) ), ' ' );
+			// mobile env set
+			$rules .= "    RewriteCond %{HTTP_USER_AGENT} (" . $mobile_browsers . ") [NC]" . PHP_EOL;
+			$rules .= "    RewriteRule .* - [E=PC_UA:-mobile]" . PHP_EOL;
+			$rules .= "    RewriteCond %{HTTP_USER_AGENT} ^(" . $mobile_prefixes . ") [NC]" . PHP_EOL;
+			$rules .= "    RewriteRule .* - [E=PC_UA:-mobile]" . PHP_EOL;
+			$env_powered_cache_ua = '%{ENV:PC_UA}';
+		}
+
+		if ( true === powered_cache_get_option( 'ssl_cache' ) ) {
+			$rules .= "    RewriteCond %{HTTPS} =on" . PHP_EOL;
+			$rules .= "    RewriteRule .* - [E=PC_SSL:-https]" . PHP_EOL;
+			$rules .= "    RewriteCond %{SERVER_PORT} =443" . PHP_EOL;
+			$rules .= "    RewriteRule .* - [E=PC_SSL:-https]" . PHP_EOL;
+			$env_powered_cache_ssl = '%{ENV:PC_SSL}';
+		}
+
+		if ( true === powered_cache_get_option( 'gzip_compression' ) ) {
+			$rules .= "    RewriteCond %{HTTP:Accept-Encoding} gzip" . PHP_EOL;
+			$rules .= "    RewriteRule .* - [E=PC_ENC:_gzip]" . PHP_EOL;
+			$env_powered_cache_enc = '%{ENV:PC_ENC}';
+		}
+
+		$rules .= "    RewriteCond %{REQUEST_METHOD} !=POST" . PHP_EOL;
+		$rules .= '    RewriteCond %{QUERY_STRING} =""' . PHP_EOL;
+
+		if ( substr( get_option( 'permalink_structure' ), - 1 ) == '/' ) {
+			$rules .= '    RewriteCond %{REQUEST_URI} \/$' . PHP_EOL;
+		}
+
+		// Get root base
+		$site_root = parse_url( site_url() );
+		$site_root = isset( $site_root['path'] ) ? trailingslashit( $site_root['path'] ) : '';
+
+
+		// reject user agent
+		if ( false !== powered_cache_get_option( 'rejected_user_agents' ) ) {
+			$rejected_user_agents = preg_split( '#(\r\n|\n|\r)#', powered_cache_get_option( 'rejected_user_agents' ) );
+			if ( ! empty( $rejected_user_agents ) ) {
+				$rules .= '    RewriteCond %{HTTP_USER_AGENT} !^(' . implode( '|', $rejected_user_agents ) . ').* [NC]' . PHP_EOL;
+			}
+		}
+
+
+		// ignore cookies
+		if ( false !== powered_cache_get_option( 'rejected_uri' ) ) {
+			$cookies = preg_split( '#(\n|\r)#', powered_cache_get_option( 'rejected_uri' ) );
+		}
+		$wp_cookies = array( 'wordpressuser_', 'wordpresspass_', 'wordpress_sec_', 'wordpress_logged_in_' );
+		if ( ! empty( $cookies ) ) {
+			$wp_cookies = array_merge( $cookies, $wp_cookies );
+		}
+		$rules .= '    RewriteCond %{HTTP:Cookie} !(' . implode( '|', $wp_cookies ) . ') [NC]' . PHP_EOL;
+
+		// dont cache fbexternal
+		$rules .= '    RewriteCond %{HTTP_USER_AGENT} !^(facebookexternalhit).* [NC]' . PHP_EOL;
+
+
+		$cache_location = powered_cache_get_cache_dir();
+		$cache_location = untrailingslashit( $cache_location ) . '/powered-cache/';
+		if ( strpos( ABSPATH, $cache_location ) === false ) {
+			// clean doc root
+			$cache_path = str_replace( $_SERVER['DOCUMENT_ROOT'], '', $cache_location );
+		} else {
+			$cache_path = $site_root . str_replace( ABSPATH, '', $cache_location );
+		}
+
+
+		if ( apply_filters( 'powered_cache_maybe_1and1_hosting', ( 0 === strpos( $_SERVER['DOCUMENT_ROOT'], '/kunden/homepage/' ) ) ) ) {
+			$rules .= '    RewriteCond "' . str_replace( '/kunden/homepage/', '/', $cache_location ) . '%{HTTP_HOST}' . '%{REQUEST_URI}/index' . $env_powered_cache_ssl . $env_powered_cache_ua . '.html' . $env_powered_cache_enc . '" -f' . PHP_EOL;
+		} else {
+			$rules .= '    RewriteCond "%{DOCUMENT_ROOT}/' . ltrim( $cache_path, '/' ) . '%{HTTP_HOST}' . '%{REQUEST_URI}/index' . $env_powered_cache_ssl . $env_powered_cache_ua . '.html' . $env_powered_cache_enc . '" -f' . PHP_EOL;
+		}
+		$rules .= '    RewriteRule .* "' . $cache_path . '%{HTTP_HOST}' . '%{REQUEST_URI}/index' . $env_powered_cache_ssl . $env_powered_cache_ua . '.html' . $env_powered_cache_enc . '" [L]' . PHP_EOL;
+		$rules .= '</IfModule>' . PHP_EOL;
+		$rules .= '# END POWERED CACHE' . PHP_EOL;
+
+		return $rules;
+	}
+
+
+	/**
+	 * Prepares nginx configuration
+	 *
+	 * @since 1.1
+	 * @return string $contents nginx rules
+	 */
+	public function nginx_rules() {
+		$contents = '';
+		$contents .= '##### POWERED CACHE CONF #####' . PHP_EOL;
+		$contents .= 'set $cache_uri $request_uri;' . PHP_EOL;
+		$contents .= 'set $pc_ssl "";' . PHP_EOL;
+		$contents .= 'set $pc_enc "";' . PHP_EOL;
+		$contents .= 'set $pc_ua "";' . PHP_EOL . PHP_EOL;
+
+		// post
+		$contents .= '# POST requests and urls with a query string should always go to PHP' . PHP_EOL;
+		$contents .= 'if ($request_method = POST) {' . PHP_EOL;
+		$contents .= '  set $cache_uri \'null cache\';' . PHP_EOL;
+		$contents .= '}' . PHP_EOL . PHP_EOL;
+
+		// query string
+		$contents .= 'if ($query_string != "") {' . PHP_EOL;
+		$contents .= '  set $cache_uri \'null cache\';' . PHP_EOL;
+		$contents .= '}' . PHP_EOL . PHP_EOL;
+
+		// https
+		$contents .= '# HTTPS' . PHP_EOL;
+		$contents .= 'if ($https = "on") {' . PHP_EOL;
+		$contents .= '  set $pc_ssl "-https";' . PHP_EOL;
+		$contents .= '}' . PHP_EOL . PHP_EOL;
+
+		$contents .= '# Don\'t cache uris containing the following segments' . PHP_EOL;
+		$contents .= 'if ($request_uri ~* "(/wp-admin/|/xmlrpc.php|/wp-(app|cron|login|register|mail).php|wp-.*.php|/feed/|index.php|wp-comments-popup.php|wp-links-opml.php|wp-locations.php|sitemap(_index)?.xml|[a-z0-9_-]+-sitemap([0-9]+)?.xml)") {' . PHP_EOL;
+		$contents .= '  set $cache_uri \'null cache\';' . PHP_EOL;
+		$contents .= '}' . PHP_EOL . PHP_EOL;
+
+		$contents .= '# Don\'t use the cache for logged in users or recent commenters' . PHP_EOL;
+		$contents .= 'if ($http_cookie ~* "comment_author|wordpress_[a-f0-9]+|wp-postpass|wordpress_logged_in|powered_cache_commented_posts") {' . PHP_EOL;
+		$contents .= '  set $cache_uri \'null cache\';' . PHP_EOL;
+		$contents .= '}' . PHP_EOL . PHP_EOL;
+
+		$contents .= 'if ($http_x_wap_profile) {' . PHP_EOL;
+		$contents .= '	set $pc_ua \'-mobile\';' . PHP_EOL;
+		$contents .= '}' . PHP_EOL . PHP_EOL;
+
+		if ( true === powered_cache_get_option( 'cache_mobile' ) && true === powered_cache_get_option( 'cache_mobile_separate_file' ) ) {
+			$mobile_browsers = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', powered_cache_mobile_browsers() ) ), ' ' );
+			$mobile_prefixes = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', powered_cache_mobile_prefixes() ) ), ' ' );
+
+			$contents .= 'if ($http_user_agent ~* (' . $mobile_browsers . '))' . PHP_EOL;
+			$contents .= '	set $pc_ua \'-mobile\';' . PHP_EOL;
+			$contents .= '}' . PHP_EOL . PHP_EOL;
+
+			$contents .= 'if ($http_user_agent ~* (' . $mobile_prefixes . '))' . PHP_EOL;
+			$contents .= '	set $pc_ua \'-mobile\';' . PHP_EOL;
+			$contents .= '}' . PHP_EOL . PHP_EOL;
+		}
+
+		$contents .= 'location = /favicon.ico { log_not_found off; access_log off; }' . PHP_EOL;
+		$contents .= 'location = /robots.txt  { log_not_found off; access_log off; }' . PHP_EOL . PHP_EOL;
+
+		$contents .= 'location ~* .(jpg|jpeg|png|gif|ico|css|js|woff|svg)$ {' . PHP_EOL;
+		$contents .= '  expires 1M;' . PHP_EOL;
+		$contents .= '}' . PHP_EOL . PHP_EOL;
+
+		$cache_suffix = 'html';
+		if ( true === powered_cache_get_option( 'gzip_compression' ) ) {
+			$cache_suffix .= '_gzip';
+		}
+
+
+		$contents .= 'location / {' . PHP_EOL;
+		$contents .= '  add_header X-Powered-Cache nginx;' . PHP_EOL;
+		$contents .= '  try_files /wp-content/cache/powered-cache/$http_host/$cache_uri/index${pc_ssl}${pc_ua}.' . $cache_suffix . ' $uri $uri/ /index.php?$args;' . PHP_EOL;
+		$contents .= '}' . PHP_EOL . PHP_EOL;
+
+
+		return $contents;
+	}
+
+
+	/**
+	 * Downloads configuration files
+	 *
+	 * @since 1.1
+	 *
+	 * @param string $server type supports apache and nginx
+	 */
+	public function download_rewrite_rules( $server ) {
+
+		$rules    = '';
+		$filename = 'conf';
+
+		if ( 'apache' === $server ) {
+			$rules    = $this->htaccess_rules();
+			$filename = '.htaccess_powered_cache';
+		}
+
+		if ( 'nginx' === $server ) {
+			$rules    = $this->nginx_rules();
+			$filename = 'poweredcache.conf';
+		}
+
+		nocache_headers();
+		@header( 'Content-Type: text/plain' );
+		@header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
+		@header( 'Content-Transfer-Encoding: binary' );
+		@header( 'Content-Length: ' . strlen( $rules ) );
+		@header( 'Connection: close' );
+		echo $rules;
+		exit;
 	}
 
 
