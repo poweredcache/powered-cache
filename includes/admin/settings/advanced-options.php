@@ -21,6 +21,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<table class="form-table">
 				<tbody>
 				<tr>
+					<th scope="row"><label for="powered_cache_remove_query_string"><?php _e( 'Remove query string', 'powered-cache' ); ?></label></th>
+					<td>
+						<label><input type="checkbox" <?php checked( powered_cache_get_option( 'remove_query_string' ), 1 ); ?> id="powered_cache_remove_query_string" name="powered_cache_settings[remove_query_string]" value="1">
+							<?php _e( 'Remove query strings from CSS & JS resources', 'powered-cache' ); ?>
+							(<a target="_blank" href="http://docs.poweredcache.com/article/11-advanced-caching-options#remove-query-string">?</a>)
+						</label>
+					</td>
+				</tr>
+				<tr>
 					<th scope="row"><label for="powered_cache_rejected_user_agents"><?php _e( 'Rejected user agents', 'powered-cache' ); ?></label></th>
 					<td>
 						<textarea id="powered_cache_rejected_user_agents" name="powered_cache_settings[rejected_user_agents]" cols="50" rows="5"><?php echo powered_cache_get_option( 'rejected_user_agents' ); ?></textarea><br>

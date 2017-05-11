@@ -113,6 +113,7 @@ if ( ! class_exists( 'Powered_Cache' ) ) :
 			require_once POWERED_CACHE_INC_DIR . 'class-powered-cache-cdn.php';
 			require_once POWERED_CACHE_INC_DIR . 'class-powered-cache-extensions.php';
 			require_once POWERED_CACHE_INC_DIR . 'class-powered-cache-cron.php';
+			require_once POWERED_CACHE_INC_DIR . 'class-powered-cache-hooks.php';
 			require_once POWERED_CACHE_INC_DIR . 'class-powered-cache-advanced-cache.php';
 			require_once POWERED_CACHE_INC_DIR . 'class-powered-cache-object-cache.php';
 
@@ -156,6 +157,9 @@ if ( ! class_exists( 'Powered_Cache' ) ) :
 
 			// setup cron
 			Powered_Cache_Cron::factory();
+
+			// Attached hooks
+			Powered_Cache_Hooks::factory();
 
 			// init admin
 			if ( is_admin() && class_exists( 'Powered_Cache_Admin' ) ) {

@@ -56,6 +56,7 @@ class Powered_Cache_Config {
 			'cache_timeout'              => 1440,
 			'cache_location'             => powered_cache_get_cache_dir(),
 			// advanced options
+			'remove_query_string'        => false,
 			'rejected_user_agents'       => '',
 			'rejected_cookies'           => '',
 			'rejected_uri'               => '',

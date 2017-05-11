@@ -65,6 +65,7 @@ class Powered_Cache_Admin_Actions {
 
 				break;
 			case 'advanced-options':
+				$new_options['remove_query_string']        = ( isset( $_post['remove_query_string'] ) && 1 == $_post['remove_query_string'] ? true : false );
 				$new_options['rejected_user_agents']   = ( strlen( trim( $_post['rejected_user_agents'] ) ) > 0 ? wp_kses_post( $_post['rejected_user_agents'] ) : '' );
 				$new_options['rejected_cookies']       = ( strlen( trim( $_post['rejected_cookies'] ) ) > 0 ? wp_kses_post( $_post['rejected_cookies'] ) : '' );
 				$new_options['rejected_uri']           = ( strlen( trim( $_post['rejected_uri'] ) ) > 0 ? wp_kses_post( $_post['rejected_uri'] ) : '' );
