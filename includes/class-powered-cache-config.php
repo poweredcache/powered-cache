@@ -163,6 +163,7 @@ class Powered_Cache_Config {
 	 * object-cache.php contents
 	 *
 	 * @since 1.0
+	 * @since 1.1 supports `POWERED_CACHE_OBJECT_CACHE_DROPIN`
 	 * @param $backend
 	 * @see Powered_Cache_Admin_Helper::object_cache_dropins
 	 *
@@ -170,18 +171,19 @@ class Powered_Cache_Config {
 	 */
 	public function object_cache_file_content( $backend ) {
 		$string = '<?php ' . "\n";
-		$string .= "defined( 'ABSPATH' ) || exit;" . "\n";
-		$string .= "define( 'POWERED_OBJECT_CACHE', true );" . "\n";
-		$string .= "if ( ! @file_exists( WP_CONTENT_DIR . '/pc-config/config-' . \$_SERVER['HTTP_HOST'] . '.php' ) ) { return; }" . "\n";
+		$string .= "defined( 'ABSPATH' ) || exit;" . PHP_EOL;
+		$string .= "define( 'POWERED_OBJECT_CACHE', true );" . PHP_EOL;
+		$string .= "if ( ! @file_exists( WP_CONTENT_DIR . '/pc-config/config-' . \$_SERVER['HTTP_HOST'] . '.php' ) ) { return; }" . PHP_EOL;
 
 		$object_caches = Powered_Cache_Admin_Helper::object_cache_dropins();
 
 		$string .= "\$GLOBALS['powered_cache_options'] = include( WP_CONTENT_DIR . '/pc-config/config-' . \$_SERVER['HTTP_HOST'] . '.php' );" . "\n\n";
-
-		$string .= 'if ( @file_exists( \'' . $object_caches[ $backend ] . '\' ) ) {' . "\n";
-		$string .= "\t" . 'include( \'' . $object_caches[ $backend ] . '\' );' . "\n";
-		$string .= '} else {' . "\n";
-		$string .= "\t" . 'define( \'POWERED_OBJECT_CACHE_HAS_PROBLEM\', true );' . "\n";
+		$string .= 'if ( defined( \'POWERED_CACHE_OBJECT_CACHE_DROPIN\') && @file_exists( POWERED_CACHE_OBJECT_CACHE_DROPIN ) ) {' . PHP_EOL;
+		$string .= "\t" . 'include( POWERED_CACHE_OBJECT_CACHE_DROPIN );' . PHP_EOL;
+		$string .= '} elseif ( @file_exists( \'' . $object_caches[ $backend ] . '\' ) ) {' . PHP_EOL;
+		$string .= "\t" . 'include( \'' . $object_caches[ $backend ] . '\' );' . PHP_EOL;
+		$string .= '} else {' . PHP_EOL;
+		$string .= "\t" . 'define( \'POWERED_OBJECT_CACHE_HAS_PROBLEM\', true );' . PHP_EOL;
 		$string .= '}';
 
 		return apply_filters( 'powered_cache_object_cache_file_content', $string );
@@ -192,6 +194,7 @@ class Powered_Cache_Config {
 	 * Prepare advanced-cache.php contents
 	 *
 	 * @since 1.0
+	 * @since 1.1 supports `POWERED_CACHE_ADVANCED_CACHE_DROPIN`
 	 * @return mixed|void
 	 */
 	public function advanced_cache_file_content(){
@@ -217,7 +220,9 @@ class Powered_Cache_Config {
 		$string .= '$powered_cache_mobile_browsers = ' . var_export( powered_cache_mobile_browsers(), true ) . ";" . PHP_EOL;
 		$string .= '$powered_cache_mobile_prefixes = ' . var_export( powered_cache_mobile_prefixes(), true ) . ";" . PHP_EOL;
 
-		$string .= 'if ( @file_exists( \'' . POWERED_CACHE_DROPIN_DIR . 'page-cache.php' . '\' ) ) {' . PHP_EOL;
+		$string .= 'if ( defined( \'POWERED_CACHE_ADVANCED_CACHE_DROPIN\') && @file_exists( POWERED_CACHE_ADVANCED_CACHE_DROPIN ) ) {' . PHP_EOL;
+		$string .= "\t" . 'include( POWERED_CACHE_ADVANCED_CACHE_DROPIN );' . PHP_EOL;
+		$string .= '} elseif ( @file_exists( \'' . POWERED_CACHE_DROPIN_DIR . 'page-cache.php' . '\' ) ) {' . PHP_EOL;
 		$string .= "\t" . 'include( \'' . POWERED_CACHE_DROPIN_DIR . 'page-cache.php' . '\' );' . PHP_EOL;
 		$string .= '} else {' . PHP_EOL;
 		$string .= "\t" . 'define( \'POWERED_CACHE_PAGE_CACHING_HAS_PROBLEM\', true );' . PHP_EOL;
