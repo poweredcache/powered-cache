@@ -12,9 +12,9 @@ branches:
     - master
 
 php:
-  - 5.2
   - 5.3
   - 5.6
+  - 7.1
 
 env:
   - WP_VERSION=latest WP_MULTISITE=0
@@ -36,9 +36,6 @@ before_script:
       composer global require "phpunit/phpunit=4.8.*"
     fi
   - |
-    composer global require wp-coding-standards/wpcs
-    phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
 
 script:
-  - phpcs --standard=phpcs.ruleset.xml $(find . -name '*.php')
   - phpunit
