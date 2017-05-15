@@ -85,7 +85,7 @@ function powered_cache_save_settings( $old_settings, $new_settings ) {
 	}
 
 	if ( isset( $changed_settings['enable_page_caching'] ) ) {
-		powered_cache_clean_page_cache_dir();
+		powered_cache_clean_site_cache_dir();
 	}
 
 	Powered_Cache_Config::factory()->setup_object_cache( $settings['object_cache'] );
@@ -201,23 +201,54 @@ function powered_cache_maybe_require_premium_html() {
 
 
 /**
- * get page cache dir
+ * Page cache base directory.
  *
- * @param string $url
  * @since 1.0
- *
+ * @since 1.1 $url parameter removed @see `powered_cache_get_url_dir`
  * @return string
  */
-function powered_cache_get_page_cache_dir( $url = false ) {
-	if ( $url ) {
-		$url_info = parse_url( $url );
-		$sub_dir  = $url_info['host'] . $url_info['path'];
+function powered_cache_get_page_cache_dir() {
+	$path = powered_cache_get_cache_dir() . 'powered-cache/';
 
-		return powered_cache_get_cache_dir() . 'powered-cache/' . ltrim( $sub_dir, '/' );
-	}
-
-	return powered_cache_get_cache_dir() . 'powered-cache/';
+	return apply_filters( 'powered_cache_get_page_cache_dir', $path );
 }
+
+
+/**
+ * get cache location of given url
+ *
+ * @param string $url
+ *
+ * @since 1.1
+ * @return mixed|void
+ */
+function powered_cache_get_url_dir( $url ) {
+	$url_info = parse_url( $url );
+	$sub_dir  = $url_info['host'] . $url_info['path'];
+	$path     = powered_cache_get_cache_dir() . 'powered-cache/' . ltrim( $sub_dir, '/' );
+
+	return apply_filters( 'powered_cache_get_url_dir', $path );
+}
+
+/**
+ * get base caching directory of site
+ *
+ * @since 1.1
+ * @return mixed|void
+ */
+function powered_cache_site_cache_dir() {
+	$base_dir = powered_cache_get_page_cache_dir();
+
+	// compatible with multisite
+	$site_url = get_site_url();
+
+	$site_path = parse_url( $site_url, PHP_URL_HOST );
+
+	$site_cache_dir = $base_dir . $site_path;
+
+	return apply_filters( 'powered_cache_site_cache_dir', $site_cache_dir );
+}
+
 
 /**
  * Delete cache file
@@ -229,7 +260,7 @@ function powered_cache_get_page_cache_dir( $url = false ) {
  */
 function powered_cache_delete_page_cache( $url ) {
 
-	$dir = trailingslashit( powered_cache_get_page_cache_dir( trim( $url ) ) );
+	$dir = trailingslashit( powered_cache_get_url_dir( trim( $url ) ) );
 
 	if ( is_dir( $dir ) ) {
 		$files = scandir( $dir );
@@ -341,6 +372,17 @@ function powered_cache_clean_page_cache_dir() {
 	return $wp_filesystem->rmdir( untrailingslashit( powered_cache_get_cache_dir() ) . '/powered-cache', true );
 }
 
+/**
+ * Clean cache base for the current site
+ *
+ * @since 1.1
+ * @return mixed
+ */
+function powered_cache_clean_site_cache_dir() {
+	global $wp_filesystem;
+
+	return $wp_filesystem->rmdir( powered_cache_site_cache_dir(), true );
+}
 
 
 /**
