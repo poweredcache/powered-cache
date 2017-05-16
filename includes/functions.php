@@ -518,6 +518,40 @@ function powered_cache_get_debug_info() {
 
 
 /**
+ * Get list of expired files for given directory
+ *
+ * @param string $path
+ * @param int $lifespan lifespan in seconds
+ *
+ * @since 1.1
+ * @return array expired file list
+ */
+function powered_cache_get_exprired_files( $path, $lifespan = 0 ) {
+
+	$current_time = time();
+
+	$expired_files = array();
+	$files         = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $path ) );
+
+	foreach ( $files as $file ) {
+
+		if ( $file->isDir() ) {
+			continue;
+		}
+
+
+		$path = $file->getPathname();
+
+		if ( @filemtime( $path ) + $lifespan <= $current_time ) {
+			$expired_files[] = $path;
+		}
+
+	}
+
+	return $expired_files;
+}
+
+/**
  * Is saving options now?
  *
  * @since 1.0

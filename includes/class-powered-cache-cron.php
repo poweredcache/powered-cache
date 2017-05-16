@@ -91,7 +91,15 @@ class Powered_Cache_Cron {
 			return;
 		}
 
-		powered_cache_flush();
+		$lifespan = powered_cache_get_option( 'cache_timeout' ) * 60;
+
+		$expired_files = powered_cache_get_exprired_files( powered_cache_site_cache_dir(), $lifespan );
+
+		foreach ( $expired_files as $file_path ) {
+			@unlink( $file_path );
+		}
+
+		do_action( 'powered_cache_expired_files_deleted' );
 	}
 
 	/**
