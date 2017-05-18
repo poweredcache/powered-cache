@@ -31,7 +31,7 @@ class Powered_Cache_Admin {
 		$this->capability = apply_filters( 'powered_cache_cap', $this->capability );
 
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
-		add_action( 'admin_bar_menu', array( $this, 'admin_bar_menu' ), '9999' );
+		add_action( 'admin_bar_menu', array( $this, 'admin_bar_menu' ), 999 );
 		add_filter( 'plugin_action_links_' . plugin_basename( POWERED_CACHE_PLUGIN_FILE ), array( $this, 'action_links' ) );
 		add_action( 'load-toplevel_page_powered-cache', array( $this, 'update_options' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'load_scripts' ) );
