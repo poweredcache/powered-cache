@@ -53,5 +53,7 @@ function powered_cache_cloudflare_purge_cache() {
 	return false;
 }
 
+add_action( 'powered_cache_purge_all_cache', 'powered_cache_cloudflare_purge_cache' );
+
 // make description translatable
 __( 'Cloudflare extension for Powered Cache', 'powered-cache' );
