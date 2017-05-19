@@ -58,9 +58,6 @@ class Powered_Cache_Admin {
 				case 'powered_cache_update_settings':
 					Powered_Cache_Admin_Actions::update_settings();
 					break;
-				case 'purge_cache':
-					Powered_Cache_Admin_Actions::purge_cache();
-					break;
 				case 'reset_settings':
 					Powered_Cache_Admin_Actions::reset_settings();
 					break;

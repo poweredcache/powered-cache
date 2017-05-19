@@ -28,14 +28,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</td>
 				</tr>
 
-				<tr>
-					<th scope="row"><label for="powered_cache_clear_cache"><?php _e( 'Clear Cache', 'powered-cache' ); ?></label></th>
-					<td>
-						<?php echo Powered_Cache_Admin_Helper::flush_cache_button(); ?>
-						<br>
-						<span class="description"><?php _e( 'Clear all cache, including object cache', 'powered-cache' ); ?></span>
-					</td>
-				</tr>
+				<?php
+				// additional control needed for cache flushing
+				if ( ( is_multisite() && current_user_can( 'manage_network' ) ) || current_user_can( 'activate_plugins' ) ): ?>
+					<tr>
+						<th scope="row"><label for="powered_cache_clear_cache"><?php _e( 'Clear Cache', 'powered-cache' ); ?></label></th>
+						<td>
+							<?php echo Powered_Cache_Admin_Helper::flush_cache_button(); ?>
+							<br>
+							<span class="description"><?php _e( 'Clear all cache, including object cache', 'powered-cache' ); ?></span>
+						</td>
+					</tr>
+				<?php endif; ?>
+
 				<tr>
 					<th scope="row"><label for="powered_cache_rewrite"><?php _e( 'Download Configuration', 'powered-cache' ); ?></label></th>
 					<td>

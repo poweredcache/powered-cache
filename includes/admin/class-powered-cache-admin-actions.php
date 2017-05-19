@@ -154,20 +154,6 @@ class Powered_Cache_Admin_Actions {
 		self::exit_with_redirect();
 	}
 
-	/**
-	 * just simple wrapper of powered_cache_flush
-	 *
-	 * @since 1.0
-	 */
-	public static function purge_cache() {
-		// purge cache stuff
-		powered_cache_flush();
-
-		$msg = __( 'Cache flushed successfully', 'powered-cache' );
-		Powered_Cache_Admin_Helper::set_flash_message( $msg );
-
-		self::exit_with_redirect();
-	}
 
 	/**
 	 * Reset settings

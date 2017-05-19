@@ -156,18 +156,11 @@ class Powered_Cache_Admin_Helper {
 	 * Generates cache flush button
 	 *
 	 * @since 1.0
-	 *
+	 * @since 1.1 $url changed to admin-post.php
 	 * @return string
 	 */
 	public static function flush_cache_button() {
-		$url = add_query_arg( array(
-			'page'                         => esc_attr( 'powered-cache' ),
-			'section'                      => 'misc',
-			'action'                       => 'purge_cache',
-			'wp_http_referer'              => urlencode( wp_unslash( $_SERVER['REQUEST_URI'] ) ),
-			'powered_cache_settings_nonce' => wp_create_nonce( 'powered_cache_update_settings' ),
-		), admin_url( 'admin.php' ) );
-
+		$url  = wp_nonce_url( admin_url( 'admin-post.php?action=powered_cache_purge_all_cache' ), 'powered_cache_purge_all_cache' );
 		$html = '<a href="' . esc_url( $url ) . '" class="button" >' . esc_html__( 'Clear Cache', 'powered-cache' ) . '</a>';
 
 		return $html;
