@@ -31,6 +31,9 @@ if ( ! preg_match( '#index\.php$#i', $_SERVER['REQUEST_URI'] ) && in_array( $fil
 	return;
 }
 
+if ( ! $GLOBALS['powered_cache_options']['enable_page_caching'] ) {
+	return;
+}
 
 // Don't cache page with these user agents
 if ( ! empty( $GLOBALS['powered_cache_options']['rejected_user_agents'] ) ) {
