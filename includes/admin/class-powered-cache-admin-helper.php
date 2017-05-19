@@ -84,15 +84,10 @@ class Powered_Cache_Admin_Helper {
 	 * Get available object cache backends
 	 *
 	 * @since 1.0
-	 *
 	 * @return array
 	 */
 	public static function available_object_caches() {
 		$object_cache_methods = self::object_cache_dropins();
-
-		if ( ! function_exists( 'apc_fetch' ) ) {
-			unset( $object_cache_methods['apc'] );
-		}
 
 		if ( ! class_exists( 'Memcache' ) ) {
 			unset( $object_cache_methods['memcache'] );
@@ -106,7 +101,7 @@ class Powered_Cache_Admin_Helper {
 			unset( $object_cache_methods['redis'] );
 		}
 
-		return array_keys($object_cache_methods);
+		return array_keys( $object_cache_methods );
 	}
 
 
