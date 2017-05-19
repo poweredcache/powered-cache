@@ -80,17 +80,21 @@ class Powered_Cache_Config {
 	 * Generates advanced-cache.php
 	 *
 	 * @since 1.0
+	 * @since 1.1 is_multisite control added
 	 * @return bool
 	 */
 	public function generate_advanced_cache_file() {
 		global $wp_filesystem;
 
-		$file = untrailingslashit( WP_CONTENT_DIR )  . '/advanced-cache.php';
+		$file = untrailingslashit( WP_CONTENT_DIR ) . '/advanced-cache.php';
 
 
 		$file_string = '';
 
-		if ( true === powered_cache_get_option( 'enable_page_caching' ) ) {
+		/**
+		 * multisite setups should always have `advanced-cache.php` file
+		 */
+		if ( true === powered_cache_get_option( 'enable_page_caching' ) || is_multisite() ) {
 			$file_string = $this->advanced_cache_file_content();
 		}
 
