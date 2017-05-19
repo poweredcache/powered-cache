@@ -162,7 +162,7 @@ class Powered_Cache_Admin_Actions {
 	 */
 	public static function reset_settings() {
 		// purge cache stuff
-		powered_cache_flush();
+		powered_cache_clean_site_cache_dir();
 		delete_option( 'powered_cache_settings' );
 
 		global $powered_cache_options;
