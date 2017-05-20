@@ -23,6 +23,11 @@ class Powered_Cache_Admin_Helper {
 			'support'          => __( 'Support', 'powered-cache' ),
 		);
 
+		if ( is_multisite() && ! current_user_can( 'manage_network' ) ) {
+			unset( $sections['premium'] );
+			unset( $sections['support'] );
+		}
+
 		return apply_filters( 'powered_cache_admin_settings_sections', $sections );
 	}
 
