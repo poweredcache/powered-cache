@@ -119,6 +119,10 @@ class Powered_Cache_Config {
 
 		$file = untrailingslashit( WP_CONTENT_DIR )  . '/object-cache.php';
 
+		if ( is_multisite() && ! current_user_can( 'manage_network' ) ) {
+			return false;
+		}
+
 		if ( 'off' === $backend ) {
 			if ( $wp_filesystem->exists( $file ) ) {
 				$wp_filesystem->delete( $file ); // remove object cache file

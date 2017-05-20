@@ -73,6 +73,12 @@ class Powered_Cache_Hooks {
 			wp_nonce_ays( '' );
 		}
 
+		if ( is_multisite() && ! current_user_can( 'manage_network' ) ) {
+			Powered_Cache_Admin_Helper::set_flash_message( __( "You don't have permission to perform this action!", 'powered-cache' ), 'error' );
+			wp_safe_redirect( wp_get_referer() );
+			die();
+		}
+
 		powered_cache_flush();// cleans object cache + page cache dir
 
 		// extensions should use this action

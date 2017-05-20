@@ -44,6 +44,11 @@ class Powered_Cache_Object_Cache {
 	 * @param $wp_admin_bar
 	 */
 	public function admin_bar_menu( $wp_admin_bar ) {
+
+		if ( is_multisite() && ! current_user_can( 'manage_network' ) ) {
+			return;
+		}
+
 		$wp_admin_bar->add_menu( array(
 			'id'     => 'object-cache-purge',
 			'title'  => __( 'Purge Object Cache', 'powered-cache' ),
@@ -61,6 +66,12 @@ class Powered_Cache_Object_Cache {
 	public function purge_object_cache() {
 		if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'powered_cache_purge_object_cache' ) ) {
 			wp_nonce_ays( '' );
+		}
+
+		if ( is_multisite() && ! current_user_can( 'manage_network' ) ) {
+			Powered_Cache_Admin_Helper::set_flash_message( __( "You don't have permission to perform this action!", 'powered-cache' ) ,'error' );
+			wp_safe_redirect( wp_get_referer() );
+			die();
 		}
 
 		if ( function_exists( 'wp_cache_flush' ) ) {

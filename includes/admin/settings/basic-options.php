@@ -30,6 +30,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</td>
 				</tr>
 
+				<?php
+				// additional control needed for cache flushing
+				if ( ( is_multisite() && current_user_can( 'manage_network' ) ) || current_user_can( 'activate_plugins' ) ): ?>
 				<tr>
 					<th scope="row"><label for="powered_cache_object_cache"><?php _e( 'Object Caching', 'powered-cache' ); ?></label></th>
 					<td>
@@ -45,6 +48,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						(<a target="_blank" href="http://docs.poweredcache.com/article/6-object-cache">?</a>)
 					</td>
 				</tr>
+				<?php endif; ?>
 
 				<tr>
 					<th scope="row"><label for="powered_cache_mobile_cache"><?php _e( 'Mobile Cache', 'powered-cache' ); ?></label></th>
