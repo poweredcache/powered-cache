@@ -58,14 +58,16 @@ class Powered_Cache_Advanced_Cache {
 
 	/**
 	 * Purge page cache directory
+	 *
 	 * @since 1.0
+	 * @since 1.1 clean site dir instead of root page caching dir
 	 */
 	public function purge_page_cache() {
 		if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'powered_cache_purge_page_cache' ) ) {
 			wp_nonce_ays( '' );
 		}
 
-		powered_cache_clean_page_cache_dir();
+		powered_cache_clean_site_cache_dir();
 		Powered_Cache_Admin_Helper::set_flash_message( __( 'Page cache deleted successfully!', 'powered-cache' ) );
 
 		wp_safe_redirect( wp_get_referer() );
