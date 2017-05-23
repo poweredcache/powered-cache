@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Powered Cache 1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/powered-cache\n"
-"POT-Creation-Date: 2017-04-15 13:25:24+00:00\n"
-"PO-Revision-Date: 2017-04-15 16:28+0300\n"
+"POT-Creation-Date: 2017-05-23 18:11:16+00:00\n"
+"PO-Revision-Date: 2017-05-23 21:16+0300\n"
 "Last-Translator: Mustafa Uysal <EMAIL@ADDRESS>\n"
 "Language-Team: TR LANGUAGE <LL@li.org>\n"
 "Language: tr\n"
@@ -16,7 +16,7 @@ msgstr ""
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SearchPath-0: ..\n"
 
-#: extensions/cloudflare/cloudflare.php:57
+#: extensions/cloudflare/cloudflare.php:59
 msgid "Cloudflare extension for Powered Cache"
 msgstr "Powered Cache için Cloudflare eklentisi."
 
@@ -38,8 +38,8 @@ msgstr "Cloudflare önbelleğini temizleme sırasında sorun oluştu!"
 
 #: extensions/cloudflare/inc/class-powered-cache-cloudflare-admin.php:134
 #: extensions/cloudflare/inc/settings.php:41
-#: includes/admin/class-powered-cache-admin-helper.php:171
-#: includes/admin/settings/misc.php:32
+#: includes/admin/class-powered-cache-admin-helper.php:164
+#: includes/admin/settings/misc.php:35
 msgid "Clear Cache"
 msgstr "Önbelleği Temizle"
 
@@ -76,7 +76,7 @@ msgid "Enable for post content."
 msgstr "Yazı içerikleri için etkinleştir."
 
 #: extensions/lazy-load/inc/settings.php:21
-#: includes/admin/class-powered-cache-admin-helper.php:245
+#: includes/admin/class-powered-cache-admin-helper.php:238
 msgid "Images"
 msgstr "Resimler"
 
@@ -167,7 +167,13 @@ msgstr ""
 "<b>%s:</b> Önyükleme özelliği için sayfa önbelleklemesinin açık olması "
 "gerekmektedir."
 
-#. Plugin Name of the plugin/theme
+#: extensions/preload/inc/class-powered-cache-preload-admin.php:89
+#: includes/admin/class-powered-cache-admin.php:117
+#: includes/admin/class-powered-cache-admin.php:134
+#: includes/admin/notices.php:61 includes/admin/notices.php:63
+#: includes/admin/notices.php:116 includes/admin/settings.php:27
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-helper.php:665
+#: premium/extensions/remote-cron/inc/class-powered-cache-remote-cron-admin.php:48
 msgid "Powered Cache"
 msgstr "Powered Cache"
 
@@ -254,7 +260,6 @@ msgid "Preload tags, categories and other taxonomies."
 msgstr "Etiketleri, kategorileri ve diğer taksonomileri ön yükle"
 
 #: extensions/preload/inc/settings.php:30
-#: includes/admin/settings/basic-options.php:88
 msgid "minutes"
 msgstr "dakika"
 
@@ -282,20 +287,20 @@ msgstr "WordPress cron'u uzaktan tetikler"
 msgid "Varnish extension for Powered Cache"
 msgstr "Powered Cache için Varnish eklentisi."
 
-#: includes/admin/class-powered-cache-admin-actions.php:74
+#: includes/admin/class-powered-cache-admin-actions.php:99
 msgid "Extension activated"
 msgstr "Eklenti aktifleştirildi"
 
-#: includes/admin/class-powered-cache-admin-actions.php:79
+#: includes/admin/class-powered-cache-admin-actions.php:104
 msgid "Extension deactivated"
 msgstr "Eklenti pasifleştirildi"
 
-#: includes/admin/class-powered-cache-admin-actions.php:119
+#: includes/admin/class-powered-cache-admin-actions.php:144
 #: includes/admin/class-powered-cache-extension-admin-base.php:117
 msgid "Options updated"
 msgstr "Ayarlar güncellendi"
 
-#: includes/admin/class-powered-cache-admin-actions.php:126
+#: includes/admin/class-powered-cache-admin-actions.php:151
 msgid ""
 "Something went wrong, we could not save settings to file. Please make sure "
 "the configuration file writable."
@@ -303,11 +308,7 @@ msgstr ""
 "Bir şeyler ters gitti ve ayarları dosyaya kaydedemedik. Lütfen yapılandırma "
 "dosyasının yazılabilir olduğundan emin olunuz."
 
-#: includes/admin/class-powered-cache-admin-actions.php:141
-msgid "Cache flushed successfully"
-msgstr "Önbellek başarılı bir şekilde temizlendi"
-
-#: includes/admin/class-powered-cache-admin-actions.php:160
+#: includes/admin/class-powered-cache-admin-actions.php:171
 msgid "All settings cleaned!"
 msgstr "Tüm ayarlar temizlendi!"
 
@@ -341,7 +342,7 @@ msgstr "Premium Ol"
 msgid "Support"
 msgstr "Destek"
 
-#: includes/admin/class-powered-cache-admin-helper.php:56
+#: includes/admin/class-powered-cache-admin-helper.php:61
 msgid "Dismiss this notice"
 msgstr "Bu bildirimi yoksay"
 
@@ -357,45 +358,45 @@ msgstr "Etkinleştir"
 msgid "Upgrade Now"
 msgstr "Şimdi Yükselt"
 
-#: includes/admin/class-powered-cache-admin-helper.php:192
+#: includes/admin/class-powered-cache-admin-helper.php:185
 msgid "Download Settings"
 msgstr "Ayarları İndir"
 
-#: includes/admin/class-powered-cache-admin-helper.php:214
+#: includes/admin/class-powered-cache-admin-helper.php:207
 msgid "Reset Settings"
 msgstr "Ayarları Sıfırla"
 
-#: includes/admin/class-powered-cache-admin-helper.php:231
+#: includes/admin/class-powered-cache-admin-helper.php:224
 msgid "Cheatin, uh?"
 msgstr "Hile mi yapıyorsunuz?"
 
-#: includes/admin/class-powered-cache-admin-helper.php:244
+#: includes/admin/class-powered-cache-admin-helper.php:237
 msgid "All files"
 msgstr "Tüm dosyalar"
 
-#: includes/admin/class-powered-cache-admin-helper.php:246
+#: includes/admin/class-powered-cache-admin-helper.php:239
 msgid "JavaScript"
 msgstr "JavaScript"
 
-#: includes/admin/class-powered-cache-admin-helper.php:247
+#: includes/admin/class-powered-cache-admin-helper.php:240
 msgid "CSS"
 msgstr "CSS"
 
-#: includes/admin/class-powered-cache-admin.php:119
-#: includes/admin/class-powered-cache-admin.php:125
+#: includes/admin/class-powered-cache-admin.php:117
+#: includes/admin/class-powered-cache-admin.php:123
 msgid "Powered Cache Settings"
 msgstr "Powered Cache Ayarları"
 
-#: includes/admin/class-powered-cache-admin.php:125
+#: includes/admin/class-powered-cache-admin.php:123
 #: includes/admin/extension-settings.php:10
 msgid "Settings"
 msgstr "Ayarlar"
 
-#: includes/admin/class-powered-cache-admin.php:151
+#: includes/admin/class-powered-cache-admin.php:149
 msgid "<a href=\"%s\">Settings</a>"
 msgstr "<a href=\"%s\">Ayarlar</a>"
 
-#: includes/admin/class-powered-cache-admin.php:153
+#: includes/admin/class-powered-cache-admin.php:151
 msgid "<a href=\"%s\" style=\"color: red;\">Get Premium</a>"
 msgstr "<a href=\"%s\" style=\"color: red;\">Premium Ol</a>"
 
@@ -454,38 +455,54 @@ msgid "Powered Cache:"
 msgstr "Powered Cache:"
 
 #: includes/admin/settings/advanced-options.php:24
+msgid "Remove query string"
+msgstr "Query string kaldır"
+
+#: includes/admin/settings/advanced-options.php:27
+msgid "Remove query strings from CSS & JS resources"
+msgstr "CSS & JS adreslerinden sorgu parametrelerini kaldır"
+
+#: includes/admin/settings/advanced-options.php:33
 msgid "Rejected user agents"
 msgstr "Reddedilen kullanıcı aracıları"
 
-#: includes/admin/settings/advanced-options.php:27
+#: includes/admin/settings/advanced-options.php:36
 msgid "Never send cache pages for these user agents."
 msgstr "Ön belleğe alınmayacak kullanıcı aracıları (user-agent)"
 
-#: includes/admin/settings/advanced-options.php:32
+#: includes/admin/settings/advanced-options.php:41
 msgid "Rejected cookies"
 msgstr "Reddedilen çerezler"
 
-#: includes/admin/settings/advanced-options.php:35
+#: includes/admin/settings/advanced-options.php:44
 msgid "Never cache pages that use the specified cookies."
 msgstr ""
 "Belirtilen çerezler kullanıldığında ön belleğe alınmış sayfa "
 "gösterilmeyecektir."
 
-#: includes/admin/settings/advanced-options.php:40
+#: includes/admin/settings/advanced-options.php:49
 msgid "Never cache the following pages"
 msgstr "Hiç ön belleğe alınmayacak sayfalar"
 
-#: includes/admin/settings/advanced-options.php:43
+#: includes/admin/settings/advanced-options.php:52
 msgid "Ignore the specified pages / directories. Supports regex."
 msgstr "Belirtilen sayfaları / dizinleri yok sayar. Regex destekler."
 
-#: includes/admin/settings/advanced-options.php:48
+#: includes/admin/settings/advanced-options.php:57
 msgid "Accepted query strings"
 msgstr "Kabul edilen query strings"
 
-#: includes/admin/settings/advanced-options.php:51
+#: includes/admin/settings/advanced-options.php:60
 msgid "Enter GET parameters line by line."
 msgstr "Kabul edilen GET parametrelerini satır satır giriniz."
+
+#: includes/admin/settings/advanced-options.php:65
+msgid "Purge Additional Pages"
+msgstr "Temizlenecek Harici Sayfalar"
+
+#: includes/admin/settings/advanced-options.php:68
+msgid "Enter pages line by line."
+msgstr "Sayfaları satır satır girin."
 
 #: includes/admin/settings/basic-options.php:24
 msgid "Page Cache"
@@ -496,58 +513,70 @@ msgid "Enable page caching that will reduce the response time of your site."
 msgstr ""
 "Sayfa önbelleğini etkinleştirmeniz sitenizin cevap süresini azaltacaktır."
 
-#: includes/admin/settings/basic-options.php:34
+#: includes/admin/settings/basic-options.php:37
 msgid "Object Caching"
 msgstr "Obje Önbelleği"
 
-#: includes/admin/settings/basic-options.php:37
+#: includes/admin/settings/basic-options.php:40
 #: premium/includes/class-powered-cache-license-page.php:127
 msgid "Off"
 msgstr "Kapalı"
 
-#: includes/admin/settings/basic-options.php:44
+#: includes/admin/settings/basic-options.php:47
 msgid "Speed up dynamic pageviews"
 msgstr "Dinamik sayfa gösterimlerini hızlandırır"
 
-#: includes/admin/settings/basic-options.php:50
+#: includes/admin/settings/basic-options.php:54
 msgid "Mobile Cache"
 msgstr "Mobil Önbellek"
 
-#: includes/admin/settings/basic-options.php:52
+#: includes/admin/settings/basic-options.php:56
 msgid "Enable caching for mobile devices."
 msgstr "Mobil cihazlar için önbelleği etkinleştir"
 
-#: includes/admin/settings/basic-options.php:55
+#: includes/admin/settings/basic-options.php:59
 msgid "Use separate cache file for mobile."
 msgstr "Mobil önbelleği ayrı dosyalarda tut."
 
-#: includes/admin/settings/basic-options.php:63
+#: includes/admin/settings/basic-options.php:67
 msgid "Logged in user cache"
 msgstr "Giriş yapmış kullanıcı önbelleği"
 
-#: includes/admin/settings/basic-options.php:65
+#: includes/admin/settings/basic-options.php:69
 msgid "Show cached page for logged in users"
 msgstr "Giriş yapmış kullanıcıya önbelleğe alınmış sayfayı göster"
 
-#: includes/admin/settings/basic-options.php:71
+#: includes/admin/settings/basic-options.php:75
 msgid "SSL Cache"
 msgstr "SSL Önbelleği"
 
-#: includes/admin/settings/basic-options.php:73
+#: includes/admin/settings/basic-options.php:77
 msgid "Enable caching for SSL"
 msgstr "SSL için önbelleklemeyi aç"
 
-#: includes/admin/settings/basic-options.php:79
+#: includes/admin/settings/basic-options.php:83
 msgid "Gzip"
 msgstr "Gzip"
 
-#: includes/admin/settings/basic-options.php:81
+#: includes/admin/settings/basic-options.php:85
 msgid "Enable gzip compression"
 msgstr "Gzip sıkıştırmasını etkinleştir"
 
-#: includes/admin/settings/basic-options.php:86
+#: includes/admin/settings/basic-options.php:90
 msgid "Cache Timeout"
 msgstr "Önbellek Süresi"
+
+#: includes/admin/settings/basic-options.php:99
+msgid "Minute"
+msgstr "Dakika"
+
+#: includes/admin/settings/basic-options.php:100
+msgid "Hour"
+msgstr "Saat"
+
+#: includes/admin/settings/basic-options.php:101
+msgid "Day"
+msgstr "Gün"
 
 #: includes/admin/settings/cdn.php:27
 msgid "Enable CDN Support"
@@ -600,23 +629,39 @@ msgstr "Önbellek mesajı"
 msgid "Show cache status message in footer"
 msgstr "Önbellek durum mesajını footer'da göster"
 
-#: includes/admin/settings/misc.php:36
+#: includes/admin/settings/misc.php:39
 msgid "Clear all cache, including object cache"
 msgstr "Tüm önbelleği temizle, obje önbelleği dahil"
 
-#: includes/admin/settings/misc.php:41
+#: includes/admin/settings/misc.php:45
+msgid "Download Configuration"
+msgstr "Ayarları İndir"
+
+#: includes/admin/settings/misc.php:48
+msgid ".htaccess configuration"
+msgstr ".htaccess ayarları"
+
+#: includes/admin/settings/misc.php:51
+msgid "nginx configuration"
+msgstr "nginx ayarları"
+
+#: includes/admin/settings/misc.php:54
+msgid "Download configuration file for your server"
+msgstr "Sunucunuz için uygun ayar dosyasını indirin"
+
+#: includes/admin/settings/misc.php:58
 msgid "Reset All Settings"
 msgstr "Tüm Ayarları Sıfırla"
 
-#: includes/admin/settings/misc.php:48
+#: includes/admin/settings/misc.php:65
 msgid "Export"
 msgstr "Dışarı aktar"
 
-#: includes/admin/settings/misc.php:55
+#: includes/admin/settings/misc.php:72
 msgid "Import"
 msgstr "İçeri aktar"
 
-#: includes/admin/settings/misc.php:59
+#: includes/admin/settings/misc.php:76
 msgid "Upload and import"
 msgstr "Yükle ve içeri aktar"
 
@@ -785,11 +830,11 @@ msgstr ""
 msgid "Please check our <a href=\"%s\">support policy</a>"
 msgstr "Lütfen <a href=\"%s\">destek politikamızı</a> okuyunuz"
 
-#: includes/class-powered-cache-advanced-cache.php:51
+#: includes/class-powered-cache-advanced-cache.php:52
 msgid "Purge Page Cache"
 msgstr "Sayfa Önbelleğini Temizle"
 
-#: includes/class-powered-cache-advanced-cache.php:68
+#: includes/class-powered-cache-advanced-cache.php:71
 msgid "Page cache deleted successfully!"
 msgstr "Sayfa önbelleği başarılı bir şekilde silindi!"
 
@@ -797,11 +842,24 @@ msgstr "Sayfa önbelleği başarılı bir şekilde silindi!"
 msgid "Powered Cache Purge Interval"
 msgstr "Powered Cache Temizleme Aralığı"
 
-#: includes/class-powered-cache-object-cache.php:49
+#: includes/class-powered-cache-hooks.php:58
+msgid "Purge All Cache"
+msgstr "Tüm Önbelleği Temizle"
+
+#: includes/class-powered-cache-hooks.php:77
+#: includes/class-powered-cache-object-cache.php:72
+msgid "You don't have permission to perform this action!"
+msgstr "Bu işlemi gerçekleştirebilecek yetkiniz bulunmamaktadır!"
+
+#: includes/class-powered-cache-hooks.php:87
+msgid "Cache flushed successfully"
+msgstr "Önbellek başarılı bir şekilde temizlendi"
+
+#: includes/class-powered-cache-object-cache.php:54
 msgid "Purge Object Cache"
 msgstr "Obje Önbelleğini Temizle"
 
-#: includes/class-powered-cache-object-cache.php:70
+#: includes/class-powered-cache-object-cache.php:81
 msgid "Object cache deleted successfully!"
 msgstr "Obje önbelleği başarılı bir şekilde silindi!"
 
@@ -809,15 +867,15 @@ msgstr "Obje önbelleği başarılı bir şekilde silindi!"
 msgid "This feature available only premium users"
 msgstr "Bu özellik yalnızca premium kullanıcılara özel"
 
-#: powered-cache.php:202 powered-cache.php:210
+#: powered-cache.php:206 powered-cache.php:214
 msgid "Cheatin&#8217; huh?"
 msgstr "Hile mi yapıyorsunuz?"
 
-#: powered-cache.php:271
+#: powered-cache.php:275
 msgid "Your site does not support Powered Cache."
 msgstr "Siteniz Powered Cache'i desteklemiyor."
 
-#: powered-cache.php:273
+#: powered-cache.php:277
 msgid ""
 "Your site is currently running WordPress version %1$s, while Powered Cache "
 "requires version %2$s or greater."
@@ -825,7 +883,7 @@ msgstr ""
 "Kullanmakta olduğunuz WordPress sürümu %1$s, Powered Cache için  %2$s veya "
 "daha üst bir sürüm kullanmalısınız."
 
-#: powered-cache.php:275
+#: powered-cache.php:279
 msgid "Please update your WordPress or deactivate Powered Cache."
 msgstr ""
 "Lütfen WordPress sürümünüzü güncelleyin veya Powered Cache'i etkisizleştirin."
@@ -930,23 +988,31 @@ msgstr "Varnish temizleme isteği gönderildi: %s"
 msgid "Minifier"
 msgstr "Minifier"
 
-#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:63
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:70
 msgid "Blocking – (default)"
 msgstr "Blocking – (varsayılan)"
 
-#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:64
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:71
 msgid "Non-blocking using async"
 msgstr "Non-blocking (async kullanarak)"
 
-#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:65
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:72
 msgid "Non-blocking using defer"
 msgstr "Non-blocking (defer kullanarak)"
 
-#: premium/extensions/minifier/inc/class-powered-cache-minifier-helper.php:602
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:82
+msgid "Purge Minifier Cache"
+msgstr "Minify Önbelleğini Temizle"
+
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:103
+msgid "Minifier cache flushed successfully"
+msgstr "Minifier önbelleğı başarılı bir şekilde temizlendi"
+
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-helper.php:666
 msgid "Minifier could not create cache directory"
 msgstr "Minifier önbellek dizini oluşturamadı"
 
-#: premium/extensions/minifier/inc/class-powered-cache-minifier-helper.php:604
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-helper.php:668
 msgid ""
 "Please make sure root caching directory writable by plugin. If you defined "
 "custom %s in config  please make sure it exist."
@@ -990,7 +1056,7 @@ msgstr "JavaScript çalışma yöntemi"
 msgid "CSS files to exclude"
 msgstr "Hariç tutulacak CSS dosyaları"
 
-#: premium/extensions/minifier/inc/settings.php:54
+#: premium/extensions/minifier/inc/settings.php:53
 msgid "JS files to exclude"
 msgstr "Hariç tutulacak JS dosyaları"
 
@@ -1145,6 +1211,10 @@ msgid ""
 msgstr ""
 "Lütfen lisans anahtarınızı <a href=\"%s\">lisans sayfasından</a>,  giriniz "
 "veya  <code>%s</code> sabiti ile wp-config.php dosyasında tanımlayınız."
+
+#. Plugin Name of the plugin/theme
+msgid "Powered Cache Premium"
+msgstr "Powered Cache Premium"
 
 #. Plugin URI of the plugin/theme
 msgid "https://poweredcache.com"

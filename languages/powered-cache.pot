@@ -2,9 +2,9 @@
 # This file is distributed under the GPLv2 (or later).
 msgid ""
 msgstr ""
-"Project-Id-Version: Powered Cache 1.0\n"
+"Project-Id-Version: Powered Cache Premium 1.1-beta\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/powered-cache\n"
-"POT-Creation-Date: 2017-04-15 13:25:24+00:00\n"
+"POT-Creation-Date: 2017-05-23 18:11:16+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -24,7 +24,7 @@ msgstr ""
 "X-Poedit-Bookmarks: \n"
 "X-Textdomain-Support: yes\n"
 
-#: extensions/cloudflare/cloudflare.php:57
+#: extensions/cloudflare/cloudflare.php:59
 msgid "Cloudflare extension for Powered Cache"
 msgstr ""
 
@@ -46,8 +46,8 @@ msgstr ""
 
 #: extensions/cloudflare/inc/class-powered-cache-cloudflare-admin.php:134
 #: extensions/cloudflare/inc/settings.php:41
-#: includes/admin/class-powered-cache-admin-helper.php:171
-#: includes/admin/settings/misc.php:32
+#: includes/admin/class-powered-cache-admin-helper.php:164
+#: includes/admin/settings/misc.php:35
 msgid "Clear Cache"
 msgstr ""
 
@@ -84,7 +84,7 @@ msgid "Enable for post content."
 msgstr ""
 
 #: extensions/lazy-load/inc/settings.php:21
-#: includes/admin/class-powered-cache-admin-helper.php:245
+#: includes/admin/class-powered-cache-admin-helper.php:238
 msgid "Images"
 msgstr ""
 
@@ -172,7 +172,13 @@ msgstr ""
 msgid "<b>%s:</b> You need enable page cache for preload feature."
 msgstr ""
 
-#. Plugin Name of the plugin/theme
+#: extensions/preload/inc/class-powered-cache-preload-admin.php:89
+#: includes/admin/class-powered-cache-admin.php:117
+#: includes/admin/class-powered-cache-admin.php:134
+#: includes/admin/notices.php:61 includes/admin/notices.php:63
+#: includes/admin/notices.php:116 includes/admin/settings.php:27
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-helper.php:665
+#: premium/extensions/remote-cron/inc/class-powered-cache-remote-cron-admin.php:48
 msgid "Powered Cache"
 msgstr ""
 
@@ -257,7 +263,6 @@ msgid "Preload tags, categories and other taxonomies."
 msgstr ""
 
 #: extensions/preload/inc/settings.php:30
-#: includes/admin/settings/basic-options.php:88
 msgid "minutes"
 msgstr ""
 
@@ -285,30 +290,26 @@ msgstr ""
 msgid "Varnish extension for Powered Cache"
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin-actions.php:74
+#: includes/admin/class-powered-cache-admin-actions.php:99
 msgid "Extension activated"
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin-actions.php:79
+#: includes/admin/class-powered-cache-admin-actions.php:104
 msgid "Extension deactivated"
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin-actions.php:119
+#: includes/admin/class-powered-cache-admin-actions.php:144
 #: includes/admin/class-powered-cache-extension-admin-base.php:117
 msgid "Options updated"
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin-actions.php:126
+#: includes/admin/class-powered-cache-admin-actions.php:151
 msgid ""
 "Something went wrong, we could not save settings to file. Please make sure "
 "the configuration file writable."
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin-actions.php:141
-msgid "Cache flushed successfully"
-msgstr ""
-
-#: includes/admin/class-powered-cache-admin-actions.php:160
+#: includes/admin/class-powered-cache-admin-actions.php:171
 msgid "All settings cleaned!"
 msgstr ""
 
@@ -342,7 +343,7 @@ msgstr ""
 msgid "Support"
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin-helper.php:56
+#: includes/admin/class-powered-cache-admin-helper.php:61
 msgid "Dismiss this notice"
 msgstr ""
 
@@ -358,45 +359,45 @@ msgstr ""
 msgid "Upgrade Now"
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin-helper.php:192
+#: includes/admin/class-powered-cache-admin-helper.php:185
 msgid "Download Settings"
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin-helper.php:214
+#: includes/admin/class-powered-cache-admin-helper.php:207
 msgid "Reset Settings"
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin-helper.php:231
+#: includes/admin/class-powered-cache-admin-helper.php:224
 msgid "Cheatin, uh?"
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin-helper.php:244
+#: includes/admin/class-powered-cache-admin-helper.php:237
 msgid "All files"
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin-helper.php:246
+#: includes/admin/class-powered-cache-admin-helper.php:239
 msgid "JavaScript"
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin-helper.php:247
+#: includes/admin/class-powered-cache-admin-helper.php:240
 msgid "CSS"
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin.php:119
-#: includes/admin/class-powered-cache-admin.php:125
+#: includes/admin/class-powered-cache-admin.php:117
+#: includes/admin/class-powered-cache-admin.php:123
 msgid "Powered Cache Settings"
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin.php:125
+#: includes/admin/class-powered-cache-admin.php:123
 #: includes/admin/extension-settings.php:10
 msgid "Settings"
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin.php:151
+#: includes/admin/class-powered-cache-admin.php:149
 msgid "<a href=\"%s\">Settings</a>"
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin.php:153
+#: includes/admin/class-powered-cache-admin.php:151
 msgid "<a href=\"%s\" style=\"color: red;\">Get Premium</a>"
 msgstr ""
 
@@ -447,35 +448,51 @@ msgid "Powered Cache:"
 msgstr ""
 
 #: includes/admin/settings/advanced-options.php:24
-msgid "Rejected user agents"
+msgid "Remove query string"
 msgstr ""
 
 #: includes/admin/settings/advanced-options.php:27
+msgid "Remove query strings from CSS & JS resources"
+msgstr ""
+
+#: includes/admin/settings/advanced-options.php:33
+msgid "Rejected user agents"
+msgstr ""
+
+#: includes/admin/settings/advanced-options.php:36
 msgid "Never send cache pages for these user agents."
 msgstr ""
 
-#: includes/admin/settings/advanced-options.php:32
+#: includes/admin/settings/advanced-options.php:41
 msgid "Rejected cookies"
 msgstr ""
 
-#: includes/admin/settings/advanced-options.php:35
+#: includes/admin/settings/advanced-options.php:44
 msgid "Never cache pages that use the specified cookies."
 msgstr ""
 
-#: includes/admin/settings/advanced-options.php:40
+#: includes/admin/settings/advanced-options.php:49
 msgid "Never cache the following pages"
 msgstr ""
 
-#: includes/admin/settings/advanced-options.php:43
+#: includes/admin/settings/advanced-options.php:52
 msgid "Ignore the specified pages / directories. Supports regex."
 msgstr ""
 
-#: includes/admin/settings/advanced-options.php:48
+#: includes/admin/settings/advanced-options.php:57
 msgid "Accepted query strings"
 msgstr ""
 
-#: includes/admin/settings/advanced-options.php:51
+#: includes/admin/settings/advanced-options.php:60
 msgid "Enter GET parameters line by line."
+msgstr ""
+
+#: includes/admin/settings/advanced-options.php:65
+msgid "Purge Additional Pages"
+msgstr ""
+
+#: includes/admin/settings/advanced-options.php:68
+msgid "Enter pages line by line."
 msgstr ""
 
 #: includes/admin/settings/basic-options.php:24
@@ -486,57 +503,69 @@ msgstr ""
 msgid "Enable page caching that will reduce the response time of your site."
 msgstr ""
 
-#: includes/admin/settings/basic-options.php:34
+#: includes/admin/settings/basic-options.php:37
 msgid "Object Caching"
 msgstr ""
 
-#: includes/admin/settings/basic-options.php:37
+#: includes/admin/settings/basic-options.php:40
 #: premium/includes/class-powered-cache-license-page.php:127
 msgid "Off"
 msgstr ""
 
-#: includes/admin/settings/basic-options.php:44
+#: includes/admin/settings/basic-options.php:47
 msgid "Speed up dynamic pageviews"
 msgstr ""
 
-#: includes/admin/settings/basic-options.php:50
+#: includes/admin/settings/basic-options.php:54
 msgid "Mobile Cache"
 msgstr ""
 
-#: includes/admin/settings/basic-options.php:52
+#: includes/admin/settings/basic-options.php:56
 msgid "Enable caching for mobile devices."
 msgstr ""
 
-#: includes/admin/settings/basic-options.php:55
+#: includes/admin/settings/basic-options.php:59
 msgid "Use separate cache file for mobile."
 msgstr ""
 
-#: includes/admin/settings/basic-options.php:63
+#: includes/admin/settings/basic-options.php:67
 msgid "Logged in user cache"
 msgstr ""
 
-#: includes/admin/settings/basic-options.php:65
+#: includes/admin/settings/basic-options.php:69
 msgid "Show cached page for logged in users"
 msgstr ""
 
-#: includes/admin/settings/basic-options.php:71
+#: includes/admin/settings/basic-options.php:75
 msgid "SSL Cache"
 msgstr ""
 
-#: includes/admin/settings/basic-options.php:73
+#: includes/admin/settings/basic-options.php:77
 msgid "Enable caching for SSL"
 msgstr ""
 
-#: includes/admin/settings/basic-options.php:79
+#: includes/admin/settings/basic-options.php:83
 msgid "Gzip"
 msgstr ""
 
-#: includes/admin/settings/basic-options.php:81
+#: includes/admin/settings/basic-options.php:85
 msgid "Enable gzip compression"
 msgstr ""
 
-#: includes/admin/settings/basic-options.php:86
+#: includes/admin/settings/basic-options.php:90
 msgid "Cache Timeout"
+msgstr ""
+
+#: includes/admin/settings/basic-options.php:99
+msgid "Minute"
+msgstr ""
+
+#: includes/admin/settings/basic-options.php:100
+msgid "Hour"
+msgstr ""
+
+#: includes/admin/settings/basic-options.php:101
+msgid "Day"
 msgstr ""
 
 #: includes/admin/settings/cdn.php:27
@@ -589,23 +618,39 @@ msgstr ""
 msgid "Show cache status message in footer"
 msgstr ""
 
-#: includes/admin/settings/misc.php:36
+#: includes/admin/settings/misc.php:39
 msgid "Clear all cache, including object cache"
 msgstr ""
 
-#: includes/admin/settings/misc.php:41
-msgid "Reset All Settings"
+#: includes/admin/settings/misc.php:45
+msgid "Download Configuration"
 msgstr ""
 
 #: includes/admin/settings/misc.php:48
+msgid ".htaccess configuration"
+msgstr ""
+
+#: includes/admin/settings/misc.php:51
+msgid "nginx configuration"
+msgstr ""
+
+#: includes/admin/settings/misc.php:54
+msgid "Download configuration file for your server"
+msgstr ""
+
+#: includes/admin/settings/misc.php:58
+msgid "Reset All Settings"
+msgstr ""
+
+#: includes/admin/settings/misc.php:65
 msgid "Export"
 msgstr ""
 
-#: includes/admin/settings/misc.php:55
+#: includes/admin/settings/misc.php:72
 msgid "Import"
 msgstr ""
 
-#: includes/admin/settings/misc.php:59
+#: includes/admin/settings/misc.php:76
 msgid "Upload and import"
 msgstr ""
 
@@ -763,11 +808,11 @@ msgstr ""
 msgid "Please check our <a href=\"%s\">support policy</a>"
 msgstr ""
 
-#: includes/class-powered-cache-advanced-cache.php:51
+#: includes/class-powered-cache-advanced-cache.php:52
 msgid "Purge Page Cache"
 msgstr ""
 
-#: includes/class-powered-cache-advanced-cache.php:68
+#: includes/class-powered-cache-advanced-cache.php:71
 msgid "Page cache deleted successfully!"
 msgstr ""
 
@@ -775,11 +820,24 @@ msgstr ""
 msgid "Powered Cache Purge Interval"
 msgstr ""
 
-#: includes/class-powered-cache-object-cache.php:49
+#: includes/class-powered-cache-hooks.php:58
+msgid "Purge All Cache"
+msgstr ""
+
+#: includes/class-powered-cache-hooks.php:77
+#: includes/class-powered-cache-object-cache.php:72
+msgid "You don't have permission to perform this action!"
+msgstr ""
+
+#: includes/class-powered-cache-hooks.php:87
+msgid "Cache flushed successfully"
+msgstr ""
+
+#: includes/class-powered-cache-object-cache.php:54
 msgid "Purge Object Cache"
 msgstr ""
 
-#: includes/class-powered-cache-object-cache.php:70
+#: includes/class-powered-cache-object-cache.php:81
 msgid "Object cache deleted successfully!"
 msgstr ""
 
@@ -787,21 +845,21 @@ msgstr ""
 msgid "This feature available only premium users"
 msgstr ""
 
-#: powered-cache.php:202 powered-cache.php:210
+#: powered-cache.php:206 powered-cache.php:214
 msgid "Cheatin&#8217; huh?"
 msgstr ""
 
-#: powered-cache.php:271
+#: powered-cache.php:275
 msgid "Your site does not support Powered Cache."
 msgstr ""
 
-#: powered-cache.php:273
+#: powered-cache.php:277
 msgid ""
 "Your site is currently running WordPress version %1$s, while Powered Cache "
 "requires version %2$s or greater."
 msgstr ""
 
-#: powered-cache.php:275
+#: powered-cache.php:279
 msgid "Please update your WordPress or deactivate Powered Cache."
 msgstr ""
 
@@ -901,23 +959,31 @@ msgstr ""
 msgid "Minifier"
 msgstr ""
 
-#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:63
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:70
 msgid "Blocking – (default)"
 msgstr ""
 
-#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:64
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:71
 msgid "Non-blocking using async"
 msgstr ""
 
-#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:65
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:72
 msgid "Non-blocking using defer"
 msgstr ""
 
-#: premium/extensions/minifier/inc/class-powered-cache-minifier-helper.php:602
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:82
+msgid "Purge Minifier Cache"
+msgstr ""
+
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:103
+msgid "Minifier cache flushed successfully"
+msgstr ""
+
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-helper.php:666
 msgid "Minifier could not create cache directory"
 msgstr ""
 
-#: premium/extensions/minifier/inc/class-powered-cache-minifier-helper.php:604
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-helper.php:668
 msgid ""
 "Please make sure root caching directory writable by plugin. If you defined "
 "custom %s in config  please make sure it exist."
@@ -959,7 +1025,7 @@ msgstr ""
 msgid "CSS files to exclude"
 msgstr ""
 
-#: premium/extensions/minifier/inc/settings.php:54
+#: premium/extensions/minifier/inc/settings.php:53
 msgid "JS files to exclude"
 msgstr ""
 
@@ -1096,6 +1162,10 @@ msgstr ""
 msgid ""
 "Please enter your license key at the <a href=\"%s\">license page</a>, or "
 "you can define <code>%s</code> in wp-config.php file."
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "Powered Cache Premium"
 msgstr ""
 
 #. Plugin URI of the plugin/theme
