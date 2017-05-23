@@ -96,9 +96,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<label><input size="5" id="powered_cache_cache_timeout" type="text" value="<?php echo $cache_timeout; ?>" name="powered_cache_settings[cache_timeout]"> </label>
 						<label>
 							<select name="powered_cache_settings[cache_timeout_interval]" id="powered_cache_cache_timeout_interval">
-								<option <?php selected( 'MINUTE', $selected_interval ); ?> value="MINUTE"><?php echo __( 'Minute' ); ?></option>
-								<option <?php selected( 'HOUR', $selected_interval ); ?> value="HOUR"><?php echo __( 'Hour' ); ?></option>
-								<option <?php selected( 'DAY', $selected_interval ); ?> value="DAY"><?php echo __( 'Day' ); ?></option>
+								<option <?php selected( 'MINUTE', $selected_interval ); ?> value="MINUTE"><?php echo __( 'Minute', 'powered-cache' ); ?></option>
+								<option <?php selected( 'HOUR', $selected_interval ); ?> value="HOUR"><?php echo __( 'Hour', 'powered-cache' ); ?></option>
+								<option <?php selected( 'DAY', $selected_interval ); ?> value="DAY"><?php echo __( 'Day', 'powered-cache' ); ?></option>
 							</select>
 						</label>
 						(<a target="_blank" href="http://docs.poweredcache.com/article/10-cache-timeout">?</a>)
