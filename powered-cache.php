@@ -5,7 +5,7 @@
  * Description:   Comprehensive caching and performance plugin for WordPress.
  * Author:        SKOP, Mustafa Uysal
  * Author URI:    http://skop.co/
- * Version:       1.0.1
+ * Version:       1.1-beta
  * Text Domain:   powered-cache
  * Domain Path:   /languages/
  * License:       GPLv2 (or later)
@@ -69,7 +69,7 @@ if ( ! class_exists( 'Powered_Cache' ) ) :
 			}
 
 			if ( ! defined( 'POWERED_CACHE_PLUGIN_VERSION' ) ) {
-				define( 'POWERED_CACHE_PLUGIN_VERSION', '1.0.1' );
+				define( 'POWERED_CACHE_PLUGIN_VERSION', '1.1' );
 			}
 
 			if ( ! defined( 'POWERED_CACHE_PLUGIN_DIR' ) ) {
@@ -223,7 +223,7 @@ endif;
 register_deactivation_hook( __FILE__, 'powered_cache_deactivation' );
 
 function powered_cache_deactivation() {
-	global $wp_filesystem;
+	global $powered_cache_fs;
 
 	powered_cache_flush();
 	if ( ! is_multisite() ) {
@@ -233,12 +233,12 @@ function powered_cache_deactivation() {
 
 		// delete object cache file
 		if ( file_exists( untrailingslashit( WP_CONTENT_DIR ) . '/object-cache.php' ) ) {
-			$wp_filesystem->delete( untrailingslashit( WP_CONTENT_DIR ) . '/object-cache.php' );
+			$powered_cache_fs->delete( untrailingslashit( WP_CONTENT_DIR ) . '/object-cache.php' );
 		}
 
 		// delete advanced cache file
 		if ( file_exists( untrailingslashit( WP_CONTENT_DIR ) . '/advanced-cache.php' ) ) {
-			$wp_filesystem->delete( untrailingslashit( WP_CONTENT_DIR ) . '/advanced-cache.php' );
+			$powered_cache_fs->delete( untrailingslashit( WP_CONTENT_DIR ) . '/advanced-cache.php' );
 		}
 	}
 

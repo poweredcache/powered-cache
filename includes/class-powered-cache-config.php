@@ -11,6 +11,7 @@ class Powered_Cache_Config {
 	 * Return an instance of the current class
 	 *
 	 * @since 1.0
+	 * @since 1.1 initialize WP_Filesystem_Direct
 	 * @return Powered_Cache_Config
 	 */
 	public static function factory() {
@@ -18,11 +19,13 @@ class Powered_Cache_Config {
 
 		if ( ! $instance ) {
 			$instance = new self();
-			global $wp_filesystem;
+			global $powered_cache_fs;
 
-			if ( ! $wp_filesystem ) {
-				require_once( ABSPATH . 'wp-admin/includes/file.php' );
-				WP_Filesystem();
+			if ( ! $powered_cache_fs ) {
+				include_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
+				include_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
+
+				$powered_cache_fs = new WP_Filesystem_Direct( new StdClass() );
 			}
 		}
 
@@ -84,7 +87,7 @@ class Powered_Cache_Config {
 	 * @return bool
 	 */
 	public function generate_advanced_cache_file() {
-		global $wp_filesystem;
+		global $powered_cache_fs;
 
 		$file = untrailingslashit( WP_CONTENT_DIR ) . '/advanced-cache.php';
 
@@ -98,7 +101,7 @@ class Powered_Cache_Config {
 			$file_string = $this->advanced_cache_file_content();
 		}
 
-		if ( ! $wp_filesystem->put_contents( $file, $file_string, FS_CHMOD_FILE ) ) {
+		if ( ! $powered_cache_fs->put_contents( $file, $file_string, FS_CHMOD_FILE ) ) {
 			return false;
 		}
 
@@ -115,7 +118,7 @@ class Powered_Cache_Config {
 	 * @return bool
 	 */
 	public function setup_object_cache( $backend = 'off' ) {
-		global $wp_filesystem;
+		global $powered_cache_fs;
 
 		$file = untrailingslashit( WP_CONTENT_DIR )  . '/object-cache.php';
 
@@ -124,8 +127,8 @@ class Powered_Cache_Config {
 		}
 
 		if ( 'off' === $backend ) {
-			if ( $wp_filesystem->exists( $file ) ) {
-				$wp_filesystem->delete( $file ); // remove object cache file
+			if ( $powered_cache_fs->exists( $file ) ) {
+				$powered_cache_fs->delete( $file ); // remove object cache file
 			}
 
 			return true;
@@ -133,7 +136,7 @@ class Powered_Cache_Config {
 
 		$file_string = $this->object_cache_file_content( $backend );
 
-		if ( ! $wp_filesystem->put_contents( $file, $file_string, FS_CHMOD_FILE ) ) {
+		if ( ! $powered_cache_fs->put_contents( $file, $file_string, FS_CHMOD_FILE ) ) {
 			return false;
 		}
 
@@ -249,7 +252,7 @@ class Powered_Cache_Config {
 	 * @return bool
 	 */
 	public function define_wp_cache( $status ) {
-		global $wp_filesystem;
+		global $powered_cache_fs;
 		$config_path = $this->find_wp_config_file();
 
 		if ( ! $config_path ) {
@@ -261,7 +264,7 @@ class Powered_Cache_Config {
 			return true;
 		}
 
-		$config_file_string = $wp_filesystem->get_contents( $config_path );
+		$config_file_string = $powered_cache_fs->get_contents( $config_path );
 
 		// Config file is empty. Maybe couldn't read it?
 		if ( empty( $config_file_string ) ) {
@@ -296,7 +299,7 @@ class Powered_Cache_Config {
 			}
 		}
 
-		if ( ! $wp_filesystem->put_contents( $config_path, implode( "\n\r", $config_file ), FS_CHMOD_FILE ) ) {
+		if ( ! $powered_cache_fs->put_contents( $config_path, implode( "\n\r", $config_file ), FS_CHMOD_FILE ) ) {
 			return false;
 		}
 
@@ -312,7 +315,7 @@ class Powered_Cache_Config {
 	 * @return bool|string
 	 */
 	public function find_wp_config_file() {
-		global $wp_filesystem;
+		global $powered_cache_fs;
 
 		$file = '/wp-config.php';
 
@@ -321,7 +324,7 @@ class Powered_Cache_Config {
 				$file = '/..' . $file;
 			}
 
-			if ( $wp_filesystem->exists( untrailingslashit( ABSPATH ) . $file ) ) {
+			if ( $powered_cache_fs->exists( untrailingslashit( ABSPATH ) . $file ) ) {
 				$config_path = untrailingslashit( ABSPATH ) . $file;
 				break;
 			}
@@ -343,7 +346,7 @@ class Powered_Cache_Config {
 	 * @return bool
 	 */
 	public function save_to_file( $configuration ) {
-		global $wp_filesystem;
+		global $powered_cache_fs;
 
 		$config_dir = WP_CONTENT_DIR  . '/pc-config';
 
@@ -364,11 +367,11 @@ class Powered_Cache_Config {
 
 		$configuration['cache_location'] = powered_cache_get_cache_dir();
 
-		$wp_filesystem->mkdir( $config_dir );
+		$powered_cache_fs->mkdir( $config_dir );
 
 		$config_file_string = '<?php ' . "\n\r" . "defined( 'ABSPATH' ) || exit;" . "\n\r" . 'return ' . var_export( $configuration, true ) . '; ' . "\n\r";
 
-		if ( ! $wp_filesystem->put_contents( $config_file, $config_file_string, FS_CHMOD_FILE ) ) {
+		if ( ! $powered_cache_fs->put_contents( $config_file, $config_file_string, FS_CHMOD_FILE ) ) {
 			return false;
 		}
 
@@ -382,24 +385,24 @@ class Powered_Cache_Config {
 	 * @return bool
 	 */
 	public function configure_htaccess( $enable = true ) {
-		global $wp_filesystem;
+		global $powered_cache_fs;
 		$htaccess_file = get_home_path() . '.htaccess';
 
-		if ( $wp_filesystem->is_writable( $htaccess_file ) ) {
-			$contents = $wp_filesystem->get_contents( $htaccess_file );
+		if ( $powered_cache_fs->is_writable( $htaccess_file ) ) {
+			$contents = $powered_cache_fs->get_contents( $htaccess_file );
 
 			//clean up
 			$contents = preg_replace( '/# BEGIN POWERED CACHE(.*)# END POWERED CACHE/is', '', $contents );
 
 			if ( false === $enable ) {
-				return $wp_filesystem->put_contents( $htaccess_file, $contents, FS_CHMOD_FILE );
+				return $powered_cache_fs->put_contents( $htaccess_file, $contents, FS_CHMOD_FILE );
 			}
 
 			$rules    = $this->htaccess_rules();
 			$contents = $rules . $contents;
 
 			// Update the .htacces file
-			if ( ! $wp_filesystem->put_contents( $htaccess_file, $contents, FS_CHMOD_FILE ) ) {
+			if ( ! $powered_cache_fs->put_contents( $htaccess_file, $contents, FS_CHMOD_FILE ) ) {
 				return false;
 			}
 

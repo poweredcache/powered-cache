@@ -34,6 +34,7 @@ class Powered_Cache_Extensions {
 	 * @return mixed|void|array
 	 */
 	public function get_extentions() {
+		global $powered_cache_fs;
 
 		$extentions = array(
 			'cloudflare'  => $this->core_extension_dir . 'cloudflare/cloudflare.php',
@@ -62,10 +63,10 @@ class Powered_Cache_Extensions {
 
 		foreach ( $extentions as $id => $extention ) {
 
-			if ( file_exists( $extention ) ) {
+			if ( $powered_cache_fs->exists( $extention ) ) {
 
 				$header_data = get_file_data( $extention, $default_headers );
-				if ( ! empty( $header_data['ExtensionImage'] ) && file_exists( plugin_dir_path( $extention ) . $header_data['ExtensionImage'] ) ) {
+				if ( ! empty( $header_data['ExtensionImage'] ) && $powered_cache_fs->exists( plugin_dir_path( $extention ) . $header_data['ExtensionImage'] ) ) {
 					$header_data['ExtensionImage'] = plugin_dir_url( $extention ) . $header_data['ExtensionImage'];
 				}
 
@@ -85,6 +86,8 @@ class Powered_Cache_Extensions {
 	 * @since 1.0
 	 */
 	public function load_extentions() {
+		global $powered_cache_fs;
+
 		do_action( 'powered_cache_before_extension_load' );
 
 		$activated_extensions = powered_cache_get_option('active_extensions');
@@ -93,7 +96,7 @@ class Powered_Cache_Extensions {
 			$extensions = $this->get_extentions();
 
 			foreach ( $activated_extensions as $extension ) {
-				if ( isset( $extensions[ $extension ] ) && file_exists( $extensions[ $extension ]['path'] ) ) {
+				if ( isset( $extensions[ $extension ] ) && $powered_cache_fs->exists( $extensions[ $extension ]['path'] ) ) {
 					include_once $extensions[ $extension ]['path'];
 
 					// fire after extension loaded

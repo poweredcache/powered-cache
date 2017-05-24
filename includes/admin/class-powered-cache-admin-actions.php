@@ -13,7 +13,7 @@ class Powered_Cache_Admin_Actions {
 	 * @since 1.0
 	 */
 	public static function update_settings() {
-		global $powered_cache_options, $wp_filesystem;
+		global $powered_cache_options, $powered_cache_fs;
 
 
 		if ( ! defined( 'POWERED_CACHE_SAVING_OPTIONS' ) ) {
@@ -125,10 +125,10 @@ class Powered_Cache_Admin_Actions {
 					$import_file = wp_handle_upload( $uploadedfile, array( 'action' => 'powered_cache_update_settings', 'mimes' => array( 'txt' => 'text/plain' ) ) );
 
 					if ( $import_file && ! isset( $import_file['error'] ) ) {
-						$imported_options = $wp_filesystem->get_contents( $import_file['file'] );
+						$imported_options = $powered_cache_fs->get_contents( $import_file['file'] );
 						$imported_options = unserialize( $imported_options );
 						$imported_options['cache_location'] = powered_cache_get_cache_dir();
-						$wp_filesystem->delete( $import_file['file'] );
+						$powered_cache_fs->delete( $import_file['file'] );
 						update_option( 'powered_cache_settings', $imported_options );
 						$new_options = get_option( 'powered_cache_settings' );
 					} else {

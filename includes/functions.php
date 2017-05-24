@@ -367,9 +367,9 @@ function powered_cache_get_cache_dir() {
  * @return mixed
  */
 function powered_cache_clean_page_cache_dir() {
-	global $wp_filesystem;
+	global $powered_cache_fs;
 
-	return $wp_filesystem->rmdir( untrailingslashit( powered_cache_get_cache_dir() ) . '/powered-cache', true );
+	return $powered_cache_fs->rmdir( untrailingslashit( powered_cache_get_cache_dir() ) . '/powered-cache', true );
 }
 
 /**
@@ -379,9 +379,9 @@ function powered_cache_clean_page_cache_dir() {
  * @return mixed
  */
 function powered_cache_clean_site_cache_dir() {
-	global $wp_filesystem;
+	global $powered_cache_fs;
 
-	return $wp_filesystem->rmdir( powered_cache_site_cache_dir(), true );
+	return $powered_cache_fs->rmdir( powered_cache_site_cache_dir(), true );
 }
 
 

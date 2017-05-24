@@ -11,7 +11,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 include_once( 'powered-cache.php' );
 
-global $wp_filesystem;
+global $powered_cache_fs;
 
 // clean cache
 powered_cache_flush();
@@ -26,22 +26,22 @@ Powered_Cache_Config::factory()->define_wp_cache( false );
 
 // delete object cache file
 if ( file_exists( untrailingslashit( WP_CONTENT_DIR ) . '/object-cache.php' ) ) {
-	$wp_filesystem->delete( untrailingslashit( WP_CONTENT_DIR ) . '/object-cache.php' );
+	$powered_cache_fs->delete( untrailingslashit( WP_CONTENT_DIR ) . '/object-cache.php' );
 }
 
 // delete advanced cache file
 if ( file_exists( untrailingslashit( WP_CONTENT_DIR ) . '/advanced-cache.php' ) ) {
-	$wp_filesystem->delete( untrailingslashit( WP_CONTENT_DIR ) . '/advanced-cache.php' );
+	$powered_cache_fs->delete( untrailingslashit( WP_CONTENT_DIR ) . '/advanced-cache.php' );
 }
 
 // delete cache directory
 if ( file_exists( powered_cache_get_cache_dir() ) ) {
-	$wp_filesystem->delete( powered_cache_get_cache_dir(), true );
+	$powered_cache_fs->delete( powered_cache_get_cache_dir(), true );
 }
 
 // delete configuration files
 if ( file_exists( WP_CONTENT_DIR . '/pc-config' ) ) {
-	$wp_filesystem->delete( WP_CONTENT_DIR . '/pc-config', true );
+	$powered_cache_fs->delete( WP_CONTENT_DIR . '/pc-config', true );
 }
 
 
