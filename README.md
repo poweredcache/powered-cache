@@ -21,6 +21,7 @@ __Plugin Website__: [poweredcache.com](https://poweredcache.com)
 - Built-in extensions: Lazy Load, Preloader, Cloudflare
 - Multisite support
 - Smart cache purging (automatic cache purging on post update/publish)
+- Query string removal from CSS & JS resources
 
 ### Built-in extensions
 
