@@ -486,6 +486,12 @@ class Powered_Cache_Config {
 		$rules .= '    AddOutputFilterByType DEFLATE text/css text/x-component application/x-javascript application/javascript text/javascript text/x-js text/html text/richtext image/svg+xml text/plain text/xsd text/xsl text/xml image/bmp application/java application/msword application/vnd.ms-fontobject application/x-msdownload image/x-icon application/json application/vnd.ms-access application/vnd.ms-project application/x-font-otf application/vnd.ms-opentype application/vnd.oasis.opendocument.database application/vnd.oasis.opendocument.chart application/vnd.oasis.opendocument.formula application/vnd.oasis.opendocument.graphics application/vnd.oasis.opendocument.presentation application/vnd.oasis.opendocument.spreadsheet application/vnd.oasis.opendocument.text audio/ogg application/pdf application/vnd.ms-powerpoint application/x-shockwave-flash image/tiff application/x-font-ttf application/vnd.ms-opentype audio/wav application/vnd.ms-write application/font-woff application/font-woff2 application/vnd.ms-excel' . PHP_EOL;
 		$rules .= '  <IfModule mod_mime.c>' . PHP_EOL;
 		$rules .= '    AddOutputFilter DEFLATE js css htm html xml' . PHP_EOL;
+
+		if ( true === powered_cache_get_option( 'gzip_compression' ) ) {
+			$rules .= '    AddType text/html .html_gzip' . PHP_EOL;
+			$rules .= '    AddEncoding gzip .html_gzip' . PHP_EOL;
+		}
+
 		$rules .= '  </IfModule>' . PHP_EOL;
 		$rules .= '</IfModule>' . PHP_EOL;
 
