@@ -509,10 +509,8 @@ class Powered_Cache_Config {
 		$env_powered_cache_enc = '';
 
 
-		$rewrite_base = network_home_url( '', 'relative' );
-		if ( empty( $rewrite_base ) ) {
-			$rewrite_base = '/';
-		}
+		$rewrite_base = parse_url( home_url() );
+		$rewrite_base = isset( $rewrite_base['path'] ) ? trailingslashit( $rewrite_base['path'] ) : '/';
 
 		$rules .= '<IfModule mod_rewrite.c>' . PHP_EOL;
 		$rules .= '    RewriteEngine On' . PHP_EOL;
