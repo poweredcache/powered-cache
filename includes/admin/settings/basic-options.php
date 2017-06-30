@@ -83,6 +83,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<th scope="row"><label for="powered_cache_gzip_status"><?php _e( 'Gzip', 'powered-cache' ); ?></label></th>
 					<td>
 						<label><input type="checkbox" id="powered_cache_gzip_status"  name="powered_cache_settings[gzip_compression]"  <?php checked( powered_cache_get_option( 'gzip_compression' ), 1 ); ?> value="1"><?php _e('Enable gzip compression','powered-cache'); ?></label>
+						(<a target="_blank" href="http://docs.poweredcache.com/article/15-enable-gzip-compression">?</a>)
 					</td>
 				</tr>
 
