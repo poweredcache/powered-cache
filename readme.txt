@@ -71,7 +71,7 @@ Our knowledge base is available on [docs.poweredcache.com](http://docs.poweredca
 1. Visit 'Plugins > Add New'
 2. Search for 'Powered Cache'
 3. Activate Powered Cache from your Plugins page.
-4. Go to "after activation" below.
+4. That's all.
 
 === Manually ===
 1. Upload the `powered-cache` folder to the `/wp-content/plugins/` directory
