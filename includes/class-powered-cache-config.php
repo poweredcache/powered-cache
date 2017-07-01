@@ -388,6 +388,15 @@ class Powered_Cache_Config {
 		global $powered_cache_fs;
 		$htaccess_file = get_home_path() . '.htaccess';
 
+		/**
+		 * Users might want to control .htaccess manually
+		 *
+		 * @since 1.1.1
+		 */
+		if ( true !== apply_filters( 'powered_cache_auto_htaccess_update', true ) ) {
+			return false;
+		}
+
 		if ( $powered_cache_fs->is_writable( $htaccess_file ) ) {
 			$contents = $powered_cache_fs->get_contents( $htaccess_file );
 
