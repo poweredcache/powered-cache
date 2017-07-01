@@ -111,16 +111,10 @@ We didn't test all of them but principally it must be worked, you consider exclu
 
 == Changelog ==
 
-= 1.1 =
- - Human readable format for interval fields
- - Predefined .htaccess & nginx configuration files
- - Additional page purging added
- - Better garbage collecting
- - Purge all cache with single click
- - Multisite improvements
- - New constants added
- - Bug fixes
-
+= 1.1.1 =
+ - New filter added for disable auto update `.htaccess` file
+ - RewriteBase base fix. Props @baga
+ - .htaccess gzip rule fix. Props @sadriercan
 
 Detailed changelog located in [changelog page](https://poweredcache.com/changelog)
 
