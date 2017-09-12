@@ -271,7 +271,7 @@ class Powered_Cache_Config {
 			return false;
 		}
 
-		$config_file = preg_split( "#(\n|\r)#", $config_file_string );
+		$config_file = preg_split( "#(\r\n|\r|\n)#", $config_file_string );
 		$line_key = false;
 
 		foreach ( $config_file as $key => $line ) {
@@ -299,7 +299,7 @@ class Powered_Cache_Config {
 			}
 		}
 
-		if ( ! $powered_cache_fs->put_contents( $config_path, implode( "\n\r", $config_file ), FS_CHMOD_FILE ) ) {
+		if ( ! $powered_cache_fs->put_contents( $config_path, implode( PHP_EOL, $config_file ), FS_CHMOD_FILE ) ) {
 			return false;
 		}
 
@@ -369,7 +369,7 @@ class Powered_Cache_Config {
 
 		$powered_cache_fs->mkdir( $config_dir );
 
-		$config_file_string = '<?php ' . "\n\r" . "defined( 'ABSPATH' ) || exit;" . "\n\r" . 'return ' . var_export( $configuration, true ) . '; ' . "\n\r";
+		$config_file_string = '<?php' . PHP_EOL . "defined( 'ABSPATH' ) || exit;" . PHP_EOL . 'return ' . var_export( $configuration, true ) . ';' . PHP_EOL;
 
 		if ( ! $powered_cache_fs->put_contents( $config_file, $config_file_string, FS_CHMOD_FILE ) ) {
 			return false;
@@ -570,7 +570,7 @@ class Powered_Cache_Config {
 
 		// reject user agent
 		if ( false !== powered_cache_get_option( 'rejected_user_agents' ) ) {
-			$rejected_user_agents = preg_split( '#(\r\n|\n|\r)#', powered_cache_get_option( 'rejected_user_agents' ) );
+			$rejected_user_agents = preg_split( '#(\r\n|\r|\n)#', powered_cache_get_option( 'rejected_user_agents' ) );
 			if ( ! empty( $rejected_user_agents ) ) {
 				$rules .= '    RewriteCond %{HTTP_USER_AGENT} !^(' . implode( '|', $rejected_user_agents ) . ').* [NC]' . PHP_EOL;
 			}
@@ -579,7 +579,7 @@ class Powered_Cache_Config {
 
 		// ignore cookies
 		if ( false !== powered_cache_get_option( 'rejected_uri' ) ) {
-			$cookies = preg_split( '#(\n|\r)#', powered_cache_get_option( 'rejected_uri' ) );
+			$cookies = preg_split( '#(\r\n|\r|\n)#', powered_cache_get_option( 'rejected_uri' ) );
 		}
 		$wp_cookies = array( 'wordpressuser_', 'wordpresspass_', 'wordpress_sec_', 'wordpress_logged_in_' );
 		if ( ! empty( $cookies ) ) {

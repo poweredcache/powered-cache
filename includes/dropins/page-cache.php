@@ -11,7 +11,7 @@ if ( strpos( $_SERVER['REQUEST_URI'], 'robots.txt' ) !== false || strpos( $_SERV
 }
 
 // Don't cache non-GET requests
-if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || $_SERVER['REQUEST_METHOD'] !== 'GET' ) {
+if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || 'GET' !== $_SERVER['REQUEST_METHOD'] ) {
 	return;
 }
 
@@ -37,8 +37,8 @@ if ( ! $GLOBALS['powered_cache_options']['enable_page_caching'] ) {
 
 // Don't cache page with these user agents
 if ( ! empty( $GLOBALS['powered_cache_options']['rejected_user_agents'] ) ) {
-	$rejected_user_agents = preg_split( '#(\r\n|\n|\r)#', $GLOBALS['powered_cache_options']['rejected_user_agents'] );
-	$rejected_user_agents = implode('|',$rejected_user_agents);
+	$rejected_user_agents = preg_split( '#(\r\n|\r|\n)#', $GLOBALS['powered_cache_options']['rejected_user_agents'] );
+	$rejected_user_agents = implode( '|', $rejected_user_agents );
 	if ( ! empty( $rejected_user_agents ) && isset( $_SERVER['HTTP_USER_AGENT'] )  && preg_match( '#(' . $rejected_user_agents . ')#', $_SERVER['HTTP_USER_AGENT'] ) ) {
 		return;
 	}
@@ -58,15 +58,13 @@ if ( ! isset( $GLOBALS['powered_cache_options']['cache_mobile'] ) || true !== $G
 	$mobile_browsers = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', $powered_cache_mobile_browsers ) ), ' ' );
 	$mobile_prefixes = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', $powered_cache_mobile_prefixes ) ), ' ' );
 	// Don't cache if mobile detection is activated
-	if ( (preg_match('#^.*('.$mobile_browsers.').*#i', $_SERVER['HTTP_USER_AGENT']) || preg_match('#^('.$mobile_prefixes.').*#i', substr($_SERVER['HTTP_USER_AGENT'], 0, 4))) ) {
+	if ( (preg_match( '#^.*(' . $mobile_browsers . ').*#i', $_SERVER['HTTP_USER_AGENT'] ) || preg_match( '#^(' . $mobile_prefixes . ').*#i', substr( $_SERVER['HTTP_USER_AGENT'], 0, 4 ) ) ) ) {
 		return '';
 	}
-
 }
 
 
 if ( ! empty( $_COOKIE ) ) {
-
 	//Don't cache if logged in
 	if ( ! isset( $GLOBALS['powered_cache_options']['loggedin_user_cache'] ) || false === $GLOBALS['powered_cache_options']['loggedin_user_cache'] ) {
 		$wp_cookies = array( 'wordpressuser_', 'wordpresspass_', 'wordpress_sec_', 'wordpress_logged_in_' );
@@ -85,7 +83,7 @@ if ( ! empty( $_COOKIE ) ) {
 
 	if ( ! empty( $_COOKIE['powered_cache_commented_posts'] ) ) {
 		foreach ( $_COOKIE['powered_cache_commented_posts'] as $path ) {
-			if ( rtrim( $path, '/') === rtrim( $_SERVER['REQUEST_URI'], '/' ) ) {
+			if ( rtrim( $path, '/' ) === rtrim( $_SERVER['REQUEST_URI'], '/' ) ) {
 				// User commented on this post
 				return;
 			}
@@ -94,19 +92,17 @@ if ( ! empty( $_COOKIE ) ) {
 
 	// don't cache specific cookie
 	if ( ! empty( $GLOBALS['powered_cache_options']['rejected_cookies'] ) ) {
-		$rejected_cookies = preg_split( '#(\r\n|\n|\r)#', $GLOBALS['powered_cache_options']['rejected_cookies'] );
+		$rejected_cookies = preg_split( '#(\r\n|\r|\n)#', $GLOBALS['powered_cache_options']['rejected_cookies'] );
 		$rejected_cookies = implode( '|', $rejected_cookies );
 		if ( preg_match( '#(' . $rejected_cookies . ')#', var_export( $_COOKIE, true ) ) ) {
 			return;
 		}
 	}
-
-}
-
+} // End if().
 
 // Deal with optional cache exceptions
 if ( ! empty( $GLOBALS['powered_cache_options']['rejected_uri'] ) ) {
-	$exceptions = preg_split( '#(\n|\r)#', $GLOBALS['powered_cache_options']['rejected_uri'] );
+	$exceptions = preg_split( '#(\r\n|\r|\n)#', $GLOBALS['powered_cache_options']['rejected_uri'] );
 
 	foreach ( $exceptions as $exception ) {
 		if ( preg_match( '#^[\s]*$#', $exception ) ) {
@@ -121,7 +117,6 @@ if ( ! empty( $GLOBALS['powered_cache_options']['rejected_uri'] ) ) {
 		if ( preg_match( '#^(' . $exception . ')$#', $_SERVER['REQUEST_URI'] ) ) {
 			return;
 		}
-
 	}
 }
 
@@ -129,14 +124,12 @@ if ( ! empty( $GLOBALS['powered_cache_options']['rejected_uri'] ) ) {
 $accepted_query_strings = array();
 // cache url with allowed query string
 if ( ! empty( $GLOBALS['powered_cache_options']['accepted_query_strings'] ) ) {
-	$accepted_query_strings = preg_split( '#(\r\n|\n|\r)#', $GLOBALS['powered_cache_options']['accepted_query_strings'] );
+	$accepted_query_strings = preg_split( '#(\r\n|\r|\n)#', $GLOBALS['powered_cache_options']['accepted_query_strings'] );
 }
 
 if ( ! empty( $_GET ) && isset( $accepted_query_strings ) && is_array( $accepted_query_strings ) && ! array_intersect( array_keys( $_GET ), $accepted_query_strings ) ) {
 	return;
 }
-
-
 
 powered_cache_serve_cache();
 
@@ -160,7 +153,6 @@ function powered_cache_page_buffer( $buffer, $flags ) {
 		return $buffer;
 	}
 
-
 	// maybe we shouldn't cache template file has this constant
 	if ( defined( 'DONOTCACHEPAGE' ) && true === DONOTCACHEPAGE ) {
 		return $buffer;
@@ -170,8 +162,6 @@ function powered_cache_page_buffer( $buffer, $flags ) {
 	if ( true !== apply_filters( 'powered_cache_page_cache_enable', true ) ) {
 		return $buffer;
 	}
-
-
 
 	include_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
 	include_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
@@ -236,7 +226,6 @@ function powered_cache_page_buffer( $buffer, $flags ) {
 
 	header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s', $modified_time ) . ' GMT' );
 
-
 	do_action( 'powered_cache_page_cached', $buffer );
 
 	if ( function_exists( 'ob_gzhandler' ) && $GLOBALS['powered_cache_options']['gzip_compression'] ) {
@@ -262,7 +251,7 @@ function powered_cache_serve_cache() {
 
 	header( 'Cache-Control: no-cache' ); // Check back in an hour
 
-	if ( ! empty( $modified_time ) && ! empty( $_SERVER[ 'HTTP_IF_MODIFIED_SINCE' ] ) && strtotime( $_SERVER[ 'HTTP_IF_MODIFIED_SINCE' ] ) === $modified_time  ) {
+	if ( ! empty( $modified_time ) && ! empty( $_SERVER['HTTP_IF_MODIFIED_SINCE'] ) && strtotime( $_SERVER['HTTP_IF_MODIFIED_SINCE'] ) === $modified_time ) {
 		  header( $_SERVER['SERVER_PROTOCOL'] . ' 304 Not Modified', true, 304 );
 		  exit;
 	}
@@ -290,7 +279,6 @@ function powered_cache_serve_cache() {
 function powered_cache_get_url_path() {
 
 	$host = ( isset( $_SERVER['HTTP_HOST'] ) ) ? $_SERVER['HTTP_HOST'] : '';
-
 
 	return rtrim( $host, '/' ) . $_SERVER['REQUEST_URI'];
 }
@@ -328,18 +316,16 @@ function powered_cache_index_file() {
 	     && true === $GLOBALS['powered_cache_options']['cache_mobile_separate_file']
 	) {
 
-
 		global $powered_cache_mobile_browsers, $powered_cache_mobile_prefixes;
 
 		$mobile_browsers = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', $powered_cache_mobile_browsers ) ), ' ' );
 		$mobile_prefixes = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', $powered_cache_mobile_prefixes ) ), ' ' );
 
 		// Don't cache if mobile detection is activated
-		if ( (preg_match('#^.*('.$mobile_browsers.').*#i', $_SERVER['HTTP_USER_AGENT']) || preg_match('#^('.$mobile_prefixes.').*#i', substr($_SERVER['HTTP_USER_AGENT'], 0, 4))) ) {
+		if ( (preg_match( '#^.*(' . $mobile_browsers . ').*#i', $_SERVER['HTTP_USER_AGENT'] ) || preg_match( '#^(' . $mobile_prefixes . ').*#i', substr( $_SERVER['HTTP_USER_AGENT'], 0, 4 ) ) ) ) {
 			$file_name .= '-mobile';
 		}
 	}
-
 
 	if ( isset( $GLOBALS['powered_cache_options']['loggedin_user_cache'] )
 	     && true === $GLOBALS['powered_cache_options']['loggedin_user_cache']
@@ -352,7 +338,6 @@ function powered_cache_index_file() {
 			$file_name .= '_' . $cookie_info[0] . '-' . $cookie_info[1];
 		}
 	}
-
 
 	$file_name .= '.html';
 
