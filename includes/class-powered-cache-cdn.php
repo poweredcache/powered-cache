@@ -116,7 +116,7 @@ class Powered_Cache_CDN {
 
 		// rejected file
 		if ( ! empty( $powered_cache_options['cdn_rejected_files'] ) ) {
-			$cdn_rejected_files = preg_split( '#(\r\n|\n|\r)#', $powered_cache_options['cdn_rejected_files'] );
+			$cdn_rejected_files = preg_split( '#(\r\n|\r|\n)#', $powered_cache_options['cdn_rejected_files'] );
 			$cdn_rejected_files = implode( '|', $cdn_rejected_files );
 
 			if ( preg_match( '#(' . $cdn_rejected_files . ')#', $url ) ) {
