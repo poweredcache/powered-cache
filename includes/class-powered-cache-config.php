@@ -673,7 +673,7 @@ class Powered_Cache_Config {
 		}
 
 		$contents .= 'location = /favicon.ico { log_not_found off; access_log off; }' . PHP_EOL;
-		$contents .= 'location = /robots.txt  { log_not_found off; access_log off; }' . PHP_EOL . PHP_EOL;
+		$contents .= 'location = /robots.txt { try_files $uri $uri/ /index.php?$args; log_not_found off; access_log off; }' . PHP_EOL . PHP_EOL;
 
 		$contents .= 'location ~* .(jpg|jpeg|png|gif|ico|css|js|woff|svg)$ {' . PHP_EOL;
 		$contents .= '  expires 1M;' . PHP_EOL;
