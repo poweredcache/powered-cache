@@ -25,6 +25,7 @@ env:
 matrix:
   include:
     - php: 5.3
+      sudo: required
       dist: precise
       env: WP_VERSION=latest WP_MULTISITE=1
 
