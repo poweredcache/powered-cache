@@ -168,6 +168,10 @@ function powered_cache_page_buffer( $buffer, $flags ) {
 
 	$filesystem = new WP_Filesystem_Direct( new StdClass() );
 
+	if ( ! function_exists( 'powered_cache_get_cache_dir' ) ) {
+		return $buffer;
+	}
+
 	// Make sure we can read/write files and that proper folders exist
 	if ( ! $filesystem->exists( untrailingslashit( powered_cache_get_cache_dir() ) ) ) {
 		if ( ! $filesystem->mkdir( untrailingslashit( powered_cache_get_cache_dir() ) ) ) {
