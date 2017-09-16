@@ -69,6 +69,6 @@ We have used code or ideas from the following projects:
 * [minify](https://github.com/mrclay/minify) for concatenation and minification
 * [varnish-http-purge](https://github.com/Ipstenu/varnish-http-purge) for varnish extension
 * [Memcached Object Cache](https://wordpress.org/plugins/memcached/) for memcache drop-in.
-* [Memcached Redux](https://wordpress.org/plugins/memcached-redux/) for memcached drop-in.
+* [Memcached Redux](https://github.com/Ipstenu/memcached-redux/) for memcached drop-in.
 * [WP Redis](https://wordpress.org/plugins/wp-redis/) for redis drop-in.
 
