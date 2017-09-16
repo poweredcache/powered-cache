@@ -529,6 +529,7 @@ class Powered_Cache_Config {
 		$rules .= '<IfModule mod_rewrite.c>' . PHP_EOL;
 		$rules .= '    RewriteEngine On' . PHP_EOL;
 		$rules .= '    RewriteBase ' . $rewrite_base . PHP_EOL;
+		$rules .= '    AddDefaultCharset UTF-8 ' . PHP_EOL;
 
 
 		if ( true === powered_cache_get_option( 'cache_mobile' ) && true === powered_cache_get_option( 'cache_mobile_separate_file' ) ) {
