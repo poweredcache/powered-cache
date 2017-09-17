@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<td>
 						<label><input type="checkbox" id="powered_cache_cdn_status" name="powered_cache_settings[cdn_status]" <?php checked( powered_cache_get_option( 'cdn_status' ), 1 ); ?> value="1"><?php _e( 'Enable CDN Support', 'powered-cache' ); ?></label>
 						<br>
-						<span class="description"><?php _e('please make sure that your CDN is property setup before enabling this feature','powered-cache'); ?></span>
+						<span class="description"><?php _e('please make sure that your CDN is properly setup before enabling this feature','powered-cache'); ?></span>
 						(<a target="_blank" href="http://docs.poweredcache.com/article/12-cdn-setup">?</a>)
 					</td>
 				</tr>
