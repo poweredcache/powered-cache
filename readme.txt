@@ -4,7 +4,7 @@ Contributors:  skopco, m_uysl
 Tags: cache, caching, powered cache, cdn, performance, optimisation, SEO
 Requires at least:  4.1
 Tested up to:  4.8
-Stable tag:  1.1.1
+Stable tag:  1.1.2
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -114,10 +114,12 @@ We didn't test all of them but principally it must be worked, you consider exclu
 
 == Changelog ==
 
-= 1.1.1 =
- - New filter added for disable auto update `.htaccess` file
- - RewriteBase base fix. Props @baga
- - .htaccess gzip rule fix. Props @sadriercan
+= 1.1.2 =
+ - fix: encoding problem on apache
+ - fix: pass robots.txt requests to PHP. Props  [@karalamalar](https://github.com/karalamalar/)
+ - PHP7+ support for memcached redux
+ - fix: page cache undefined function during update
+ - fix: new line characters on parsing configuration file
 
 Detailed changelog located in [changelog page](https://poweredcache.com/changelog)
 
