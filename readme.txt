@@ -83,6 +83,9 @@ Our knowledge base is available on [docs.poweredcache.com](http://docs.poweredca
 = Is it compatible with multisite? =
 Yes, it works with subdirectory/subdomain setups.
 
+= Is it compatible with PHP 7? =
+Yes, it's compatible with PHP7+
+
 = What is the built-in extension? =
 We designed Powered Cache is a complete optimization solution for WordPress. However, we believe that your system should be tailored to your needs without the added weight of unwanted functionality. We strive to perfect this balance with our built-in extensions.
 
