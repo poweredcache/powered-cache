@@ -565,6 +565,30 @@ function powered_cache_is_saving_options() {
 	return false;
 }
 
+/**
+ * Fragment caching for WordPress
+ *
+ * @link  https://gist.github.com/markjaquith/2653957
+ * @see   https://gist.github.com/westonruter/5475349
+ *
+ * @param string   $key
+ * @param int      $ttl
+ * @param callable $function
+ *
+ * @since 1.2
+ */
+function powered_cache_fragment( $key, $ttl, $function ) {
+	$group  = 'powered-fragments';
+	$output = wp_cache_get( $key, $group );
+	if ( empty( $output ) ) {
+		ob_start();
+		call_user_func( $function );
+		$output = ob_get_clean();
+		wp_cache_add( $key, $output, $group, $ttl );
+	}
+	echo $output;
+}
+
 
 if ( ! function_exists( 'boolval' ) ) {
 	/**

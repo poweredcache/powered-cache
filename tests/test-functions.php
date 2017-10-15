@@ -38,6 +38,16 @@ class Powered_Cache_Function_Test extends WP_UnitTestCase {
 	}
 
 
+	public function test_fragment_cache() {
+		ob_start();
+		powered_cache_fragment( 'unique-key', 300, function () {
+			echo 'Fragment caching content';
+		} );
+		$output = ob_get_flush();
+
+		$this->assertEquals( 'Fragment caching content', $output );
+	}
+
 	public function tearDown() {
 		if ( file_exists( $this->dummy_file ) ) {
 			unlink( $this->dummy_file );
