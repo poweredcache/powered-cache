@@ -239,6 +239,12 @@ class Powered_Cache_Config {
 		$string .= '$powered_cache_mobile_browsers = ' . var_export( powered_cache_mobile_browsers(), true ) . ";" . PHP_EOL;
 		$string .= '$powered_cache_mobile_prefixes = ' . var_export( powered_cache_mobile_prefixes(), true ) . ";" . PHP_EOL;
 
+		if ( substr( get_option( 'permalink_structure' ), - 1 ) == '/' ) {
+			$string .= '$powered_cache_slash_check = true;' . PHP_EOL;
+		} else {
+			$string .= '$powered_cache_slash_check = false;' . PHP_EOL;
+		}
+
 		$string .= 'if ( defined( \'POWERED_CACHE_ADVANCED_CACHE_DROPIN\') && @file_exists( POWERED_CACHE_ADVANCED_CACHE_DROPIN ) ) {' . PHP_EOL;
 		$string .= "\t" . 'include( POWERED_CACHE_ADVANCED_CACHE_DROPIN );' . PHP_EOL;
 		$string .= '} elseif ( @file_exists( \'' . POWERED_CACHE_DROPIN_DIR . 'page-cache.php' . '\' ) ) {' . PHP_EOL;
@@ -569,7 +575,8 @@ class Powered_Cache_Config {
 		$rules .= '    RewriteCond %{QUERY_STRING} =""' . PHP_EOL;
 
 		if ( substr( get_option( 'permalink_structure' ), - 1 ) == '/' ) {
-			$rules .= '    RewriteCond %{REQUEST_URI} \/$' . PHP_EOL;
+			$rules .= "    RewriteCond %{REQUEST_URI} !^.*[^/]$" . PHP_EOL;
+			$rules .= "    RewriteCond %{REQUEST_URI} !^.*//.*$" . PHP_EOL;
 		}
 
 		// Get root base
@@ -627,6 +634,8 @@ class Powered_Cache_Config {
 	 * Prepares nginx configuration
 	 *
 	 * @since 1.1
+	 * @since 1.2 trailingslash rule added
+	 *
 	 * @return string $contents nginx rules
 	 */
 	public function nginx_rules() {
@@ -699,6 +708,10 @@ class Powered_Cache_Config {
 		$contents .= '  try_files /wp-content/cache/powered-cache/$http_host/$cache_uri/index${pc_ssl}${pc_ua}.' . $cache_suffix . ' $uri $uri/ /index.php?$args;' . PHP_EOL;
 		$contents .= '}' . PHP_EOL . PHP_EOL;
 
+		if ( substr( get_option( 'permalink_structure' ), - 1 ) == '/' ) {
+			$contents .= '# add trailingslash rule' . PHP_EOL;
+			$contents .= 'rewrite ^([^.]*[^/])$ $1/ permanent;'. PHP_EOL;
+		}
 
 		return $contents;
 	}
