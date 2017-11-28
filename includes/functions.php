@@ -531,6 +531,12 @@ function powered_cache_get_exprired_files( $path, $lifespan = 0 ) {
 	$current_time = time();
 
 	$expired_files = array();
+
+	// return immediately if the path is not exist!
+	if ( ! file_exists( $path ) ) {
+		return $expired_files;
+	}
+
 	$files         = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $path ) );
 
 	foreach ( $files as $file ) {
