@@ -292,7 +292,7 @@ function powered_cache_get_url_path() {
 
 	$host = ( isset( $_SERVER['HTTP_HOST'] ) ) ? $_SERVER['HTTP_HOST'] : '';
 
-	return rtrim( $host, '/' ) . $_SERVER['REQUEST_URI'];
+	return rtrim( $host, '/' ) . parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH );
 }
 
 function powered_cache_get_user_cookie() {
@@ -349,6 +349,10 @@ function powered_cache_index_file() {
 			// user specific cache dir
 			$file_name .= '_' . $cookie_info[0] . '-' . $cookie_info[1];
 		}
+	}
+
+	if ( ! empty( $_SERVER['QUERY_STRING'] ) ) {
+		$file_name .= '_' . sha1( $_SERVER['QUERY_STRING'] );
 	}
 
 	$file_name .= '.html';
