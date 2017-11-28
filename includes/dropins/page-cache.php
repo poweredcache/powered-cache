@@ -163,6 +163,14 @@ function powered_cache_page_buffer( $buffer, $flags ) {
 		return $buffer;
 	}
 
+	if ( ! defined( 'FS_CHMOD_DIR' ) ) {
+		define( 'FS_CHMOD_DIR', ( fileperms( ABSPATH ) & 0777 | 0755 ) );
+	}
+
+	if ( ! defined( 'FS_CHMOD_FILE' ) ) {
+		define( 'FS_CHMOD_FILE', ( fileperms( ABSPATH . 'index.php' ) & 0777 | 0644 ) );
+	}
+
 	include_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
 	include_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
 
