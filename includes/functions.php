@@ -596,6 +596,93 @@ function powered_cache_fragment( $key, $ttl, $function ) {
 }
 
 
+/**
+ * Fetches known headers, ported from WP Super Cache but not using apache_response_headers
+ *
+ * @since 1.2
+ * @return array|false
+ */
+function powered_cache_get_response_headers() {
+	static $known_headers = array(
+		'Access-Control-Allow-Origin',
+		'Accept-Ranges',
+		'Age',
+		'Allow',
+		'Cache-Control',
+		'Connection',
+		'Content-Encoding',
+		'Content-Language',
+		'Content-Length',
+		'Content-Location',
+		'Content-MD5',
+		'Content-Disposition',
+		'Content-Range',
+		'Content-Type',
+		'Date',
+		'ETag',
+		'Expires',
+		'Last-Modified',
+		'Link',
+		'Location',
+		'P3P',
+		'Pragma',
+		'Proxy-Authenticate',
+		"Referrer-Policy",
+		'Refresh',
+		'Retry-After',
+		'Server',
+		'Status',
+		'Strict-Transport-Security',
+		'Trailer',
+		'Transfer-Encoding',
+		'Upgrade',
+		'Vary',
+		'Via',
+		'Warning',
+		'WWW-Authenticate',
+		'X-Frame-Options',
+		'Public-Key-Pins',
+		'X-XSS-Protection',
+		'Content-Security-Policy',
+		"X-Pingback",
+		'X-Content-Security-Policy',
+		'X-WebKit-CSP',
+		'X-Content-Type-Options',
+		'X-Powered-By',
+		'X-UA-Compatible',
+		'X-Robots-Tag',
+	);
+
+	$known_headers = apply_filters( 'powered_cache_known_headers', $known_headers );
+
+	if ( ! isset( $known_headers['age'] ) ) {
+		$known_headers = array_map( 'strtolower', $known_headers );
+	}
+
+	$headers = array();
+
+	if ( function_exists( 'headers_list' ) ) {
+		$headers = array();
+		foreach ( headers_list() as $hdr ) {
+			$header_parts = explode( ':', $hdr, 2 );
+			$header_name  = isset( $header_parts[0] ) ? trim( $header_parts[0] ) : '';
+			$header_value = isset( $header_parts[1] ) ? trim( $header_parts[1] ) : '';
+
+			$headers[ $header_name ] = $header_value;
+		}
+	}
+
+
+	foreach ( $headers as $key => $value ) {
+		if ( ! in_array( strtolower( $key ), $known_headers ) ) {
+			unset( $headers[ $key ] );
+		}
+	}
+
+	return $headers;
+}
+
+
 if ( ! function_exists( 'boolval' ) ) {
 	/**
 	 * For compatible reason.

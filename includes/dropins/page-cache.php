@@ -224,7 +224,32 @@ function powered_cache_page_buffer( $buffer, $flags ) {
 		}
 	}
 
-	$index_name = powered_cache_index_file();
+
+
+	$meta_file_name = 'meta.php';
+	$meta_file = '<?php exit; ?>' . PHP_EOL;
+
+	$meta_params = array(); // holds to metadata for cached file
+
+	$response_headers = powered_cache_get_response_headers();
+
+	foreach ( (array) $response_headers as $key => $value ) {
+		$meta_params['headers'][ $key ] = "$key: $value";
+	}
+
+	$meta_params = apply_filters( 'powered_cache_page_cache_meta_params', $meta_params, $response_headers );
+	$meta_file_contents = $meta_file . serialize( $meta_params );
+
+	$meta_file_contents = apply_filters( 'powered_cache_page_cache_meta_info', $meta_file_contents );
+
+	$filesystem->put_contents( $path . '/' . $meta_file_name, $meta_file_contents, FS_CHMOD_FILE );
+	$filesystem->touch( $path . '/' . $meta_file_name, $modified_time );
+
+	if ( isset( $meta_params['headers']['Content-Type'] ) ) {
+		$index_name = powered_cache_index_file( $meta_params['headers']['Content-Type'] );
+	} else {
+		$index_name = powered_cache_index_file();
+	}
 
 	if ( $GLOBALS['powered_cache_options']['gzip_compression'] && function_exists( 'gzencode' ) ) {
 		$filesystem->put_contents( $path . '/' . $index_name, gzencode( $buffer, 3 ), FS_CHMOD_FILE );
@@ -234,11 +259,11 @@ function powered_cache_page_buffer( $buffer, $flags ) {
 		$filesystem->touch( $path . '/' . $index_name, $modified_time );
 	}
 
+	do_action( 'powered_cache_page_cached', $buffer );
+
 	header( 'Cache-Control: no-cache' ); // Check back every time to see if re-download is necessary
 
 	header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s', $modified_time ) . ' GMT' );
-
-	do_action( 'powered_cache_page_cached', $buffer );
 
 	if ( function_exists( 'ob_gzhandler' ) && $GLOBALS['powered_cache_options']['gzip_compression'] ) {
 		return ob_gzhandler( $buffer, $flags );
@@ -255,11 +280,25 @@ function powered_cache_page_buffer( $buffer, $flags ) {
  */
 function powered_cache_serve_cache() {
 
-	$file_name = powered_cache_index_file();
 
-	$path = rtrim( $GLOBALS['powered_cache_options']['cache_location'], '/' ) . '/powered-cache/' . rtrim( powered_cache_get_url_path(), '/' ) . '/' . $file_name;
+	$path = rtrim( $GLOBALS['powered_cache_options']['cache_location'], '/' ) . '/powered-cache/' . rtrim( powered_cache_get_url_path(), '/' ) . '/';
 
-	$modified_time = (int) @filemtime( $path );
+	$meta_file = $path.'/meta.php';
+
+
+	if ( @file_exists( $meta_file ) ) {
+		$meta_contents = trim( file_get_contents( $meta_file ) );
+		$meta_contents = str_replace( '<?php exit; ?>', '', $meta_contents );
+		$meta_params   = unserialize( trim( $meta_contents ) );
+		$header_params = $meta_params['headers'];
+	}
+
+	$content_type = @$header_params['Content-Type'];
+
+	$file_name = powered_cache_index_file( $content_type );
+	$file_path = $path.$file_name;
+
+	$modified_time = (int) @filemtime( $file_path );
 
 	header( 'Cache-Control: no-cache' ); // Check back in an hour
 
@@ -268,15 +307,21 @@ function powered_cache_serve_cache() {
 		  exit;
 	}
 
-	if ( @file_exists( $path ) && @is_readable( $path ) ) {
+	if ( @file_exists( $file_path ) && @is_readable( $file_path ) ) {
 
-		header( 'X-Powered-Cache: php' );
+		if ( ! empty( $header_params ) ) {
+			foreach ( $header_params as $key => $response_header ) {
+				header( $response_header );
+			}
+		}
+
+		header( 'X-Powered-Cache: PHP' );
 
 		if ( function_exists( 'gzencode' ) && $GLOBALS['powered_cache_options']['gzip_compression'] ) {
 			header( 'Content-Encoding: gzip' );
 		}
 
-		@readfile( $path );
+		@readfile( $file_path );
 
 		exit;
 	}
@@ -312,10 +357,14 @@ function powered_cache_get_user_cookie() {
 
 /**
  * Determines cache file names
+ *
+ * @param string $content_type
+ *
  * @since 1.0
+ * @since 1.2 `$content_type`
  * @return string
  */
-function powered_cache_index_file() {
+function powered_cache_index_file( $content_type = 'text/html' ) {
 	$file_name = 'index';
 
 	if ( powered_cache_is_ssl() ) {
@@ -353,6 +402,16 @@ function powered_cache_index_file() {
 
 	if ( ! empty( $_SERVER['QUERY_STRING'] ) ) {
 		$file_name .= '_' . sha1( $_SERVER['QUERY_STRING'] );
+	}
+
+	/**
+	 * Content-Type is not always text/html (like feed, wp-json etc..)
+	 * We should respect proper format!
+	 * Alternatively, we can add multiple level lookup for apache/nginx config
+	 * but that makes things much more complicated.
+	 */
+	if ( false === strpos( $content_type, 'text/html' ) ) {
+		$file_name .= '-' . mb_substr( sha1( $content_type ), 0, 6 );
 	}
 
 	$file_name .= '.html';
