@@ -5,6 +5,8 @@
  */
 defined( 'ABSPATH' ) || exit;
 
+$powered_cache_start_time = microtime( true );
+
 // Don't cache robots.txt or htacesss
 if ( strpos( $_SERVER['REQUEST_URI'], 'robots.txt' ) !== false || strpos( $_SERVER['REQUEST_URI'], '.htaccess' ) !== false ) {
 	return;
@@ -144,6 +146,8 @@ ob_start( 'powered_cache_page_buffer' );
  * @return string
  */
 function powered_cache_page_buffer( $buffer, $flags ) {
+	global $powered_cache_start_time;
+
 	if ( strlen( $buffer ) < 255 ) {
 		return $buffer;
 	}
@@ -216,14 +220,23 @@ function powered_cache_page_buffer( $buffer, $flags ) {
 		}
 	}
 
-	$modified_time = time(); // Make sure modified time is consistent
+
+	$modified_time   = time(); // Make sure modified time is consistent
+	$generation_time = number_format( microtime( true ) - $powered_cache_start_time, 3 );
 
 	if ( array_key_exists( 'show_cache_message', $GLOBALS['powered_cache_options'] ) && true === $GLOBALS['powered_cache_options']['show_cache_message'] ) {
 		if ( preg_match( '#</html>#i', $buffer ) ) {
-			$buffer .= "\n<!-- Cache served by Powered Cache - Last modified: " . gmdate( 'D, d M Y H:i:s', $modified_time ) . " GMT -->\n";
+			$buffer .= PHP_EOL;
+			$buffer .= "<!-- Cache served by PoweredCache -->";
+			$buffer .= PHP_EOL;
+			$buffer .= "<!-- If you like fast websites like this, visit: https://poweredcache.com -->";
+			$buffer .= PHP_EOL;
+			$buffer .= "<!-- Last modified: " . gmdate( 'D, d M Y H:i:s', $modified_time ) . " GMT -->";
+			$buffer .= PHP_EOL;
+			$buffer .= "<!-- Dynamic page generated in $generation_time -->";
+			$buffer .= PHP_EOL;
 		}
 	}
-
 
 
 	$meta_file_name = 'meta.php';
