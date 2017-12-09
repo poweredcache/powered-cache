@@ -21,12 +21,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<table class="form-table">
 				<tbody>
-				<tr>
-					<th scope="row"><label for="powered_cache_cache_message"><?php _e( 'Cache status message', 'powered-cache' ); ?></label></th>
-					<td>
-						<label><input type="checkbox" id="powered_cache_cache_message"  name="powered_cache_settings[show_cache_message]" <?php checked( powered_cache_get_option( 'show_cache_message' ), 1 ); ?> value="1"><?php _e('Show cache status message in footer','powered-cache'); ?></label>
-					</td>
-				</tr>
+				<?php if ( powered_cache_is_premium() ): ?>
+					<tr>
+						<th scope="row"><label for="powered_cache_cache_message"><?php _e( 'Cache footprint', 'powered-cache' ); ?></label></th>
+						<td>
+							<label><input type="checkbox" id="powered_cache_cache_message" name="powered_cache_settings[show_cache_message]" <?php checked( powered_cache_get_option( 'show_cache_message' ), 1 ); ?> value="1"><?php _e( 'Show caching footprints in the HTML output.', 'powered-cache' ); ?></label>
+						</td>
+					</tr>
+				<?php endif; ?>
 
 				<?php
 				// additional control needed for cache flushing
