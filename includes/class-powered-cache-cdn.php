@@ -129,6 +129,11 @@ class Powered_Cache_CDN {
 			return $url;
 		}
 
+		// don't replace for base64 encoded images
+		if ( false !== strpos( $url, 'data:image' ) ) {
+			return $url;
+		}
+
 		// clean version string
 		if ( strpos( $url, '?ver=' ) ) {
 			$raw_url = remove_query_arg( 'ver', $url );
