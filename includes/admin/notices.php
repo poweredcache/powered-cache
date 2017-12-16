@@ -133,11 +133,29 @@ add_action( 'admin_notices', 'powered_cache_object_cache_notices' );
  * @since 1.0
  */
 function powered_cache_object_cache_notices() {
+	$object_cache_backends = Powered_Cache_Admin_Helper::object_cache_dropins();
+	$object_cache_driver = powered_cache_get_option( 'object_cache' );
+	$object_cache_dropin   = untrailingslashit( WP_CONTENT_DIR ) . '/object-cache.php';
+
+
+	// first check object cache file exist
+	if ( isset( $object_cache_backends[ $object_cache_driver ] ) && ! file_exists( $object_cache_dropin ) ) {
+		$message = sprintf( __( 'Phew! It looks your object cache file missing. Please check <code>%s</code> exist, writable and accessible on your server.', 'powered-cache' ), $object_cache_dropin );
+		?>
+		<div class="error">
+			<p><strong><?php echo __( 'Powered Cache:', 'powered-cache' ); ?></strong>
+				<?php echo $message; ?>
+			</p>
+		</div>
+		<?php
+		return;
+	}
+
+
+
 	if ( defined( 'POWERED_OBJECT_CACHE_HAS_PROBLEM' ) && true === POWERED_OBJECT_CACHE_HAS_PROBLEM ) {
-		$object_caches = Powered_Cache_Admin_Helper::object_cache_dropins();
-		$broken_file   = untrailingslashit( WP_CONTENT_DIR ) . '/object-cache.php';
-		if ( isset( $object_caches[ powered_cache_get_option( 'object_cache' ) ] ) ) {
-			$broken_file = $object_caches[ powered_cache_get_option( 'object_cache' ) ];
+		if ( isset( $object_cache_backends[ $object_cache_driver] ) ) {
+			$broken_file = $object_cache_backends[ $object_cache_driver ];
 		}
 
 		$message = sprintf( __( 'Powered Cache could not access object cache backend. Please check <code>%s</code> exist and accessible on your server.', 'powered-cache' ), $broken_file );
@@ -149,4 +167,5 @@ function powered_cache_object_cache_notices() {
 		</div>
 		<?php
 	}
+
 }
