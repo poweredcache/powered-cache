@@ -62,7 +62,7 @@ class Powered_Cache_Config {
 			'cache_mobile'               => true,
 			'cache_mobile_separate_file' => false,
 			'loggedin_user_cache'        => false,
-			'ssl_cache'                  => false,
+			'ssl_cache'                  => true,
 			'gzip_compression'           => false,
 			'cache_timeout'              => 1440,
 			'cache_location'             => powered_cache_get_cache_dir(),
