@@ -7,7 +7,7 @@
  */
 
 if ( ! defined( 'WP_CACHE_KEY_SALT' ) ) {
-	define( 'WP_CACHE_KEY_SALT', '' );
+	define( 'WP_CACHE_KEY_SALT', DB_NAME );
 }
 
 if ( class_exists( 'Memcached' ) ):

@@ -9,7 +9,7 @@ if ( class_exists( 'Memcache' ) ):
  */
 
 if ( ! defined( 'WP_CACHE_KEY_SALT' ) ) {
-	define( 'WP_CACHE_KEY_SALT', '' );
+	define( 'WP_CACHE_KEY_SALT', DB_NAME );
 }
 
 function wp_cache_add( $key, $data, $group = '', $expire = 0 ) {
