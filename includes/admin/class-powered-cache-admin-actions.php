@@ -168,6 +168,8 @@ class Powered_Cache_Admin_Actions {
 		global $powered_cache_options;
 		$powered_cache_options = array();
 
+		powered_cache_save_settings( $powered_cache_options, powered_cache_get_settings() );
+
 		$msg = __( 'All settings cleaned!', 'powered-cache' );
 		Powered_Cache_Admin_Helper::set_flash_message( $msg );
 
