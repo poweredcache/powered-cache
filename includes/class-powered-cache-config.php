@@ -173,6 +173,7 @@ class Powered_Cache_Config {
 		Powered_Cache_Config::factory()->generate_advanced_cache_file();
 		Powered_Cache_Config::factory()->define_wp_cache( $status );
 		Powered_Cache_Config::factory()->configure_htaccess( $status );
+		Powered_Cache_Config::factory()->protect_cache_dir();
 
 		return true;
 	}
@@ -749,5 +750,26 @@ class Powered_Cache_Config {
 		exit;
 	}
 
+
+	/**
+	 * Make sure directory listing disabled
+	 *
+	 * @since 1.2
+	 * @return bool
+	 */
+	public function protect_cache_dir() {
+		global $powered_cache_fs;
+
+		$file = powered_cache_get_cache_dir() . '.htaccess';
+
+		$file_string = 'Options -Indexes';
+
+		if ( ! $powered_cache_fs->put_contents( $file, $file_string, FS_CHMOD_FILE ) ) {
+			return false;
+		}
+
+		return true;
+
+	}
 
 }
