@@ -70,6 +70,7 @@ class Powered_Cache_Admin_Helper {
 	 * Object cache methods keys will use as option
 	 *
 	 * @since 1.0
+	 * @since 1.2 apcu added
 	 *
 	 * @return array $object_caches
 	 */
@@ -79,6 +80,7 @@ class Powered_Cache_Admin_Helper {
 			'memcache'  => POWERED_CACHE_DROPIN_DIR . 'memcache-object-cache.php',
 			'memcached' => POWERED_CACHE_DROPIN_DIR . 'memcached-object-cache.php',
 			'redis'     => POWERED_CACHE_DROPIN_DIR . 'redis-object-cache.php',
+			'apcu'      => POWERED_CACHE_DROPIN_DIR . 'apcu-object-cache.php',
 		);
 
 		return apply_filters( 'powered_cache_object_cache_dropins', $object_caches );
@@ -89,6 +91,7 @@ class Powered_Cache_Admin_Helper {
 	 * Get available object cache backends
 	 *
 	 * @since 1.0
+	 * @since 1.2 unset apcu
 	 * @return array
 	 */
 	public static function available_object_caches() {
@@ -104,6 +107,10 @@ class Powered_Cache_Admin_Helper {
 
 		if ( ! class_exists( 'Redis' ) ) {
 			unset( $object_cache_methods['redis'] );
+		}
+
+		if ( ! function_exists( 'apcu_add' ) ) {
+			unset( $object_cache_methods['apcu'] );
 		}
 
 		return array_keys( $object_cache_methods );
