@@ -71,4 +71,5 @@ We have used code or ideas from the following projects:
 * [Memcached Object Cache](https://wordpress.org/plugins/memcached/) for memcache drop-in.
 * [Memcached Redux](https://github.com/Ipstenu/memcached-redux/) for memcached drop-in.
 * [WP Redis](https://wordpress.org/plugins/wp-redis/) for redis drop-in.
+* [APCu](https://wordpress.org/plugins/apcu/) for APCu drop-in.
 
