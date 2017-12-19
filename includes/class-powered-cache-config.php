@@ -58,6 +58,7 @@ class Powered_Cache_Config {
 		$settings = array(
 			// basic options
 			'enable_page_caching'        => false,
+			'configure_htaccess'         => true,
 			'object_cache'               => 'off',
 			'cache_mobile'               => true,
 			'cache_mobile_separate_file' => false,
@@ -409,6 +410,17 @@ class Powered_Cache_Config {
 		 * @since 1.1.1
 		 */
 		if ( true !== apply_filters( 'powered_cache_auto_htaccess_update', true ) ) {
+			return false;
+		}
+
+		/**
+		 * Apache users can control automatic configuration
+		 *
+		 * @since 1.2
+		 */
+		$automatic_configuration = powered_cache_get_option( 'configure_htaccess' );
+
+		if ( ! $automatic_configuration ) {
 			return false;
 		}
 

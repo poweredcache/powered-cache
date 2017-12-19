@@ -27,6 +27,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<?php _e( 'Enable page caching that will reduce the response time of your site.', 'powered-cache' ); ?>
 							(<a target="_blank" href="http://docs.poweredcache.com/article/4-page-cache">?</a>)
 						</label>
+						<?php global $is_apache;
+						if ( $is_apache && ( ( is_multisite() && current_user_can( 'manage_network' ) ) || current_user_can( 'activate_plugins' ) ) ): ?>
+							<div id="configure-htaccess-option">
+								<label><input type="checkbox" id="cache_configure_htaccess" name="powered_cache_settings[configure_htaccess]" <?php checked( powered_cache_get_option( 'configure_htaccess' ), 1 ); ?> value="1"><?php _e( 'Configure <code>.htaccess</code> file automatically.', 'powered-cache' ); ?></label>
+							</div>
+						<?php endif; ?>
 					</td>
 				</tr>
 

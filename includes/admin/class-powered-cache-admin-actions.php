@@ -13,7 +13,7 @@ class Powered_Cache_Admin_Actions {
 	 * @since 1.0
 	 */
 	public static function update_settings() {
-		global $powered_cache_options, $powered_cache_fs;
+		global $powered_cache_options, $powered_cache_fs, $is_apache;;
 
 
 		if ( ! defined( 'POWERED_CACHE_SAVING_OPTIONS' ) ) {
@@ -33,12 +33,19 @@ class Powered_Cache_Admin_Actions {
 			case 'basic-options':
 			default:
 				$new_options['enable_page_caching']        = ( isset( $_post['enable_page_caching'] ) && 1 == $_post['enable_page_caching'] ? true : false );
+				$new_options['configure_htaccess']         = ( isset( $_post['configure_htaccess'] ) && 1 == $_post['configure_htaccess'] ? true : false );
 				$new_options['object_cache']               = ( isset( $_post['object_cache'] ) ? sanitize_text_field( $_post['object_cache'] ) : 'off' );
 				$new_options['cache_mobile']               = ( isset( $_post['cache_mobile'] ) && 1 == $_post['cache_mobile'] ? true : false );
-				$new_options['cache_mobile_separate_file'] = ( ( isset( $_post['cache_mobile'] ) && 1 == $_post['cache_mobile'] ) && ( isset( $_post['cache_mobile_separate_file'] ) && 1 == $_post['cache_mobile_separate_file'] ) ? true : false );
+				$new_options['cache_mobile_separate_file'] = ( true === $new_options['cache_mobile'] && ( isset( $_post['cache_mobile_separate_file'] ) && 1 == $_post['cache_mobile_separate_file'] ) ? true : false );
 				$new_options['loggedin_user_cache']        = ( isset( $_post['loggedin_user_cache'] ) && 1 == $_post['loggedin_user_cache'] ? true : false );
 				$new_options['ssl_cache']                  = ( isset( $_post['ssl_cache'] ) && 1 == $_post['ssl_cache'] ? true : false );
 				$new_options['gzip_compression']           = ( isset( $_post['gzip_compression'] ) && 1 == $_post['gzip_compression'] ? true : false );
+
+
+				// this option only valid on apache
+				if ( ! $is_apache ) {
+					unset( $new_options['configure_htaccess'] );
+				}
 
 				/**
 				 * Calculate timeout with given interval, saving as minutes.
