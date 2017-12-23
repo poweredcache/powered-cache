@@ -17,7 +17,7 @@ $object_cache_methods = Powered_Cache_Admin_Helper::available_object_caches();
 $current_section      = isset( $_GET['section'] ) ? $_GET['section'] : 'basic-options';
 $show_submit          = true;
 
-if ( in_array( $current_section, array( 'extensions', 'premium', 'support' ) ) ) {
+if ( in_array( $current_section, array( 'misc', 'extensions', 'premium', 'support' ) ) ) {
 	$show_submit = false;
 }
 ?>
