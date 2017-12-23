@@ -18,7 +18,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<div class="postbox">
 		<div class="inside">
+			<?php if(isset($_GET['action']) && 'run-diagnostic' === $_GET['action']):?>
+				<?php
+				$checks  = Powered_Cache_Admin_Helper::diagnostic_info();
 
+				foreach ($checks as $check_key => $result){
+					if($result['status']){
+						echo '<span class="dashicons dashicons-yes"></span>';
+					}else{
+						echo '<span class="dashicons dashicons-no"></span>';
+					}
+					echo $result['description'];
+					echo '<br>';
+				}
+				?>
+			<?php else:?>
 			<table class="form-table">
 				<tbody>
 				<?php if ( powered_cache_is_premium() ): ?>
@@ -62,6 +76,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<?php echo Powered_Cache_Admin_Helper::reset_settings_button(); ?>
 					</td>
 				</tr>
+				<tr>
+					<th scope="row"><label for="powered_cache_clear_cache"><?php _e( 'Diagnostic', 'powered-cache' ); ?></label></th>
+					<td>
+						<?php echo Powered_Cache_Admin_Helper::diagnostic_button(); ?><br>
+						<span class="description"><?php _e( 'If you get trouble, perform the diagnostic checks', 'powered-cache' ); ?></span>
+					</td>
+				</tr>
 
 				<tr>
 					<th scope="row"><label for="powered_cache_export_settings"><?php _e( 'Export', 'powered-cache' ); ?></label></th>
@@ -82,7 +103,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				</tbody>
 			</table>
-
+			<?php endif;?>
 		</div>
 		<!-- .inside -->
 

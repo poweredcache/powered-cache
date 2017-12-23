@@ -216,6 +216,25 @@ class Powered_Cache_Admin_Helper {
 		return $html;
 	}
 
+	/**
+	 * Link for the diagnostic
+	 *
+	 * @since 1.2
+	 * @return string
+	 */
+	public static function diagnostic_button() {
+		$url = add_query_arg( array(
+			'page'                         => esc_attr( 'powered-cache' ),
+			'section'                      => 'misc',
+			'action'                       => 'run-diagnostic',
+			'powered_cache_settings_nonce' => wp_create_nonce( 'powered_cache_update_settings' ),
+		), admin_url( 'admin.php' ) );
+
+		$html = '<a href="' . esc_url( $url ) . '" class="button" >' . esc_html__( 'Run Diagnostic', 'powered-cache' ) . '</a>';
+
+		return $html;
+	}
+
 
 	/**
 	 * Check capability and nonce during admin action
@@ -297,6 +316,114 @@ class Powered_Cache_Admin_Helper {
 	}
 
 
+	/**
+	 * run diagnostic checks
+	 *
+	 * @since 1.2
+	 * @return array
+	 */
+	public static function diagnostic_info() {
+		global $is_apache;
+
+		// hold the checks! HODORRR!!!
+		$checks = array();
+
+		// check config file
+		$config_file        = Powered_Cache_Config::factory()->find_wp_config_file();
+		$config_file_status = is_writeable( $config_file );
+
+		if ( $config_file_status ) {
+			$config_file_desc = __( 'wp-config.php is writable.', 'powered-cache' );
+		} else {
+			$config_file_desc = sprintf( __( 'wp-config.php is not writable. Please make sure the file writable or you can manually define %s constant.', 'powered-cache' ), '<code>WP_CACHE</code>' );
+		}
+
+		$checks['config'] = array(
+			'status'      => $config_file_status,
+			'description' => $config_file_desc,
+		);
+
+
+		// check cache directory
+		$cache_dir        = powered_cache_get_cache_dir();
+		$cache_dir_status = false;
+		if ( ! file_exists( $cache_dir ) ) {
+			$cache_dir_desc = sprintf( __( 'Cache directory %s is not exist!', 'powered-cache' ), '<code>' . $cache_dir . '</code>' );
+		} elseif ( ! is_writeable( $cache_dir ) ) {
+			$cache_dir_desc = sprintf( __( 'Cache directory %s is not writeable!', 'powered-cache' ), '<code>' . $cache_dir . '</code>' );
+		} else {
+			$cache_dir_status = true;
+			$cache_dir_desc   = sprintf( __( 'Cache directory %s exist and writable!', 'powered-cache' ), '<code>' . $cache_dir . '</code>' );
+		}
+
+		$checks['cache-dir'] = array(
+			'status'      => $cache_dir_status,
+			'description' => $cache_dir_desc,
+		);
+
+
+		// check .htaccess file
+		if ( $is_apache && powered_cache_get_option( 'configure_htaccess' ) ) {
+			$htaccess_file        = get_home_path() . '.htaccess';
+			$htaccess_file_status = false;
+			if ( ! file_exists( $htaccess_file ) ) {
+				$htaccess_file_desc = sprintf( __( '.htaccess file %s is not exist!', 'powered-cache' ), '<code>' . $htaccess_file . '</code>' );
+			} elseif ( ! is_writeable( $htaccess_file ) ) {
+				$htaccess_file_desc = sprintf( __( '.htaccess file %s is not writeable!', 'powered-cache' ), '<code>' . $htaccess_file . '</code>' );
+			} else {
+				$htaccess_file_status = true;
+				$htaccess_file_desc   = sprintf( __( '.htaccess file %s exist and writable!', 'powered-cache' ), '<code>' . $htaccess_file . '</code>' );
+			}
+
+			$checks['htaccess'] = array(
+				'status'      => $htaccess_file_status,
+				'description' => $htaccess_file_desc,
+			);
+		}
+
+
+		// check page cache
+		if ( powered_cache_get_option( 'enable_page_caching' ) ) {
+			$advanced_cache_file        = untrailingslashit( WP_CONTENT_DIR ) . '/advanced-cache.php';
+			$advanced_cache_file_status = false;
+			if ( ! file_exists( $advanced_cache_file ) ) {
+				$advanced_cache_file_desc = sprintf( __( 'Required file for the page caching %s is not exist!', 'powered-cache' ), '<code>' . $advanced_cache_file . '</code>' );
+			} elseif ( ! is_writeable( $advanced_cache_file ) ) {
+				$advanced_cache_file_desc = sprintf( __( 'Required file for the page caching %s is not writeable!', 'powered-cache' ), '<code>' . $advanced_cache_file . '</code>' );
+			} else {
+				$advanced_cache_file_status = true;
+				$advanced_cache_file_desc   = sprintf( __( 'Required file for the page caching %s exist and writable!', 'powered-cache' ), '<code>' . $advanced_cache_file . '</code>' );
+			}
+
+			$checks['advanced-cache'] = array(
+				'status'      => $advanced_cache_file_status,
+				'description' => $advanced_cache_file_desc,
+			);
+		}
+
+
+		// check object cache
+		if ( 'off' !== powered_cache_get_option( 'object_cache' ) ) {
+			$object_cache_file        = untrailingslashit( WP_CONTENT_DIR ) . '/object-cache.php';
+			$object_cache_file_status = false;
+			if ( ! file_exists( $object_cache_file ) ) {
+				$object_cache_file_desc = sprintf( __( 'Required file for the object caching %s is not exist!', 'powered-cache' ), '<code>' . $object_cache_file . '</code>' );
+			} elseif ( ! is_writeable( $object_cache_file ) ) {
+				$object_cache_file_desc = sprintf( __( 'Required file for the object caching %s is not writeable!', 'powered-cache' ), '<code>' . $object_cache_file . '</code>' );
+			} else {
+				$object_cache_file_status = true;
+				$object_cache_file_desc   = sprintf( __( 'Required file for the object caching %s exist and writable!', 'powered-cache' ), '<code>' . $object_cache_file . '</code>' );
+			}
+
+			$checks['object-cache'] = array(
+				'status'      => $object_cache_file_status,
+				'description' => $object_cache_file_desc,
+			);
+		}
+
+
+		return $checks;
+	}
 
 
 }
