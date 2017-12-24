@@ -36,6 +36,7 @@ class Powered_Cache_CDN {
 		add_filter( 'bp_core_fetch_avatar_url', array( $this, 'cdn_url' ), PHP_INT_MAX );
 		add_filter( 'style_loader_src', array( $this, 'cdn_url' ), PHP_INT_MAX );
 		add_filter( 'script_loader_src', array( $this, 'cdn_url' ), PHP_INT_MAX );
+		add_filter( 'wp_calculate_image_srcset', array( $this, 'srcset_url' ), PHP_INT_MAX );
 
 
 		add_filter( 'the_content', array( $this, 'cdn_images' ), PHP_INT_MAX );
@@ -44,11 +45,28 @@ class Powered_Cache_CDN {
 		add_filter( 'bp_core_fetch_avatar', array( $this, 'cdn_images' ), PHP_INT_MAX );
 		add_filter( 'widget_text', array( $this, 'cdn_images' ), PHP_INT_MAX );
 		add_filter( 'media_image', array( $this, 'cdn_images' ), PHP_INT_MAX );
+		add_filter( 'powered_cache_page_caching_buffer', array( $this, 'cdn_images' ), PHP_INT_MAX );
 
 
 		do_action( 'powered_cache_cdn_setup' );
 	}
 
+
+	/**
+	 * Replace CDN url for srcset
+	 *
+	 * @param $sources array source files
+	 *
+	 * @since 1.2
+	 * @return mixed
+	 */
+	public function srcset_url( $sources ) {
+		foreach ( $sources as $key => $source ) {
+			$sources[ $key ]['url'] = $this->cdn_url( $source['url'] );
+		}
+
+		return $sources;
+	}
 
 	public function cdn_url( $url ) {
 		if ( is_admin() || is_preview() ) {
