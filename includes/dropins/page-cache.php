@@ -292,7 +292,7 @@ function powered_cache_page_buffer( $buffer, $flags ) {
  * @since 1.0
  */
 function powered_cache_serve_cache() {
-
+	global $powered_cache_slash_check;
 
 	$path = rtrim( $GLOBALS['powered_cache_options']['cache_location'], '/' ) . '/powered-cache/' . rtrim( powered_cache_get_url_path(), '/' ) . '/';
 
@@ -318,6 +318,16 @@ function powered_cache_serve_cache() {
 	if ( ! empty( $modified_time ) && ! empty( $_SERVER['HTTP_IF_MODIFIED_SINCE'] ) && strtotime( $_SERVER['HTTP_IF_MODIFIED_SINCE'] ) === $modified_time ) {
 		  header( $_SERVER['SERVER_PROTOCOL'] . ' 304 Not Modified', true, 304 );
 		  exit;
+	}
+
+	// trailingslash check
+	if ( isset( $powered_cache_slash_check ) && $powered_cache_slash_check ) {
+		$current_path = parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH );
+		if ( ! empty( $current_path ) && '/' !== substr( $current_path, - 1 ) ) {
+			header( 'X-Powered-Cache: Passing to WordPress' );
+
+			return;
+		}
 	}
 
 	if ( @file_exists( $file_path ) && @is_readable( $file_path ) ) {
