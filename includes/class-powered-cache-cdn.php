@@ -163,7 +163,7 @@ class Powered_Cache_CDN {
 		$ext = strtolower( end( $ext ) );
 
 		$zone = 'all';
-		$image_extensions = apply_filters( 'powered_cache_cdn_image_extensions', array( 'jpg', 'jpeg', 'gif', 'png', 'bmp', 'ico' ) );
+		$image_extensions = apply_filters( 'powered_cache_cdn_image_extensions', array( 'jpg', 'jpeg', 'gif', 'png', 'bmp', 'ico', 'webp' ) );
 
 		if ( in_array( $ext, $image_extensions ) ) {
 			$zone = 'image';
