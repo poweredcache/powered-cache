@@ -30,19 +30,20 @@ class Powered_Cache_CDN {
 	 */
 	public function setup() {
 
-		add_filter( 'wp_get_attachment_url', array( $this, 'cdn_url' ), 9999 );
-		add_filter( 'stylesheet_uri', array( $this, 'cdn_url' ), 9999 );
-		add_filter( 'smilies_src', array( $this, 'cdn_url' ), 9999 );
-		add_filter( 'bp_core_fetch_avatar_url', array( $this, 'cdn_url' ), 9999 );
-		add_filter( 'style_loader_src', array( $this, 'cdn_url' ), 9999 );
-		add_filter( 'script_loader_src', array( $this, 'cdn_url' ), 9999 );
+		add_filter( 'wp_get_attachment_url', array( $this, 'cdn_url' ), PHP_INT_MAX );
+		add_filter( 'stylesheet_uri', array( $this, 'cdn_url' ), PHP_INT_MAX );
+		add_filter( 'smilies_src', array( $this, 'cdn_url' ), PHP_INT_MAX );
+		add_filter( 'bp_core_fetch_avatar_url', array( $this, 'cdn_url' ), PHP_INT_MAX );
+		add_filter( 'style_loader_src', array( $this, 'cdn_url' ), PHP_INT_MAX );
+		add_filter( 'script_loader_src', array( $this, 'cdn_url' ), PHP_INT_MAX );
 
 
-		add_filter( 'the_content', array( $this, 'cdn_images' ), 9999 );
-		add_filter( 'post_thumbnail_html', array( $this, 'cdn_images' ), 9999 );
-		add_filter( 'get_avatar', array( $this, 'cdn_images' ), 9999 );
-		add_filter( 'bp_core_fetch_avatar', array( $this, 'cdn_images' ), 9999 );
-		add_filter( 'widget_text', array( $this, 'cdn_images' ), 9999 );
+		add_filter( 'the_content', array( $this, 'cdn_images' ), PHP_INT_MAX );
+		add_filter( 'post_thumbnail_html', array( $this, 'cdn_images' ), PHP_INT_MAX );
+		add_filter( 'get_avatar', array( $this, 'cdn_images' ), PHP_INT_MAX );
+		add_filter( 'bp_core_fetch_avatar', array( $this, 'cdn_images' ), PHP_INT_MAX );
+		add_filter( 'widget_text', array( $this, 'cdn_images' ), PHP_INT_MAX );
+		add_filter( 'media_image', array( $this, 'cdn_images' ), PHP_INT_MAX );
 
 
 		do_action( 'powered_cache_cdn_setup' );
@@ -96,7 +97,7 @@ class Powered_Cache_CDN {
 		}
 
 
-		return str_replace($img_url,$cdn_url,$content);
+		return str_replace( $img_url, $cdn_url, $content );
 	}
 
 
