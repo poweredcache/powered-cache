@@ -125,7 +125,7 @@ class Powered_Cache_CDN {
 		}
 
 		// external resource
-		if ( false === strpos( $url, site_url() ) ) {
+		if ( false === strpos( $url, home_url() ) ) {
 			return $url;
 		}
 
@@ -161,7 +161,7 @@ class Powered_Cache_CDN {
 			return $url;
 		}
 
-		return str_replace( site_url(), $cdn_url, $url );
+		return str_replace( home_url(), $cdn_url, $url );
 	}
 
 	/**
