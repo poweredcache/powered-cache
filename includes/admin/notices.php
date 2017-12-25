@@ -111,6 +111,9 @@ function powered_cache_advanced_cache_notices() {
 		return;
 	}
 
+	if ( ! current_user_can( apply_filters( 'powered_cache_cap', 'manage_options' ) ) ) {
+		return;
+	}
 	?>
 	<div class="error">
 		<h2><?php _e( 'Powered Cache', 'powered-cache' ); ?></h2>
@@ -137,6 +140,10 @@ function powered_cache_object_cache_notices() {
 	$object_cache_driver = powered_cache_get_option( 'object_cache' );
 	$object_cache_dropin   = untrailingslashit( WP_CONTENT_DIR ) . '/object-cache.php';
 
+
+	if ( ! current_user_can( apply_filters( 'powered_cache_cap', 'manage_options' ) ) ) {
+		return;
+	}
 
 	// first check object cache file exist
 	if ( isset( $object_cache_backends[ $object_cache_driver ] ) && ! file_exists( $object_cache_dropin ) ) {
