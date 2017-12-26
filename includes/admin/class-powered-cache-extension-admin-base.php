@@ -86,10 +86,6 @@ class Powered_Cache_Extension_Admin_Base {
 
 	public function update_options() {
 
-		if ( ! defined( 'POWERED_CACHE_SAVING_OPTIONS' ) ) {
-			define( 'POWERED_CACHE_SAVING_OPTIONS', true );
-		}
-
 		Powered_Cache_Admin_Helper::check_cap_and_nonce( $this->capability );
 
 		if ( isset( $_REQUEST['extension'] ) && ( $_REQUEST['extension'] === $this->extension_id ) ) {

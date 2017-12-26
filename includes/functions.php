@@ -561,10 +561,11 @@ function powered_cache_get_exprired_files( $path, $lifespan = 0 ) {
  * Is saving options now?
  *
  * @since 1.0
+ * @since 1.2 checks query arg
  * @return bool
  */
 function powered_cache_is_saving_options() {
-	if ( defined( 'POWERED_CACHE_SAVING_OPTIONS' ) && true === POWERED_CACHE_SAVING_OPTIONS ) {
+	if ( isset( $_GET['pc_options'] ) && 'updated' === $_GET['pc_options'] ) {
 		return true;
 	}
 

@@ -13,12 +13,7 @@ class Powered_Cache_Admin_Actions {
 	 * @since 1.0
 	 */
 	public static function update_settings() {
-		global $powered_cache_options, $powered_cache_fs, $is_apache;;
-
-
-		if ( ! defined( 'POWERED_CACHE_SAVING_OPTIONS' ) ) {
-			define( 'POWERED_CACHE_SAVING_OPTIONS', true );
-		}
+		global $powered_cache_options, $powered_cache_fs, $is_apache;
 
 		$old_options = $powered_cache_options;
 
@@ -208,11 +203,13 @@ class Powered_Cache_Admin_Actions {
 	 * @since 1.0
 	 */
 	public static function exit_with_redirect() {
-		if ( isset( $_REQUEST['wp_http_referer'] ) ) {
-			wp_redirect( $_REQUEST['wp_http_referer'] );
-		} else {
-			wp_redirect( admin_url( 'admin.php?page=powered-cache' ) );
+
+		$referer = wp_get_referer();
+		if ( false === $referer ) {
+			$referer = admin_url( 'admin.php?page=powered-cache' );
 		}
+
+		wp_safe_redirect( esc_url_raw( add_query_arg( 'pc_options', 'updated', $referer ) ) );
 		exit;
 	}
 
