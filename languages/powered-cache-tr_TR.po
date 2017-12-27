@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Powered Cache 1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/powered-cache\n"
-"POT-Creation-Date: 2017-12-25 20:03:22+00:00\n"
-"PO-Revision-Date: 2017-12-25 23:12+0300\n"
+"POT-Creation-Date: 2017-12-27 21:27:02+00:00\n"
+"PO-Revision-Date: 2017-12-28 00:30+0300\n"
 "Last-Translator: Mustafa Uysal <EMAIL@ADDRESS>\n"
 "Language-Team: TR LANGUAGE <LL@li.org>\n"
 "Language: tr\n"
@@ -167,7 +167,13 @@ msgstr ""
 "<b>%s:</b> Önyükleme özelliği için sayfa önbelleklemesinin açık olması "
 "gerekmektedir."
 
-#. Plugin Name of the plugin/theme
+#: extensions/preload/inc/class-powered-cache-preload-admin.php:89
+#: includes/admin/class-powered-cache-admin.php:117
+#: includes/admin/class-powered-cache-admin.php:134
+#: includes/admin/notices.php:61 includes/admin/notices.php:63
+#: includes/admin/notices.php:137 includes/admin/settings.php:27
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-helper.php:665
+#: premium/extensions/remote-cron/inc/class-powered-cache-remote-cron-admin.php:48
 msgid "Powered Cache"
 msgstr "Powered Cache"
 
@@ -281,20 +287,20 @@ msgstr "WordPress cron'u uzaktan tetikler"
 msgid "Varnish extension for Powered Cache"
 msgstr "Powered Cache için Varnish eklentisi."
 
-#: includes/admin/class-powered-cache-admin-actions.php:106
+#: includes/admin/class-powered-cache-admin-actions.php:101
 msgid "Extension activated"
 msgstr "Eklenti aktifleştirildi"
 
-#: includes/admin/class-powered-cache-admin-actions.php:111
+#: includes/admin/class-powered-cache-admin-actions.php:106
 msgid "Extension deactivated"
 msgstr "Eklenti pasifleştirildi"
 
-#: includes/admin/class-powered-cache-admin-actions.php:151
-#: includes/admin/class-powered-cache-extension-admin-base.php:117
+#: includes/admin/class-powered-cache-admin-actions.php:146
+#: includes/admin/class-powered-cache-extension-admin-base.php:113
 msgid "Options updated"
 msgstr "Ayarlar güncellendi"
 
-#: includes/admin/class-powered-cache-admin-actions.php:158
+#: includes/admin/class-powered-cache-admin-actions.php:153
 msgid ""
 "Something went wrong, we could not save settings to file. Please make sure "
 "the configuration file writable."
@@ -302,7 +308,7 @@ msgstr ""
 "Bir şeyler ters gitti ve ayarları dosyaya kaydedemedik. Lütfen yapılandırma "
 "dosyasının yazılabilir olduğundan emin olunuz."
 
-#: includes/admin/class-powered-cache-admin-actions.php:180
+#: includes/admin/class-powered-cache-admin-actions.php:175
 msgid "All settings cleaned!"
 msgstr "Tüm ayarlar temizlendi!"
 
@@ -474,11 +480,19 @@ msgstr ""
 msgid "Deactivate"
 msgstr "Etkisizleştir"
 
-#: includes/admin/notices.php:97
+#: includes/admin/notices.php:105
+msgid ""
+"<strong>Important:</strong> please enable page caching on the Powered Cache "
+"<a href=\"%s\">settings page</a>"
+msgstr ""
+"<strong>Önemli:</strong> lütfen sayfa önbellekleme özelliğini Powered Cache "
+"<a href=\"%s\">ayar sayfasından</a> etkinleştirin"
+
+#: includes/admin/notices.php:115
 msgid "<code>%s</code> is not in wp-config.php."
 msgstr "<code>%s</code> wp-config.php dosyasında tanımlanmamış."
 
-#: includes/admin/notices.php:101
+#: includes/admin/notices.php:119
 msgid ""
 "<code>%s</code> file was edited or deleted. You can re-create correct "
 "configuration files by saving settings."
@@ -486,7 +500,7 @@ msgstr ""
 "<code>%s</code> dosya değiştirilmiş veya silinmiş. Ayarları tekrar "
 "kaydederek dosyayı yeniden oluşturabilirsiniz."
 
-#: includes/admin/notices.php:106
+#: includes/admin/notices.php:124
 msgid ""
 "Powered Cache could not access dropin. Please check <code>%s</code> exist "
 "and accessible on your server."
@@ -494,11 +508,11 @@ msgstr ""
 "Powered Cache dropin dosyasına ulaşamadı. Lütfen, <code>%s</code> dosyasının "
 "mevcut ve sunucu tarafından erişilebilir olduğundan emin olun."
 
-#: includes/admin/notices.php:117
+#: includes/admin/notices.php:138
 msgid "Page Caching feature could not work because:"
 msgstr "Sayfa önbellekleme özelliği çalışamadı çünkü:"
 
-#: includes/admin/notices.php:143
+#: includes/admin/notices.php:168
 msgid ""
 "Phew! It looks your object cache file missing. Please check <code>%s</code> "
 "exist, writable and accessible on your server."
@@ -507,17 +521,39 @@ msgstr ""
 "%s</code> dosyasının mevcut ve sunucu tarafından erişilebilir olduğundan "
 "emin olun."
 
-#: includes/admin/notices.php:146 includes/admin/notices.php:164
+#: includes/admin/notices.php:171 includes/admin/notices.php:189
+#: includes/admin/notices.php:235
+#: premium/includes/class-powered-cache-license-page.php:189
+#: premium/includes/premium-functions.php:422
 msgid "Powered Cache:"
 msgstr "Powered Cache:"
 
-#: includes/admin/notices.php:161
+#: includes/admin/notices.php:186
 msgid ""
 "Powered Cache could not access object cache backend. Please check <code>%s</"
 "code> exist and accessible on your server."
 msgstr ""
 "Powered Cache obje önbelleğinin arka ucuna erişemedi. Lütfen <code>%s</code> "
 "dosyasının mevcut ve sunucu tarafından erişilebilir olduğundan emin olun."
+
+#: includes/admin/notices.php:223
+msgid ""
+"We can't find <code>%s</code> file on your server. Please create a new "
+"<code>.htaccess</code> file. <a href=\"%s\">Codex</a> might help!."
+msgstr ""
+"Sunucunuzda <code>%s</code> dosyasını bulamadık. Lütfen yeni bir <code>."
+"htaccess</code> dosyası oluşturun. <a href=\"%s\">Codex</a> bu konuda "
+"yardımcı olabilir!"
+
+#: includes/admin/notices.php:225
+msgid ""
+"Oh no! It looks your <code>%s</code> file is not writable. Please make sure "
+"it is writable by the web server. Your website will much more faster when "
+"configured for Powered Cache."
+msgstr ""
+"Olamaz! <code>%s</code> dosyanız yazılamaz durumda. Lütfen web sunucunuzun "
+"bu dosyaya yazabildiğinden emin olun. Powered Cache için yapılandırıldığında "
+"çok daha hızlı olacaktır."
 
 #: includes/admin/settings/advanced-options.php:24
 msgid "Remove query string"
@@ -587,6 +623,7 @@ msgid "Object Caching"
 msgstr "Obje Önbelleği"
 
 #: includes/admin/settings/basic-options.php:46
+#: premium/includes/class-powered-cache-license-page.php:127
 msgid "Off"
 msgstr "Kapalı"
 
@@ -964,6 +1001,334 @@ msgid "Please update your WordPress or deactivate Powered Cache."
 msgstr ""
 "Lütfen WordPress sürümünüzü güncelleyin veya Powered Cache'i etkisizleştirin."
 
+#: premium/bin/wp-cli.php:20
+msgid "This is not a valid post id."
+msgstr "Bu geçerli bir post id'si değil."
+
+#: premium/bin/wp-cli.php:26
+msgid "post_id: %s purged successfully!"
+msgstr "post_id: %s başarılı bir şekilde temizlendi!"
+
+#: premium/bin/wp-cli.php:34
+msgid "Purging cloudflare cache...."
+msgstr "Cloudflare önbelleği temizleniyor..."
+
+#: premium/bin/wp-cli.php:38
+msgid "All caches purged successfully!"
+msgstr "Tüm önbellekler başarılı bir şekilde temizlendi!"
+
+#: premium/bin/wp-cli.php:54
+msgid "Preload does not help when page caching disabled"
+msgstr "Önyükleme sayfa önbelleği özelliğı kapalıyken yardımci olamaz"
+
+#: premium/bin/wp-cli.php:59
+msgid "Removing scheduled preloading events"
+msgstr "Planlanan önyükleme etkinlikleri kaldırılıyor"
+
+#: premium/bin/wp-cli.php:68
+msgid "caching directory cleaned"
+msgstr "önbellek dizini temizlendi"
+
+#: premium/bin/wp-cli.php:81
+msgid "Scheduling preloading events"
+msgstr "Önyükleme etkinlikleri planlanıyor"
+
+#: premium/bin/wp-cli.php:85
+msgid "Preloading successfully completed!"
+msgstr "Önyükleme başarılı bir şekilde tamamlandı!"
+
+#: premium/bin/wp-cli.php:137 premium/bin/wp-cli.php:188
+msgid "%s crawling"
+msgstr "%s taranıyor"
+
+#: premium/bin/wp-cli.php:146 premium/bin/wp-cli.php:197
+msgid "%s crawling for mobile device"
+msgstr "%s mobil cihaz için taranıyor"
+
+#: premium/bin/wp-cli.php:151
+msgid "Post %s does not exist"
+msgstr "Yazı %s mevcut değil"
+
+#: premium/bin/wp-cli.php:160
+msgid "Post preloading finished successfully"
+msgstr "Post önyüklemesi başarılı bir şekilde tamamlandı"
+
+#: premium/bin/wp-cli.php:203
+msgid "Term %s does not exist in %s"
+msgstr "Term %s, %s içinde bulunmuyor"
+
+#: premium/bin/wp-cli.php:208
+msgid "Taxonomy preloading finished successfully"
+msgstr "Taksonomi önyüklemesi başarılı bir şekilde tamamlandı"
+
+#: premium/bin/wp-cli.php:221
+msgid "%s already activated "
+msgstr "%s zaten etkin"
+
+#: premium/bin/wp-cli.php:225
+msgid "%s activated successfully"
+msgstr "%s başarılı bir şekilde etkinleştirildi"
+
+#: premium/bin/wp-cli.php:229
+msgid "%s already deactivated "
+msgstr "%s zaten etkisiz"
+
+#: premium/bin/wp-cli.php:233
+msgid "%s deactivated successfully"
+msgstr "%s başarılı bir şekilde etkisizleştirildi"
+
+#: premium/bin/wp-cli.php:237
+msgid ""
+"Nothing happened! If you need help, try to run this command: `wp help "
+"powered-cache extension`"
+msgstr ""
+"Hiçbir şey olmadı! Yardıma ihtiyacınız varsa şu komutu çalıştırın: `wp help "
+"powered-cache extension`"
+
+#: premium/bin/wp-cli.php:254
+msgid ""
+"You need enable to Varnish extension of Powered Cache for executing this "
+"command!"
+msgstr ""
+"Bu komutu çalıştırabilmeniz için Varnish eklentisini etkinleştirmeniz "
+"gerekmektedir!"
+
+#: premium/bin/wp-cli.php:266
+msgid "Varnish purge request sent for: %s"
+msgstr "Varnish temizleme isteği gönderildi: %s"
+
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:49
+msgid "Minifier"
+msgstr "Minifier"
+
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:70
+msgid "Blocking – (default)"
+msgstr "Blocking – (varsayılan)"
+
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:71
+msgid "Non-blocking using async"
+msgstr "Non-blocking (async kullanarak)"
+
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:72
+msgid "Non-blocking using defer"
+msgstr "Non-blocking (defer kullanarak)"
+
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:82
+msgid "Purge Minifier Cache"
+msgstr "Minify Önbelleğini Temizle"
+
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:103
+msgid "Minifier cache flushed successfully"
+msgstr "Minifier önbelleğı başarılı bir şekilde temizlendi"
+
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-helper.php:666
+msgid "Minifier could not create cache directory"
+msgstr "Minifier önbellek dizini oluşturamadı"
+
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-helper.php:668
+msgid ""
+"Please make sure root caching directory writable by plugin. If you defined "
+"custom %s in config  please make sure it exist."
+msgstr ""
+"Lütfen önbellek kök dizininin eklenti tarafından yazılabilir olduğundan emin "
+"olunuz. Özel bir %s tanımladıysanız bunun mevcut olduğundan emin olun."
+
+#: premium/extensions/minifier/inc/settings.php:13
+msgid "Minification"
+msgstr "Küçült"
+
+#: premium/extensions/minifier/inc/settings.php:15
+msgid "Minify HTML"
+msgstr "HTML'i küçült"
+
+#: premium/extensions/minifier/inc/settings.php:17
+msgid "Minify CSS"
+msgstr "CSS'i küçült"
+
+#: premium/extensions/minifier/inc/settings.php:19
+msgid "Minify JS"
+msgstr "JS'i küçült"
+
+#: premium/extensions/minifier/inc/settings.php:24
+msgid "Concatenation"
+msgstr "Birleştirme"
+
+#: premium/extensions/minifier/inc/settings.php:26
+msgid "Concat CSS"
+msgstr "CSS birleştir"
+
+#: premium/extensions/minifier/inc/settings.php:28
+msgid "Concat JS"
+msgstr "JS birleştir"
+
+#: premium/extensions/minifier/inc/settings.php:34
+msgid "JavaScript execution method"
+msgstr "JavaScript çalışma yöntemi"
+
+#: premium/extensions/minifier/inc/settings.php:47
+msgid "CSS files to exclude"
+msgstr "Hariç tutulacak CSS dosyaları"
+
+#: premium/extensions/minifier/inc/settings.php:53
+msgid "JS files to exclude"
+msgstr "Hariç tutulacak JS dosyaları"
+
+#: premium/extensions/remote-cron/inc/class-powered-cache-remote-cron-admin.php:21
+msgid "Remote Cron"
+msgstr "Remote Cron"
+
+#: premium/extensions/remote-cron/inc/class-powered-cache-remote-cron-admin.php:48
+msgid "You need define %s true for remote cron functionality."
+msgstr ""
+"Bu özellik için %s sabitini true olarak wp-config.php dosyanıza tanımlamanız "
+"gerekmektedir."
+
+#: premium/extensions/remote-cron/inc/settings.php:14
+msgid "Enable Remote Cron"
+msgstr "Remote Cron'u etkinleştir"
+
+#: premium/extensions/remote-cron/inc/settings.php:16
+msgid "When enabled, our Cron Bot will frequently execute wp-cron.php"
+msgstr ""
+"Etkinleştirdiğinizde, cron botumuz WordPress cron dosyasını (wp-cron.php) "
+"periyodik olarak çalıştıracak."
+
+#: premium/extensions/varnish/inc/class-powered-cache-varnish-admin.php:20
+msgid "Varnish"
+msgstr "Varnish"
+
+#: premium/extensions/varnish/inc/class-powered-cache-varnish-purger.php:107
+msgid "Varnish cache purged!"
+msgstr "Varnish önbelleği temizlendi!"
+
+#: premium/extensions/varnish/inc/class-powered-cache-varnish-purger.php:117
+msgid ""
+"Varnish HTTP Purge requires you to use custom permalinks. Please go to the "
+"<a href=\"%1$s\">Permalinks Options Page</a> to configure them."
+msgstr ""
+"Varnish icin özel kalıcı bağlantıları kullanmalısınız. Lütfen <a href=\"%1$s"
+"\">kalıcı bağlantılar sayfasından</a> ayarlayın."
+
+#: premium/extensions/varnish/inc/class-powered-cache-varnish-purger.php:141
+#: premium/extensions/varnish/inc/class-powered-cache-varnish-purger.php:145
+msgid "Purge Varnish"
+msgstr "Varnish önbelleğı temizle"
+
+#: premium/extensions/varnish/inc/settings.php:14
+msgid "Varnish IP"
+msgstr "Varnish IP"
+
+#: premium/extensions/varnish/inc/settings.php:18
+msgid ""
+"If defined<code>VHP_VARNISH_IP</code> exist, you do not need to setup here"
+msgstr ""
+"<code>VHP_VARNISH_IP</code> sabiti tanımlıysa buradan ayarlama yapmanıza "
+"gerek yok"
+
+#: premium/includes/class-powered-cache-license-page.php:50
+msgid "Powered Cache License"
+msgstr "Powered Cache Lisans"
+
+#: premium/includes/class-powered-cache-license-page.php:51
+msgid "License"
+msgstr "Lisans"
+
+#: premium/includes/class-powered-cache-license-page.php:71
+msgid "License Management"
+msgstr "Lisans Yönetimi"
+
+#: premium/includes/class-powered-cache-license-page.php:90
+msgid "License Key"
+msgstr "Lisans Anahtarı"
+
+#: premium/includes/class-powered-cache-license-page.php:95
+msgid "Enter your license key"
+msgstr "Lisans anahtarıni giriniz"
+
+#: premium/includes/class-powered-cache-license-page.php:112
+msgid "License Info"
+msgstr "Lisans Bilgisi"
+
+#: premium/includes/class-powered-cache-license-page.php:118
+msgid "License status:"
+msgstr "Lisans durumu:"
+
+#: premium/includes/class-powered-cache-license-page.php:122
+msgid "Expiry date:"
+msgstr "Son kullanma tarihi:"
+
+#: premium/includes/class-powered-cache-license-page.php:126
+msgid "Development mode:"
+msgstr "Geliştirme modu:"
+
+#: premium/includes/class-powered-cache-license-page.php:127
+msgid "On"
+msgstr "Açık"
+
+#: premium/includes/class-powered-cache-license-page.php:132
+msgid "Manage License"
+msgstr "Lisansı Yönet"
+
+#: premium/includes/class-powered-cache-license-page.php:169
+msgid "License key does not exist"
+msgstr "Lisans anahtarı mevcut değil"
+
+#: premium/includes/class-powered-cache-license-page.php:172
+msgid "License key does not active"
+msgstr "Lisans anahtarı aktif değil"
+
+#: premium/includes/class-powered-cache-license-page.php:175
+msgid "License key has been expired"
+msgstr "Lisansınızın süresi dolmuş"
+
+#: premium/includes/class-powered-cache-license-page.php:178
+msgid ""
+"Unregistered domain address, if you want to assing your license to another "
+"domain visit our website"
+msgstr ""
+"Kaydedilmemiş domain, eğer mevcut lisansınızı başka bir domain için "
+"kullanmak istiyorsanız sitemizi ziyaret edin"
+
+#: premium/includes/premium-functions.php:264
+msgid "We could not provide support on localhost."
+msgstr "Localhost'a deste sağlayamıyoruz."
+
+#: premium/includes/premium-functions.php:288
+msgid "Please do not leave blank the fields."
+msgstr "Lütfen alanları boş bırakmayın."
+
+#: premium/includes/premium-functions.php:326
+msgid ""
+"We received your support request, we will be with you as soon as we are "
+"able. Do not forget to check %s"
+msgstr ""
+"Destek talebinizi aldık, mümkün olan en kısa sürede iletişime geçeceğiz. %s "
+"adresinizi kontrol etmeyi unutmayın"
+
+#: premium/includes/premium-functions.php:334
+msgid "We could not receive support request. <code>ERR_CODE:</code> %s"
+msgstr "Destek talebinizi alamadık. <code>HATA_KODU:</code> %s"
+
+#: premium/includes/premium-functions.php:361
+msgid ""
+"If you do not want to share site details, you are free to use our support "
+"email %s"
+msgstr ""
+"Siteniz hakkında detay bilgi paylaşmak istemiyorsanız, direkt %s adresinden "
+"destek alabilirsiniz."
+
+#: premium/includes/premium-functions.php:423
+msgid ""
+"Please enter your license key at the <a href=\"%s\">license page</a>, or you "
+"can define <code>%s</code> in wp-config.php file."
+msgstr ""
+"Lütfen lisans anahtarınızı <a href=\"%s\">lisans sayfasından</a>,  giriniz "
+"veya  <code>%s</code> sabiti ile wp-config.php dosyasında tanımlayınız."
+
+#. Plugin Name of the plugin/theme
+msgid "Powered Cache Premium"
+msgstr "Powered Cache Premium"
+
 #. Plugin URI of the plugin/theme
 msgid "https://poweredcache.com"
 msgstr "https://poweredcache.com"
@@ -988,260 +1353,6 @@ msgstr "http://skop.co/"
 
 #~ msgid "Show cache status message in footer"
 #~ msgstr "Önbellek durum mesajını footer'da göster"
-
-#~ msgid "This is not a valid post id."
-#~ msgstr "Bu geçerli bir post id'si değil."
-
-#~ msgid "post_id: %s purged successfully!"
-#~ msgstr "post_id: %s başarılı bir şekilde temizlendi!"
-
-#~ msgid "Purging cloudflare cache...."
-#~ msgstr "Cloudflare önbelleği temizleniyor..."
-
-#~ msgid "All caches purged successfully!"
-#~ msgstr "Tüm önbellekler başarılı bir şekilde temizlendi!"
-
-#~ msgid "Preload does not help when page caching disabled"
-#~ msgstr "Önyükleme sayfa önbelleği özelliğı kapalıyken yardımci olamaz"
-
-#~ msgid "Removing scheduled preloading events"
-#~ msgstr "Planlanan önyükleme etkinlikleri kaldırılıyor"
-
-#~ msgid "caching directory cleaned"
-#~ msgstr "önbellek dizini temizlendi"
-
-#~ msgid "Scheduling preloading events"
-#~ msgstr "Önyükleme etkinlikleri planlanıyor"
-
-#~ msgid "Preloading successfully completed!"
-#~ msgstr "Önyükleme başarılı bir şekilde tamamlandı!"
-
-#~ msgid "%s crawling"
-#~ msgstr "%s taranıyor"
-
-#~ msgid "%s crawling for mobile device"
-#~ msgstr "%s mobil cihaz için taranıyor"
-
-#~ msgid "Post preloading finished successfully"
-#~ msgstr "Post önyüklemesi başarılı bir şekilde tamamlandı"
-
-#~ msgid "Term %s does not exist in %s"
-#~ msgstr "Term %s, %s içinde bulunmuyor"
-
-#~ msgid "Taxonomy preloading finished successfully"
-#~ msgstr "Taksonomi önyüklemesi başarılı bir şekilde tamamlandı"
-
-#~ msgid "%s already activated "
-#~ msgstr "%s zaten etkin"
-
-#~ msgid "%s activated successfully"
-#~ msgstr "%s başarılı bir şekilde etkinleştirildi"
-
-#~ msgid "%s already deactivated "
-#~ msgstr "%s zaten etkisiz"
-
-#~ msgid "%s deactivated successfully"
-#~ msgstr "%s başarılı bir şekilde etkisizleştirildi"
-
-#~ msgid ""
-#~ "Nothing happened! If you need help, try to run this command: `wp help "
-#~ "powered-cache extension`"
-#~ msgstr ""
-#~ "Hiçbir şey olmadı! Yardıma ihtiyacınız varsa şu komutu çalıştırın: `wp "
-#~ "help powered-cache extension`"
-
-#~ msgid ""
-#~ "You need enable to Varnish extension of Powered Cache for executing this "
-#~ "command!"
-#~ msgstr ""
-#~ "Bu komutu çalıştırabilmeniz için Varnish eklentisini etkinleştirmeniz "
-#~ "gerekmektedir!"
-
-#~ msgid "Varnish purge request sent for: %s"
-#~ msgstr "Varnish temizleme isteği gönderildi: %s"
-
-#~ msgid "Minifier"
-#~ msgstr "Minifier"
-
-#~ msgid "Blocking – (default)"
-#~ msgstr "Blocking – (varsayılan)"
-
-#~ msgid "Non-blocking using async"
-#~ msgstr "Non-blocking (async kullanarak)"
-
-#~ msgid "Non-blocking using defer"
-#~ msgstr "Non-blocking (defer kullanarak)"
-
-#~ msgid "Purge Minifier Cache"
-#~ msgstr "Minify Önbelleğini Temizle"
-
-#~ msgid "Minifier cache flushed successfully"
-#~ msgstr "Minifier önbelleğı başarılı bir şekilde temizlendi"
-
-#~ msgid "Minifier could not create cache directory"
-#~ msgstr "Minifier önbellek dizini oluşturamadı"
-
-#~ msgid ""
-#~ "Please make sure root caching directory writable by plugin. If you "
-#~ "defined custom %s in config  please make sure it exist."
-#~ msgstr ""
-#~ "Lütfen önbellek kök dizininin eklenti tarafından yazılabilir olduğundan "
-#~ "emin olunuz. Özel bir %s tanımladıysanız bunun mevcut olduğundan emin "
-#~ "olun."
-
-#~ msgid "Minification"
-#~ msgstr "Küçült"
-
-#~ msgid "Minify HTML"
-#~ msgstr "HTML'i küçült"
-
-#~ msgid "Minify CSS"
-#~ msgstr "CSS'i küçült"
-
-#~ msgid "Minify JS"
-#~ msgstr "JS'i küçült"
-
-#~ msgid "Concatenation"
-#~ msgstr "Birleştirme"
-
-#~ msgid "Concat CSS"
-#~ msgstr "CSS birleştir"
-
-#~ msgid "Concat JS"
-#~ msgstr "JS birleştir"
-
-#~ msgid "JavaScript execution method"
-#~ msgstr "JavaScript çalışma yöntemi"
-
-#~ msgid "CSS files to exclude"
-#~ msgstr "Hariç tutulacak CSS dosyaları"
-
-#~ msgid "JS files to exclude"
-#~ msgstr "Hariç tutulacak JS dosyaları"
-
-#~ msgid "Remote Cron"
-#~ msgstr "Remote Cron"
-
-#~ msgid "You need define %s true for remote cron functionality."
-#~ msgstr ""
-#~ "Bu özellik için %s sabitini true olarak wp-config.php dosyanıza "
-#~ "tanımlamanız gerekmektedir."
-
-#~ msgid "Enable Remote Cron"
-#~ msgstr "Remote Cron'u etkinleştir"
-
-#~ msgid "When enabled, our Cron Bot will frequently execute wp-cron.php"
-#~ msgstr ""
-#~ "Etkinleştirdiğinizde, cron botumuz WordPress cron dosyasını (wp-cron.php) "
-#~ "periyodik olarak çalıştıracak."
-
-#~ msgid "Varnish"
-#~ msgstr "Varnish"
-
-#~ msgid "Varnish cache purged!"
-#~ msgstr "Varnish önbelleği temizlendi!"
-
-#~ msgid ""
-#~ "Varnish HTTP Purge requires you to use custom permalinks. Please go to "
-#~ "the <a href=\"%1$s\">Permalinks Options Page</a> to configure them."
-#~ msgstr ""
-#~ "Varnish icin özel kalıcı bağlantıları kullanmalısınız. Lütfen <a href="
-#~ "\"%1$s\">kalıcı bağlantılar sayfasından</a> ayarlayın."
-
-#~ msgid "Purge Varnish"
-#~ msgstr "Varnish önbelleğı temizle"
-
-#~ msgid "Varnish IP"
-#~ msgstr "Varnish IP"
-
-#~ msgid ""
-#~ "If defined<code>VHP_VARNISH_IP</code> exist, you do not need to setup here"
-#~ msgstr ""
-#~ "<code>VHP_VARNISH_IP</code> sabiti tanımlıysa buradan ayarlama yapmanıza "
-#~ "gerek yok"
-
-#~ msgid "Powered Cache License"
-#~ msgstr "Powered Cache Lisans"
-
-#~ msgid "License"
-#~ msgstr "Lisans"
-
-#~ msgid "License Management"
-#~ msgstr "Lisans Yönetimi"
-
-#~ msgid "License Key"
-#~ msgstr "Lisans Anahtarı"
-
-#~ msgid "Enter your license key"
-#~ msgstr "Lisans anahtarıni giriniz"
-
-#~ msgid "License Info"
-#~ msgstr "Lisans Bilgisi"
-
-#~ msgid "License status:"
-#~ msgstr "Lisans durumu:"
-
-#~ msgid "Expiry date:"
-#~ msgstr "Son kullanma tarihi:"
-
-#~ msgid "Development mode:"
-#~ msgstr "Geliştirme modu:"
-
-#~ msgid "On"
-#~ msgstr "Açık"
-
-#~ msgid "Manage License"
-#~ msgstr "Lisansı Yönet"
-
-#~ msgid "License key does not exist"
-#~ msgstr "Lisans anahtarı mevcut değil"
-
-#~ msgid "License key does not active"
-#~ msgstr "Lisans anahtarı aktif değil"
-
-#~ msgid "License key has been expired"
-#~ msgstr "Lisansınızın süresi dolmuş"
-
-#~ msgid ""
-#~ "Unregistered domain address, if you want to assing your license to "
-#~ "another domain visit our website"
-#~ msgstr ""
-#~ "Kaydedilmemiş domain, eğer mevcut lisansınızı başka bir domain için "
-#~ "kullanmak istiyorsanız sitemizi ziyaret edin"
-
-#~ msgid "We could not provide support on localhost."
-#~ msgstr "Localhost'a deste sağlayamıyoruz."
-
-#~ msgid "Please do not leave blank the fields."
-#~ msgstr "Lütfen alanları boş bırakmayın."
-
-#~ msgid ""
-#~ "We received your support request, we will be with you as soon as we are "
-#~ "able. Do not forget to check %s"
-#~ msgstr ""
-#~ "Destek talebinizi aldık, mümkün olan en kısa sürede iletişime geçeceğiz. "
-#~ "%s adresinizi kontrol etmeyi unutmayın"
-
-#~ msgid "We could not receive support request. <code>ERR_CODE:</code> %s"
-#~ msgstr "Destek talebinizi alamadık. <code>HATA_KODU:</code> %s"
-
-#~ msgid ""
-#~ "If you do not want to share site details, you are free to use our support "
-#~ "email %s"
-#~ msgstr ""
-#~ "Siteniz hakkında detay bilgi paylaşmak istemiyorsanız, direkt %s "
-#~ "adresinden destek alabilirsiniz."
-
-#~ msgid ""
-#~ "Please enter your license key at the <a href=\"%s\">license page</a>, or "
-#~ "you can define <code>%s</code> in wp-config.php file."
-#~ msgstr ""
-#~ "Lütfen lisans anahtarınızı <a href=\"%s\">lisans sayfasından</a>,  "
-#~ "giriniz veya  <code>%s</code> sabiti ile wp-config.php dosyasında "
-#~ "tanımlayınız."
-
-#~ msgid "Powered Cache Premium"
-#~ msgstr "Powered Cache Premium"
 
 #~ msgid "Powered Cache Team"
 #~ msgstr "Powered Cache Team"

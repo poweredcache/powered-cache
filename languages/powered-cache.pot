@@ -2,9 +2,9 @@
 # This file is distributed under the GPLv2 (or later).
 msgid ""
 msgstr ""
-"Project-Id-Version: Powered Cache 1.2\n"
+"Project-Id-Version: Powered Cache Premium 1.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/powered-cache\n"
-"POT-Creation-Date: 2017-12-25 20:03:22+00:00\n"
+"POT-Creation-Date: 2017-12-27 21:27:02+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -172,7 +172,13 @@ msgstr ""
 msgid "<b>%s:</b> You need enable page cache for preload feature."
 msgstr ""
 
-#. Plugin Name of the plugin/theme
+#: extensions/preload/inc/class-powered-cache-preload-admin.php:89
+#: includes/admin/class-powered-cache-admin.php:117
+#: includes/admin/class-powered-cache-admin.php:134
+#: includes/admin/notices.php:61 includes/admin/notices.php:63
+#: includes/admin/notices.php:137 includes/admin/settings.php:27
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-helper.php:665
+#: premium/extensions/remote-cron/inc/class-powered-cache-remote-cron-admin.php:48
 msgid "Powered Cache"
 msgstr ""
 
@@ -284,26 +290,26 @@ msgstr ""
 msgid "Varnish extension for Powered Cache"
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin-actions.php:106
+#: includes/admin/class-powered-cache-admin-actions.php:101
 msgid "Extension activated"
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin-actions.php:111
+#: includes/admin/class-powered-cache-admin-actions.php:106
 msgid "Extension deactivated"
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin-actions.php:151
-#: includes/admin/class-powered-cache-extension-admin-base.php:117
+#: includes/admin/class-powered-cache-admin-actions.php:146
+#: includes/admin/class-powered-cache-extension-admin-base.php:113
 msgid "Options updated"
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin-actions.php:158
+#: includes/admin/class-powered-cache-admin-actions.php:153
 msgid ""
 "Something went wrong, we could not save settings to file. Please make sure "
 "the configuration file writable."
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin-actions.php:180
+#: includes/admin/class-powered-cache-admin-actions.php:175
 msgid "All settings cleaned!"
 msgstr ""
 
@@ -471,40 +477,62 @@ msgstr ""
 msgid "Deactivate"
 msgstr ""
 
-#: includes/admin/notices.php:97
+#: includes/admin/notices.php:105
+msgid ""
+"<strong>Important:</strong> please enable page caching on the Powered Cache "
+"<a href=\"%s\">settings page</a>"
+msgstr ""
+
+#: includes/admin/notices.php:115
 msgid "<code>%s</code> is not in wp-config.php."
 msgstr ""
 
-#: includes/admin/notices.php:101
+#: includes/admin/notices.php:119
 msgid ""
 "<code>%s</code> file was edited or deleted. You can re-create correct "
 "configuration files by saving settings."
 msgstr ""
 
-#: includes/admin/notices.php:106
+#: includes/admin/notices.php:124
 msgid ""
 "Powered Cache could not access dropin. Please check <code>%s</code> exist "
 "and accessible on your server."
 msgstr ""
 
-#: includes/admin/notices.php:117
+#: includes/admin/notices.php:138
 msgid "Page Caching feature could not work because:"
 msgstr ""
 
-#: includes/admin/notices.php:143
+#: includes/admin/notices.php:168
 msgid ""
 "Phew! It looks your object cache file missing. Please check <code>%s</code> "
 "exist, writable and accessible on your server."
 msgstr ""
 
-#: includes/admin/notices.php:146 includes/admin/notices.php:164
+#: includes/admin/notices.php:171 includes/admin/notices.php:189
+#: includes/admin/notices.php:235
+#: premium/includes/class-powered-cache-license-page.php:189
+#: premium/includes/premium-functions.php:422
 msgid "Powered Cache:"
 msgstr ""
 
-#: includes/admin/notices.php:161
+#: includes/admin/notices.php:186
 msgid ""
 "Powered Cache could not access object cache backend. Please check "
 "<code>%s</code> exist and accessible on your server."
+msgstr ""
+
+#: includes/admin/notices.php:223
+msgid ""
+"We can't find <code>%s</code> file on your server. Please create a new "
+"<code>.htaccess</code> file. <a href=\"%s\">Codex</a> might help!."
+msgstr ""
+
+#: includes/admin/notices.php:225
+msgid ""
+"Oh no! It looks your <code>%s</code> file is not writable. Please make sure "
+"it is writable by the web server. Your website will much more faster when "
+"configured for Powered Cache."
 msgstr ""
 
 #: includes/admin/settings/advanced-options.php:24
@@ -572,6 +600,7 @@ msgid "Object Caching"
 msgstr ""
 
 #: includes/admin/settings/basic-options.php:46
+#: premium/includes/class-powered-cache-license-page.php:127
 msgid "Off"
 msgstr ""
 
@@ -932,6 +961,311 @@ msgstr ""
 
 #: powered-cache.php:279
 msgid "Please update your WordPress or deactivate Powered Cache."
+msgstr ""
+
+#: premium/bin/wp-cli.php:20
+msgid "This is not a valid post id."
+msgstr ""
+
+#: premium/bin/wp-cli.php:26
+msgid "post_id: %s purged successfully!"
+msgstr ""
+
+#: premium/bin/wp-cli.php:34
+msgid "Purging cloudflare cache...."
+msgstr ""
+
+#: premium/bin/wp-cli.php:38
+msgid "All caches purged successfully!"
+msgstr ""
+
+#: premium/bin/wp-cli.php:54
+msgid "Preload does not help when page caching disabled"
+msgstr ""
+
+#: premium/bin/wp-cli.php:59
+msgid "Removing scheduled preloading events"
+msgstr ""
+
+#: premium/bin/wp-cli.php:68
+msgid "caching directory cleaned"
+msgstr ""
+
+#: premium/bin/wp-cli.php:81
+msgid "Scheduling preloading events"
+msgstr ""
+
+#: premium/bin/wp-cli.php:85
+msgid "Preloading successfully completed!"
+msgstr ""
+
+#: premium/bin/wp-cli.php:137 premium/bin/wp-cli.php:188
+msgid "%s crawling"
+msgstr ""
+
+#: premium/bin/wp-cli.php:146 premium/bin/wp-cli.php:197
+msgid "%s crawling for mobile device"
+msgstr ""
+
+#: premium/bin/wp-cli.php:151
+msgid "Post %s does not exist"
+msgstr ""
+
+#: premium/bin/wp-cli.php:160
+msgid "Post preloading finished successfully"
+msgstr ""
+
+#: premium/bin/wp-cli.php:203
+msgid "Term %s does not exist in %s"
+msgstr ""
+
+#: premium/bin/wp-cli.php:208
+msgid "Taxonomy preloading finished successfully"
+msgstr ""
+
+#: premium/bin/wp-cli.php:221
+msgid "%s already activated "
+msgstr ""
+
+#: premium/bin/wp-cli.php:225
+msgid "%s activated successfully"
+msgstr ""
+
+#: premium/bin/wp-cli.php:229
+msgid "%s already deactivated "
+msgstr ""
+
+#: premium/bin/wp-cli.php:233
+msgid "%s deactivated successfully"
+msgstr ""
+
+#: premium/bin/wp-cli.php:237
+msgid ""
+"Nothing happened! If you need help, try to run this command: `wp help "
+"powered-cache extension`"
+msgstr ""
+
+#: premium/bin/wp-cli.php:254
+msgid ""
+"You need enable to Varnish extension of Powered Cache for executing this "
+"command!"
+msgstr ""
+
+#: premium/bin/wp-cli.php:266
+msgid "Varnish purge request sent for: %s"
+msgstr ""
+
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:49
+msgid "Minifier"
+msgstr ""
+
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:70
+msgid "Blocking – (default)"
+msgstr ""
+
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:71
+msgid "Non-blocking using async"
+msgstr ""
+
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:72
+msgid "Non-blocking using defer"
+msgstr ""
+
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:82
+msgid "Purge Minifier Cache"
+msgstr ""
+
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-admin.php:103
+msgid "Minifier cache flushed successfully"
+msgstr ""
+
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-helper.php:666
+msgid "Minifier could not create cache directory"
+msgstr ""
+
+#: premium/extensions/minifier/inc/class-powered-cache-minifier-helper.php:668
+msgid ""
+"Please make sure root caching directory writable by plugin. If you defined "
+"custom %s in config  please make sure it exist."
+msgstr ""
+
+#: premium/extensions/minifier/inc/settings.php:13
+msgid "Minification"
+msgstr ""
+
+#: premium/extensions/minifier/inc/settings.php:15
+msgid "Minify HTML"
+msgstr ""
+
+#: premium/extensions/minifier/inc/settings.php:17
+msgid "Minify CSS"
+msgstr ""
+
+#: premium/extensions/minifier/inc/settings.php:19
+msgid "Minify JS"
+msgstr ""
+
+#: premium/extensions/minifier/inc/settings.php:24
+msgid "Concatenation"
+msgstr ""
+
+#: premium/extensions/minifier/inc/settings.php:26
+msgid "Concat CSS"
+msgstr ""
+
+#: premium/extensions/minifier/inc/settings.php:28
+msgid "Concat JS"
+msgstr ""
+
+#: premium/extensions/minifier/inc/settings.php:34
+msgid "JavaScript execution method"
+msgstr ""
+
+#: premium/extensions/minifier/inc/settings.php:47
+msgid "CSS files to exclude"
+msgstr ""
+
+#: premium/extensions/minifier/inc/settings.php:53
+msgid "JS files to exclude"
+msgstr ""
+
+#: premium/extensions/remote-cron/inc/class-powered-cache-remote-cron-admin.php:21
+msgid "Remote Cron"
+msgstr ""
+
+#: premium/extensions/remote-cron/inc/class-powered-cache-remote-cron-admin.php:48
+msgid "You need define %s true for remote cron functionality."
+msgstr ""
+
+#: premium/extensions/remote-cron/inc/settings.php:14
+msgid "Enable Remote Cron"
+msgstr ""
+
+#: premium/extensions/remote-cron/inc/settings.php:16
+msgid "When enabled, our Cron Bot will frequently execute wp-cron.php"
+msgstr ""
+
+#: premium/extensions/varnish/inc/class-powered-cache-varnish-admin.php:20
+msgid "Varnish"
+msgstr ""
+
+#: premium/extensions/varnish/inc/class-powered-cache-varnish-purger.php:107
+msgid "Varnish cache purged!"
+msgstr ""
+
+#: premium/extensions/varnish/inc/class-powered-cache-varnish-purger.php:117
+msgid ""
+"Varnish HTTP Purge requires you to use custom permalinks. Please go to the "
+"<a href=\"%1$s\">Permalinks Options Page</a> to configure them."
+msgstr ""
+
+#: premium/extensions/varnish/inc/class-powered-cache-varnish-purger.php:141
+#: premium/extensions/varnish/inc/class-powered-cache-varnish-purger.php:145
+msgid "Purge Varnish"
+msgstr ""
+
+#: premium/extensions/varnish/inc/settings.php:14
+msgid "Varnish IP"
+msgstr ""
+
+#: premium/extensions/varnish/inc/settings.php:18
+msgid "If defined<code>VHP_VARNISH_IP</code> exist, you do not need to setup here"
+msgstr ""
+
+#: premium/includes/class-powered-cache-license-page.php:50
+msgid "Powered Cache License"
+msgstr ""
+
+#: premium/includes/class-powered-cache-license-page.php:51
+msgid "License"
+msgstr ""
+
+#: premium/includes/class-powered-cache-license-page.php:71
+msgid "License Management"
+msgstr ""
+
+#: premium/includes/class-powered-cache-license-page.php:90
+msgid "License Key"
+msgstr ""
+
+#: premium/includes/class-powered-cache-license-page.php:95
+msgid "Enter your license key"
+msgstr ""
+
+#: premium/includes/class-powered-cache-license-page.php:112
+msgid "License Info"
+msgstr ""
+
+#: premium/includes/class-powered-cache-license-page.php:118
+msgid "License status:"
+msgstr ""
+
+#: premium/includes/class-powered-cache-license-page.php:122
+msgid "Expiry date:"
+msgstr ""
+
+#: premium/includes/class-powered-cache-license-page.php:126
+msgid "Development mode:"
+msgstr ""
+
+#: premium/includes/class-powered-cache-license-page.php:127
+msgid "On"
+msgstr ""
+
+#: premium/includes/class-powered-cache-license-page.php:132
+msgid "Manage License"
+msgstr ""
+
+#: premium/includes/class-powered-cache-license-page.php:169
+msgid "License key does not exist"
+msgstr ""
+
+#: premium/includes/class-powered-cache-license-page.php:172
+msgid "License key does not active"
+msgstr ""
+
+#: premium/includes/class-powered-cache-license-page.php:175
+msgid "License key has been expired"
+msgstr ""
+
+#: premium/includes/class-powered-cache-license-page.php:178
+msgid ""
+"Unregistered domain address, if you want to assing your license to another "
+"domain visit our website"
+msgstr ""
+
+#: premium/includes/premium-functions.php:264
+msgid "We could not provide support on localhost."
+msgstr ""
+
+#: premium/includes/premium-functions.php:288
+msgid "Please do not leave blank the fields."
+msgstr ""
+
+#: premium/includes/premium-functions.php:326
+msgid ""
+"We received your support request, we will be with you as soon as we are "
+"able. Do not forget to check %s"
+msgstr ""
+
+#: premium/includes/premium-functions.php:334
+msgid "We could not receive support request. <code>ERR_CODE:</code> %s"
+msgstr ""
+
+#: premium/includes/premium-functions.php:361
+msgid ""
+"If you do not want to share site details, you are free to use our support "
+"email %s"
+msgstr ""
+
+#: premium/includes/premium-functions.php:423
+msgid ""
+"Please enter your license key at the <a href=\"%s\">license page</a>, or "
+"you can define <code>%s</code> in wp-config.php file."
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "Powered Cache Premium"
 msgstr ""
 
 #. Plugin URI of the plugin/theme
