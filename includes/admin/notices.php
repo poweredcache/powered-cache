@@ -83,11 +83,29 @@ add_action( 'admin_notices', 'powered_cache_advanced_cache_notices' );
  */
 function powered_cache_advanced_cache_notices() {
 
+	/**
+	 * Users might want to control this notice.
+	 * eg: Varnish users don't need to turning on page cache.
+	 * Yeah! they can use remove_action as well
+	 *
+	 * @since 1.2
+	 */
+	if ( apply_filters( 'powered_cache_disable_advanced_cache_notices', false ) ) {
+		return;
+	}
+
 	if ( powered_cache_is_saving_options() ) {
 		return;
 	}
 
+
 	if ( true !== powered_cache_get_option( 'enable_page_caching' ) ) {
+		?>
+		<div class="notice notice-warning"><p>
+				<?php echo sprintf( __( '<strong>Important:</strong> please enable page caching on the Powered Cache <a href="%s">settings page</a>', 'powered-cache' ), admin_url( 'admin.php?page=powered-cache' ) ); ?>
+			</p>
+		</div>
+		<?php
 		return;
 	}
 
