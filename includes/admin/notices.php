@@ -176,3 +176,49 @@ function powered_cache_object_cache_notices() {
 	}
 
 }
+
+add_action( 'admin_notices', 'powered_cache_maybe_htaccess_warning' );
+
+/**
+ * Notices for the .htaccess
+ *
+ * @since 1.2
+ */
+function powered_cache_maybe_htaccess_warning() {
+	global $is_apache;
+
+	if ( true !== powered_cache_get_option( 'configure_htaccess' ) ) {
+		return;
+	}
+
+	if ( ! $is_apache ) {
+		return;
+	}
+
+	if ( ! current_user_can( apply_filters( 'powered_cache_cap', 'manage_options' ) ) ) {
+		return;
+	}
+
+	$htaccess_file = get_home_path() . '.htaccess';
+	$message       = '';
+	if ( ! file_exists( $htaccess_file ) ) {
+		$message = sprintf( __( 'We can\'t find <code>%s</code> file on your server. Please create a new <code>.htaccess</code> file. <a href="%s">Codex</a> might help!.', 'powered-cache' ), '.htaccess', 'https://codex.wordpress.org/htaccess' );
+	} elseif ( ! is_writeable( $htaccess_file ) ) {
+		$message = sprintf( __( 'Oh no! It looks your <code>%s</code> file is not writable. Please make sure it is writable by the web server. Your website will much more faster when configured for Powered Cache.', 'powered-cache' ), '.htaccess' );
+	}
+
+	if ( empty( $message ) ) {
+		return;
+	}
+
+	?>
+
+	<div class="error">
+		<p><strong><?php echo __( 'Powered Cache:', 'powered-cache' ); ?></strong>
+			<?php echo $message; ?>
+		</p>
+	</div>
+
+	<?php
+
+}
