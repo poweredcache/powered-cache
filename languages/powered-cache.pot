@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Powered Cache Premium 1.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/powered-cache\n"
-"POT-Creation-Date: 2017-12-27 21:27:02+00:00\n"
+"POT-Creation-Date: 2017-12-28 22:12:22+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -290,26 +290,26 @@ msgstr ""
 msgid "Varnish extension for Powered Cache"
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin-actions.php:101
+#: includes/admin/class-powered-cache-admin-actions.php:105
 msgid "Extension activated"
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin-actions.php:106
+#: includes/admin/class-powered-cache-admin-actions.php:110
 msgid "Extension deactivated"
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin-actions.php:146
+#: includes/admin/class-powered-cache-admin-actions.php:150
 #: includes/admin/class-powered-cache-extension-admin-base.php:113
 msgid "Options updated"
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin-actions.php:153
+#: includes/admin/class-powered-cache-admin-actions.php:157
 msgid ""
 "Something went wrong, we could not save settings to file. Please make sure "
 "the configuration file writable."
 msgstr ""
 
-#: includes/admin/class-powered-cache-admin-actions.php:175
+#: includes/admin/class-powered-cache-admin-actions.php:179
 msgid "All settings cleaned!"
 msgstr ""
 
