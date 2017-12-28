@@ -42,6 +42,10 @@ class Powered_Cache_Admin_Actions {
 					unset( $new_options['configure_htaccess'] );
 				}
 
+				if ( is_multisite() && ! current_user_can( 'manage_network' ) ) {
+					unset( $new_options['configure_htaccess'] );
+				}
+
 				/**
 				 * Calculate timeout with given interval, saving as minutes.
 				 *

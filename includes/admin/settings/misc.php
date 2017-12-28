@@ -46,7 +46,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				<?php
 				// additional control needed for cache flushing
-				if ( ( is_multisite() && current_user_can( 'manage_network' ) ) || current_user_can( 'activate_plugins' ) ): ?>
+				if ( ( is_multisite() && current_user_can( 'manage_network' ) ) || ( ! is_multisite() && current_user_can( 'activate_plugins' ) ) ): ?>
 					<tr>
 						<th scope="row"><label for="powered_cache_clear_cache"><?php _e( 'Clear Cache', 'powered-cache' ); ?></label></th>
 						<td>
