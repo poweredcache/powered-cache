@@ -1,9 +1,9 @@
 === Powered Cache ===
 
 Contributors:  skopco, m_uysl
-Tags: cache, caching, powered cache, cdn, performance, optimisation, SEO
+Tags: cache, caching, powered cache, cdn, super cache, fastest cache, total cache
 Requires at least:  4.1
-Tested up to:  4.8
+Tested up to:  4.9
 Stable tag:  1.1.2
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -13,7 +13,7 @@ Comprehensive caching and performance plugin for WordPress.
 
 == Description ==
 
-Powered Cache is a comprehensive caching and performance plugin for WordPress. It comes with build-in extensions that improve your website's performance.
+Powered Cache is a comprehensive caching and performance plugin for WordPress. It comes with built-in extensions that improve your website's performance.
 
 __Plugin Website__: [poweredcache.com](https://poweredcache.com)
 
@@ -21,7 +21,7 @@ __Plugin Website__: [poweredcache.com](https://poweredcache.com)
 
 - Simple and easily configurable. You can import and export settings via one click.
 - Page Caching
-- Object Caching (redis, memcached, memcache)
+- Object Caching (redis, memcached, memcache, apcu)
 - Support mod_rewrite (automatic .htaccess rules)
 - Mobile support (separate cache file for mobile)
 - Logged-in user cache
@@ -36,7 +36,7 @@ __Plugin Website__: [poweredcache.com](https://poweredcache.com)
 
 = Built-in extensions =
 
-Build-in extensions (aka add-ons) are comes with Powered Cache to provide more functionality.
+Built-in extensions (aka add-ons) come with Powered Cache to provide more functionality.
 
 [__Cloudflare__](https://poweredcache.com/extensions/cloudflare) – Cloudflare compatibility and functionalities ***Free***
 [__Lazy Load__](https://poweredcache.com/extensions/lazy-load/) – Loads images and iframes only when visible to the user ***Free***
@@ -52,7 +52,7 @@ Build-in extensions (aka add-ons) are comes with Powered Cache to provide more f
 
 = Premium Features =
 - All current and future premium extensions
-- Get benefits from our bots like reqular cron check, preloading etc...
+- Get benefits from our bots like regular cron checks, preloading, etc...
 - WP-CLI commands ready to save your time
 - We are providing top-notch premium support to premium users
 - No Ads on plugin page
@@ -90,7 +90,7 @@ Yes, it's compatible with PHP7+
 We designed Powered Cache is a complete optimization solution for WordPress. However, we believe that your system should be tailored to your needs without the added weight of unwanted functionality. We strive to perfect this balance with our built-in extensions.
 
 = What about mobile caching? =
-We support mobile devices and user agents, if your template is not responsive you can use mobile caching with separate file. It all works.
+We support mobile devices and user agents, if your template is not responsive you can use mobile caching with a separate file. It all works.
 
 = How to get premium version of plugin? =
 You can buy from [poweredcache.com](https://poweredcache.com/)
@@ -102,7 +102,7 @@ Yes, definitely!
 Yes, we don't get any problems with Jetpack.
 
 = Is it compatible with ecommerce plugins? =
-We didn't test all of them but principally it must be worked, you consider excluding dynamic pages from page cache. (like checkout page)
+We didn't test all of them, but principally it must be worked, you consider excluding dynamic pages from the page cache. (like checkout page)
 
 
 == Screenshots ==
@@ -114,15 +114,25 @@ We didn't test all of them but principally it must be worked, you consider exclu
 
 == Changelog ==
 
-= 1.1.2 =
- - fix: encoding problem on apache
- - fix: pass robots.txt requests to PHP. Props  [@karalamalar](https://github.com/karalamalar/)
- - PHP7+ support for memcached redux
- - fix: page cache undefined function during update
- - fix: new line characters on parsing configuration file
+= 1.2 =
+ - New feature: Fragment caching
+ - New feature: APCu support for object caching
+ - New feature: Diagnostic
+ - New feature: Control `.htaccess` update on apache env.
+ - Fix: respect original `Content type`
+ - Fix: caching on password protected posts
+ - Fix: wrong admin notice during options update
+ - Fix: CDN srcset replacements
+ - Fix: trailingslash handling
+ - Capability improvements on multisite
+ - CDN integration improvements
+
 
 Detailed changelog located in [changelog page](https://poweredcache.com/changelog)
 
 == Upgrade notice ==
+
+= 1.2 =
+ - Default `WP_CACHE_KEY_SALT` has been changed, be careful about upgrading
 
 If you get unexpected results after upgrade or migrating to new hosting, please check WordPress drop-in caching files which are located in `wp-content/advanced-cache.php` and `wp-content/object-cache.php`

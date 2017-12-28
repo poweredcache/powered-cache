@@ -25,7 +25,7 @@ __Plugin Website__: [poweredcache.com](https://poweredcache.com)
 
 ### Built-in extensions
 
-Build-in extensions (aka add-ons) are comes with Powered Cache to provide more functionality.
+Built-in extensions (aka add-ons) come with Powered Cache to provide more functionality.
 
 [__Cloudflare__](https://poweredcache.com/extensions/cloudflare) – Cloudflare compatibility and functionalities ***Free***  
 [__Lazy Load__](https://poweredcache.com/extensions/lazy-load/) – Loads images and iframes only when visible to the user ***Free***  
@@ -41,7 +41,7 @@ Build-in extensions (aka add-ons) are comes with Powered Cache to provide more f
 
 ### Premium Features   
 - All current and future premium extensions
-- Get benefits from our bots like reqular cron check, preloading etc...
+- Get benefits from our bots like regular cron checks, preloading, etc...
 - WP-CLI commands ready to save your time
 - We are providing top-notch premium support to premium users
 - No Ads on plugin page
