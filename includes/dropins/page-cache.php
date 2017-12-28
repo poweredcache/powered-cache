@@ -146,14 +146,14 @@ ob_start( 'powered_cache_page_buffer' );
  * @return string
  */
 function powered_cache_page_buffer( $buffer, $flags ) {
-	global $powered_cache_start_time;
+	global $powered_cache_start_time, $post;
 
 	if ( strlen( $buffer ) < 255 ) {
 		return $buffer;
 	}
 
 	// Don't cache search, 404, or password protected
-	if ( is_404() || is_search() || post_password_required() ) {
+	if ( is_404() || is_search() || ! empty( $post->post_password ) ) {
 		return $buffer;
 	}
 
