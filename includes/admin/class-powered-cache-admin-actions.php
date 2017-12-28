@@ -208,7 +208,7 @@ class Powered_Cache_Admin_Actions {
 	 */
 	public static function exit_with_redirect() {
 
-		$referer = wp_get_referer();
+		$referer = wp_get_raw_referer();
 		if ( false === $referer ) {
 			$referer = admin_url( 'admin.php?page=powered-cache' );
 		}
