@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Powered Cache 1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/powered-cache\n"
-"POT-Creation-Date: 2017-12-27 21:27:02+00:00\n"
-"PO-Revision-Date: 2017-12-28 00:30+0300\n"
+"POT-Creation-Date: 2018-05-24 20:38:47+00:00\n"
+"PO-Revision-Date: 2018-05-24 23:42+0300\n"
 "Last-Translator: Mustafa Uysal <EMAIL@ADDRESS>\n"
 "Language-Team: TR LANGUAGE <LL@li.org>\n"
 "Language: tr\n"
@@ -287,20 +287,20 @@ msgstr "WordPress cron'u uzaktan tetikler"
 msgid "Varnish extension for Powered Cache"
 msgstr "Powered Cache için Varnish eklentisi."
 
-#: includes/admin/class-powered-cache-admin-actions.php:101
+#: includes/admin/class-powered-cache-admin-actions.php:105
 msgid "Extension activated"
 msgstr "Eklenti aktifleştirildi"
 
-#: includes/admin/class-powered-cache-admin-actions.php:106
+#: includes/admin/class-powered-cache-admin-actions.php:110
 msgid "Extension deactivated"
 msgstr "Eklenti pasifleştirildi"
 
-#: includes/admin/class-powered-cache-admin-actions.php:146
+#: includes/admin/class-powered-cache-admin-actions.php:150
 #: includes/admin/class-powered-cache-extension-admin-base.php:113
 msgid "Options updated"
 msgstr "Ayarlar güncellendi"
 
-#: includes/admin/class-powered-cache-admin-actions.php:153
+#: includes/admin/class-powered-cache-admin-actions.php:157
 msgid ""
 "Something went wrong, we could not save settings to file. Please make sure "
 "the configuration file writable."
@@ -308,7 +308,7 @@ msgstr ""
 "Bir şeyler ters gitti ve ayarları dosyaya kaydedemedik. Lütfen yapılandırma "
 "dosyasının yazılabilir olduğundan emin olunuz."
 
-#: includes/admin/class-powered-cache-admin-actions.php:175
+#: includes/admin/class-powered-cache-admin-actions.php:179
 msgid "All settings cleaned!"
 msgstr "Tüm ayarlar temizlendi!"
 
@@ -524,7 +524,7 @@ msgstr ""
 #: includes/admin/notices.php:171 includes/admin/notices.php:189
 #: includes/admin/notices.php:235
 #: premium/includes/class-powered-cache-license-page.php:189
-#: premium/includes/premium-functions.php:422
+#: premium/includes/premium-functions.php:433
 msgid "Powered Cache:"
 msgstr "Powered Cache:"
 
@@ -879,15 +879,23 @@ msgstr "Ne olmasını bekliyordunuz?"
 msgid "What did you see instead?"
 msgstr "Bunun yerine ne oldu?"
 
-#: includes/admin/settings/support.php:70
+#: includes/admin/settings/support.php:72
 msgid ""
-"You agree to allow sharing site related info (WordPress version, PHP "
-"version, active plugin etc...) with Powered Cache by submitting this form."
+"I accept the <a href=\"%s\" target=\"_blank\">Privacy Policy </a> by "
+"submitting this form."
 msgstr ""
-"Bu formu göndererek sitenizle ilgili bilgileri (WordPress sürümü, PHP "
-"sürümü, aktif eklentiler vs...) bizimle paylaşmayı kabul etmiş sayılırsınız."
+"Bu formu göndererek <a href=\"%s\" target=\"_blank\">Gizlilik Sözleşmesini </"
+"a> kabul ediyorum."
 
-#: includes/admin/settings/support.php:77
+#: includes/admin/settings/support.php:74
+msgid ""
+"This form will be sent site related information. (WordPress version, PHP "
+"version, active plugin etc...)"
+msgstr ""
+"Bu formu sitenizle ilgili bilgileri (WordPress sürümü, PHP sürümü, aktif "
+"eklentiler vs...) gönderecektir"
+
+#: includes/admin/settings/support.php:82
 msgid "Open new support ticket"
 msgstr "Yeni destek talebi gönder"
 
@@ -1293,11 +1301,19 @@ msgstr ""
 msgid "We could not provide support on localhost."
 msgstr "Localhost'a deste sağlayamıyoruz."
 
-#: premium/includes/premium-functions.php:288
+#: premium/includes/premium-functions.php:282
+msgid ""
+"You have to accept our <a href=\"%s\" target=\"_blank\">Privacy Policy</a> "
+"to submit this form."
+msgstr ""
+"Bu formu göndermek için <a href=\"%s\" target=\"_blank\">Gizlilik "
+"Sözleşmemizi</a> kabul etmelisiniz."
+
+#: premium/includes/premium-functions.php:299
 msgid "Please do not leave blank the fields."
 msgstr "Lütfen alanları boş bırakmayın."
 
-#: premium/includes/premium-functions.php:326
+#: premium/includes/premium-functions.php:337
 msgid ""
 "We received your support request, we will be with you as soon as we are "
 "able. Do not forget to check %s"
@@ -1305,11 +1321,11 @@ msgstr ""
 "Destek talebinizi aldık, mümkün olan en kısa sürede iletişime geçeceğiz. %s "
 "adresinizi kontrol etmeyi unutmayın"
 
-#: premium/includes/premium-functions.php:334
+#: premium/includes/premium-functions.php:345
 msgid "We could not receive support request. <code>ERR_CODE:</code> %s"
 msgstr "Destek talebinizi alamadık. <code>HATA_KODU:</code> %s"
 
-#: premium/includes/premium-functions.php:361
+#: premium/includes/premium-functions.php:372
 msgid ""
 "If you do not want to share site details, you are free to use our support "
 "email %s"
@@ -1317,7 +1333,7 @@ msgstr ""
 "Siteniz hakkında detay bilgi paylaşmak istemiyorsanız, direkt %s adresinden "
 "destek alabilirsiniz."
 
-#: premium/includes/premium-functions.php:423
+#: premium/includes/premium-functions.php:434
 msgid ""
 "Please enter your license key at the <a href=\"%s\">license page</a>, or you "
 "can define <code>%s</code> in wp-config.php file."

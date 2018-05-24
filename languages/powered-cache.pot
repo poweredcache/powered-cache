@@ -1,14 +1,14 @@
-# Copyright (C) 2017 SKOP, Mustafa Uysal
+# Copyright (C) 2018 SKOP, Mustafa Uysal
 # This file is distributed under the GPLv2 (or later).
 msgid ""
 msgstr ""
 "Project-Id-Version: Powered Cache Premium 1.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/powered-cache\n"
-"POT-Creation-Date: 2017-12-28 22:12:22+00:00\n"
+"POT-Creation-Date: 2018-05-24 20:38:47+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2017-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2018-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "X-Generator: grunt-wp-i18n 0.5.4\n"
@@ -512,7 +512,7 @@ msgstr ""
 #: includes/admin/notices.php:171 includes/admin/notices.php:189
 #: includes/admin/notices.php:235
 #: premium/includes/class-powered-cache-license-page.php:189
-#: premium/includes/premium-functions.php:422
+#: premium/includes/premium-functions.php:433
 msgid "Powered Cache:"
 msgstr ""
 
@@ -850,13 +850,19 @@ msgstr ""
 msgid "What did you see instead?"
 msgstr ""
 
-#: includes/admin/settings/support.php:70
+#: includes/admin/settings/support.php:72
 msgid ""
-"You agree to allow sharing site related info (WordPress version, PHP "
-"version, active plugin etc...) with Powered Cache by submitting this form."
+"I accept the <a href=\"%s\" target=\"_blank\">Privacy Policy </a> by "
+"submitting this form."
 msgstr ""
 
-#: includes/admin/settings/support.php:77
+#: includes/admin/settings/support.php:74
+msgid ""
+"This form will be sent site related information. (WordPress version, PHP "
+"version, active plugin etc...)"
+msgstr ""
+
+#: includes/admin/settings/support.php:82
 msgid "Open new support ticket"
 msgstr ""
 
@@ -1238,27 +1244,33 @@ msgstr ""
 msgid "We could not provide support on localhost."
 msgstr ""
 
-#: premium/includes/premium-functions.php:288
+#: premium/includes/premium-functions.php:282
+msgid ""
+"You have to accept our <a href=\"%s\" target=\"_blank\">Privacy Policy</a> "
+"to submit this form."
+msgstr ""
+
+#: premium/includes/premium-functions.php:299
 msgid "Please do not leave blank the fields."
 msgstr ""
 
-#: premium/includes/premium-functions.php:326
+#: premium/includes/premium-functions.php:337
 msgid ""
 "We received your support request, we will be with you as soon as we are "
 "able. Do not forget to check %s"
 msgstr ""
 
-#: premium/includes/premium-functions.php:334
+#: premium/includes/premium-functions.php:345
 msgid "We could not receive support request. <code>ERR_CODE:</code> %s"
 msgstr ""
 
-#: premium/includes/premium-functions.php:361
+#: premium/includes/premium-functions.php:372
 msgid ""
 "If you do not want to share site details, you are free to use our support "
 "email %s"
 msgstr ""
 
-#: premium/includes/premium-functions.php:423
+#: premium/includes/premium-functions.php:434
 msgid ""
 "Please enter your license key at the <a href=\"%s\">license page</a>, or "
 "you can define <code>%s</code> in wp-config.php file."
