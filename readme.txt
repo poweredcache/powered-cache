@@ -4,7 +4,7 @@ Contributors:  skopco, m_uysl
 Tags: cache, caching, powered cache, cdn, super cache, fastest cache, total cache
 Requires at least:  4.1
 Tested up to:  4.9
-Stable tag:  1.2
+Stable tag:  1.2.1
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -114,18 +114,8 @@ We didn't test all of them, but principally it must be worked, you consider excl
 
 == Changelog ==
 
-= 1.2 =
- - New feature: Fragment caching
- - New feature: APCu support for object caching
- - New feature: Diagnostic
- - New feature: Control `.htaccess` update on apache env.
- - Fix: respect original `Content type`
- - Fix: caching on password protected posts
- - Fix: wrong admin notice during options update
- - Fix: CDN srcset replacements
- - Fix: trailingslash handling
- - Capability improvements on multisite
- - CDN integration improvements
+= 1.2.1 =
+ - Make support form GDPR friendly
 
 
 Detailed changelog located in [changelog page](https://poweredcache.com/changelog)
