@@ -66,9 +66,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<tr>
 						<td></td>
 						<td>
-							<small>
-								<?php _e( 'You agree to allow sharing site related info (WordPress version, PHP version, active plugin etc...) with Powered Cache by submitting this form.', 'powered-cache' ); ?>
-							</small>
+							<input type="checkbox" value="1" name="support-terms" id="support-terms" />
+							<label for="support-terms">
+								<small>
+									<?php echo sprintf( __( 'I accept the <a href="%s" target="_blank">Privacy Policy </a> by submitting this form.', 'powered-cache' ), 'https://poweredcache.com/privacy/' ); ?>
+									<br>
+									<?php _e( 'This form will be sent site related information. (WordPress version, PHP version, active plugin etc...)', 'powered-cache' ); ?>
+								</small>
+							</label>
 						</td>
 					</tr>
 					<tr>
