@@ -434,7 +434,7 @@ function powered_cache_index_file( $content_type = 'text/html' ) {
 	 * but that makes things much more complicated.
 	 */
 	if ( false === strpos( $content_type, 'text/html' ) ) {
-		$file_name .= '-' . mb_substr( sha1( $content_type ), 0, 6 );
+		$file_name .= '-' . substr( sha1( $content_type ), 0, 6 );
 	}
 
 	$file_name .= '.html';
