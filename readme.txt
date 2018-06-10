@@ -4,7 +4,7 @@ Contributors:  skopco, m_uysl
 Tags: cache, caching, powered cache, cdn, super cache, fastest cache, total cache
 Requires at least:  4.1
 Tested up to:  4.9
-Stable tag:  1.2.1
+Stable tag:  1.2.2
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -114,8 +114,8 @@ We didn't test all of them, but principally it must be worked, you consider excl
 
 == Changelog ==
 
-= 1.2.1 =
- - Make support form GDPR friendly
+= 1.2.2 =
+ - Fix: use `substr` instead `mb_substr` to avoid fatal error on the environment which is not supported multibyte string
 
 
 Detailed changelog located in [changelog page](https://poweredcache.com/changelog)
