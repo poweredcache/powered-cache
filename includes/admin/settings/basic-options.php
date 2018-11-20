@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<td>
 						<label><input type="checkbox" <?php checked( powered_cache_get_option( 'enable_page_caching' ), 1 ); ?> id="powered_cache_caching_status" name="powered_cache_settings[enable_page_caching]" value="1">
 							<?php _e( 'Enable page caching that will reduce the response time of your site.', 'powered-cache' ); ?>
-							(<a target="_blank" href="http://docs.poweredcache.com/article/4-page-cache">?</a>)
+							(<a target="_blank" href="https://github.com/skopco/powered-cache/wiki/Page-Cache">?</a>)
 						</label>
 						<?php global $is_apache;
 						if ( $is_apache && ( ( is_multisite() && current_user_can( 'manage_network' ) ) || ( ! is_multisite() && current_user_can( 'activate_plugins' ) ) ) ): ?>
@@ -51,7 +51,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<?php endforeach;?>
 						</select>
 						<?php echo __( 'Speed up dynamic pageviews', 'powered-cache' ); ?>
-						(<a target="_blank" href="http://docs.poweredcache.com/article/6-object-cache">?</a>)
+						(<a target="_blank" href="https://github.com/skopco/powered-cache/wiki/Object-Cache">?</a>)
 					</td>
 				</tr>
 				<?php endif; ?>
@@ -64,7 +64,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div id="separate-mobile-cache" style="display:<?php echo( '1' == powered_cache_get_option( 'cache_mobile' ) ? '' : 'none;' ) ?>">
 							<label><input type="checkbox" id="cache_mobile_separate_file"  name="powered_cache_settings[cache_mobile_separate_file]" <?php checked( powered_cache_get_option( 'cache_mobile_separate_file' ), 1 ); ?> value="1"><?php _e('Use separate cache file for mobile.','powered-cache'); ?></label>
 						</div>
-						(<a target="_blank" href="http://docs.poweredcache.com/article/7-mobile-cache">?</a>)
+						(<a target="_blank" href="https://github.com/skopco/powered-cache/wiki/Mobile-Cache">?</a>)
 
 					</td>
 				</tr>
@@ -73,7 +73,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<th scope="row"><label for="powered_cache_loggedin_user_cache"><?php _e( 'Logged in user cache', 'powered-cache' ); ?></label></th>
 					<td>
 						<label><input type="checkbox" id="powered_cache_loggedin_user_cache"  name="powered_cache_settings[loggedin_user_cache]" <?php checked( powered_cache_get_option( 'loggedin_user_cache' ), 1 ); ?> value="1"><?php _e('Show cached page for logged in users','powered-cache'); ?></label>
-						(<a target="_blank" href="http://docs.poweredcache.com/article/8-logged-in-user-cache">?</a>)
+						(<a target="_blank" href="https://github.com/skopco/powered-cache/wiki/Logged-in-user-cache">?</a>)
 					</td>
 				</tr>
 
@@ -81,7 +81,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<th scope="row"><label for="powered_cache_ssl_cache"><?php _e( 'SSL Cache', 'powered-cache' ); ?></label></th>
 					<td>
 						<label><input type="checkbox" id="powered_cache_ssl_cache"  name="powered_cache_settings[ssl_cache]"  <?php checked( powered_cache_get_option( 'ssl_cache' ), 1 ); ?> value="1"><?php _e('Enable caching for SSL','powered-cache'); ?></label>
-						(<a target="_blank" href="http://docs.poweredcache.com/article/9-caching-on-https">?</a>)
+						(<a target="_blank" href="https://github.com/skopco/powered-cache/wiki/Caching-on-https">?</a>)
 					</td>
 				</tr>
 
@@ -89,7 +89,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<th scope="row"><label for="powered_cache_gzip_status"><?php _e( 'Gzip', 'powered-cache' ); ?></label></th>
 					<td>
 						<label><input type="checkbox" id="powered_cache_gzip_status"  name="powered_cache_settings[gzip_compression]"  <?php checked( powered_cache_get_option( 'gzip_compression' ), 1 ); ?> value="1"><?php _e('Enable gzip compression','powered-cache'); ?></label>
-						(<a target="_blank" href="http://docs.poweredcache.com/article/15-enable-gzip-compression">?</a>)
+						(<a target="_blank" href="https://github.com/skopco/powered-cache/wiki/Enable-gzip-compression">?</a>)
 					</td>
 				</tr>
 
@@ -108,7 +108,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 								<option <?php selected( 'DAY', $selected_interval ); ?> value="DAY"><?php echo __( 'Day', 'powered-cache' ); ?></option>
 							</select>
 						</label>
-						(<a target="_blank" href="http://docs.poweredcache.com/article/10-cache-timeout">?</a>)
+						(<a target="_blank" href="https://github.com/skopco/powered-cache/wiki/Cache-Timeout">?</a>)
 					</td>
 				</tr>
 
