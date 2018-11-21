@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-define( 'POWERED_CACHE_REQUIRED_WP_VERSION', '4.1' );
+define( 'POWERED_CACHE_REQUIRED_WP_VERSION', '4.5' );
 
 
 if ( ! class_exists( 'Powered_Cache' ) ) :
