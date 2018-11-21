@@ -224,6 +224,15 @@ function powered_cache_page_buffer( $buffer, $flags ) {
 	$modified_time   = time(); // Make sure modified time is consistent
 	$generation_time = number_format( microtime( true ) - $powered_cache_start_time, 3 );
 
+	// Prevent mixed content when there's an http request but the site URL uses https
+	// @see https://github.com/tlovett1/simple-cache/issues/67
+	$home_url = get_home_url();
+	if ( ! is_ssl() && 'https' === strtolower( parse_url( $home_url, PHP_URL_SCHEME ) ) ) {
+		$https_home_url = $home_url;
+		$http_home_url  = str_replace( 'https://', 'http://', $https_home_url );
+		$buffer         = str_replace( esc_url( $http_home_url ), esc_url( $https_home_url ), $buffer );
+	}
+
 	if ( array_key_exists( 'show_cache_message', $GLOBALS['powered_cache_options'] ) && true === $GLOBALS['powered_cache_options']['show_cache_message'] ) {
 		if ( preg_match( '#</html>#i', $buffer ) ) {
 			$buffer .= PHP_EOL;
