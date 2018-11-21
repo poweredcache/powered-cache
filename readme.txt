@@ -4,7 +4,7 @@ Contributors:  skopco, m_uysl
 Tags: cache, caching, powered cache, cdn, super cache, fastest cache, total cache
 Requires at least:  4.5
 Tested up to:  5.0
-Stable tag:  1.2.2
+Stable tag:  1.2.3
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -115,8 +115,11 @@ We didn't test all of them, but principally it must be worked, you consider excl
 
 == Changelog ==
 
-= 1.2.2 =
- - Fix: use `substr` instead `mb_substr` to avoid fatal error on the environment which is not supported multibyte string
+= 1.2.3 =
+ - browser caching improved for fonts
+ - documents migrated to GitHub, inline links have been updated
+ - prevent mixed content when there's an http request but the site uses https
+ - required WordPress version bumped to 4.5, because of `wp_get_raw_referer`
 
 
 Detailed changelog located in [changelog page](https://poweredcache.com/changelog)

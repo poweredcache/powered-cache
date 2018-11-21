@@ -4,8 +4,8 @@
  * Plugin URI:    https://poweredcache.com
  * Description:   Comprehensive caching and performance plugin for WordPress.
  * Author:        SKOP, Mustafa Uysal
- * Author URI:    http://skop.co/
- * Version:       1.2.2
+ * Author URI:    https://poweredcache.com
+ * Version:       1.2.3
  * Text Domain:   powered-cache
  * Domain Path:   /languages/
  * License:       GPLv2 (or later)
@@ -69,7 +69,7 @@ if ( ! class_exists( 'Powered_Cache' ) ) :
 			}
 
 			if ( ! defined( 'POWERED_CACHE_PLUGIN_VERSION' ) ) {
-				define( 'POWERED_CACHE_PLUGIN_VERSION', '1.2.2' );
+				define( 'POWERED_CACHE_PLUGIN_VERSION', '1.2.3' );
 			}
 
 			if ( ! defined( 'POWERED_CACHE_PLUGIN_DIR' ) ) {
