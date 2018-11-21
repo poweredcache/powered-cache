@@ -508,6 +508,16 @@ class Powered_Cache_Config {
 				}
 				$rules .= '    ExpiresByType ' . $mime_type . '                 "' . $expiry_time . '"' . PHP_EOL;
 			}
+
+			$rules .= '    ExpiresByType application/x-font-ttf                 "access plus 1 month"' . PHP_EOL;
+			$rules .= '    ExpiresByType application/x-font-woff                "access plus 1 month"' . PHP_EOL;
+			$rules .= '    ExpiresByType application/x-font-woff2               "access plus 1 month"' . PHP_EOL;
+			$rules .= '    ExpiresByType font/opentype                          "access plus 1 month"' . PHP_EOL;
+			$rules .= '    ExpiresByType application/vnd.ms-fontobject          "access plus 1 month"' . PHP_EOL;
+			$rules .= '    ExpiresByType application/font-sfnt                  "access plus 1 month"' . PHP_EOL;
+			$rules .= '    ExpiresByType image/svg+xml                          "access plus 1 month"' . PHP_EOL;
+
+
 			$rules .= "</IfModule>" . PHP_EOL;
 
 		}
@@ -705,7 +715,7 @@ class Powered_Cache_Config {
 		$contents .= 'location = /favicon.ico { log_not_found off; access_log off; }' . PHP_EOL;
 		$contents .= 'location = /robots.txt { try_files $uri $uri/ /index.php?$args; log_not_found off; access_log off; }' . PHP_EOL . PHP_EOL;
 
-		$contents .= 'location ~* .(jpg|jpeg|png|gif|ico|css|js|woff|svg)$ {' . PHP_EOL;
+		$contents .= 'location ~* .(jpg|jpeg|png|gif|ico|css|js|svg|eot|woff|woff2|ttf|otf)$ {' . PHP_EOL;
 		$contents .= '  expires 1M;' . PHP_EOL;
 		$contents .= '}' . PHP_EOL . PHP_EOL;
 
