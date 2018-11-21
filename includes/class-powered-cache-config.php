@@ -483,7 +483,6 @@ class Powered_Cache_Config {
 			$rules .= "    ExpiresActive On" . PHP_EOL;
 			$rules .= '    ExpiresByType  text/html            "access plus 0 seconds"' . PHP_EOL;
 			$rules .= '    ExpiresByType  text/richtext        "access plus 0 seconds"' . PHP_EOL;
-			$rules .= '    ExpiresByType  image/svg+xml        "access plus 0 seconds"' . PHP_EOL;
 			$rules .= '    ExpiresByType  text/plain           "access plus 0 seconds"' . PHP_EOL;
 			$rules .= '    ExpiresByType  text/xsd             "access plus 0 seconds"' . PHP_EOL;
 			$rules .= '    ExpiresByType  text/xsl             "access plus 0 seconds"' . PHP_EOL;
@@ -492,7 +491,7 @@ class Powered_Cache_Config {
 
 			foreach ( $mime_types as $mime_type => $ext ) {
 
-				if ( in_array( $mime_type, array( 'text/html', 'text/richtext', 'image/svg+xml', 'text/plain', 'text/xsd', 'text/xsl', 'text/xml', 'text/cache-manifest' ) ) ) {
+				if ( in_array( $mime_type, array( 'text/html', 'text/richtext', 'text/plain', 'text/xsd', 'text/xsl', 'text/xml', 'text/cache-manifest' ) ) ) {
 					continue;
 				}
 
