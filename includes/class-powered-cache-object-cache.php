@@ -33,6 +33,10 @@ class Powered_Cache_Object_Cache {
 	public function setup() {
 		add_action( 'admin_bar_menu', array( $this, 'admin_bar_menu' ) );
 		add_action( 'admin_post_powered_cache_purge_object_cache', array( $this, 'purge_object_cache' ) );
+
+		add_action( 'added_option', array( $this, 'maybe_clear_alloptions_cache' ) );
+		add_action( 'updated_option', array( $this, 'maybe_clear_alloptions_cache' ) );
+		add_action( 'deleted_option', array( $this, 'maybe_clear_alloptions_cache' ) );
 	}
 
 
@@ -84,5 +88,25 @@ class Powered_Cache_Object_Cache {
 		die();
 	}
 
+
+	/**
+	 * Fix a race condition in alloptions caching
+	 *
+	 * @see https://github.com/skopco/powered-cache/issues/47
+	 * @see https://core.trac.wordpress.org/ticket/31245
+	 *
+	 *
+	 * Ported from https://core.trac.wordpress.org/ticket/31245#comment:57
+	 * @since 1.2.4
+	 */
+	public function maybe_clear_alloptions_cache( $option ) {
+		if ( ! wp_installing() ) {
+			$alloptions = wp_load_alloptions(); //alloptions should be cached at this point
+
+			if ( isset( $alloptions[ $option ] ) ) { //only if option is among alloptions
+				wp_cache_delete( 'alloptions', 'options' );
+			}
+		}
+	}
 
 }
