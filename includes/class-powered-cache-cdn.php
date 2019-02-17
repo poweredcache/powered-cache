@@ -37,6 +37,7 @@ class Powered_Cache_CDN {
 		add_filter( 'style_loader_src', array( $this, 'cdn_url' ), PHP_INT_MAX );
 		add_filter( 'script_loader_src', array( $this, 'cdn_url' ), PHP_INT_MAX );
 		add_filter( 'wp_calculate_image_srcset', array( $this, 'srcset_url' ), PHP_INT_MAX );
+		add_filter( 'wp_get_attachment_image_src', array( $this, 'attachment_image_src' ), PHP_INT_MAX );
 
 
 		add_filter( 'the_content', array( $this, 'cdn_images' ), PHP_INT_MAX );
@@ -76,6 +77,34 @@ class Powered_Cache_CDN {
 		return $this->maybe_cdn_replace( $url );
 	}
 
+
+	/**
+	 * Replace URL for wp_get_attachment_image_src function
+	 *
+	 * @param array|false $image Either array with src, width & height, icon src, or false
+	 *
+	 * @since 1.2.4
+	 * @return array $image
+	 */
+	public function attachment_image_src( $image ) {
+		if ( is_admin() || is_preview() ) {
+			return $image;
+		}
+
+		if ( ! (bool) $image ) {
+			return $image;
+		}
+
+		$cdn_url = self::get_best_possible_cdn_host( 'image' );
+		// no host found
+		if ( false === $cdn_url ) {
+			return $image;
+		}
+
+		$image[0] = str_replace( home_url(), $cdn_url, $image[0] );
+
+		return $image;
+	}
 
 
 	public function cdn_images( $content ) {
