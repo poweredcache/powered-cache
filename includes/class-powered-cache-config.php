@@ -584,6 +584,8 @@ class Powered_Cache_Config {
 			$rules .= "    RewriteRule .* - [E=PC_SSL:-https]" . PHP_EOL;
 			$rules .= "    RewriteCond %{SERVER_PORT} =443" . PHP_EOL;
 			$rules .= "    RewriteRule .* - [E=PC_SSL:-https]" . PHP_EOL;
+			$rules .= "    RewriteCond %{HTTP:X-Forwarded-Proto} https" . PHP_EOL;
+			$rules .= "    RewriteRule .* - [E=PC_SSL:-https]" . PHP_EOL;
 			$env_powered_cache_ssl = '%{ENV:PC_SSL}';
 		}
 
