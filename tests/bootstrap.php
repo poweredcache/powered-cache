@@ -13,10 +13,11 @@ if ( ! $_tests_dir ) {
 // Give access to tests_add_filter() function.
 require_once $_tests_dir . '/includes/functions.php';
 
-if ( ! defined( 'FS_CHMOD_DIR' ) ) {
+if ( ! defined( 'FS_CHMOD_DIR' ) && defined( 'ABSPATH' ) ) {
 	define( 'FS_CHMOD_DIR', ( fileperms( ABSPATH ) & 0777 | 0755 ) );
 }
-if ( ! defined( 'FS_CHMOD_FILE' ) ) {
+
+if ( ! defined( 'FS_CHMOD_FILE' ) && defined( 'ABSPATH' ) ) {
 	define( 'FS_CHMOD_FILE', ( fileperms( ABSPATH . 'index.php' ) & 0777 | 0644 ) );
 }
 
