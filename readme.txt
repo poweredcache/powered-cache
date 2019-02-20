@@ -4,7 +4,7 @@ Contributors:  skopco, m_uysl
 Tags: cache, caching, powered cache, cdn, super cache, fastest cache, total cache
 Requires at least:  4.5
 Tested up to:  5.1
-Stable tag:  1.2.3
+Stable tag:  1.2.4
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -115,11 +115,10 @@ We didn't test all of them, but principally it must be worked, you consider excl
 
 == Changelog ==
 
-= 1.2.3 =
- - browser caching improved for fonts
- - documents migrated to GitHub, inline links have been updated
- - prevent mixed content when there's an http request but the site uses https
- - required WordPress version bumped to 4.5, because of `wp_get_raw_referer`
+= 1.2.4 =
+ - object cache race condition bug fixed
+ - .htaccess now respects `X-Forwarded-Proto`
+ - CDN support added for `wp_get_attachment_image_src`
 
 
 Detailed changelog located in [changelog page](https://poweredcache.com/changelog)
