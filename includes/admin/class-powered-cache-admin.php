@@ -30,6 +30,10 @@ class Powered_Cache_Admin {
 	function setup() {
 		$this->capability = apply_filters( 'powered_cache_cap', $this->capability );
 
+		if ( is_multisite() ) {
+			add_action( 'network_admin_menu', array( $this, 'admin_menu' ) );
+		}
+
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 		add_action( 'admin_bar_menu', array( $this, 'admin_bar_menu' ), 999 );
 		add_filter( 'plugin_action_links_' . plugin_basename( POWERED_CACHE_PLUGIN_FILE ), array( $this, 'action_links' ) );
