@@ -367,9 +367,7 @@ function powered_cache_get_cache_dir() {
  * @return mixed
  */
 function powered_cache_clean_page_cache_dir() {
-	global $powered_cache_fs;
-
-	return $powered_cache_fs->rmdir( untrailingslashit( powered_cache_get_cache_dir() ) . '/powered-cache', true );
+	powered_cache_rmdir( untrailingslashit( powered_cache_get_cache_dir() ) . '/powered-cache' );
 }
 
 /**
@@ -379,9 +377,7 @@ function powered_cache_clean_page_cache_dir() {
  * @return mixed
  */
 function powered_cache_clean_site_cache_dir() {
-	global $powered_cache_fs;
-
-	return $powered_cache_fs->rmdir( powered_cache_site_cache_dir(), true );
+	powered_cache_rmdir( powered_cache_site_cache_dir() );
 }
 
 
@@ -696,5 +692,44 @@ if ( ! function_exists( 'boolval' ) ) {
 	 */
 	function boolval( $val ) {
 		return (bool) $val;
+	}
+}
+
+/**
+ * remove directories recursively
+ *
+ * Adopted from W3TC Utility
+ * @param string $path
+ * @param array  $exclude
+ *
+ * @since 1.2.5
+ * @return void
+ */
+function powered_cache_rmdir( $path, $exclude = array() ) {
+	$dir = @opendir( $path );
+
+	if ( $dir ) {
+		while ( ( $entry = @readdir( $dir ) ) !== false ) {
+			if ( $entry == '.' || $entry == '..' ) {
+				continue;
+			}
+
+			foreach ( $exclude as $mask ) {
+				if ( fnmatch( $mask, basename( $entry ) ) ) {
+					continue 2;
+				}
+			}
+
+			$full_path = $path . DIRECTORY_SEPARATOR . $entry;
+
+			if ( @is_dir( $full_path ) ) {
+				powered_cache_rmdir( $full_path, $exclude );
+			} else {
+				@unlink( $full_path );
+			}
+		}
+
+		@closedir( $dir );
+		@rmdir( $path );
 	}
 }
