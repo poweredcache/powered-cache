@@ -4,7 +4,7 @@ Contributors:  skopco, m_uysl
 Tags: cache, caching, powered cache, cdn, super cache, fastest cache, total cache
 Requires at least:  4.5
 Tested up to:  5.2
-Stable tag:  1.2.4
+Stable tag:  1.2.5
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -115,10 +115,10 @@ We didn't test all of them, but principally it must be worked, you consider excl
 
 == Changelog ==
 
-= 1.2.4 =
- - object cache race condition bug fixed
- - .htaccess now respects `X-Forwarded-Proto`
- - CDN support added for `wp_get_attachment_image_src`
+= 1.2.5 =
+ - fix: normalize request_uri for generating correct file
+ - show Powered Cache on network administration page too
+ - performance improvements on flushing page cache
 
 
 Detailed changelog located in [changelog page](https://poweredcache.com/changelog)
