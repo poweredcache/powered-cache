@@ -43,7 +43,7 @@ class Powered_Cache_Function_Test extends WP_UnitTestCase {
 		powered_cache_fragment( 'unique-key', 300, function () {
 			echo 'Fragment caching content';
 		} );
-		$output = ob_get_flush();
+		$output = ob_get_clean();
 
 		$this->assertEquals( 'Fragment caching content', $output );
 	}
