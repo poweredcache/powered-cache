@@ -1016,7 +1016,25 @@ class WP_Object_Cache {
 		} else { //tcp connection
 			$port = ! empty( $redis_server['port'] ) ? $redis_server['port'] : 6379;
 		}
-		$this->redis->connect( $redis_server['host'], $port, 1, null, 100 ); # 1s timeout, 100ms delay between reconnections
+
+		try {
+			$this->redis->connect( $redis_server['host'], $port, 1, null, 100 ); # 1s timeout, 100ms delay between reconnections
+		} catch ( RedisException $e ) {
+			// PhpRedis throws an Exception when it fails a server call.
+			// To prevent WordPress from fataling, we catch the Exception.
+			try {
+				$this->last_triggered_error = 'WP Redis: ' . $e->getMessage();
+				// Be friendly to developers debugging production servers by triggering an error
+				// @codingStandardsIgnoreStart
+				trigger_error( $this->last_triggered_error, E_USER_WARNING );
+				// @codingStandardsIgnoreEnd
+			} catch ( PHPUnit_Framework_Error_Warning $e ) {
+				// PHPUnit throws an Exception when `trigger_error()` is called.
+				// To ensure our tests (which expect Exceptions to be caught) continue to run,
+				// we catch the PHPUnit exception and inspect the RedisException message
+			}
+		}
+
 		foreach ( array( 'auth' => 'auth', 'database' => 'select' ) as $k => $method ) {
 			if ( ! isset( $redis_server[ $k ] ) ) {
 				continue;
