@@ -705,11 +705,11 @@ class Powered_Cache_Config {
 			$mobile_browsers = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', powered_cache_mobile_browsers() ) ), ' ' );
 			$mobile_prefixes = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', powered_cache_mobile_prefixes() ) ), ' ' );
 
-			$contents .= 'if ($http_user_agent ~* (' . $mobile_browsers . '))' . PHP_EOL;
+			$contents .= 'if ($http_user_agent ~* (' . $mobile_browsers . ')) {' . PHP_EOL;
 			$contents .= '	set $pc_ua \'-mobile\';' . PHP_EOL;
 			$contents .= '}' . PHP_EOL . PHP_EOL;
 
-			$contents .= 'if ($http_user_agent ~* (' . $mobile_prefixes . '))' . PHP_EOL;
+			$contents .= 'if ($http_user_agent ~* (' . $mobile_prefixes . ')) {' . PHP_EOL;
 			$contents .= '	set $pc_ua \'-mobile\';' . PHP_EOL;
 			$contents .= '}' . PHP_EOL . PHP_EOL;
 		}
