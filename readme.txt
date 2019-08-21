@@ -117,7 +117,7 @@ We didn't test all of them, but principally it must be worked, you consider excl
 
 = 1.2.6 =
  - fix: missing curly brackets for Nginx config
- - handle RedisException property to prevent WSOD with wrong credentials. Props [adiloztaser][https://github.com/adiloztaser]
+ - handle RedisException property to prevent WSOD with wrong credentials. Props [adiloztaser](https://github.com/adiloztaser)
  - CF extension: fetch up to 1000 zones
 
 
