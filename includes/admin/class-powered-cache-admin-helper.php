@@ -131,7 +131,7 @@ class Powered_Cache_Admin_Helper {
 
 		if ( true === Powered_Cache_Extensions::factory()->is_active( $plugin_id ) ) {
 			$action = 'deactivate';
-			$button = __( 'Dectivate', 'powered-cache' );
+			$button = __( 'Deactivate', 'powered-cache' );
 		} else {
 			$action = 'activate';
 			$button = __( 'Activate', 'powered-cache' );
