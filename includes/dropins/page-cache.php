@@ -367,7 +367,7 @@ function powered_cache_serve_cache() {
  */
 function powered_cache_get_url_path() {
 
-	$host        = ( isset( $_SERVER['HTTP_HOST'] ) ) ? $_SERVER['HTTP_HOST'] : '';
+	$host        = ( isset( $_SERVER['HTTP_HOST'] ) ? $_SERVER['HTTP_HOST'] : '' );
 	$request_uri = preg_replace( '/(\/+)/', '/', $_SERVER['REQUEST_URI'] );
 	$request_uri = str_replace( '..', '', preg_replace( '/[ <>\'\"\r\n\t\(\)]/', '', $request_uri ) );
 
