@@ -2,8 +2,8 @@
 /**
  * Memcached Redux drop-in, Mika's fork
  *
- * @link https://github.com/Ipstenu/memcached-redux
- * Origin version: 0.1.6
+ * @link https://github.com/skopco/memcached-redux
+ * Upstream: 0.1.7
  */
 
 if ( ! defined( 'WP_CACHE_KEY_SALT' ) ) {
@@ -405,20 +405,20 @@ if ( class_exists( 'Memcached' ) ):
 				'get'    => 'green',
 				'set'    => 'purple',
 				'add'    => 'blue',
-				'delete' => 'red',
+				'delete' => 'red'
 			);
 
 			$cmd = substr( $line, 0, strpos( $line, ' ' ) );
 
-			$cmd2 = "<span style='color:{$colors[$cmd]}'>$cmd</span>";
+			$cmd2 = "<span style='color:" . esc_attr( $colors[ $cmd ] ) . "'>" . esc_html( $cmd ) . "</span>";
 
-			return $cmd2 . substr( $line, strlen( $cmd ) ) . "\n";
+			return $cmd2 . esc_html( substr( $line, strlen( $cmd ) ) ) . "\n";
 		}
 
 		function stats() {
 			echo "<p>\n";
 			foreach ( $this->stats as $stat => $n ) {
-				echo "<strong>$stat</strong> $n";
+				echo "<strong>" . esc_html( $stat ) . "</strong> " . esc_html( $n );
 				echo "<br/>\n";
 			}
 			echo "</p>\n";
@@ -426,9 +426,9 @@ if ( class_exists( 'Memcached' ) ):
 			foreach ( $this->group_ops as $group => $ops ) {
 				if ( ! isset( $_GET['debug_queries'] ) && 500 < count( $ops ) ) {
 					$ops = array_slice( $ops, 0, 500 );
-					echo "<big>Too many to show! <a href='" . add_query_arg( 'debug_queries', 'true' ) . "'>Show them anyway</a>.</big>\n";
+					echo "<big>Too many to show! <a href='" . esc_url( add_query_arg( 'debug_queries', 'true' ) ) . "'>Show them anyway</a>.</big>\n";
 				}
-				echo "<h4>$group commands</h4>";
+				echo "<h4>" . esc_html( $group ) . " commands</h4>";
 				echo "<pre>\n";
 				$lines = array();
 				foreach ( $ops as $op ) {
