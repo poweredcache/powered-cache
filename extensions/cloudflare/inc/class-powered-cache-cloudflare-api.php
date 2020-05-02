@@ -20,7 +20,7 @@ class Powered_Cache_Cloudflare_Api {
 	public function get_zones() {
 		$endpoint = $this->end_point . '/zones';
 
-		$result = $this->remote_request( $endpoint, array( 'page' => 1, 'per_page' => 1000 ) );
+		$result = $this->remote_request( $endpoint, 'GET', array( 'page' => 1, 'per_page' => 1000 ) );
 
 		return $result;
 	}
