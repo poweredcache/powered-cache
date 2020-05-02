@@ -3,8 +3,8 @@
 Contributors:  skopco, m_uysl
 Tags: cache, caching, powered cache, cdn, super cache, fastest cache, total cache
 Requires at least:  4.5
-Tested up to:  5.4
-Stable tag:  1.2.7
+Tested up to:  5.4.1
+Stable tag:  1.2.8
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -116,10 +116,8 @@ We didn't test all of them, but principally it must be worked, you consider excl
 == Changelog ==
 
 = 1.2.7 =
- - fix: HTTP_HOST check
- - minor UI tweaks
- - tested with WP 5.4
-
+ - fix: XSS issue in memcache & memcached backend
+ - fix: Cloudflare API bug
 
 Detailed changelog located in [changelog page](https://poweredcache.com/changelog)
 
