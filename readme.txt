@@ -115,7 +115,7 @@ We didn't test all of them, but principally it must be worked, you consider excl
 
 == Changelog ==
 
-= 1.2.7 =
+= 1.2.8 =
  - fix: XSS issue in memcache & memcached backend
  - fix: Cloudflare API bug
 
