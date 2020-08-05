@@ -1,0 +1,48 @@
+{
+  "name": "skopco/powered-cache",
+  "description": "Comprehensive caching and performance plugin for WordPress.",
+  "type": "wordpress-plugin",
+  "keywords": [
+    "wordpress",
+    "powered-cache",
+    "cache",
+    "object-cache"
+  ],
+  "license": [
+    "GPLv2 (or later)"
+  ],
+  "minimum-stability": "dev",
+  "authors": [
+    {
+      "name": "PoweredCache",
+      "homepage": "https://poweredcache.com"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://wpackagist.org"
+    }
+  ],
+  "require": {
+    "php": ">=5.6"
+  },
+  "require-dev": {
+    "10up/phpcs-composer": "dev-master",
+    "phpunit/phpunit": "^7"
+  },
+  "scripts": {
+    "lint": "phpcs powered-cache.php includes extensions",
+    "lint-fix": "phpcbf powered-cache.php includes extensions",
+    "test": "phpunit",
+    "setup-local-tests": "bash bin/install-wp-tests.sh pc_wp_test root password mysql trunk true"
+  },
+  "extra": {
+    "installer-paths": {
+      "vendor/{$name}/": [
+        "type:wordpress-plugin",
+        "type:wordpress-theme"
+      ]
+    }
+  }
+}
