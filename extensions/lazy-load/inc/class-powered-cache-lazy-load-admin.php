@@ -1,15 +1,31 @@
 <?php
+/**
+ * Lazy-load Admin functionality
+ *
+ * @package PoweredCache
+ */
+
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 if ( ! class_exists( 'Powered_Cache_Lazy_Load_Admin' ) ) :
-
+	/**
+	 * class Powered_Cache_Lazy_Load_Admin
+	 */
 	class Powered_Cache_Lazy_Load_Admin extends Powered_Cache_Extension_Admin_Base {
+		/**
+		 * Form fields
+		 *
+		 * @var array $fields
+		 */
 		public $fields;
 
-		function __construct() {
+		/**
+		 * Powered_Cache_Lazy_Load_Admin constructor.
+		 */
+		public function __construct() {
 			$this->fields = array(
 				'post_content'   => array(
 					'default'   => true,
@@ -47,6 +63,9 @@ if ( ! class_exists( 'Powered_Cache_Lazy_Load_Admin' ) ) :
 			$this->setup();
 		}
 
+		/**
+		 * Load settings template
+		 */
 		public function settings_page() {
 			$settings_file[] = realpath( dirname( __FILE__ ) ) . '/settings.php';
 			parent::settings_template( $settings_file );
@@ -56,8 +75,8 @@ if ( ! class_exists( 'Powered_Cache_Lazy_Load_Admin' ) ) :
 		/**
 		 * Return an instance of the current class
 		 *
-		 * @since 1.0
 		 * @return Powered_Cache_Lazy_Load_Admin
+		 * @since 1.0
 		 */
 		public static function factory() {
 			static $instance = false;

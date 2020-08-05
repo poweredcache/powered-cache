@@ -1,4 +1,10 @@
 <?php
+/**
+ * Preload processing
+ *
+ * @package PoweredCache
+ */
+
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -6,8 +12,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ) :
 
+	/**
+	 * Class Powered_Cache_Preload_Process
+	 */
 	class Powered_Cache_Preload_Process {
 
+		/**
+		 * Powered_Cache_Preload_Process constructor.
+		 */
 		public function __construct() { }
 
 		/**
@@ -16,7 +28,7 @@ if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ) :
 		 * @since 1.0
 		 */
 		private function setup() {
-			add_filter( 'cron_schedules', array( $this, 'cron_schedules' ) );
+			add_filter( 'cron_schedules', array( $this, 'cron_schedules' ) ); // phpcs:ignore WordPress.WP.CronInterval.ChangeDetected
 			add_action( 'init', array( $this, 'schedule_events' ) );
 
 			add_action( 'powered_cache_preload_hook', array( $this, 'setup_child_process' ) );
@@ -24,6 +36,13 @@ if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ) :
 		}
 
 
+		/**
+		 * Register powered cache schedule
+		 *
+		 * @param array $schedules Cron schedules
+		 *
+		 * @return mixed
+		 */
 		public function cron_schedules( $schedules ) {
 
 			if ( powered_cache_get_extension_option( 'preload', 'interval', 60 ) > 0 ) {
@@ -89,7 +108,7 @@ if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ) :
 		public function setup_child_process() {
 			$timestamp = wp_next_scheduled( 'powered_cache_preload_child_process' );
 
-			if ( true !== powered_cache_get_option( 'enable_page_caching' ) || 0 == powered_cache_get_extension_option( 'preload', 'interval', 60 ) ) {
+			if ( true !== powered_cache_get_option( 'enable_page_caching' ) || 0 === absint( powered_cache_get_extension_option( 'preload', 'interval', 60 ) ) ) {
 				wp_unschedule_event( $timestamp, 'powered_cache_preload_child_process' );
 
 				return;
@@ -167,13 +186,14 @@ if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ) :
 					'category' => 'category',
 				)
 			);
+			// phpcs:disable WordPress.PHP.NoSilencedErrors.Discouraged
 			foreach ( $taxonomies as $taxonomy => $path ) {
 				$taxonomy_filename = trailingslashit( powered_cache_get_cache_dir() ) . 'taxonomy_' . $taxonomy . '.txt';
-				if ( 0 == $runtime_option['post_count'] ) {
+				if ( 0 === (int) $runtime_option['post_count'] ) {
 					@unlink( $taxonomy_filename );
 				}
 
-				if ( false == @file_exists( $taxonomy_filename ) ) {
+				if ( false === @file_exists( $taxonomy_filename ) ) {
 					$out     = '';
 					$records = get_terms( $taxonomy );
 					foreach ( $records as $term ) {
@@ -186,13 +206,13 @@ if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ) :
 					}
 					$details = explode( PHP_EOL, $out );
 				} else {
-					$details = explode( PHP_EOL, file_get_contents( $taxonomy_filename ) );
+					$details = explode( PHP_EOL, file_get_contents( $taxonomy_filename ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 				}
-				if ( count( $details ) != 1 && $details[0] != '' ) {
+				if ( 1 !== count( $details ) && '' !== $details[0] ) {
 					$rows = array_splice( $details, 0, 40 );
 					foreach ( (array) $rows as $key => $url ) {
 						set_time_limit( 30 );
-						if ( $url == '' ) {
+						if ( '' === $url ) {
 							continue;
 						}
 						powered_cache_delete_page_cache( $url );
@@ -217,19 +237,23 @@ if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ) :
 					}
 				}
 			}
+			// phpcs:enable WordPress.PHP.NoSilencedErrors.Discouraged
 		}
 
-
+		/**
+		 * Preloads the posts
+		 */
 		public function preload_posts() {
 			global $wpdb;
 			$runtime_option = get_option( 'powered_cache_preload_runtime_option' );
 			$post_count     = $runtime_option['post_count'];
 
-			if ( get_option( 'show_on_front' ) == 'page' ) {
+			if ( 'page' === get_option( 'show_on_front' ) ) {
 				$page_on_front  = get_option( 'page_on_front' );
 				$page_for_posts = get_option( 'page_for_posts' );
 			} else {
-				$page_on_front = $page_for_posts = 0;
+				$page_on_front  = 0;
+				$page_for_posts = 0;
 			}
 
 			$types = apply_filters(
@@ -245,12 +269,12 @@ if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ) :
 			);
 			$types = array_map( 'esc_sql', $types );
 			$types = "'" . implode( "','", $types ) . "'";
-			$posts = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE ( post_type IN ( $types ) ) AND post_status = 'publish' ORDER BY ID ASC LIMIT $post_count, 100" );
+			$posts = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE ( post_type IN ( $types ) ) AND post_status = 'publish' ORDER BY ID ASC LIMIT $post_count, 100" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			foreach ( $posts as $post_id ) {
 				set_time_limit( 30 );
 
 				// skip page used for front
-				if ( $page_on_front != 0 && ( $post_id == $page_on_front || $post_id == $page_for_posts ) ) {
+				if ( 0 !== $page_on_front && ( $post_id === $page_on_front || $post_id === $page_for_posts ) ) {
 					continue;
 				}
 
@@ -273,6 +297,9 @@ if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ) :
 		}
 
 
+		/**
+		 * Preload homepage
+		 */
 		public function preload_homepage() {
 			$site_url = site_url();
 			powered_cache_delete_page_cache( $site_url );
@@ -289,9 +316,10 @@ if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ) :
 		/**
 		 * Make crawl request
 		 *
+		 * @param string $url  URL to retrieve.
+		 * @param array  $args Request arguments.
+		 *
 		 * @since 1.0
-		 * @param  string $url
-		 * @param array  $args
 		 */
 		public function http_request( $url, $args = array() ) {
 
@@ -308,8 +336,6 @@ if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ) :
 			}
 
 			do_action( 'powered_cache_preload_http_request', $url, $args );
-
-			return;
 		}
 
 		/**

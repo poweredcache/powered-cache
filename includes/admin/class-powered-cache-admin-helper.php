@@ -1,9 +1,18 @@
 <?php
+/**
+ * Powered Cache Admin helpers
+ *
+ * @package PoweredCache
+ */
+
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Class Powered_Cache_Admin_Helper
+ */
 class Powered_Cache_Admin_Helper {
 	/**
 	 * Register admin sections
@@ -35,10 +44,10 @@ class Powered_Cache_Admin_Helper {
 	/**
 	 * Set flash message for admin page
 	 *
-	 * @since 1.0
+	 * @param string $msg   Flash message
+	 * @param string $class CSS class
 	 *
-	 * @param $msg   string
-	 * @param $class string
+	 * @since 1.0
 	 */
 	public static function set_flash_message( $msg, $class = 'updated' ) {
 		if ( ! empty( $msg ) ) {
@@ -61,9 +70,9 @@ class Powered_Cache_Admin_Helper {
 		if ( $flash_message && is_array( $flash_message ) ) {
 			$html = '<div id="setting-error-settings_updated" class="' . esc_attr( $flash_message['class'] ) . ' notice is-dismissible">
 						<p><strong>' . esc_attr( $flash_message['message'] ) . '</strong></p>
-						<button type="button" class="notice-dismiss"><span class="screen-reader-text">' . __( 'Dismiss this notice', 'powered-cache' ) . '</span></button>
+						<button type="button" class="notice-dismiss"><span class="screen-reader-text">' . esc_html__( 'Dismiss this notice', 'powered-cache' ) . '</span></button>
 					</div>';
-			echo $html;
+			echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			// destroy transient
 			delete_site_transient( 'powered_cache_flash_msg' );
 		}
@@ -146,7 +155,7 @@ class Powered_Cache_Admin_Helper {
 				'section'                      => 'extensions',
 				'extension'                    => $plugin_id,
 				'status'                       => $action,
-				'wp_http_referer'              => urlencode( wp_unslash( $_SERVER['REQUEST_URI'] ) ),
+				'wp_http_referer'              => rawurlencode( wp_unslash( $_SERVER['REQUEST_URI'] ) ),
 				'action'                       => 'powered_cache_update_settings',
 				'powered_cache_settings_nonce' => wp_create_nonce( 'powered_cache_update_settings' ),
 			),
@@ -158,6 +167,11 @@ class Powered_Cache_Admin_Helper {
 		return $html;
 	}
 
+	/**
+	 * Upgrade button markup
+	 *
+	 * @return string
+	 */
 	public static function upgrade_button() {
 		$url  = 'https://poweredcache.com/';
 		$html = '<a href="' . esc_url( $url ) . '" class="upgrade-now" >' . __( 'Upgrade Now', 'powered-cache' ) . '</a>';
@@ -192,7 +206,7 @@ class Powered_Cache_Admin_Helper {
 				'page'                         => esc_attr( 'powered-cache' ),
 				'section'                      => 'misc',
 				'action'                       => 'export_settings',
-				'wp_http_referer'              => urlencode( wp_unslash( $_SERVER['REQUEST_URI'] ) ),
+				'wp_http_referer'              => rawurlencode( wp_unslash( $_SERVER['REQUEST_URI'] ) ),
 				'powered_cache_settings_nonce' => wp_create_nonce( 'powered_cache_update_settings' ),
 			),
 			admin_url( 'admin.php' )
@@ -217,7 +231,7 @@ class Powered_Cache_Admin_Helper {
 				'page'                         => esc_attr( 'powered-cache' ),
 				'section'                      => 'misc',
 				'action'                       => 'reset_settings',
-				'wp_http_referer'              => urlencode( wp_unslash( $_SERVER['REQUEST_URI'] ) ),
+				'wp_http_referer'              => rawurlencode( wp_unslash( $_SERVER['REQUEST_URI'] ) ),
 				'powered_cache_settings_nonce' => wp_create_nonce( 'powered_cache_update_settings' ),
 			),
 			admin_url( 'admin.php' )
@@ -254,13 +268,12 @@ class Powered_Cache_Admin_Helper {
 	/**
 	 * Check capability and nonce during admin action
 	 *
+	 * @param string $cap capability
+	 *
 	 * @since 1.0
-	 * @param $cap string capability
 	 */
 	public static function check_cap_and_nonce( $cap ) {
-		if ( isset( $_REQUEST['action'] )
-			 && ( ! current_user_can( $cap ) || empty( $_REQUEST['powered_cache_settings_nonce'] )
-				  || ! wp_verify_nonce( $_REQUEST['powered_cache_settings_nonce'], 'powered_cache_update_settings' ) )
+		if ( isset( $_REQUEST['action'] ) && ( ! current_user_can( $cap ) || empty( $_REQUEST['powered_cache_settings_nonce'] ) || ! wp_verify_nonce( $_REQUEST['powered_cache_settings_nonce'], 'powered_cache_update_settings' ) )
 		) {
 			wp_die( esc_html__( 'Cheatin, uh?', 'powered-cache' ) );
 		}
@@ -305,10 +318,10 @@ class Powered_Cache_Admin_Helper {
 	/**
 	 * convert minutes to possible time format
 	 *
-	 * @param int $timeout_in_minutes
+	 * @param int $timeout_in_minutes timeout value
 	 *
-	 * @since 1.1
 	 * @return array
+	 * @since 1.1
 	 */
 	public static function get_timeout_interval( $timeout_in_minutes ) {
 		$cache_timeout     = $timeout_in_minutes;

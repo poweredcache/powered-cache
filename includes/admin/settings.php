@@ -1,12 +1,10 @@
 <?php
 /**
- *
  * Settings page template
  *
- * @package PoweredCache
+ * @package    PoweredCache
  * @subpackage PoweredCache/Settings
  */
-
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -14,17 +12,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $object_cache_methods = Powered_Cache_Admin_Helper::available_object_caches();
-$current_section      = isset( $_GET['section'] ) ? $_GET['section'] : 'basic-options';
+$current_section      = isset( $_GET['section'] ) ? $_GET['section'] : 'basic-options'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 $show_submit          = true;
 
-if ( in_array( $current_section, array( 'misc', 'extensions', 'premium', 'support' ) ) ) {
+if ( in_array( $current_section, array( 'misc', 'extensions', 'premium', 'support' ), true ) ) {
 	$show_submit = false;
 }
 ?>
 <div class="wrap">
 	<h1>
 		<img width="22" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjwhRE9DVFlQRSBzdmcgIFBVQkxJQyAnLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4nICAnaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkJz48c3ZnIGhlaWdodD0iMzJweCIgaWQ9IkxheWVyXzEiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDMyIDMyOyIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgMzIgMzIiIHdpZHRoPSIzMnB4IiB4bWw6c3BhY2U9InByZXNlcnZlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNDQgMzM2KSI+PHBhdGggZD0iTS0xMTcuMTc2LTMzNC4wNjNoLTkuMzUzTC0xMzguMTExLTMyMGg5LjMwNGwtMTEuNzQ1LDE0LjA2M2wyNS4xMDUtMTguMzE2aC05LjgwOUwtMTE3LjE3Ni0zMzQuMDYzeiIvPjwvZz48L3N2Zz4=">
-		<?php _e( 'Powered Cache', 'powered-cache' ); ?>
+		<?php esc_html_e( 'Powered Cache', 'powered-cache' ); ?>
 	</h1>
 
 
@@ -54,10 +52,10 @@ if ( in_array( $current_section, array( 'misc', 'extensions', 'premium', 'suppor
 					);
 					?>
 							"
-					title="<?php esc_attr_e( $title, 'powered-cache' ); ?>"
-					class="nav-tab <?php echo $current_section == $section ? 'nav-tab-active' : ''; ?>"
+					title="<?php esc_attr_e( $title, 'powered-cache' ); // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText ?>"
+					class="nav-tab <?php echo $current_section === $section ? 'nav-tab-active' : ''; ?>"
 					>
-					<?php esc_attr_e( $title, 'powered-cache' ); ?>
+					<?php esc_attr_e( $title, 'powered-cache' ); // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText ?>
 				</a>
 			<?php endforeach; ?>
 		</h2>
@@ -102,58 +100,78 @@ if ( in_array( $current_section, array( 'misc', 'extensions', 'premium', 'suppor
 
 
 					<div class="inside">
-						<h3 class="powered-cache-sidebar-title"><span><?php _e( 'Rate Us!', 'powered-cache' ); ?></span> <span class="powered-cache-sidebar-icon dashicons dashicons-heart"></span> </h3>
+						<h3 class="powered-cache-sidebar-title"><span><?php esc_html_e( 'Rate Us!', 'powered-cache' ); ?></span> <span class="powered-cache-sidebar-icon dashicons dashicons-heart"></span> </h3>
 						<?php
-						echo sprintf(
-							__(
-								'We would like to hear your thoughts about our plugin. Please review on <a target="_blank" href="%s">WordPress.org</a>',
-								'powered-cache'
+						echo wp_kses(
+							sprintf(
+								__(
+									'We would like to hear your thoughts about our plugin. Please review on <a target="_blank" rel="noopener" href="%s">WordPress.org</a>',
+									'powered-cache'
+								),
+								'https://wordpress.org/support/plugin/powered-cache/reviews/'
 							),
-							'https://wordpress.org/support/plugin/powered-cache/reviews/'
+							array(
+								'a' => array(
+									'target' => true,
+									'rel'    => true,
+									'href'   => true,
+								),
+							)
 						);
 						?>
 					</div>
 					<br>
 
 					<div class="inside">
-						<h3 class="powered-cache-sidebar-title"><span><?php _e( 'Become a Premium User', 'powered-cache' ); ?></span><span class="powered-cache-sidebar-icon dashicons dashicons-awards"></span></h3>
-						<?php _e( 'Premium users will reach more goodies', 'powered-cache' ); ?>
+						<h3 class="powered-cache-sidebar-title"><span><?php esc_html_e( 'Become a Premium User', 'powered-cache' ); ?></span><span class="powered-cache-sidebar-icon dashicons dashicons-awards"></span></h3>
+						<?php esc_html_e( 'Premium users will reach more goodies', 'powered-cache' ); ?>
 						<ul class="premium-benefits">
 							<li>
 								<span class="dashicons dashicons-yes"></span>
-								<?php _e( 'Premium Features', 'powered-cache' ); ?>
+								<?php esc_html_e( 'Premium Features', 'powered-cache' ); ?>
 							</li>
 							<li>
 								<span class="dashicons dashicons-yes"></span>
-								<?php _e( 'Premium Extensions', 'powered-cache' ); ?>
+								<?php esc_html_e( 'Premium Extensions', 'powered-cache' ); ?>
 							</li>
 							<li>
 								<span class="dashicons dashicons-yes"></span>
-								<?php _e( 'Friendly Bots', 'powered-cache' ); ?>
+								<?php esc_html_e( 'Friendly Bots', 'powered-cache' ); ?>
 							</li>
 							<li>
 								<span class="dashicons dashicons-yes"></span>
-								<?php _e( 'WP-CLI commands', 'powered-cache' ); ?>
+								<?php esc_html_e( 'WP-CLI commands', 'powered-cache' ); ?>
 							</li>
 							<li>
 								<span class="dashicons dashicons-yes"></span>
-								<?php _e( 'Premium Support', 'powered-cache' ); ?>
+								<?php esc_html_e( 'Premium Support', 'powered-cache' ); ?>
 							</li>
 							<li>
 								<span class="dashicons dashicons-yes"></span>
-								<?php _e( 'No Ads', 'powered-cache' ); ?>
+								<?php esc_html_e( 'No Ads', 'powered-cache' ); ?>
 							</li>
 						</ul>
-						<a class="get-premium-small" href="https://poweredcache.com"><span><?php echo __( 'Buy Powered Cache Premium', 'powered-cache' ); ?></span></a>
+						<a class="get-premium-small" href="https://poweredcache.com"><span><?php echo esc_html__( 'Buy Powered Cache Premium', 'powered-cache' ); ?></span></a>
 
 					</div>
 
 					<div class="inside">
-						<h3 class="powered-cache-sidebar-title"><span><?php _e( 'Support', 'powered-cache' ); ?></span><span class="powered-cache-sidebar-icon dashicons dashicons-sos"></span></h3>
+						<h3 class="powered-cache-sidebar-title"><span><?php esc_html_e( 'Support', 'powered-cache' ); ?></span><span class="powered-cache-sidebar-icon dashicons dashicons-sos"></span></h3>
 						<p>
-							<?php _e( 'We are offering direct support to premium users only, free users welcome on WordPress.org forums.', 'powered-cache' ); ?>
+							<?php esc_html_e( 'We are offering direct support to premium users only, free users welcome on WordPress.org forums.', 'powered-cache' ); ?>
 							<br>
-							<?php echo sprintf( __( 'Please check our <a href="%s">support policy</a>', 'powered-cache' ), 'https://poweredcache.com/support-policy/' ); ?>
+							<?php
+							echo wp_kses(
+								sprintf( __( 'Please check our <a target="_blank" href="%s" rel="noopener">support policy</a>', 'powered-cache' ), 'https://poweredcache.com/support-policy/' ),
+								array(
+									'a' => array(
+										'target' => true,
+										'href'   => true,
+										'rel'    => true,
+									),
+								)
+							);
+							?>
 						</p>
 					</div>
 

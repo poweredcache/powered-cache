@@ -1,12 +1,24 @@
 <?php
+/**
+ * Powered Cache extensions
+ *
+ * @package PoweredCache
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-
+/**
+ * Class Powered_Cache_Extensions
+ */
 class Powered_Cache_Extensions {
 
+	/**
+	 * Extensions dir
+	 *
+	 * @var string $core_extension_dir
+	 */
 	public $core_extension_dir;
 
 
@@ -110,18 +122,15 @@ class Powered_Cache_Extensions {
 	/**
 	 * Check powered cache's extension active
 	 *
-	 * @since 1.0
-	 *
-	 * @param string $extension_id
+	 * @param string $extension_id extension id
 	 *
 	 * @return bool
+	 * @since 1.0
 	 */
 	public function is_active( $extension_id ) {
 		$options = get_option( 'powered_cache_settings' );
-		if ( is_array( $options ) && isset( $options['active_extensions'] )
-			 && is_array( $options['active_extensions'] )
-			 && in_array( $extension_id, $options['active_extensions'] )
-		) {
+
+		if ( is_array( $options ) && isset( $options['active_extensions'] ) && is_array( $options['active_extensions'] ) && in_array( $extension_id, $options['active_extensions'], true ) ) {
 			return true;
 		}
 
@@ -132,10 +141,10 @@ class Powered_Cache_Extensions {
 	/**
 	 * Activates extension
 	 *
-	 * @param $extension_id
+	 * @param string $extension_id extension id
 	 *
-	 * @since 1.0
 	 * @return bool
+	 * @since 1.0
 	 */
 	public function activate( $extension_id ) {
 
@@ -144,7 +153,8 @@ class Powered_Cache_Extensions {
 			return false;
 		}
 
-		$old_options = $new_options = powered_cache_get_settings();
+		$old_options = powered_cache_get_settings();
+		$new_options = $old_options;
 
 		if ( isset( $old_options['active_extensions'] ) && is_array( $old_options['active_extensions'] ) ) {
 			$new_options['active_extensions'] = array_merge( $old_options['active_extensions'], array( $extension_id ) );
@@ -161,10 +171,10 @@ class Powered_Cache_Extensions {
 	/**
 	 * Deactivate given extension
 	 *
-	 * @param $extension_id
+	 * @param string $extension_id extension id
 	 *
-	 * @since 1.0
 	 * @return bool
+	 * @since 1.0
 	 */
 	public function deactivate( $extension_id ) {
 
@@ -173,9 +183,10 @@ class Powered_Cache_Extensions {
 			return false;
 		}
 
-		$old_options = $new_options = powered_cache_get_settings();
+		$old_options = powered_cache_get_settings();
+		$new_options = $old_options;
 
-		$key = array_search( $extension_id, $old_options['active_extensions'] );
+		$key = array_search( $extension_id, $old_options['active_extensions'], true );
 
 		if ( false !== $key ) {
 			unset( $new_options['active_extensions'][ $key ] );

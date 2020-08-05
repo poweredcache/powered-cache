@@ -1,18 +1,67 @@
 <?php
+/**
+ * Base class for extension' admin functionality
+ *
+ * @package    PoweredCache
+ * @subpackage PoweredCache/Settings
+ */
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Class Powered_Cache_Extension_Admin_Base
+ */
 class Powered_Cache_Extension_Admin_Base {
 
+	/**
+	 * Extension id
+	 *
+	 * @var string $extension_id
+	 */
 	public $extension_id;
+
+	/**
+	 * Extension name
+	 *
+	 * @var string $extension_name
+	 */
 	public $extension_name;
+
+	/**
+	 * Premium status
+	 *
+	 * @var bool $is_premium
+	 */
 	public $is_premium;
+
+	/**
+	 * Extension settings
+	 *
+	 * @var bool $options
+	 */
 	public $options;
+
+	/**
+	 * Required capability
+	 *
+	 * @var string $capability
+	 */
 	public $capability = 'manage_options';
+
+	/**
+	 * Form fields
+	 *
+	 * @var array $fields
+	 */
 	protected $fields;
 
-
+	/**
+	 * Powered_Cache_Extension_Admin_Base constructor.
+	 *
+	 * @param array $args arguments
+	 */
 	protected function __construct( $args ) {
 		foreach ( $args as $key => $value ) {
 			$this->$key = $value;
@@ -47,6 +96,11 @@ class Powered_Cache_Extension_Admin_Base {
 		$powered_cache_plugin_pages[ $this->extension_id ] = add_submenu_page( 'powered-cache', $this->extension_name, $this->extension_name, $this->capability, 'powered-cache-extension-' . $this->extension_id, array( $this, 'settings_page' ) );
 	}
 
+	/**
+	 * Adds admin bar menu item
+	 *
+	 * @param object $wp_admin_bar WP_Admin_Bar
+	 */
 	public function admin_bar_menu( $wp_admin_bar ) {
 		if ( current_user_can( $this->capability ) ) {
 			$wp_admin_bar->add_menu(
@@ -60,11 +114,23 @@ class Powered_Cache_Extension_Admin_Base {
 		}
 	}
 
+	/**
+	 * Set template files
+	 *
+	 * @param array $settings_files template partials
+	 */
 	public function settings_template( $settings_files = array() ) {
 		$this->settings_files = $settings_files;
 		require_once POWERED_CACHE_ADMIN_DIR . 'extension-settings.php';
 	}
 
+	/**
+	 * Get extension option
+	 *
+	 * @param string $key option key
+	 *
+	 * @return mixed|string
+	 */
 	public function get_option( $key ) {
 		if ( isset( $this->options[ $key ] ) ) {
 			return $this->options[ $key ];
@@ -76,21 +142,30 @@ class Powered_Cache_Extension_Admin_Base {
 	}
 
 
+	/**
+	 * Returns premium status
+	 *
+	 * @return bool
+	 */
 	public function is_premium() {
 		return $this->is_premium;
 	}
 
-
+	/**
+	 * placeholder method
+	 */
 	public function settings_page() {
 
 	}
 
-
+	/**
+	 * Update extension options
+	 */
 	public function update_options() {
 
 		Powered_Cache_Admin_Helper::check_cap_and_nonce( $this->capability );
 
-		if ( isset( $_REQUEST['extension'] ) && ( $_REQUEST['extension'] === $this->extension_id ) ) {
+		if ( isset( $_REQUEST['extension'] ) && ( $_REQUEST['extension'] === $this->extension_id ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$_post = $_POST[ $this->extension_id ];
 
 			foreach ( $this->fields as $key => $field ) {

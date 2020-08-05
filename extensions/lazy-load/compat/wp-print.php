@@ -1,7 +1,15 @@
 <?php
+/**
+ * Lazy-load Print compat
+ *
+ * @package PoweredCache
+ */
 
+/**
+ * Disable lazy-load on print request
+ */
 function powered_cache_lazy_load_compat_wpprint() {
-	if ( 1 == intval( get_query_var( 'print' ) ) || 1 == intval( get_query_var( 'printpage' ) ) ) {
+	if ( 1 === intval( get_query_var( 'print' ) ) || 1 === intval( get_query_var( 'printpage' ) ) ) {
 		add_filter( 'powered_cache_lazy_load_enabled', '__return_false' );
 	}
 }

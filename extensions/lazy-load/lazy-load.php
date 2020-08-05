@@ -1,5 +1,11 @@
 <?php
 /**
+ * LazyLoad extension
+ *
+ * @package PoweredCache
+ */
+
+/**
  * Extension Name: Lazy Load
  * Extension URI: https://poweredcache.com/extensions/lazy-load
  * Description: Loads images and iframes only when visible to the user.

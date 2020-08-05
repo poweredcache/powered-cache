@@ -1,8 +1,17 @@
 <?php
+/**
+ * Cron functionality
+ *
+ * @package PoweredCache
+ */
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Class Powered_Cache_Cron
+ */
 class Powered_Cache_Cron {
 
 	/**
@@ -19,16 +28,16 @@ class Powered_Cache_Cron {
 	private function setup() {
 		add_action( 'powered_cache_purge_cache', array( $this, 'purge_cache' ) );
 		add_action( 'init', array( $this, 'schedule_events' ) );
-		add_filter( 'cron_schedules', array( $this, 'cron_schedules' ) );
+		add_filter( 'cron_schedules', array( $this, 'cron_schedules' ) ); // phpcs:ignore WordPress.WP.CronInterval.ChangeDetected
 	}
 
 	/**
 	 * Add custom cron schedule
 	 *
-	 * @param  array $schedules
+	 * @param array $schedules registered schedules
 	 *
-	 * @since  1.0
 	 * @return array $schedules
+	 * @since  1.0
 	 */
 	public function cron_schedules( $schedules ) {
 		$interval = powered_cache_get_option( 'cache_timeout' ) * 60;
@@ -93,10 +102,10 @@ class Powered_Cache_Cron {
 
 		$lifespan = powered_cache_get_option( 'cache_timeout' ) * 60;
 
-		$expired_files = powered_cache_get_exprired_files( powered_cache_site_cache_dir(), $lifespan );
+		$expired_files = powered_cache_get_expired_files( powered_cache_site_cache_dir(), $lifespan );
 
 		foreach ( $expired_files as $file_path ) {
-			@unlink( $file_path );
+			@unlink( $file_path ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 		}
 
 		do_action( 'powered_cache_expired_files_deleted' );

@@ -1,9 +1,18 @@
 <?php
+/**
+ * Object cache manager
+ *
+ * @package PoweredCache
+ */
+
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Class Powered_Cache_Object_Cache
+ */
 class Powered_Cache_Object_Cache {
 
 	/**
@@ -43,9 +52,9 @@ class Powered_Cache_Object_Cache {
 	/**
 	 * Add purge button on admin bar
 	 *
-	 * @since 1.0
+	 * @param object $wp_admin_bar WP_Admin_Bar
 	 *
-	 * @param $wp_admin_bar
+	 * @since 1.0
 	 */
 	public function admin_bar_menu( $wp_admin_bar ) {
 
@@ -94,10 +103,10 @@ class Powered_Cache_Object_Cache {
 	/**
 	 * Fix a race condition in alloptions caching
 	 *
-	 * @see https://github.com/skopco/powered-cache/issues/47
-	 * @see https://core.trac.wordpress.org/ticket/31245
+	 * @param string $option Option name
 	 *
-	 *
+	 * @see   https://github.com/skopco/powered-cache/issues/47
+	 * @see   https://core.trac.wordpress.org/ticket/31245
 	 * Ported from https://core.trac.wordpress.org/ticket/31245#comment:57
 	 * @since 1.2.4
 	 */

@@ -1,11 +1,15 @@
 <?php
+/**
+ * PoweredCache hooks
+ *
+ * @package PoweredCache
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 /**
- * @since 1.1
  * Class Powered_Cache_Hooks
  */
 class Powered_Cache_Hooks {
@@ -43,7 +47,7 @@ class Powered_Cache_Hooks {
 	/**
 	 * Adds `Purge All Cache` menu bar item
 	 *
-	 * @param $wp_admin_bar
+	 * @param object $wp_admin_bar WP_Admin_Bar
 	 *
 	 * @since 1.1
 	 */
@@ -94,8 +98,10 @@ class Powered_Cache_Hooks {
 	}
 
 	/**
-	 * @since 1.1
+	 * Singleton instance of the current class
+	 *
 	 * @return Powered_Cache_Hooks
+	 * @since 1.1
 	 */
 	public static function factory() {
 

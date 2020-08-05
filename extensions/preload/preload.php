@@ -1,5 +1,11 @@
 <?php
 /**
+ * Preloader extension
+ *
+ * @package PoweredCache
+ */
+
+/**
  * Extension Name: Preloader
  * Extension URI: https://poweredcache.com/extensions/preload
  * Description: Preload extension for Powered Cache

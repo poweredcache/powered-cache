@@ -1,4 +1,10 @@
 <?php
+/**
+ * Preloader admin functionality
+ *
+ * @package PoweredCache
+ */
+
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -6,13 +12,36 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'Powered_Cache_Preload_Admin' ) ) :
 
+	/**
+	 * class Powered_Cache_Preload_Admin
+	 */
 	class Powered_Cache_Preload_Admin extends Powered_Cache_Extension_Admin_Base {
+		/**
+		 * Extension settings
+		 *
+		 * @var array $options
+		 */
 		public $options;
+
+		/**
+		 * Form inputs and attributes
+		 *
+		 * @var array $fields
+		 */
 		public $fields;
+
+		/**
+		 * Supported intervals
+		 *
+		 * @var array $interval_options
+		 */
 		public $interval_options;
 
 
-		function __construct() {
+		/**
+		 * Powered_Cache_Preload_Admin constructor.
+		 */
+		public function __construct() {
 			$this->interval_options = array(
 				'0'       => __( 'No delay', 'powered-cache' ),
 				'100000'  => __( '100ms', 'powered-cache' ),
@@ -76,19 +105,24 @@ if ( ! class_exists( 'Powered_Cache_Preload_Admin' ) ) :
 			$this->setup();
 		}
 
+		/**
+		 * Output settings page
+		 */
 		public function settings_page() {
 			$settings_file[] = realpath( dirname( __FILE__ ) ) . '/settings.php';
 			$settings_file[] = realpath( dirname( __FILE__ ) ) . '/premium-settings.php';
 			parent::settings_template( $settings_file );
 		}
 
-
-
+		/**
+		 * Show notice
+		 */
 		public function admin_notice() {
 			if ( true !== powered_cache_get_option( 'enable_page_caching' ) ) {
 				?>
 				<div id="setting-error-settings_updated" class="error notice">
-					<p><?php printf( __( '<b>%s:</b> You need enable page cache for preload feature.', 'powered-cache' ), __( 'Powered Cache', 'powered-cache' ) ); ?></strong></p>
+					<?php /* translators: %s: Plugin name. */ ?>
+					<p><?php printf( '<b>%s:</b> ' . esc_html__( 'You need enable page cache for preload feature.', 'powered-cache' ), esc_html__( 'Powered Cache', 'powered-cache' ) ); ?></strong></p>
 				</div>
 				<?php
 			}
@@ -107,7 +141,11 @@ if ( ! class_exists( 'Powered_Cache_Preload_Admin' ) ) :
 			return false;
 		}
 
-
+		/**
+		 * Output preload button
+		 *
+		 * @return string
+		 */
 		public function preload_cache_button() {
 
 			$action = ( $this->is_running() ? 'stop' : 'start' );
@@ -119,6 +157,9 @@ if ( ! class_exists( 'Powered_Cache_Preload_Admin' ) ) :
 			return $html;
 		}
 
+		/**
+		 * Update preloader status
+		 */
 		public function update_preloader_status() {
 			if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'powered-cache-do-preload' ) ) {
 				wp_nonce_ays( '' );

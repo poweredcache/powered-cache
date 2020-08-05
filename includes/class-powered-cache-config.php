@@ -1,9 +1,17 @@
 <?php
+/**
+ * Powered Cache config related functionalities
+ *
+ * @package PoweredCache
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Class Powered_Cache_Config
+ */
 class Powered_Cache_Config {
 
 
@@ -120,7 +128,7 @@ class Powered_Cache_Config {
 	 * Setup object-cache.php
 	 *
 	 * @since 1.0
-	 * @param string $backend
+	 * @param string $backend persistent object cache backend
 	 *
 	 * @return bool
 	 */
@@ -156,7 +164,7 @@ class Powered_Cache_Config {
 	 *
 	 * @since 1.0
 	 *
-	 * @param $status
+	 * @param bool $status page cache status
 	 *
 	 * @return bool
 	 */
@@ -183,7 +191,7 @@ class Powered_Cache_Config {
 	 *
 	 * @since 1.0
 	 * @since 1.1 supports `POWERED_CACHE_OBJECT_CACHE_DROPIN`
-	 * @param $backend
+	 * @param string $backend object cache dropin path
 	 * @see Powered_Cache_Admin_Helper::object_cache_dropins
 	 *
 	 * @return mixed|void
@@ -195,7 +203,7 @@ class Powered_Cache_Config {
 		$string .= "if ( ! @file_exists( WP_CONTENT_DIR . '/pc-config/config-' . \$_SERVER['HTTP_HOST'] . '.php' ) ) { return; }" . PHP_EOL;
 
 		$object_caches = Powered_Cache_Admin_Helper::object_cache_dropins();
-
+		// phpcs:ignore Generic.Strings.UnnecessaryStringConcat.Found
 		$string .= "\$GLOBALS['powered_cache_options'] = include( WP_CONTENT_DIR . '/pc-config/config-' . \$_SERVER['HTTP_HOST'] . '.php' );" . "\n\n";
 		$string .= 'if ( defined( \'POWERED_CACHE_OBJECT_CACHE_DROPIN\') && @file_exists( POWERED_CACHE_OBJECT_CACHE_DROPIN ) ) {' . PHP_EOL;
 		$string .= "\t" . 'include( POWERED_CACHE_OBJECT_CACHE_DROPIN );' . PHP_EOL;
@@ -204,7 +212,7 @@ class Powered_Cache_Config {
 		$string .= '} else {' . PHP_EOL;
 		$string .= "\t" . 'define( \'POWERED_OBJECT_CACHE_HAS_PROBLEM\', true );' . PHP_EOL;
 		$string .= '}';
-
+		// phpcs:enable Generic.Strings.UnnecessaryStringConcat.Found
 		return apply_filters( 'powered_cache_object_cache_file_content', $string );
 	}
 
@@ -223,11 +231,10 @@ class Powered_Cache_Config {
 		$string .= "define( 'POWERED_CACHE_PAGE_CACHING', true );" . PHP_EOL;
 
 		$string .= "\$config_file = WP_CONTENT_DIR . '/pc-config/config-' . \$_SERVER['HTTP_HOST'];" . PHP_EOL . PHP_EOL;
-
 		$string .= "if ( is_multisite() && ( defined( 'SUBDOMAIN_INSTALL' ) && false === SUBDOMAIN_INSTALL ) ) {" . PHP_EOL;
-		$string .= "\t" . "\$request_uri   = explode( '/', ltrim( \$_SERVER['REQUEST_URI'], '/' ) );" . PHP_EOL;
+		$string .= "\t" . "\$request_uri   = explode( '/', ltrim( \$_SERVER['REQUEST_URI'], '/' ) );" . PHP_EOL; // phpcs:ignore Generic.Strings.UnnecessaryStringConcat.Found
 		$string .= "\t" . '$sub_site_name = $request_uri[0];' . PHP_EOL;
-		$string .= "\t" . "\$config_file .= '-'.\$sub_site_name;" . PHP_EOL;
+		$string .= "\t" . "\$config_file .= '-'.\$sub_site_name;" . PHP_EOL; // phpcs:ignore Generic.Strings.UnnecessaryStringConcat.Found
 		$string .= '}' . PHP_EOL;
 		$string .= "\$config_file .= '.php';" . PHP_EOL;
 
@@ -235,10 +242,10 @@ class Powered_Cache_Config {
 		// get config file
 		$string .= "\$GLOBALS['powered_cache_options'] = include( \$config_file );" . PHP_EOL . PHP_EOL;
 		// mobile cache varibales
-		$string .= '$powered_cache_mobile_browsers = ' . var_export( powered_cache_mobile_browsers(), true ) . ';' . PHP_EOL;
-		$string .= '$powered_cache_mobile_prefixes = ' . var_export( powered_cache_mobile_prefixes(), true ) . ';' . PHP_EOL;
+		$string .= '$powered_cache_mobile_browsers = ' . var_export( powered_cache_mobile_browsers(), true ) . ';' . PHP_EOL; // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
+		$string .= '$powered_cache_mobile_prefixes = ' . var_export( powered_cache_mobile_prefixes(), true ) . ';' . PHP_EOL; // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
 
-		if ( substr( get_option( 'permalink_structure' ), - 1 ) == '/' ) {
+		if ( substr( get_option( 'permalink_structure' ), - 1 ) === '/' ) {
 			$string .= '$powered_cache_slash_check = true;' . PHP_EOL;
 		} else {
 			$string .= '$powered_cache_slash_check = false;' . PHP_EOL;
@@ -246,8 +253,8 @@ class Powered_Cache_Config {
 
 		$string .= 'if ( defined( \'POWERED_CACHE_ADVANCED_CACHE_DROPIN\') && @file_exists( POWERED_CACHE_ADVANCED_CACHE_DROPIN ) ) {' . PHP_EOL;
 		$string .= "\t" . 'include( POWERED_CACHE_ADVANCED_CACHE_DROPIN );' . PHP_EOL;
-		$string .= '} elseif ( @file_exists( \'' . POWERED_CACHE_DROPIN_DIR . 'page-cache.php' . '\' ) ) {' . PHP_EOL;
-		$string .= "\t" . 'include( \'' . POWERED_CACHE_DROPIN_DIR . 'page-cache.php' . '\' );' . PHP_EOL;
+		$string .= '} elseif ( @file_exists( \'' . POWERED_CACHE_DROPIN_DIR . 'page-cache.php' . '\' ) ) {' . PHP_EOL; // phpcs:ignore Generic.Strings.UnnecessaryStringConcat.Found
+		$string .= "\t" . 'include( \'' . POWERED_CACHE_DROPIN_DIR . 'page-cache.php' . '\' );' . PHP_EOL; // phpcs:ignore Generic.Strings.UnnecessaryStringConcat.Found
 		$string .= '} else {' . PHP_EOL;
 		$string .= "\t" . 'define( \'POWERED_CACHE_PAGE_CACHING_HAS_PROBLEM\', true );' . PHP_EOL;
 		$string .= '}';
@@ -259,7 +266,7 @@ class Powered_Cache_Config {
 	 * Define WP_CACHE constant
 	 *
 	 * @since 1.0
-	 * @param $status
+	 * @param bool $status page cache status
 	 *
 	 * @return bool
 	 */
@@ -290,12 +297,12 @@ class Powered_Cache_Config {
 				continue;
 			}
 
-			if ( $match[2] == 'WP_CACHE' ) {
+			if ( 'WP_CACHE' === $match[2] ) {
 				$line_key = $key;
 			}
 		}
 
-		if ( $line_key !== false ) {
+		if ( false !== $line_key ) {
 			unset( $config_file[ $line_key ] );
 		}
 
@@ -351,24 +358,24 @@ class Powered_Cache_Config {
 	/**
 	 * Save settings to file
 	 *
-	 * @since 1.0
-	 * @param $configuration
+	 * @param array $configuration cache settings
 	 *
 	 * @return bool
+	 * @since 1.0
 	 */
 	public function save_to_file( $configuration ) {
 		global $powered_cache_fs;
 
 		$config_dir = WP_CONTENT_DIR . '/pc-config';
 
-		$site_url_parts   = parse_url( site_url() );
+		$site_url_parts   = wp_parse_url( site_url() );
 		$config_file_name = $site_url_parts['host'];
 
 		if ( is_multisite() && ( defined( 'SUBDOMAIN_INSTALL' ) && false === SUBDOMAIN_INSTALL ) ) {
 			if ( is_main_site( get_current_blog_id() ) ) {
 				$config_file_name .= '-blog';
 			} else {
-				$subdir_name       = ltrim( parse_url( get_site_url( get_current_blog_id() ), PHP_URL_PATH ), '/' );
+				$subdir_name       = ltrim( wp_parse_url( get_site_url( get_current_blog_id() ), PHP_URL_PATH ), '/' );
 				$config_file_name .= '-' . $subdir_name;
 			}
 		}
@@ -379,7 +386,7 @@ class Powered_Cache_Config {
 
 		$powered_cache_fs->mkdir( $config_dir );
 
-		$config_file_string = '<?php' . PHP_EOL . "defined( 'ABSPATH' ) || exit;" . PHP_EOL . 'return ' . var_export( $configuration, true ) . ';' . PHP_EOL;
+		$config_file_string = '<?php' . PHP_EOL . "defined( 'ABSPATH' ) || exit;" . PHP_EOL . 'return ' . var_export( $configuration, true ) . ';' . PHP_EOL; // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
 
 		if ( ! $powered_cache_fs->put_contents( $config_file, $config_file_string, FS_CHMOD_FILE ) ) {
 			return false;
@@ -391,8 +398,10 @@ class Powered_Cache_Config {
 	/**
 	 * Create .htaccess file based on current setting preferences
 	 *
-	 * @since 1.0
+	 * @param bool $enable htaccess configuration option
+	 *
 	 * @return bool
+	 * @since 1.0
 	 */
 	public function configure_htaccess( $enable = true ) {
 		global $powered_cache_fs;
@@ -447,12 +456,13 @@ class Powered_Cache_Config {
 	 * Prepares .htaccess rules for the caching
 	 *
 	 * @since 1.1
-	 * @return string $rules
 	 */
 	public function htaccess_rules() {
 		$rules = '';
 
 		/**
+		 * htaccess rules
+		 *
 		 * @since 1.1 $contents parameter removed
 		 */
 		$rules .= apply_filters( 'powered_cache_pre_htaccess', '' );
@@ -485,7 +495,7 @@ class Powered_Cache_Config {
 
 			foreach ( $mime_types as $mime_type => $ext ) {
 
-				if ( in_array( $mime_type, array( 'text/html', 'text/richtext', 'text/plain', 'text/xsd', 'text/xsl', 'text/xml', 'text/cache-manifest' ) ) ) {
+				if ( in_array( $mime_type, array( 'text/html', 'text/richtext', 'text/plain', 'text/xsd', 'text/xsl', 'text/xml', 'text/cache-manifest' ), true ) ) {
 					continue;
 				}
 
@@ -495,7 +505,7 @@ class Powered_Cache_Config {
 				 *
 				 * @see http://httpd.apache.org/docs/current/mod/mod_expires.html
 				 */
-				if ( in_array( $mime_type, array( 'text/css', 'application/javascript' ) ) ) {
+				if ( in_array( $mime_type, array( 'text/css', 'application/javascript' ), true ) ) {
 					$expiry_time = apply_filters( 'powered_cache_browser_cache_assets_lifespan', 'access plus 1 year' );
 				} else {
 					$expiry_time = apply_filters( 'powered_cache_browser_cache_default_lifespan', 'access plus 1 month' );
@@ -547,7 +557,7 @@ class Powered_Cache_Config {
 		$env_powered_cache_ssl = '';
 		$env_powered_cache_enc = '';
 
-		$rewrite_base = parse_url( home_url() );
+		$rewrite_base = wp_parse_url( home_url() );
 		$rewrite_base = isset( $rewrite_base['path'] ) ? trailingslashit( $rewrite_base['path'] ) : '/';
 
 		$rules .= '<IfModule mod_rewrite.c>' . PHP_EOL;
@@ -585,13 +595,13 @@ class Powered_Cache_Config {
 		$rules .= '    RewriteCond %{REQUEST_METHOD} !=POST' . PHP_EOL;
 		$rules .= '    RewriteCond %{QUERY_STRING} =""' . PHP_EOL;
 
-		if ( substr( get_option( 'permalink_structure' ), - 1 ) == '/' ) {
+		if ( '/' === substr( get_option( 'permalink_structure' ), - 1 ) ) {
 			$rules .= '    RewriteCond %{REQUEST_URI} !^.*[^/]$' . PHP_EOL;
 			$rules .= '    RewriteCond %{REQUEST_URI} !^.*//.*$' . PHP_EOL;
 		}
 
 		// Get root base
-		$site_root = parse_url( site_url() );
+		$site_root = wp_parse_url( site_url() );
 		$site_root = isset( $site_root['path'] ) ? trailingslashit( $site_root['path'] ) : '';
 
 		// reject user agent
@@ -625,11 +635,11 @@ class Powered_Cache_Config {
 		}
 
 		if ( apply_filters( 'powered_cache_maybe_1and1_hosting', ( 0 === strpos( $_SERVER['DOCUMENT_ROOT'], '/kunden/homepage/' ) ) ) ) {
-			$rules .= '    RewriteCond "' . str_replace( '/kunden/homepage/', '/', $cache_location ) . '%{HTTP_HOST}' . '%{REQUEST_URI}/index' . $env_powered_cache_ssl . $env_powered_cache_ua . '.html' . $env_powered_cache_enc . '" -f' . PHP_EOL;
+			$rules .= '    RewriteCond "' . str_replace( '/kunden/homepage/', '/', $cache_location ) . '%{HTTP_HOST}' . '%{REQUEST_URI}/index' . $env_powered_cache_ssl . $env_powered_cache_ua . '.html' . $env_powered_cache_enc . '" -f' . PHP_EOL; // phpcs:ignore Generic.Strings.UnnecessaryStringConcat.Found
 		} else {
-			$rules .= '    RewriteCond "%{DOCUMENT_ROOT}/' . ltrim( $cache_path, '/' ) . '%{HTTP_HOST}' . '%{REQUEST_URI}/index' . $env_powered_cache_ssl . $env_powered_cache_ua . '.html' . $env_powered_cache_enc . '" -f' . PHP_EOL;
+			$rules .= '    RewriteCond "%{DOCUMENT_ROOT}/' . ltrim( $cache_path, '/' ) . '%{HTTP_HOST}' . '%{REQUEST_URI}/index' . $env_powered_cache_ssl . $env_powered_cache_ua . '.html' . $env_powered_cache_enc . '" -f' . PHP_EOL; // phpcs:ignore Generic.Strings.UnnecessaryStringConcat.Found
 		}
-		$rules .= '    RewriteRule .* "' . $cache_path . '%{HTTP_HOST}' . '%{REQUEST_URI}/index' . $env_powered_cache_ssl . $env_powered_cache_ua . '.html' . $env_powered_cache_enc . '" [L]' . PHP_EOL;
+		$rules .= '    RewriteRule .* "' . $cache_path . '%{HTTP_HOST}' . '%{REQUEST_URI}/index' . $env_powered_cache_ssl . $env_powered_cache_ua . '.html' . $env_powered_cache_enc . '" [L]' . PHP_EOL; // phpcs:ignore Generic.Strings.UnnecessaryStringConcat.Found
 		$rules .= '</IfModule>' . PHP_EOL;
 		$rules .= '# END POWERED CACHE' . PHP_EOL;
 
@@ -714,7 +724,7 @@ class Powered_Cache_Config {
 		$contents .= '  try_files /wp-content/cache/powered-cache/$http_host/$cache_uri/index${pc_ssl}${pc_ua}.' . $cache_suffix . ' $uri $uri/ /index.php?$args;' . PHP_EOL;
 		$contents .= '}' . PHP_EOL . PHP_EOL;
 
-		if ( substr( get_option( 'permalink_structure' ), - 1 ) == '/' ) {
+		if ( '/' === substr( get_option( 'permalink_structure' ), - 1 ) ) {
 			$contents .= '# add trailingslash rule' . PHP_EOL;
 			$contents .= 'rewrite ^([^.]*[^/])$ $1/ permanent;' . PHP_EOL;
 		}
@@ -746,12 +756,15 @@ class Powered_Cache_Config {
 		}
 
 		nocache_headers();
+		// phpcs:disable WordPress.PHP.NoSilencedErrors.Discouraged
 		@header( 'Content-Type: text/plain' );
 		@header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
 		@header( 'Content-Transfer-Encoding: binary' );
 		@header( 'Content-Length: ' . strlen( $rules ) );
 		@header( 'Connection: close' );
-		echo $rules;
+		// phpcs:enable WordPress.PHP.NoSilencedErrors.Discouraged
+
+		echo $rules; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		exit;
 	}
 

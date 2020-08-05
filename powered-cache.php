@@ -9,6 +9,8 @@
  * Text Domain:   powered-cache
  * Domain Path:   /languages/
  * License:       GPLv2 (or later)
+ *
+ * @package  PoweredCache
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -20,11 +22,16 @@ define( 'POWERED_CACHE_REQUIRED_WP_VERSION', '4.5' );
 
 if ( ! class_exists( 'Powered_Cache' ) ) :
 
+	/**
+	 * Main class of the plugin
+	 * class Powered_Cache
+	 */
 	final class Powered_Cache {
 
 		/**
 		 * Stores the single instance of this plugin.
 		 *
+		 * @var object $instance
 		 * @since 1.0
 		 */
 		private static $instance;
@@ -205,7 +212,7 @@ if ( ! class_exists( 'Powered_Cache' ) ) :
 		 * @since 1.0
 		 */
 		public function __clone() {
-			_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'powered-cache' ), '1.0' );
+			_doing_it_wrong( __FUNCTION__, esc_html__( 'Cheatin&#8217; huh?', 'powered-cache' ), '1.0' );
 		}
 
 
@@ -215,7 +222,7 @@ if ( ! class_exists( 'Powered_Cache' ) ) :
 		 * @since 1.0
 		 */
 		public function __wakeup() {
-			_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'powered-cache' ), '1.0' );
+			_doing_it_wrong( __FUNCTION__, esc_html__( 'Cheatin&#8217; huh?', 'powered-cache' ), '1.0' );
 		}
 
 
@@ -227,6 +234,9 @@ endif;
 
 register_deactivation_hook( __FILE__, 'powered_cache_deactivation' );
 
+/**
+ * Deactivation callback
+ */
 function powered_cache_deactivation() {
 	global $powered_cache_fs;
 
@@ -277,7 +287,7 @@ function powered_cache_requirements_notice() {
 	<div id="message" class="error notice">
 		<p><strong><?php esc_html_e( 'Your site does not support Powered Cache.', 'powered-cache' ); ?></strong></p>
 
-		<p><?php printf( esc_html__( 'Your site is currently running WordPress version %1$s, while Powered Cache requires version %2$s or greater.', 'powered-cache' ), esc_html( get_bloginfo( 'version' ) ), POWERED_CACHE_REQUIRED_WP_VERSION ); ?></p>
+		<p><?php printf( esc_html__( 'Your site is currently running WordPress version %1$s, while Powered Cache requires version %2$s or greater.', 'powered-cache' ), esc_html( get_bloginfo( 'version' ) ), esc_attr( POWERED_CACHE_REQUIRED_WP_VERSION ) ); ?></p>
 
 		<p><?php esc_html_e( 'Please update your WordPress or deactivate Powered Cache.', 'powered-cache' ); ?></p>
 	</div>

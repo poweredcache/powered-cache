@@ -1,4 +1,10 @@
 <?php
+/**
+ * Powered Cache Notices
+ *
+ * @package PoweredCache
+ */
+
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -57,14 +63,24 @@ function powered_cache_plugin_compatability_notices() {
 
 	if ( count( $plugins ) > 0 && current_user_can( apply_filters( 'powered_cache_cap', 'manage_options' ) ) ) { ?>
 		<div class="error">
-			<h2><?php _e( 'Powered Cache', 'powered-cache' ); ?></h2>
+			<h2><?php esc_html_e( 'Powered Cache', 'powered-cache' ); ?></h2>
 
-			<p><?php printf( __( 'The following plugins are not compatible with  <b>%s</b> and will cause unintended results:', 'powered-cache' ), __( 'Powered Cache', 'powered-cache' ) ); ?></p>
+			<p>
+				<?php
+				printf(
+					'%s <b>%s</b> %s',
+					esc_html__( 'The following plugins are not compatible with', 'powered-cache' ),
+					esc_html__( 'Powered Cache', 'powered-cache' ),
+					esc_html__( 'and will cause unintended results:', 'powered-cache' )
+				);
+				?>
+			</p>
+
 			<ul class="incompatible-plugin-list">
 				<?php
 				foreach ( $plugins as $plugin ) {
 					$plugin_data = get_plugin_data( WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . $plugin );
-					echo '<li>' . $plugin_data['Name'] . '</span> <a href="' . wp_nonce_url( admin_url( 'admin-post.php?action=deactivate_plugin&plugin=' . urlencode( $plugin ) ), 'deactivate_plugin' ) . '" class="button-secondary">' . __( 'Deactivate', 'powered-cache' ) . '</a></li>';
+					echo '<li>' . esc_attr( $plugin_data['Name'] ) . '</span> <a href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=deactivate_plugin&plugin=' . rawurlencode( $plugin ) ), 'deactivate_plugin' ) ) . '" class="button-secondary">' . esc_html__( 'Deactivate', 'powered-cache' ) . '</a></li>';
 				}
 				?>
 			</ul>
@@ -99,8 +115,17 @@ function powered_cache_advanced_cache_notices() {
 
 	if ( true !== powered_cache_get_option( 'enable_page_caching' ) ) {
 		?>
-		<div class="notice notice-warning"><p>
-				<?php echo sprintf( __( '<strong>Important:</strong> please enable page caching on the Powered Cache <a href="%s">settings page</a>', 'powered-cache' ), admin_url( 'admin.php?page=powered-cache' ) ); ?>
+		<div class="notice notice-warning">
+			<p>
+				<?php
+				printf(
+					'<strong>%1$s:</strong> %2$s <a href="%3$s">%4$s</a>',
+					esc_html__( 'Important', 'powered-cache' ),
+					esc_html__( 'please enable page caching on the Powered Cache', 'powered-cache' ),
+					esc_url( admin_url( 'admin.php?page=powered-cache' ) ),
+					esc_html__( 'settings page', 'powered-cache' )
+				);
+				?>
 			</p>
 		</div>
 		<?php
@@ -131,11 +156,11 @@ function powered_cache_advanced_cache_notices() {
 	}
 	?>
 	<div class="error">
-		<h2><?php _e( 'Powered Cache', 'powered-cache' ); ?></h2>
-		<strong><?php echo __( 'Page Caching feature could not work because:', 'powered-cache' ); ?></strong>
+		<h2><?php esc_html_e( 'Powered Cache', 'powered-cache' ); ?></h2>
+		<strong><?php esc_html_e( 'Page Caching feature could not work because:', 'powered-cache' ); ?></strong>
 
 		<?php foreach ( $err as $error_msg ) : ?>
-			<p><?php echo $error_msg; ?></p>
+			<p><?php echo $error_msg; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
 		<?php endforeach; ?>
 	</div>
 	<?php
@@ -160,11 +185,17 @@ function powered_cache_object_cache_notices() {
 
 	// first check object cache file exist
 	if ( isset( $object_cache_backends[ $object_cache_driver ] ) && ! file_exists( $object_cache_dropin ) ) {
-		$message = sprintf( __( 'Phew! It looks your object cache file missing. Please check <code>%s</code> exist, writable and accessible on your server.', 'powered-cache' ), $object_cache_dropin );
 		?>
 		<div class="error">
-			<p><strong><?php echo __( 'Powered Cache:', 'powered-cache' ); ?></strong>
-				<?php echo $message; ?>
+			<p><strong><?php echo esc_html__( 'Powered Cache:', 'powered-cache' ); ?></strong>
+				<?php
+				printf(
+					'%1$s <code>%2$s</code> %3$s',
+					esc_html__( 'Phew! It looks your object cache file missing. Please check', 'powered-cache' ),
+					esc_attr( $object_cache_dropin ),
+					esc_html__( 'exist, writable and accessible on your server.', 'powered-cache' )
+				);
+				?>
 			</p>
 		</div>
 		<?php
@@ -176,11 +207,17 @@ function powered_cache_object_cache_notices() {
 			$broken_file = $object_cache_backends[ $object_cache_driver ];
 		}
 
-		$message = sprintf( __( 'Powered Cache could not access object cache backend. Please check <code>%s</code> exist and accessible on your server.', 'powered-cache' ), $broken_file );
 		?>
 		<div class="error">
-			<p><strong><?php echo __( 'Powered Cache:', 'powered-cache' ); ?></strong>
-				<?php echo $message; ?>
+			<p><strong><?php echo esc_html__( 'Powered Cache:', 'powered-cache' ); ?></strong>
+				<?php
+				printf(
+					'%1$s <code>%2$s</code> %3$s',
+					esc_html__( 'Powered Cache could not access object cache backend. Please check', 'powered-cache' ),
+					esc_attr( $broken_file ),
+					esc_html__( 'exist and accessible on your server.', 'powered-cache' )
+				);
+				?>
 			</p>
 		</div>
 		<?php
@@ -225,8 +262,8 @@ function powered_cache_maybe_htaccess_warning() {
 	?>
 
 	<div class="error">
-		<p><strong><?php echo __( 'Powered Cache:', 'powered-cache' ); ?></strong>
-			<?php echo $message; ?>
+		<p><strong><?php echo esc_html__( 'Powered Cache:', 'powered-cache' ); ?></strong>
+			<?php echo wp_kses_post( $message ); ?>
 		</p>
 	</div>
 

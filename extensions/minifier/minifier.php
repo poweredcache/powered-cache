@@ -1,5 +1,11 @@
 <?php
 /**
+ * Placeholder Minifier
+ *
+ * @package PoweredCache
+ */
+
+/**
  * Extension Name: Minifier
  * Extension URI: https://poweredcache.com/extensions/minifier
  * Description: Reduce size of HTML,CSS,JS files by compressing and concatenating them.
@@ -9,7 +15,6 @@
  * Extension Image: extension-image.png
  * License: GPLv2 (or later)
  * Premium: true
- *
  * This is just placeholder, actual plugin located in premium
  */
 

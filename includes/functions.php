@@ -1,8 +1,9 @@
 <?php
 /**
  * Common functions
+ *
+ * @package PoweredCache
  */
-
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -31,11 +32,11 @@ function powered_cache_get_settings() {
 /**
  * Get single settings item of plugin
  *
- * @since 1.0
- * @param string     $key
- * @param bool|false $default
+ * @param string     $key     option key
+ * @param bool|false $default default value
  *
  * @return mixed|void
+ * @since 1.0
  */
 function powered_cache_get_option( $key = '', $default = false ) {
 	global $powered_cache_options;
@@ -65,8 +66,8 @@ function powered_cache_flush() {
  *
  * @since 1.0
  *
- * @param $old_settings array
- * @param $new_settings array
+ * @param array $old_settings old settings
+ * @param array $new_settings new settings
  *
  * @return bool depends on writing settings to file
  */
@@ -188,12 +189,14 @@ function powered_cache_is_premium() {
 	return false;
 }
 
-
+/**
+ * Overlay for premium functionality
+ */
 function powered_cache_maybe_require_premium_html() {
 
-	if ( ! powered_cache_is_premium() ) {?>
+	if ( ! powered_cache_is_premium() ) { ?>
 		<div class="<?php echo( ! powered_cache_is_premium() ? 'need-upgrade' : '' ); ?>">
-			<span class="upgrade-msg"><?php echo __( 'This feature available only premium users', 'powered-cache' ); ?></span>
+			<span class="upgrade-msg"><?php esc_html_e( 'This feature available only premium users', 'powered-cache' ); ?></span>
 		</div>
 		<?php
 	}
@@ -217,13 +220,13 @@ function powered_cache_get_page_cache_dir() {
 /**
  * get cache location of given url
  *
- * @param string $url
+ * @param string $url request url
  *
  * @since 1.1
  * @return mixed|void
  */
 function powered_cache_get_url_dir( $url ) {
-	$url_info = parse_url( $url );
+	$url_info = wp_parse_url( $url );
 	$sub_dir  = $url_info['host'] . $url_info['path'];
 	$path     = powered_cache_get_cache_dir() . 'powered-cache/' . ltrim( $sub_dir, '/' );
 
@@ -242,7 +245,7 @@ function powered_cache_site_cache_dir() {
 	// compatible with multisite
 	$site_url = get_site_url();
 
-	$site_path = parse_url( $site_url, PHP_URL_HOST );
+	$site_path = wp_parse_url( $site_url, PHP_URL_HOST );
 
 	$site_cache_dir = $base_dir . $site_path;
 
@@ -253,7 +256,7 @@ function powered_cache_site_cache_dir() {
 /**
  * Delete cache file
  *
- * @param string $url
+ * @param string $url request url
  *
  * @since 1.0
  * @return bool  true when found cache dir, otherwhise false
@@ -269,7 +272,7 @@ function powered_cache_delete_page_cache( $url ) {
 			 * Don't need to lookup for index-https, index-https-mobile etc..
 			 * Just clean that directory's files only.
 			 */
-			if ( ! is_dir( $dir . $file ) && ! in_array( $file, array( '.', '..' ) ) ) {
+			if ( ! is_dir( $dir . $file ) && ! in_array( $file, array( '.', '..' ), true ) ) {
 				unlink( $dir . $file );
 			}
 		}
@@ -284,7 +287,7 @@ function powered_cache_delete_page_cache( $url ) {
  * Get all settings for plugin
  *
  * @since 1.0
- * @param $extension_id
+ * @param string $extension_id extension id
  *
  * @return bool
  */
@@ -306,11 +309,11 @@ function powered_cache_get_extension_settings( $extension_id ) {
 /**
  * Update options of extension
  *
- * @since 1.0
- * @param       $extension_id
- * @param array        $settings
+ * @param string $extension_id extension id
+ * @param array  $settings     settings
  *
  * @return bool
+ * @since 1.0
  */
 function powered_cache_update_extension_option( $extension_id, $settings = array() ) {
 	$options = get_option( 'powered_cache_settings' );
@@ -328,12 +331,12 @@ function powered_cache_update_extension_option( $extension_id, $settings = array
 /**
  * Get single option of plugin. Generally used for fields
  *
- * @since 1.0
- * @param            $extension_id
- * @param string       $option_name
- * @param bool|false   $default
+ * @param string     $extension_id extension id
+ * @param string     $option_name  option name
+ * @param bool|false $default      default value
  *
  * @return bool
+ * @since 1.0
  */
 function powered_cache_get_extension_option( $extension_id, $option_name = '', $default = false ) {
 	$option = powered_cache_get_extension_settings( $extension_id );
@@ -388,7 +391,7 @@ function powered_cache_clean_site_cache_dir() {
  * @since 1.0
  * @since 1.1 powered_cache_post_related_urls filter added
  *
- * @param $post_id
+ * @param int $post_id post id
  *
  * @return array
  */
@@ -399,7 +402,7 @@ function powered_cache_get_post_related_urls( $post_id ) {
 	// array to collect all our URLs
 	$related_urls = array();
 
-	if ( get_permalink( $post_id ) == true ) {
+	if ( get_permalink( $post_id ) ) {
 		// we're going to add a ton of things to flush.
 
 		// related category urls
@@ -422,7 +425,7 @@ function powered_cache_get_post_related_urls( $post_id ) {
 		array_push( $related_urls, get_author_posts_url( get_post_field( 'post_author', $post_id ) ), get_author_feed_link( get_post_field( 'post_author', $post_id ) ) );
 
 		// Archives and their feeds
-		if ( get_post_type_archive_link( get_post_type( $post_id ) ) == true ) {
+		if ( get_post_type_archive_link( get_post_type( $post_id ) ) ) {
 			array_push( $related_urls, get_post_type_archive_link( get_post_type( $post_id ) ), get_post_type_archive_feed_link( get_post_type( $post_id ) ) );
 		}
 
@@ -430,7 +433,7 @@ function powered_cache_get_post_related_urls( $post_id ) {
 		array_push( $related_urls, get_permalink( $post_id ) );
 
 		// Also clean URL for trashed post.
-		if ( $current_post_status == 'trash' ) {
+		if ( 'trash' === $current_post_status ) {
 			$trashpost = get_permalink( $post_id );
 			$trashpost = str_replace( '__trashed', '', $trashpost );
 			array_push( $related_urls, $trashpost, $trashpost . 'feed/' );
@@ -449,7 +452,7 @@ function powered_cache_get_post_related_urls( $post_id ) {
 
 		// Home Page and (if used) posts page
 		array_push( $related_urls, trailingslashit( home_url() ) );
-		if ( get_option( 'show_on_front' ) == 'page' ) {
+		if ( 'page' === get_option( 'show_on_front' ) ) {
 			// Ensure we have a page_for_posts setting to avoid empty URL
 			if ( get_option( 'page_for_posts' ) ) {
 				array_push( $related_urls, get_permalink( get_option( 'page_for_posts' ) ) );
@@ -515,13 +518,13 @@ function powered_cache_get_debug_info() {
 /**
  * Get list of expired files for given directory
  *
- * @param string $path
+ * @param string $path cache directory
  * @param int    $lifespan lifespan in seconds
  *
  * @since 1.1
  * @return array expired file list
  */
-function powered_cache_get_exprired_files( $path, $lifespan = 0 ) {
+function powered_cache_get_expired_files( $path, $lifespan = 0 ) {
 
 	$current_time = time();
 
@@ -542,7 +545,7 @@ function powered_cache_get_exprired_files( $path, $lifespan = 0 ) {
 
 		$path = $file->getPathname();
 
-		if ( @filemtime( $path ) + $lifespan <= $current_time ) {
+		if ( @filemtime( $path ) + $lifespan <= $current_time ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 			$expired_files[] = $path;
 		}
 	}
@@ -553,12 +556,12 @@ function powered_cache_get_exprired_files( $path, $lifespan = 0 ) {
 /**
  * Is saving options now?
  *
- * @since 1.0
- * @since 1.2 checks query arg
  * @return bool
+ * @since 1.2 checks query arg
+ * @since 1.0
  */
 function powered_cache_is_saving_options() {
-	if ( isset( $_GET['pc_options'] ) && 'updated' === $_GET['pc_options'] ) {
+	if ( isset( $_GET['pc_options'] ) && 'updated' === $_GET['pc_options'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		return true;
 	}
 
@@ -571,9 +574,9 @@ function powered_cache_is_saving_options() {
  * @link  https://gist.github.com/markjaquith/2653957
  * @see   https://gist.github.com/westonruter/5475349
  *
- * @param string   $key
- * @param int      $ttl
- * @param callable $function
+ * @param string   $key      cache key
+ * @param int      $ttl      TTL in seconds
+ * @param callable $function callback
  *
  * @since 1.2
  */
@@ -586,7 +589,7 @@ function powered_cache_fragment( $key, $ttl, $function ) {
 		$output = ob_get_clean();
 		wp_cache_add( $key, $output, $group, $ttl );
 	}
-	echo $output;
+	echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
 
 
@@ -667,7 +670,7 @@ function powered_cache_get_response_headers() {
 	}
 
 	foreach ( $headers as $key => $value ) {
-		if ( ! in_array( strtolower( $key ), $known_headers ) ) {
+		if ( ! in_array( strtolower( $key ), $known_headers, true ) ) {
 			unset( $headers[ $key ] );
 		}
 	}
@@ -682,7 +685,7 @@ if ( ! function_exists( 'boolval' ) ) {
 	 * If we create compat file someday this function should move there
 	 *
 	 * @since 1.0
-	 * @param $val
+	 * @param mixed $val value
 	 *
 	 * @return bool
 	 */
@@ -693,21 +696,21 @@ if ( ! function_exists( 'boolval' ) ) {
 
 /**
  * remove directories recursively
- *
  * Adopted from W3TC Utility
  *
- * @param string $path
- * @param array  $exclude
+ * @param string $path    target directory
+ * @param array  $exclude excluded files
  *
- * @since 1.2.5
  * @return void
+ * @since 1.2.5
  */
 function powered_cache_rmdir( $path, $exclude = array() ) {
+	// phpcs:disable WordPress.PHP.NoSilencedErrors.Discouraged
 	$dir = @opendir( $path );
 
 	if ( $dir ) {
-		while ( ( $entry = @readdir( $dir ) ) !== false ) {
-			if ( $entry == '.' || $entry == '..' ) {
+		while ( false !== ( $entry = @readdir( $dir ) ) ) { // phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
+			if ( '.' === $entry || '..' === $entry ) {
 				continue;
 			}
 
@@ -729,4 +732,5 @@ function powered_cache_rmdir( $path, $exclude = array() ) {
 		@closedir( $dir );
 		@rmdir( $path );
 	}
+	//phpcs:enable WordPress.PHP.NoSilencedErrors.Discouraged
 }

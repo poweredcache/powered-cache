@@ -1,5 +1,13 @@
 <?php
+/**
+ * Lazy-load WPTouch compat
+ *
+ * @package PoweredCache
+ */
 
+/**
+ * Disable lazy-load on wptouch
+ */
 function powered_cache_lazy_load_compat_wptouch() {
 	if ( function_exists( 'bnc_wptouch_is_mobile' ) || defined( 'WPTOUCH_VERSION' ) ) {
 		add_filter( 'powered_cache_lazy_load_enabled', '__return_false' );

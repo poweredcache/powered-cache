@@ -1,4 +1,10 @@
 <?php
+/**
+ * Extension settings
+ *
+ * @package @PoweredCache
+ */
+
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -7,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <div class="wrap">
 	<h1>
-		<?php printf( '%s %s', $this->extension_name, __( 'Settings', 'powered-cache' ) ); ?>
+		<?php printf( '%s %s', esc_attr( $this->extension_name ), esc_html__( 'Settings', 'powered-cache' ) ); ?>
 	</h1>
 
 

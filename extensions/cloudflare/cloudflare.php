@@ -1,5 +1,11 @@
 <?php
 /**
+ * Cloudflare extension
+ *
+ * @package PoweredCache
+ */
+
+/**
  * Extension Name: Cloudflare
  * Extension URI: https://poweredcache.com/extensions/cloudflare
  * Description: Cloudflare extension for Powered Cache
@@ -17,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once 'inc/class-powered-cache-cloudflare-api.php';
 
 // Fixes Flexible SSL
-if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' ) {
+if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $_SERVER['HTTP_X_FORWARDED_PROTO'] ) {
 	$_SERVER['HTTPS'] = 'on';
 }
 
@@ -35,8 +41,8 @@ if ( is_admin() ) {
 /**
  * Purge cloudflare cache
  *
- * @since 1.0
  * @return array|bool|mixed|object|string
+ * @since 1.0
  */
 function powered_cache_cloudflare_purge_cache() {
 	$email   = powered_cache_get_extension_option( 'cloudflare', 'email' );

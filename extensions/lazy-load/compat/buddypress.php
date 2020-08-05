@@ -1,4 +1,13 @@
 <?php
+/**
+ * Lazy-load BP compat
+ *
+ * @package PoweredCache
+ */
+
+/**
+ * Prevent lazy-load on bp profile page for cropping functionality
+ */
 function powered_cache_lazy_load_compat_bp() {
 	if ( function_exists( 'bp_is_my_profile' ) && bp_is_my_profile() ) {
 		add_filter( 'powered_cache_lazy_load_enabled', '__return_false' );

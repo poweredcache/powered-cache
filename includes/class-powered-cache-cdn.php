@@ -1,9 +1,17 @@
 <?php
+/**
+ * CDN Functionalities
+ *
+ * @package PoweredCache
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Class Powered_Cache_CDN
+ */
 class Powered_Cache_CDN {
 
 	/**
@@ -54,10 +62,10 @@ class Powered_Cache_CDN {
 	/**
 	 * Replace CDN url for srcset
 	 *
-	 * @param $sources array source files
+	 * @param array $sources source files
 	 *
-	 * @since 1.2
 	 * @return mixed
+	 * @since 1.2
 	 */
 	public function srcset_url( $sources ) {
 		foreach ( $sources as $key => $source ) {
@@ -67,6 +75,13 @@ class Powered_Cache_CDN {
 		return $sources;
 	}
 
+	/**
+	 * Maybe replace given url with CDN
+	 *
+	 * @param string $url URL
+	 *
+	 * @return string
+	 */
 	public function cdn_url( $url ) {
 		if ( is_admin() || is_preview() ) {
 			return $url;
@@ -104,7 +119,13 @@ class Powered_Cache_CDN {
 		return $image;
 	}
 
-
+	/**
+	 * Maybe replace image url with CDN
+	 *
+	 * @param string $content dom content
+	 *
+	 * @return string|string[]
+	 */
 	public function cdn_images( $content ) {
 		if ( is_admin() || is_preview() || empty( $content ) ) {
 			return $content;
@@ -115,7 +136,7 @@ class Powered_Cache_CDN {
 		}
 
 		$document = new DOMDocument();
-		@$document->loadHTML( $content );
+		@$document->loadHTML( $content ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 		$images = $document->getElementsByTagName( 'img' );
 
 		$img_url = array();
@@ -149,10 +170,10 @@ class Powered_Cache_CDN {
 	 * this method decide to url replacement.
 	 * rejected files & external resources will be ignored
 	 *
-	 * @since 1.0
+	 * @param string $url url
 	 *
-	 * @param string $url
 	 * @return string cdn url
+	 * @since 1.0
 	 */
 	public static function maybe_cdn_replace( $url ) {
 		global $powered_cache_options;
@@ -191,11 +212,11 @@ class Powered_Cache_CDN {
 		$zone             = 'all';
 		$image_extensions = apply_filters( 'powered_cache_cdn_image_extensions', array( 'jpg', 'jpeg', 'gif', 'png', 'bmp', 'ico', 'webp' ) );
 
-		if ( in_array( $ext, $image_extensions ) ) {
+		if ( in_array( $ext, $image_extensions, true ) ) {
 			$zone = 'image';
-		} elseif ( 'css' == $ext ) {
+		} elseif ( 'css' === $ext ) {
 			$zone = 'css';
-		} elseif ( 'js' == $ext ) {
+		} elseif ( 'js' === $ext ) {
 			$zone = 'js';
 		}
 

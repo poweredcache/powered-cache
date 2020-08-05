@@ -1,9 +1,18 @@
 <?php
+/**
+ * Powered Cache Advanced cache functionalities
+ *
+ * @package PoweredCache
+ */
+
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Class Powered_Cache_Advanced_Cache
+ */
 class Powered_Cache_Advanced_Cache {
 
 	/**
@@ -45,7 +54,7 @@ class Powered_Cache_Advanced_Cache {
 	 * Add purge button on admin bar
 	 *
 	 * @since 1.0
-	 * @param $wp_admin_bar
+	 * @param object $wp_admin_bar WP_Admin_Bar
 	 */
 	public function admin_bar_menu( $wp_admin_bar ) {
 		$wp_admin_bar->add_menu(
@@ -83,14 +92,14 @@ class Powered_Cache_Advanced_Cache {
 	 *
 	 * @since 1.0
 	 *
-	 * @param $post_id
+	 * @param int $post_id Post ID
 	 */
 	public function purge_on_post_update( $post_id ) {
 		$current_post_status = get_post_status( $post_id );
 
 		$urls = array();
 
-		if ( in_array( $current_post_status, array( 'publish', 'trash' ) ) ) {
+		if ( in_array( $current_post_status, array( 'publish', 'trash' ), true ) ) {
 			$urls = powered_cache_get_post_related_urls( $post_id );
 
 			$urls = apply_filters( 'powered_cache_advanced_cache_purge_urls', $urls, $post_id );
@@ -106,13 +115,13 @@ class Powered_Cache_Advanced_Cache {
 	/**
 	 * Delete page cache when post update
 	 *
-	 * @since 1.0
+	 * @param int    $comment_id     Comment id
+	 * @param string $comment_status comment status
 	 *
-	 * @param $comment_ID
-	 * @param $comment_status
+	 * @since 1.0
 	 */
-	public function purge_post_on_comment_status_change( $comment_ID, $comment_status ) {
-		$comment = get_comment( $comment_ID );
+	public function purge_post_on_comment_status_change( $comment_id, $comment_status ) {
+		$comment = get_comment( $comment_id );
 		$post_id = $comment->comment_post_ID;
 		powered_cache_delete_page_cache( get_permalink( $post_id ) );
 	}
@@ -120,14 +129,14 @@ class Powered_Cache_Advanced_Cache {
 	/**
 	 * leave a cookie when comment a post as usual and don't show cached page.
 	 *
-	 * @since 1.0
+	 * @param object $comment Comment Object
+	 * @param object $user    User Object
 	 *
-	 * @param $comment
-	 * @param $user
+	 * @since 1.0
 	 */
 	public function set_comment_cookie( $comment, $user ) {
 		$post_id = $comment->comment_post_ID;
-		setcookie( 'powered_cache_commented_posts[' . $post_id . ']', parse_url( get_permalink( $post_id ), PHP_URL_PATH ), ( time() + HOUR_IN_SECONDS * 24 * 30 ) );
+		setcookie( 'powered_cache_commented_posts[' . $post_id . ']', wp_parse_url( get_permalink( $post_id ), PHP_URL_PATH ), ( time() + HOUR_IN_SECONDS * 24 * 30 ) );
 	}
 
 
@@ -136,7 +145,7 @@ class Powered_Cache_Advanced_Cache {
 	 *
 	 * @since 1.1
 	 *
-	 * @param array $urls
+	 * @param array $urls related posts' URLs that need to be purged
 	 *
 	 * @return array urls
 	 */

@@ -1,10 +1,18 @@
 <?php
+/**
+ * Powered Cache Admin functionalities
+ *
+ * @package    PoweredCache
+ */
+
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-
+/**
+ * Class Powered_Cache_Admin
+ */
 class Powered_Cache_Admin {
 
 	/**
@@ -15,19 +23,24 @@ class Powered_Cache_Admin {
 	public $capability = 'manage_options';
 
 	/**
-	 * @var string $slug used for settings page, menu etc
+	 * used for settings page and menu
+	 *
+	 * @var string $slug
 	 * @since 1.0
 	 */
 	public $slug = 'powered-cache';
 
-	function __construct() { }
+	/**
+	 * Powered_Cache_Admin constructor.
+	 */
+	public function __construct() { }
 
 	/**
 	 * Get things started
 	 *
 	 * @since 1.0
 	 */
-	function setup() {
+	public function setup() {
 		$this->capability = apply_filters( 'powered_cache_cap', $this->capability );
 
 		if ( is_multisite() ) {
@@ -54,9 +67,9 @@ class Powered_Cache_Admin {
 
 		Powered_Cache_Admin_Helper::check_cap_and_nonce( $this->capability );
 
-		if ( ! empty( $_REQUEST['action'] ) ) {
+		if ( ! empty( $_REQUEST['action'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
-			$action = apply_filters( 'powered_cache_update_options', $_REQUEST['action'] );
+			$action = apply_filters( 'powered_cache_update_options', $_REQUEST['action'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 			switch ( $action ) {
 				case 'powered_cache_update_settings':
@@ -80,19 +93,20 @@ class Powered_Cache_Admin {
 	/**
 	 * Register assets for settings page
 	 *
+	 * @param string $hook Hook
+	 *
 	 * @since 1.0
-	 * @param $hook
 	 */
 	public function load_scripts( $hook ) {
 		global $powered_cache_settings_page;
 
 		wp_enqueue_style( 'powered-cache-admin', plugins_url( '/assets/css/admin.css', POWERED_CACHE_PLUGIN_FILE ), array(), POWERED_CACHE_PLUGIN_VERSION );
 
-		if ( $hook != $powered_cache_settings_page ) {
+		if ( $hook !== $powered_cache_settings_page ) {
 			return;
 		}
 
-		wp_enqueue_script( 'powered-cache-admin', plugins_url( '/assets/js/admin.js', POWERED_CACHE_PLUGIN_FILE ), array( 'jquery' ), POWERED_CACHE_PLUGIN_VERSION );
+		wp_enqueue_script( 'powered-cache-admin', plugins_url( '/assets/js/admin.js', POWERED_CACHE_PLUGIN_FILE ), array( 'jquery' ), POWERED_CACHE_PLUGIN_VERSION, true );
 		wp_localize_script(
 			'powered-cache-admin',
 			'powered_cache_vars',
@@ -140,6 +154,8 @@ class Powered_Cache_Admin {
 	/**
 	 * Adds admin bar menu
 	 *
+	 * @param object $wp_admin_bar WP_Admin_Bar
+	 *
 	 * @since 1.0
 	 */
 	public function admin_bar_menu( $wp_admin_bar ) {
@@ -158,10 +174,10 @@ class Powered_Cache_Admin {
 	 * Adds settings link to plugin actions
 	 *
 	 * @since  1.0
-	 * @param  array $actions
+	 * @param  array $actions plugin actions
 	 * @return array
 	 */
-	function action_links( $actions ) {
+	public function action_links( $actions ) {
 
 		$actions['powered_settings'] = sprintf( __( '<a href="%s">Settings</a>', 'powered-cache' ), esc_url( admin_url( 'admin.php?page=powered-cache' ) ) );
 		if ( ! powered_cache_is_premium() ) {
@@ -176,7 +192,7 @@ class Powered_Cache_Admin {
 	 *
 	 * @since 1.0
 	 */
-	function deactivate_plugin() {
+	public function deactivate_plugin() {
 		if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'deactivate_plugin' ) ) {
 			wp_nonce_ays( '' );
 		}

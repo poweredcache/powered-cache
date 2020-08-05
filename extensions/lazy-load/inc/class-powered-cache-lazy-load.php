@@ -1,14 +1,26 @@
 <?php
+/**
+ * The main class of lazy-load functionality
+ *
+ * @package PoweredCache
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// phpcs:disable WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
 if ( ! class_exists( 'Powered_Cache_Lazy_Load' ) ) :
 
+	/**
+	 * Class Powered_Cache_Lazy_Load
+	 */
 	class Powered_Cache_Lazy_Load {
 
-		function __construct() {
+		/**
+		 * Powered_Cache_Lazy_Load constructor.
+		 */
+		public function __construct() {
 			add_action( 'wp', array( $this, 'init' ), 9999 ); // run this as late as possible
 		}
 
@@ -30,7 +42,7 @@ if ( ! class_exists( 'Powered_Cache_Lazy_Load' ) ) :
 			if ( $enabled ) {
 				add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
-				$this->_setup_filtering();
+				$this->setup_filtering();
 			}
 		}
 
@@ -43,8 +55,8 @@ if ( ! class_exists( 'Powered_Cache_Lazy_Load' ) ) :
 			$dirname = trailingslashit( POWERED_CACHE_LAZY_LOAD_DIR ) . 'compat';
 			$d       = dir( $dirname );
 			if ( $d ) {
-				while ( $entry = $d->read() ) {
-					if ( '.' != $entry[0] && '.php' == substr( $entry, - 4 ) ) {
+				while ( $entry = $d->read() ) { // phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
+					if ( '.' !== $entry[0] && '.php' === substr( $entry, - 4 ) ) {
 						include trailingslashit( $dirname ) . $entry;
 					}
 				}
@@ -57,7 +69,7 @@ if ( ! class_exists( 'Powered_Cache_Lazy_Load' ) ) :
 		 */
 		public function enqueue_scripts() {
 
-			wp_enqueue_script( 'PCLL', plugins_url( 'lazy-load/assets/js/lazy-load.min.js', POWERED_CACHE_LAZY_LOAD_DIR ), null, false, true );
+			wp_enqueue_script( 'PCLL', plugins_url( 'lazy-load/assets/js/lazy-load.min.js', POWERED_CACHE_LAZY_LOAD_DIR ), null, POWERED_CACHE_PLUGIN_VERSION, true );
 
 			$threshold = apply_filters( 'powered_cache_lazy_load_threshold', 200 );
 
@@ -69,7 +81,7 @@ if ( ! class_exists( 'Powered_Cache_Lazy_Load' ) ) :
 		/**
 		 * Set up filtering for certain content
 		 */
-		protected function _setup_filtering() {
+		protected function setup_filtering() {
 
 			if ( true === apply_filters( 'powered_cache_lazy_load_images', powered_cache_get_extension_option( 'lazyload', 'image', true ) ) ) {
 				add_filter( 'powered_cache_lazy_load_filter', array( __CLASS__, 'filter_images' ) );
@@ -135,7 +147,7 @@ if ( ! class_exists( 'Powered_Cache_Lazy_Load' ) ) :
 
 			$placeholder_url = apply_filters( 'powered_cache_lazy_load_placeholder_url', 'data:image/gif;base64,R0lGODdhAQABAPAAAP///wAAACwAAAAAAQABAEACAkQBADs=' );
 
-			$match_content = self::_get_content_haystack( $content );
+			$match_content = self::get_content_haystack( $content );
 
 			$matches = array();
 			preg_match_all( '/<img[\s\r\n]+.*?>/is', $match_content, $matches );
@@ -187,7 +199,7 @@ if ( ! class_exists( 'Powered_Cache_Lazy_Load' ) ) :
 
 			$placeholder_url = apply_filters( 'powered_cache_lazy_load_placeholder_url', 'data:image/gif;base64,R0lGODdhAQABAPAAAP///wAAACwAAAAAAQABAEACAkQBADs=' );
 
-			$match_content = self::_get_content_haystack( $content );
+			$match_content = self::get_content_haystack( $content );
 
 			$matches = array();
 			preg_match_all( '|<iframe\s+.*?</iframe>|si', $match_content, $matches );
@@ -224,7 +236,7 @@ if ( ! class_exists( 'Powered_Cache_Lazy_Load' ) ) :
 		 *
 		 * @return string The HTML string without the unwanted elements
 		 */
-		protected static function _get_content_haystack( $content ) {
+		protected static function get_content_haystack( $content ) {
 			$content = self::remove_noscript( $content );
 			$content = self::remove_skip_classes_elements( $content );
 
@@ -234,11 +246,10 @@ if ( ! class_exists( 'Powered_Cache_Lazy_Load' ) ) :
 		/**
 		 * Remove <noscript> elements from HTML string
 		 *
-		 * @author sigginet
-		 *
 		 * @param string $content The HTML string
 		 *
 		 * @return string The HTML string without <noscript> elements
+		 * @author sigginet
 		 */
 		public static function remove_noscript( $content ) {
 			return preg_replace( '/<noscript.*?(\/noscript>)/i', '', $content );
@@ -253,12 +264,12 @@ if ( ! class_exists( 'Powered_Cache_Lazy_Load' ) ) :
 		 */
 		public static function remove_skip_classes_elements( $content ) {
 
-			$skip_classes = self::_get_skip_classes( 'html' );
+			$skip_classes = self::get_skip_classes( 'html' );
 
-			/*
-			http://stackoverflow.com/questions/1732348/regex-match-open-tags-except-xhtml-self-contained-tags/1732454#1732454
-			We can’t do this, but we still do it.
-			*/
+			/**
+			 * http://stackoverflow.com/questions/1732348/regex-match-open-tags-except-xhtml-self-contained-tags/1732454#1732454
+			 * We can’t do this, but we still do it.
+			 */
 			$skip_classes_quoted = array_map( 'preg_quote', $skip_classes );
 			$skip_classes_ORed   = implode( '|', $skip_classes_quoted );
 
@@ -275,7 +286,7 @@ if ( ! class_exists( 'Powered_Cache_Lazy_Load' ) ) :
 		 *
 		 * @return array An array of strings with the class names
 		 */
-		protected static function _get_skip_classes( $content_type ) {
+		protected static function get_skip_classes( $content_type ) {
 
 			/**
 			 * Filter the class names to skip
@@ -289,5 +300,5 @@ if ( ! class_exists( 'Powered_Cache_Lazy_Load' ) ) :
 		}
 
 	}
-
+	// phpcs:enable WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
 endif;
