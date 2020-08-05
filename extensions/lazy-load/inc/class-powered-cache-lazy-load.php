@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! class_exists( 'Powered_Cache_Lazy_Load' ) ):
+if ( ! class_exists( 'Powered_Cache_Lazy_Load' ) ) :
 
 	class Powered_Cache_Lazy_Load {
 
@@ -22,10 +22,8 @@ if ( ! class_exists( 'Powered_Cache_Lazy_Load' ) ):
 				return;
 			}
 
-
 			self::compat();
 			do_action( 'powered_cache_lazy_load_compat' );
-
 
 			$enabled = apply_filters( 'powered_cache_lazy_load_enabled', true );
 
@@ -60,7 +58,6 @@ if ( ! class_exists( 'Powered_Cache_Lazy_Load' ) ):
 		public function enqueue_scripts() {
 
 			wp_enqueue_script( 'PCLL', plugins_url( 'lazy-load/assets/js/lazy-load.min.js', POWERED_CACHE_LAZY_LOAD_DIR ), null, false, true );
-
 
 			$threshold = apply_filters( 'powered_cache_lazy_load_threshold', 200 );
 

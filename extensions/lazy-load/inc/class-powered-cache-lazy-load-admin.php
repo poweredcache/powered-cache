@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! class_exists( 'Powered_Cache_Lazy_Load_Admin' ) ):
+if ( ! class_exists( 'Powered_Cache_Lazy_Load_Admin' ) ) :
 
 	class Powered_Cache_Lazy_Load_Admin extends Powered_Cache_Extension_Admin_Base {
 		public $fields;
@@ -37,11 +37,12 @@ if ( ! class_exists( 'Powered_Cache_Lazy_Load_Admin' ) ):
 				),
 			);
 
-			parent::__construct( array(
-				'extension_id'   => 'lazyload',
-				'extension_name' => __( 'Lazy Load', 'powered-cache' ),
-			) );
-
+			parent::__construct(
+				array(
+					'extension_id'   => 'lazyload',
+					'extension_name' => __( 'Lazy Load', 'powered-cache' ),
+				)
+			);
 
 			$this->setup();
 		}

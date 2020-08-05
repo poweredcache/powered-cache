@@ -24,6 +24,7 @@ if ( ! class_exists( 'Powered_Cache' ) ) :
 
 		/**
 		 * Stores the single instance of this plugin.
+		 *
 		 * @since 1.0
 		 */
 		private static $instance;
@@ -45,7 +46,7 @@ if ( ! class_exists( 'Powered_Cache' ) ) :
 		 */
 		public static function instance() {
 			if ( ! isset( self::$instance ) ) {
-				self::$instance = new Powered_Cache;
+				self::$instance = new Powered_Cache();
 				self::$instance->setup_constants();
 				self::$instance->includes();
 				self::$instance->setup_globals();
@@ -129,7 +130,6 @@ if ( ! class_exists( 'Powered_Cache' ) ) :
 				require_once POWERED_CACHE_ADMIN_DIR . 'class-powered-cache-admin.php';
 			}
 
-
 		}
 
 		/**
@@ -145,6 +145,7 @@ if ( ! class_exists( 'Powered_Cache' ) ) :
 
 		/**
 		 * Setup plugin functionality
+		 *
 		 * @since 1.0
 		 */
 		private function setup() {
@@ -203,7 +204,9 @@ if ( ! class_exists( 'Powered_Cache' ) ) :
 		 *
 		 * @since 1.0
 		 */
-		public function __clone() { _doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'powered-cache' ), '1.0' ); }
+		public function __clone() {
+			_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'powered-cache' ), '1.0' );
+		}
 
 
 		/**
@@ -211,7 +214,9 @@ if ( ! class_exists( 'Powered_Cache' ) ) :
 		 *
 		 * @since 1.0
 		 */
-		public function __wakeup() { _doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'powered-cache' ), '1.0' ); }
+		public function __wakeup() {
+			_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'powered-cache' ), '1.0' );
+		}
 
 
 	}
@@ -230,7 +235,6 @@ function powered_cache_deactivation() {
 		Powered_Cache_Config::factory()->define_wp_cache( false );
 		Powered_Cache_Config::factory()->configure_htaccess( false );
 
-
 		// delete object cache file
 		if ( file_exists( untrailingslashit( WP_CONTENT_DIR ) . '/object-cache.php' ) ) {
 			$powered_cache_fs->delete( untrailingslashit( WP_CONTENT_DIR ) . '/object-cache.php' );
@@ -243,7 +247,6 @@ function powered_cache_deactivation() {
 	}
 
 	delete_option( 'powered_cache_preload_runtime_option' );
-
 
 	// remove cron tasks
 	wp_clear_scheduled_hook( 'powered_cache_preload_hook' );

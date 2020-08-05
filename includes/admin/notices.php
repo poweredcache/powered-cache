@@ -48,11 +48,10 @@ function powered_cache_plugin_compatability_notices() {
 		'combine-css'                                => 'combine-css/combine-css.php',
 		'super-static-cache'                         => 'super-static-cache/super-static-cache.php',
 		'wpcompressor'                               => 'wpcompressor/wpcompressor.php',
-		'check-and-enable-gzip-compression' 		 => 'check-and-enable-gzip-compression/richards-toolbox.php',
-		'leverage-browser-caching-ninjas'   		 => 'leverage-browser-caching-ninjas/leverage-browser-caching-ninja.php',
-		'force-gzip'								 => 'force-gzip/force-gzip.php'
+		'check-and-enable-gzip-compression'          => 'check-and-enable-gzip-compression/richards-toolbox.php',
+		'leverage-browser-caching-ninjas'            => 'leverage-browser-caching-ninjas/leverage-browser-caching-ninja.php',
+		'force-gzip'                                 => 'force-gzip/force-gzip.php',
 	);
-
 
 	$plugins = array_filter( $plugins, 'is_plugin_active' );
 
@@ -98,7 +97,6 @@ function powered_cache_advanced_cache_notices() {
 		return;
 	}
 
-
 	if ( true !== powered_cache_get_option( 'enable_page_caching' ) ) {
 		?>
 		<div class="notice notice-warning"><p>
@@ -119,7 +117,6 @@ function powered_cache_advanced_cache_notices() {
 		$err['powered_cache_page_cache'] = sprintf( __( '<code>%s</code> file was edited or deleted. You can re-create correct configuration files by saving settings.', 'powered-cache' ), basename( WP_CONTENT_DIR ) . '/advanced-cache.php' );
 	}
 
-
 	if ( defined( 'POWERED_CACHE_PAGE_CACHING_HAS_PROBLEM' ) && true === POWERED_CACHE_PAGE_CACHING_HAS_PROBLEM ) {
 		$err['powered_cache_page_cache_has_problem'] = sprintf( __( 'Powered Cache could not access dropin. Please check <code>%s</code> exist and accessible on your server.', 'powered-cache' ), POWERED_CACHE_DROPIN_DIR . 'page-cache.php' );
 	}
@@ -137,12 +134,11 @@ function powered_cache_advanced_cache_notices() {
 		<h2><?php _e( 'Powered Cache', 'powered-cache' ); ?></h2>
 		<strong><?php echo __( 'Page Caching feature could not work because:', 'powered-cache' ); ?></strong>
 
-		<?php foreach ( $err as $error_msg ): ?>
+		<?php foreach ( $err as $error_msg ) : ?>
 			<p><?php echo $error_msg; ?></p>
 		<?php endforeach; ?>
 	</div>
 	<?php
-
 
 }
 
@@ -155,9 +151,8 @@ add_action( 'admin_notices', 'powered_cache_object_cache_notices' );
  */
 function powered_cache_object_cache_notices() {
 	$object_cache_backends = Powered_Cache_Admin_Helper::object_cache_dropins();
-	$object_cache_driver = powered_cache_get_option( 'object_cache' );
+	$object_cache_driver   = powered_cache_get_option( 'object_cache' );
 	$object_cache_dropin   = untrailingslashit( WP_CONTENT_DIR ) . '/object-cache.php';
-
 
 	if ( ! current_user_can( apply_filters( 'powered_cache_cap', 'manage_options' ) ) ) {
 		return;
@@ -176,10 +171,8 @@ function powered_cache_object_cache_notices() {
 		return;
 	}
 
-
-
 	if ( defined( 'POWERED_OBJECT_CACHE_HAS_PROBLEM' ) && true === POWERED_OBJECT_CACHE_HAS_PROBLEM ) {
-		if ( isset( $object_cache_backends[ $object_cache_driver] ) ) {
+		if ( isset( $object_cache_backends[ $object_cache_driver ] ) ) {
 			$broken_file = $object_cache_backends[ $object_cache_driver ];
 		}
 
@@ -220,7 +213,7 @@ function powered_cache_maybe_htaccess_warning() {
 	$htaccess_file = get_home_path() . '.htaccess';
 	$message       = '';
 	if ( ! file_exists( $htaccess_file ) ) {
-		$message = sprintf( __( 'We can\'t find <code>%s</code> file on your server. Please create a new <code>.htaccess</code> file. <a href="%s">Codex</a> might help!.', 'powered-cache' ), '.htaccess', 'https://codex.wordpress.org/htaccess' );
+		$message = sprintf( __( 'We can\'t find <code>%1$s</code> file on your server. Please create a new <code>.htaccess</code> file. <a href="%2$s">Codex</a> might help!.', 'powered-cache' ), '.htaccess', 'https://codex.wordpress.org/htaccess' );
 	} elseif ( ! is_writeable( $htaccess_file ) ) {
 		$message = sprintf( __( 'Oh no! It looks your <code>%s</code> file is not writable. Please make sure it is writable by the web server. Your website will much more faster when configured for Powered Cache.', 'powered-cache' ), '.htaccess' );
 	}

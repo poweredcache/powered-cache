@@ -43,16 +43,19 @@ class Powered_Cache_Advanced_Cache {
 
 	/**
 	 * Add purge button on admin bar
+	 *
 	 * @since 1.0
 	 * @param $wp_admin_bar
 	 */
 	public function admin_bar_menu( $wp_admin_bar ) {
-		$wp_admin_bar->add_menu( array(
-			'id'     => 'advanced-cache-purge',
-			'title'  => __( 'Purge Page Cache', 'powered-cache' ),
-			'href'   => wp_nonce_url( admin_url( 'admin-post.php?action=powered_cache_purge_page_cache' ), 'powered_cache_purge_page_cache' ),
-			'parent' => 'powered-cache',
-		) );
+		$wp_admin_bar->add_menu(
+			array(
+				'id'     => 'advanced-cache-purge',
+				'title'  => __( 'Purge Page Cache', 'powered-cache' ),
+				'href'   => wp_nonce_url( admin_url( 'admin-post.php?action=powered_cache_purge_page_cache' ), 'powered_cache_purge_page_cache' ),
+				'parent' => 'powered-cache',
+			)
+		);
 	}
 
 
@@ -87,7 +90,7 @@ class Powered_Cache_Advanced_Cache {
 
 		$urls = array();
 
-		if ( in_array( $current_post_status, array( "publish", "trash" ) ) ) {
+		if ( in_array( $current_post_status, array( 'publish', 'trash' ) ) ) {
 			$urls = powered_cache_get_post_related_urls( $post_id );
 
 			$urls = apply_filters( 'powered_cache_advanced_cache_purge_urls', $urls, $post_id );

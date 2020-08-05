@@ -45,7 +45,6 @@ class Powered_Cache_Extensions {
 			'minifier'    => $this->core_extension_dir . 'minifier/minifier.php',
 		);
 
-
 		do_action_ref_array( 'powered_cache_register_extensions', array( $this->core_extension_dir, &$extentions ) );
 
 		$extension_info = array();
@@ -70,11 +69,10 @@ class Powered_Cache_Extensions {
 					$header_data['ExtensionImage'] = plugin_dir_url( $extention ) . $header_data['ExtensionImage'];
 				}
 
-				$extension_info[ $id ] = $header_data;
+				$extension_info[ $id ]         = $header_data;
 				$extension_info[ $id ]['path'] = $extention;
 			}
 		}
-
 
 		return apply_filters( 'powered_cache_extension_info', $extension_info );
 	}
@@ -90,7 +88,7 @@ class Powered_Cache_Extensions {
 
 		do_action( 'powered_cache_before_extension_load' );
 
-		$activated_extensions = powered_cache_get_option('active_extensions');
+		$activated_extensions = powered_cache_get_option( 'active_extensions' );
 
 		if ( is_array( $activated_extensions ) ) {
 			$extensions = $this->get_extentions();
@@ -103,7 +101,6 @@ class Powered_Cache_Extensions {
 					do_action( 'powered_cache_extension_' . $extension . '_loaded', $extension );
 				}
 			}
-
 		}
 
 		// get active extensions and load
@@ -122,8 +119,8 @@ class Powered_Cache_Extensions {
 	public function is_active( $extension_id ) {
 		$options = get_option( 'powered_cache_settings' );
 		if ( is_array( $options ) && isset( $options['active_extensions'] )
-		     && is_array( $options['active_extensions'] )
-		     && in_array( $extension_id, $options['active_extensions'] )
+			 && is_array( $options['active_extensions'] )
+			 && in_array( $extension_id, $options['active_extensions'] )
 		) {
 			return true;
 		}
@@ -183,7 +180,6 @@ class Powered_Cache_Extensions {
 		if ( false !== $key ) {
 			unset( $new_options['active_extensions'][ $key ] );
 		}
-
 
 		do_action( 'powered_cache_extension_deactivate_' . $extension_id );
 		powered_cache_save_settings( $old_options, $new_options );

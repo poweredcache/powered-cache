@@ -53,12 +53,14 @@ class Powered_Cache_Hooks {
 			return;
 		}
 
-		$wp_admin_bar->add_menu( array(
-			'id'     => 'all-cache-purge',
-			'title'  => __( 'Purge All Cache', 'powered-cache' ),
-			'href'   => wp_nonce_url( admin_url( 'admin-post.php?action=powered_cache_purge_all_cache' ), 'powered_cache_purge_all_cache' ),
-			'parent' => 'powered-cache',
-		) );
+		$wp_admin_bar->add_menu(
+			array(
+				'id'     => 'all-cache-purge',
+				'title'  => __( 'Purge All Cache', 'powered-cache' ),
+				'href'   => wp_nonce_url( admin_url( 'admin-post.php?action=powered_cache_purge_all_cache' ), 'powered_cache_purge_all_cache' ),
+				'parent' => 'powered-cache',
+			)
+		);
 	}
 
 

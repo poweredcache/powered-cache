@@ -18,24 +18,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<div class="postbox">
 		<div class="inside">
-			<?php if(isset($_GET['action']) && 'run-diagnostic' === $_GET['action']):?>
+			<?php if ( isset( $_GET['action'] ) && 'run-diagnostic' === $_GET['action'] ) : ?>
 				<?php
-				$checks  = Powered_Cache_Admin_Helper::diagnostic_info();
+				$checks = Powered_Cache_Admin_Helper::diagnostic_info();
 
-				foreach ($checks as $check_key => $result){
-					if($result['status']){
+				foreach ( $checks as $check_key => $result ) {
+					if ( $result['status'] ) {
 						echo '<span class="dashicons dashicons-yes"></span>';
-					}else{
+					} else {
 						echo '<span class="dashicons dashicons-no"></span>';
 					}
 					echo $result['description'];
 					echo '<br>';
 				}
 				?>
-			<?php else:?>
+			<?php else : ?>
 			<table class="form-table">
 				<tbody>
-				<?php if ( powered_cache_is_premium() ): ?>
+				<?php if ( powered_cache_is_premium() ) : ?>
 					<tr>
 						<th scope="row"><label for="powered_cache_cache_message"><?php _e( 'Cache footprint', 'powered-cache' ); ?></label></th>
 						<td>
@@ -46,7 +46,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				<?php
 				// additional control needed for cache flushing
-				if ( ( is_multisite() && current_user_can( 'manage_network' ) ) || ( ! is_multisite() && current_user_can( 'activate_plugins' ) ) ): ?>
+				if ( ( is_multisite() && current_user_can( 'manage_network' ) ) || ( ! is_multisite() && current_user_can( 'activate_plugins' ) ) ) :
+					?>
 					<tr>
 						<th scope="row"><label for="powered_cache_clear_cache"><?php _e( 'Clear Cache', 'powered-cache' ); ?></label></th>
 						<td>
@@ -96,14 +97,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<td>
 						<input type="file" id="powered_cache_import_settings" name="powered_cache_import">
 						<br>
-						<input type="submit" name="do-import" id="do-import" class="button" value="<?php _e('Upload and import','powered-cache');?>">
+						<input type="submit" name="do-import" id="do-import" class="button" value="<?php _e( 'Upload and import', 'powered-cache' ); ?>">
 					</td>
 				</tr>
 
 
 				</tbody>
 			</table>
-			<?php endif;?>
+			<?php endif; ?>
 		</div>
 		<!-- .inside -->
 

@@ -39,7 +39,6 @@ class Powered_Cache_CDN {
 		add_filter( 'wp_calculate_image_srcset', array( $this, 'srcset_url' ), PHP_INT_MAX );
 		add_filter( 'wp_get_attachment_image_src', array( $this, 'attachment_image_src' ), PHP_INT_MAX );
 
-
 		add_filter( 'the_content', array( $this, 'cdn_images' ), PHP_INT_MAX );
 		add_filter( 'post_thumbnail_html', array( $this, 'cdn_images' ), PHP_INT_MAX );
 		add_filter( 'get_avatar', array( $this, 'cdn_images' ), PHP_INT_MAX );
@@ -47,7 +46,6 @@ class Powered_Cache_CDN {
 		add_filter( 'widget_text', array( $this, 'cdn_images' ), PHP_INT_MAX );
 		add_filter( 'media_image', array( $this, 'cdn_images' ), PHP_INT_MAX );
 		add_filter( 'powered_cache_page_caching_buffer', array( $this, 'cdn_images' ), PHP_INT_MAX );
-
 
 		do_action( 'powered_cache_cdn_setup' );
 	}
@@ -117,8 +115,8 @@ class Powered_Cache_CDN {
 		}
 
 		$document = new DOMDocument();
-		@$document->loadHTML($content);
-		$images = $document->getElementsByTagName('img');
+		@$document->loadHTML( $content );
+		$images = $document->getElementsByTagName( 'img' );
 
 		$img_url = array();
 		foreach ( $images as $img ) {
@@ -129,20 +127,19 @@ class Powered_Cache_CDN {
 			if ( $img->hasAttribute( 'srcset' ) ) {
 				$imgset = explode( ',', $img->getAttribute( 'srcset' ) );
 				foreach ( $imgset as $src_item ) {
-					$imgsrc    = explode( ' ', trim( $src_item ) );
+					$imgsrc = explode( ' ', trim( $src_item ) );
 					// first item is url, second width
 					$img_url[] = $imgsrc[0];
 				}
 			}
 		}
 
-		$img_url = array_unique($img_url);
+		$img_url = array_unique( $img_url );
 		$cdn_url = array();
 
 		foreach ( $img_url as $replace_url ) {
 			$cdn_url[] = $this->maybe_cdn_replace( $replace_url );
 		}
-
 
 		return str_replace( $img_url, $cdn_url, $content );
 	}
@@ -188,10 +185,10 @@ class Powered_Cache_CDN {
 		}
 
 		$raw_url = untrailingslashit( $raw_url );
-		$ext = explode( '.', $raw_url );
-		$ext = strtolower( end( $ext ) );
+		$ext     = explode( '.', $raw_url );
+		$ext     = strtolower( end( $ext ) );
 
-		$zone = 'all';
+		$zone             = 'all';
 		$image_extensions = apply_filters( 'powered_cache_cdn_image_extensions', array( 'jpg', 'jpeg', 'gif', 'png', 'bmp', 'ico', 'webp' ) );
 
 		if ( in_array( $ext, $image_extensions ) ) {
@@ -214,6 +211,7 @@ class Powered_Cache_CDN {
 
 	/**
 	 * try to catch best cdn address to given zone
+	 *
 	 * @param string $zone keys of Powered_Cache_Admin_Helper::cdn_zones
 	 *
 	 * @return mixed  string | false

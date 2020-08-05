@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! class_exists( 'Powered_Cache_Cloudflare_Admin' ) ):
+if ( ! class_exists( 'Powered_Cache_Cloudflare_Admin' ) ) :
 
 	class Powered_Cache_Cloudflare_Admin extends Powered_Cache_Extension_Admin_Base {
 
@@ -12,27 +12,29 @@ if ( ! class_exists( 'Powered_Cache_Cloudflare_Admin' ) ):
 		public $fields;
 		public $api;
 
-		function __construct( ) {
+		function __construct() {
 			$this->fields = array(
-				'email' => array(
-					'default' => false,
-					'sanitizer' => 'sanitize_email'
+				'email'   => array(
+					'default'   => false,
+					'sanitizer' => 'sanitize_email',
 				),
-				'api_key'=> array(
-					'default' => false,
-					'sanitizer' => 'sanitize_text_field'
+				'api_key' => array(
+					'default'   => false,
+					'sanitizer' => 'sanitize_text_field',
 				),
-				'zone' => array(
+				'zone'    => array(
 					'default'   => false,
 					'sanitizer' => 'sanitize_text_field',
 				),
 			);
 
-			parent::__construct( array(
-				'extension_id'   => 'cloudflare',
-				'extension_name' => __( 'Cloudflare', 'powered-cache' ),
-				'admin_bar_menu' => true,
-			) );
+			parent::__construct(
+				array(
+					'extension_id'   => 'cloudflare',
+					'extension_name' => __( 'Cloudflare', 'powered-cache' ),
+					'admin_bar_menu' => true,
+				)
+			);
 
 			$this->setup();
 
@@ -63,13 +65,15 @@ if ( ! class_exists( 'Powered_Cache_Cloudflare_Admin' ) ):
 
 		public function admin_bar_menu( $wp_admin_bar ) {
 			parent::admin_bar_menu( $wp_admin_bar );
-			if ( is_a( $this->api, 'Powered_Cache_Cloudflare_Api' ) &&  $this->get_option( 'zone' )  ) {
-				$wp_admin_bar->add_menu( array(
-					'id'     => 'cf-purge-cache',
-					'title'  => __( 'Purge Cache', 'powered-cache' ),
-					'href'   => $this->flush_url(),
-					'parent' => $this->extension_id,
-				) );
+			if ( is_a( $this->api, 'Powered_Cache_Cloudflare_Api' ) && $this->get_option( 'zone' ) ) {
+				$wp_admin_bar->add_menu(
+					array(
+						'id'     => 'cf-purge-cache',
+						'title'  => __( 'Purge Cache', 'powered-cache' ),
+						'href'   => $this->flush_url(),
+						'parent' => $this->extension_id,
+					)
+				);
 			}
 		}
 
@@ -80,7 +84,7 @@ if ( ! class_exists( 'Powered_Cache_Cloudflare_Admin' ) ):
 		}
 
 
-		public function flush_cache(){
+		public function flush_cache() {
 			Powered_Cache_Admin_Helper::check_cap_and_nonce( $this->capability );
 
 			if ( isset( $_REQUEST['action'] ) && 'purge_cf_cache' === $_REQUEST['action'] ) {
@@ -101,7 +105,7 @@ if ( ! class_exists( 'Powered_Cache_Cloudflare_Admin' ) ):
 				$req = $this->api->get_zones();
 				if ( is_object( $req ) && isset( $req->result ) ) {
 					// runtime option
-					$this->options['zone_list']= $req->result;
+					$this->options['zone_list'] = $req->result;
 
 					return $req->result;
 				}
@@ -112,12 +116,15 @@ if ( ! class_exists( 'Powered_Cache_Cloudflare_Admin' ) ):
 
 
 		public function flush_url() {
-			$url = add_query_arg( array(
-				'page'                         => 'powered-cache-extension-cloudflare',
-				'action'                       => 'purge_cf_cache',
-				'wp_http_referer'              => urlencode( wp_unslash( $_SERVER['REQUEST_URI'] ) ),
-				'powered_cache_settings_nonce' => wp_create_nonce( 'powered_cache_update_settings' ),
-			), admin_url( 'admin.php' ) );
+			$url = add_query_arg(
+				array(
+					'page'                         => 'powered-cache-extension-cloudflare',
+					'action'                       => 'purge_cf_cache',
+					'wp_http_referer'              => urlencode( wp_unslash( $_SERVER['REQUEST_URI'] ) ),
+					'powered_cache_settings_nonce' => wp_create_nonce( 'powered_cache_update_settings' ),
+				),
+				admin_url( 'admin.php' )
+			);
 
 			return $url;
 		}
@@ -129,8 +136,8 @@ if ( ! class_exists( 'Powered_Cache_Cloudflare_Admin' ) ):
 		 *
 		 * @return string
 		 */
-		public  function flush_cache_button() {
-			$url = $this->flush_url();
+		public function flush_cache_button() {
+			$url  = $this->flush_url();
 			$html = '<a href="' . esc_url( $url ) . '" class="button" >' . esc_html__( 'Clear Cache', 'powered-cache' ) . '</a>';
 
 			return $html;

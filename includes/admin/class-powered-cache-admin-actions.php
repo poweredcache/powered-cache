@@ -18,7 +18,7 @@ class Powered_Cache_Admin_Actions {
 		$old_options = $powered_cache_options;
 
 		$new_options = array();
-		$_post = ( isset( $_POST['powered_cache_settings'] ) ? $_POST['powered_cache_settings'] : array() );
+		$_post       = ( isset( $_POST['powered_cache_settings'] ) ? $_POST['powered_cache_settings'] : array() );
 
 		if ( ! isset( $_REQUEST['section'] ) ) {
 			$_REQUEST['section'] = 'basic-options';
@@ -35,7 +35,6 @@ class Powered_Cache_Admin_Actions {
 				$new_options['loggedin_user_cache']        = ( isset( $_post['loggedin_user_cache'] ) && 1 == $_post['loggedin_user_cache'] ? true : false );
 				$new_options['ssl_cache']                  = ( isset( $_post['ssl_cache'] ) && 1 == $_post['ssl_cache'] ? true : false );
 				$new_options['gzip_compression']           = ( isset( $_post['gzip_compression'] ) && 1 == $_post['gzip_compression'] ? true : false );
-
 
 				// this option only valid on apache
 				if ( ! $is_apache ) {
@@ -71,7 +70,7 @@ class Powered_Cache_Admin_Actions {
 
 				break;
 			case 'advanced-options':
-				$new_options['remove_query_string']        = ( isset( $_post['remove_query_string'] ) && 1 == $_post['remove_query_string'] ? true : false );
+				$new_options['remove_query_string']    = ( isset( $_post['remove_query_string'] ) && 1 == $_post['remove_query_string'] ? true : false );
 				$new_options['rejected_user_agents']   = ( strlen( trim( $_post['rejected_user_agents'] ) ) > 0 ? wp_kses_post( $_post['rejected_user_agents'] ) : '' );
 				$new_options['rejected_cookies']       = ( strlen( trim( $_post['rejected_cookies'] ) ) > 0 ? wp_kses_post( $_post['rejected_cookies'] ) : '' );
 				$new_options['rejected_uri']           = ( strlen( trim( $_post['rejected_uri'] ) ) > 0 ? wp_kses_post( $_post['rejected_uri'] ) : '' );
@@ -79,7 +78,7 @@ class Powered_Cache_Admin_Actions {
 				$new_options['purge_additional_pages'] = ( strlen( trim( $_post['purge_additional_pages'] ) ) > 0 ? wp_kses_post( $_post['purge_additional_pages'] ) : '' );
 				break;
 			case 'cdn':
-				$new_options['cdn_status']     = ( isset( $_post['cdn_status'] ) && 1 == $_post['cdn_status'] ? true : false );
+				$new_options['cdn_status']      = ( isset( $_post['cdn_status'] ) && 1 == $_post['cdn_status'] ? true : false );
 				$new_options['cdn_ssl_disable'] = ( isset( $_post['cdn_ssl_disable'] ) && 1 == $_post['cdn_ssl_disable'] ? true : false );
 
 				// prepare hostname + zone pair
@@ -124,15 +123,21 @@ class Powered_Cache_Admin_Actions {
 			case 'misc':
 				if ( isset( $_POST['do-import'] ) && ! empty( $_POST['do-import'] ) ) {
 					if ( ! function_exists( 'wp_handle_upload' ) ) {
-						require_once( ABSPATH . 'wp-admin/includes/file.php' );
+						require_once ABSPATH . 'wp-admin/includes/file.php';
 					}
 					$uploadedfile = $_FILES['powered_cache_import'];
 
-					$import_file = wp_handle_upload( $uploadedfile, array( 'action' => 'powered_cache_update_settings', 'mimes' => array( 'txt' => 'text/plain' ) ) );
+					$import_file = wp_handle_upload(
+						$uploadedfile,
+						array(
+							'action' => 'powered_cache_update_settings',
+							'mimes'  => array( 'txt' => 'text/plain' ),
+						)
+					);
 
 					if ( $import_file && ! isset( $import_file['error'] ) ) {
-						$imported_options = $powered_cache_fs->get_contents( $import_file['file'] );
-						$imported_options = unserialize( $imported_options );
+						$imported_options                   = $powered_cache_fs->get_contents( $import_file['file'] );
+						$imported_options                   = unserialize( $imported_options );
 						$imported_options['cache_location'] = powered_cache_get_cache_dir();
 						$powered_cache_fs->delete( $import_file['file'] );
 						update_option( 'powered_cache_settings', $imported_options );
@@ -140,7 +145,6 @@ class Powered_Cache_Admin_Actions {
 					} else {
 						Powered_Cache_Admin_Helper::set_flash_message( $import_file['error'], 'error' );
 					}
-
 				} else {
 					$new_options['show_cache_message'] = ( isset( $_post['show_cache_message'] ) && 1 == $_post['show_cache_message'] ? true : false );
 				}

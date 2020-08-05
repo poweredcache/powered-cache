@@ -8,7 +8,7 @@
  * Author URI: https://poweredcache.com
  * Extension Image: extension-image.png
  * License: GPLv2 (or later)
-*/
+ */
 
 require_once 'inc/class-powered-cache-preload-process.php';
 

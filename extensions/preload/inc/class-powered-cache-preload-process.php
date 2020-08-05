@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ):
+if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ) :
 
 	class Powered_Cache_Preload_Process {
 
@@ -34,7 +34,6 @@ if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ):
 					'display'  => esc_html__( 'Preload interval', 'powered-cache' ),
 				);
 			}
-
 
 			return $schedules;
 		}
@@ -108,13 +107,19 @@ if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ):
 		 *
 		 * @since 1.0
 		 */
-		public function preload(){
+		public function preload() {
 			global $wpdb;
 
 			// setup runtime option
 			$runtime_option = get_option( 'powered_cache_preload_runtime_option' );
 			if ( ! is_array( $runtime_option ) ) {
-				update_option( 'powered_cache_preload_runtime_option', array( 'post_count' => 0, 'time' => time() ) );
+				update_option(
+					'powered_cache_preload_runtime_option',
+					array(
+						'post_count' => 0,
+						'time'       => time(),
+					)
+				);
 			}
 
 			$post_count = $runtime_option['post_count'];
@@ -150,13 +155,20 @@ if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ):
 
 		/**
 		 * Preload taxonomies
+		 *
 		 * @since 1.0
 		 */
 		public function preload_taxonomies() {
 			$runtime_option = get_option( 'powered_cache_preload_runtime_option' );
-			$taxonomies = apply_filters( 'powered_cache_preload_taxonomies', array( 'post_tag' => 'tag', 'category' => 'category' ) );
+			$taxonomies     = apply_filters(
+				'powered_cache_preload_taxonomies',
+				array(
+					'post_tag' => 'tag',
+					'category' => 'category',
+				)
+			);
 			foreach ( $taxonomies as $taxonomy => $path ) {
-				$taxonomy_filename = trailingslashit( powered_cache_get_cache_dir() ) . "taxonomy_" . $taxonomy . ".txt";
+				$taxonomy_filename = trailingslashit( powered_cache_get_cache_dir() ) . 'taxonomy_' . $taxonomy . '.txt';
 				if ( 0 == $runtime_option['post_count'] ) {
 					@unlink( $taxonomy_filename );
 				}
@@ -184,7 +196,13 @@ if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ):
 							continue;
 						}
 						powered_cache_delete_page_cache( $url );
-						wp_remote_get( $url, array( 'timeout' => 30, 'blocking' => true ) );
+						wp_remote_get(
+							$url,
+							array(
+								'timeout'  => 30,
+								'blocking' => true,
+							)
+						);
 						unset( $rows[ $key ] );
 						sleep( 1 );
 					}
@@ -205,7 +223,7 @@ if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ):
 		public function preload_posts() {
 			global $wpdb;
 			$runtime_option = get_option( 'powered_cache_preload_runtime_option' );
-			$post_count = $runtime_option['post_count'];
+			$post_count     = $runtime_option['post_count'];
 
 			if ( get_option( 'show_on_front' ) == 'page' ) {
 				$page_on_front  = get_option( 'page_on_front' );
@@ -214,21 +232,37 @@ if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ):
 				$page_on_front = $page_for_posts = 0;
 			}
 
-			$types = apply_filters( 'powered_cache_preload_post_types', get_post_types( array( 'public' => true, 'publicly_queryable' => true ), 'names', 'or' ) );
+			$types = apply_filters(
+				'powered_cache_preload_post_types',
+				get_post_types(
+					array(
+						'public'             => true,
+						'publicly_queryable' => true,
+					),
+					'names',
+					'or'
+				)
+			);
 			$types = array_map( 'esc_sql', $types );
 			$types = "'" . implode( "','", $types ) . "'";
 			$posts = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE ( post_type IN ( $types ) ) AND post_status = 'publish' ORDER BY ID ASC LIMIT $post_count, 100" );
 			foreach ( $posts as $post_id ) {
 				set_time_limit( 30 );
 
-				//skip page used for front
-				if ( $page_on_front != 0 && ( $post_id == $page_on_front || $post_id == $page_for_posts ) ){
+				// skip page used for front
+				if ( $page_on_front != 0 && ( $post_id == $page_on_front || $post_id == $page_for_posts ) ) {
 					continue;
 				}
 
 				$url = get_permalink( $post_id );
 				powered_cache_delete_page_cache( $url );
-				$this->http_request( $url, array( 'timeout' => 30, 'blocking' => true ) );
+				$this->http_request(
+					$url,
+					array(
+						'timeout'  => 30,
+						'blocking' => true,
+					)
+				);
 				sleep( 1 );
 				$post_count ++;
 			}
@@ -242,7 +276,13 @@ if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ):
 		public function preload_homepage() {
 			$site_url = site_url();
 			powered_cache_delete_page_cache( $site_url );
-			$this->http_request( $site_url, array( 'timeout' => 30, 'blocking' => true ) );
+			$this->http_request(
+				$site_url,
+				array(
+					'timeout'  => 30,
+					'blocking' => true,
+				)
+			);
 		}
 
 
@@ -250,8 +290,8 @@ if ( ! class_exists( 'Powered_Cache_Preload_Process' ) ):
 		 * Make crawl request
 		 *
 		 * @since 1.0
-		 * @param  string     $url
-		 * @param array $args
+		 * @param  string $url
+		 * @param array  $args
 		 */
 		public function http_request( $url, $args = array() ) {
 

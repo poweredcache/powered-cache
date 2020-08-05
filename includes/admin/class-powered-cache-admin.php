@@ -93,10 +93,14 @@ class Powered_Cache_Admin {
 		}
 
 		wp_enqueue_script( 'powered-cache-admin', plugins_url( '/assets/js/admin.js', POWERED_CACHE_PLUGIN_FILE ), array( 'jquery' ), POWERED_CACHE_PLUGIN_VERSION );
-		wp_localize_script( 'powered-cache-admin', 'powered_cache_vars', array(
-			'ajaxurl' => admin_url( 'admin-ajax.php' ),
-			'nonce'   => wp_create_nonce( 'powered-cache-ajax-nonce' ),
-		) );
+		wp_localize_script(
+			'powered-cache-admin',
+			'powered_cache_vars',
+			array(
+				'ajaxurl' => admin_url( 'admin-ajax.php' ),
+				'nonce'   => wp_create_nonce( 'powered-cache-ajax-nonce' ),
+			)
+		);
 
 	}
 
@@ -118,8 +122,14 @@ class Powered_Cache_Admin {
 	 */
 	public function admin_menu() {
 		global $powered_cache_settings_page;
-		$powered_cache_settings_page = add_menu_page( __( 'Powered Cache Settings', 'powered-cache' ), __( 'Powered Cache', 'powered-cache' ), $this->capability, $this->slug, array( $this, 'settings_page' ),
-			'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjwhRE9DVFlQRSBzdmcgIFBVQkxJQyAnLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4nICAnaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkJz48c3ZnIGhlaWdodD0iMzJweCIgaWQ9IkxheWVyXzEiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDMyIDMyOyIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgMzIgMzIiIHdpZHRoPSIzMnB4IiB4bWw6c3BhY2U9InByZXNlcnZlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNDQgMzM2KSI+PHBhdGggZD0iTS0xMTcuMTc2LTMzNC4wNjNoLTkuMzUzTC0xMzguMTExLTMyMGg5LjMwNGwtMTEuNzQ1LDE0LjA2M2wyNS4xMDUtMTguMzE2aC05LjgwOUwtMTE3LjE3Ni0zMzQuMDYzeiIvPjwvZz48L3N2Zz4=' );
+		$powered_cache_settings_page = add_menu_page(
+			__( 'Powered Cache Settings', 'powered-cache' ),
+			__( 'Powered Cache', 'powered-cache' ),
+			$this->capability,
+			$this->slug,
+			array( $this, 'settings_page' ),
+			'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjwhRE9DVFlQRSBzdmcgIFBVQkxJQyAnLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4nICAnaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkJz48c3ZnIGhlaWdodD0iMzJweCIgaWQ9IkxheWVyXzEiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDMyIDMyOyIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgMzIgMzIiIHdpZHRoPSIzMnB4IiB4bWw6c3BhY2U9InByZXNlcnZlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNDQgMzM2KSI+PHBhdGggZD0iTS0xMTcuMTc2LTMzNC4wNjNoLTkuMzUzTC0xMzguMTExLTMyMGg5LjMwNGwtMTEuNzQ1LDE0LjA2M2wyNS4xMDUtMTguMzE2aC05LjgwOUwtMTE3LjE3Ni0zMzQuMDYzeiIvPjwvZz48L3N2Zz4='
+		);
 
 		/**
 		 * Different name submenu item, url point same address with parent.
@@ -129,15 +139,18 @@ class Powered_Cache_Admin {
 
 	/**
 	 * Adds admin bar menu
+	 *
 	 * @since 1.0
 	 */
 	public function admin_bar_menu( $wp_admin_bar ) {
 		if ( current_user_can( $this->capability ) ) {
-			$wp_admin_bar->add_menu( array(
-				'id'    => $this->slug,
-				'title' => __('Powered Cache','powered-cache'),
-				'href'  => admin_url( 'admin.php?page=powered-cache' ),
-			));
+			$wp_admin_bar->add_menu(
+				array(
+					'id'    => $this->slug,
+					'title' => __( 'Powered Cache', 'powered-cache' ),
+					'href'  => admin_url( 'admin.php?page=powered-cache' ),
+				)
+			);
 		}
 	}
 
@@ -163,8 +176,7 @@ class Powered_Cache_Admin {
 	 *
 	 * @since 1.0
 	 */
-	function deactivate_plugin()
-	{
+	function deactivate_plugin() {
 		if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'deactivate_plugin' ) ) {
 			wp_nonce_ays( '' );
 		}

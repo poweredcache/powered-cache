@@ -18,7 +18,7 @@ class Powered_Cache_Extension_Admin_Base {
 			$this->$key = $value;
 		}
 
-		$this->options = powered_cache_get_extension_settings( $this->extension_id );
+		$this->options    = powered_cache_get_extension_settings( $this->extension_id );
 		$this->is_premium = powered_cache_is_premium();
 	}
 
@@ -44,17 +44,19 @@ class Powered_Cache_Extension_Admin_Base {
 	 */
 	public function admin_menu() {
 		global $powered_cache_plugin_pages;
-		$powered_cache_plugin_pages[ $this->extension_id ] = add_submenu_page( 'powered-cache', $this->extension_name, $this->extension_name, $this->capability,'powered-cache-extension-'. $this->extension_id, array( $this, 'settings_page' ) );
+		$powered_cache_plugin_pages[ $this->extension_id ] = add_submenu_page( 'powered-cache', $this->extension_name, $this->extension_name, $this->capability, 'powered-cache-extension-' . $this->extension_id, array( $this, 'settings_page' ) );
 	}
 
 	public function admin_bar_menu( $wp_admin_bar ) {
 		if ( current_user_can( $this->capability ) ) {
-			$wp_admin_bar->add_menu( array(
-				'id'     => $this->extension_id,
-				'title'  => $this->extension_name,
-				'href'   => admin_url( 'admin.php?page=powered-cache-extension-' . $this->extension_id ),
-				'parent' => 'powered-cache',
-			) );
+			$wp_admin_bar->add_menu(
+				array(
+					'id'     => $this->extension_id,
+					'title'  => $this->extension_name,
+					'href'   => admin_url( 'admin.php?page=powered-cache-extension-' . $this->extension_id ),
+					'parent' => 'powered-cache',
+				)
+			);
 		}
 	}
 
@@ -91,19 +93,16 @@ class Powered_Cache_Extension_Admin_Base {
 		if ( isset( $_REQUEST['extension'] ) && ( $_REQUEST['extension'] === $this->extension_id ) ) {
 			$_post = $_POST[ $this->extension_id ];
 
-
 			foreach ( $this->fields as $key => $field ) {
 				$options[ $key ] = $field['default'];
 
 				if ( isset( $_post[ $key ] ) ) {
 					$options[ $key ] = call_user_func( $field['sanitizer'], $_post[ $key ] );
 				} elseif ( 'boolval' === $field['sanitizer'] && ! isset( $_post[ $key ] ) ) {
-					//checkbox deleted option
+					// checkbox deleted option
 					$options[ $key ] = false;
 				}
-
 			}
-
 
 			if ( isset( $options ) && ( powered_cache_update_extension_option( $this->extension_id, $options ) ) ) {
 				// update runtime values

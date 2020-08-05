@@ -24,7 +24,7 @@ if ( in_array( $current_section, array( 'misc', 'extensions', 'premium', 'suppor
 <div class="wrap">
 	<h1>
 		<img width="22" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjwhRE9DVFlQRSBzdmcgIFBVQkxJQyAnLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4nICAnaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkJz48c3ZnIGhlaWdodD0iMzJweCIgaWQ9IkxheWVyXzEiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDMyIDMyOyIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgMzIgMzIiIHdpZHRoPSIzMnB4IiB4bWw6c3BhY2U9InByZXNlcnZlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNDQgMzM2KSI+PHBhdGggZD0iTS0xMTcuMTc2LTMzNC4wNjNoLTkuMzUzTC0xMzguMTExLTMyMGg5LjMwNGwtMTEuNzQ1LDE0LjA2M2wyNS4xMDUtMTguMzE2aC05LjgwOUwtMTE3LjE3Ni0zMzQuMDYzeiIvPjwvZz48L3N2Zz4=">
-		<?php _e('Powered Cache','powered-cache'); ?>
+		<?php _e( 'Powered Cache', 'powered-cache' ); ?>
 	</h1>
 
 
@@ -36,9 +36,24 @@ if ( in_array( $current_section, array( 'misc', 'extensions', 'premium', 'suppor
 		<?php
 
 			$sections = Powered_Cache_Admin_Helper::admin_sections();
-			foreach ($sections as $section => $title ): ?>
+		foreach ( $sections as $section => $title ) :
+			?>
 				<a
-					href="<?php echo esc_url( admin_url( add_query_arg( array( 'page' => 'powered-cache', 'section' => $section ), 'admin.php' ) ) ); ?>"
+					href="
+					<?php
+					echo esc_url(
+						admin_url(
+							add_query_arg(
+								array(
+									'page'    => 'powered-cache',
+									'section' => $section,
+								),
+								'admin.php'
+							)
+						)
+					);
+					?>
+							"
 					title="<?php esc_attr_e( $title, 'powered-cache' ); ?>"
 					class="nav-tab <?php echo $current_section == $section ? 'nav-tab-active' : ''; ?>"
 					>
@@ -67,7 +82,7 @@ if ( in_array( $current_section, array( 'misc', 'extensions', 'premium', 'suppor
 
 
 				<!-- .meta-box-sortables .ui-sortable -->
-				<?php if ( true === $show_submit ): ?>
+				<?php if ( true === $show_submit ) : ?>
 					<div class="save">
 						<?php submit_button( __( 'Save Changes', 'powered-cache' ), 'primary', 'submit', false ); ?>
 					</div>
@@ -77,7 +92,7 @@ if ( in_array( $current_section, array( 'misc', 'extensions', 'premium', 'suppor
 		</div>
 		<!-- post-body-content -->
 
-		<?php if ( ! powered_cache_is_premium() ): ?>
+		<?php if ( ! powered_cache_is_premium() ) : ?>
 		<!-- sidebar -->
 		<div id="postbox-container-1" class="postbox-container">
 
@@ -87,17 +102,21 @@ if ( in_array( $current_section, array( 'misc', 'extensions', 'premium', 'suppor
 
 
 					<div class="inside">
-						<h3 class="powered-cache-sidebar-title"><span><?php _e( "Rate Us!", "powered-cache" ); ?></span> <span class="powered-cache-sidebar-icon dashicons dashicons-heart"></span> </h3>
-						<?php echo sprintf(
-							__( 'We would like to hear your thoughts about our plugin. Please review on <a target="_blank" href="%s">WordPress.org</a>',
-								'powered-cache' ),
+						<h3 class="powered-cache-sidebar-title"><span><?php _e( 'Rate Us!', 'powered-cache' ); ?></span> <span class="powered-cache-sidebar-icon dashicons dashicons-heart"></span> </h3>
+						<?php
+						echo sprintf(
+							__(
+								'We would like to hear your thoughts about our plugin. Please review on <a target="_blank" href="%s">WordPress.org</a>',
+								'powered-cache'
+							),
 							'https://wordpress.org/support/plugin/powered-cache/reviews/'
-						); ?>
+						);
+						?>
 					</div>
 					<br>
 
 					<div class="inside">
-						<h3 class="powered-cache-sidebar-title"><span><?php _e( "Become a Premium User", "powered-cache" ); ?></span><span class="powered-cache-sidebar-icon dashicons dashicons-awards"></span></h3>
+						<h3 class="powered-cache-sidebar-title"><span><?php _e( 'Become a Premium User', 'powered-cache' ); ?></span><span class="powered-cache-sidebar-icon dashicons dashicons-awards"></span></h3>
 						<?php _e( 'Premium users will reach more goodies', 'powered-cache' ); ?>
 						<ul class="premium-benefits">
 							<li>
@@ -130,7 +149,7 @@ if ( in_array( $current_section, array( 'misc', 'extensions', 'premium', 'suppor
 					</div>
 
 					<div class="inside">
-						<h3 class="powered-cache-sidebar-title"><span><?php _e( "Support", "powered-cache" ); ?></span><span class="powered-cache-sidebar-icon dashicons dashicons-sos"></span></h3>
+						<h3 class="powered-cache-sidebar-title"><span><?php _e( 'Support', 'powered-cache' ); ?></span><span class="powered-cache-sidebar-icon dashicons dashicons-sos"></span></h3>
 						<p>
 							<?php _e( 'We are offering direct support to premium users only, free users welcome on WordPress.org forums.', 'powered-cache' ); ?>
 							<br>

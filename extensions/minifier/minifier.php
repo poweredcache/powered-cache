@@ -11,7 +11,6 @@
  * Premium: true
  *
  * This is just placeholder, actual plugin located in premium
- *
  */
 
 

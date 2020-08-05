@@ -12,7 +12,7 @@ class Powered_Cache_Admin_Helper {
 	 *
 	 * @return mixed|void
 	 */
-	public static function admin_sections(){
+	public static function admin_sections() {
 		$sections = array(
 			'basic-options'    => __( 'Basic Options', 'powered-cache' ),
 			'advanced-options' => __( 'Advanced Options', 'powered-cache' ),
@@ -42,7 +42,10 @@ class Powered_Cache_Admin_Helper {
 	 */
 	public static function set_flash_message( $msg, $class = 'updated' ) {
 		if ( ! empty( $msg ) ) {
-			$message_data = array( 'message' => $msg, 'class' => $class );
+			$message_data = array(
+				'message' => $msg,
+				'class'   => $class,
+			);
 			set_site_transient( 'powered_cache_flash_msg', $message_data, 30 );
 		}
 	}
@@ -61,7 +64,7 @@ class Powered_Cache_Admin_Helper {
 						<button type="button" class="notice-dismiss"><span class="screen-reader-text">' . __( 'Dismiss this notice', 'powered-cache' ) . '</span></button>
 					</div>';
 			echo $html;
-			//destroy transient
+			// destroy transient
 			delete_site_transient( 'powered_cache_flash_msg' );
 		}
 	}
@@ -137,24 +140,27 @@ class Powered_Cache_Admin_Helper {
 			$button = __( 'Activate', 'powered-cache' );
 		}
 
-		$url = add_query_arg( array(
-			'page'                         => esc_attr( 'powered-cache' ),
-			'section'                      => 'extensions',
-			'extension'                    => $plugin_id,
-			'status'                       => $action,
-			'wp_http_referer'              => urlencode( wp_unslash( $_SERVER['REQUEST_URI'] ) ),
-			'action'                       => 'powered_cache_update_settings',
-			'powered_cache_settings_nonce' => wp_create_nonce( 'powered_cache_update_settings' ),
-		), admin_url( 'admin.php' ) );
+		$url = add_query_arg(
+			array(
+				'page'                         => esc_attr( 'powered-cache' ),
+				'section'                      => 'extensions',
+				'extension'                    => $plugin_id,
+				'status'                       => $action,
+				'wp_http_referer'              => urlencode( wp_unslash( $_SERVER['REQUEST_URI'] ) ),
+				'action'                       => 'powered_cache_update_settings',
+				'powered_cache_settings_nonce' => wp_create_nonce( 'powered_cache_update_settings' ),
+			),
+			admin_url( 'admin.php' )
+		);
 
 		$html = '<a href="' . esc_url( $url ) . '" class="button button-primary" >' . $button . '</a>';
 
 		return $html;
 	}
 
-	public static function upgrade_button(){
-		$url = 'https://poweredcache.com/';
-		$html = '<a href="' . esc_url( $url ) . '" class="upgrade-now" >' . __('Upgrade Now','powered-cache') . '</a>';
+	public static function upgrade_button() {
+		$url  = 'https://poweredcache.com/';
+		$html = '<a href="' . esc_url( $url ) . '" class="upgrade-now" >' . __( 'Upgrade Now', 'powered-cache' ) . '</a>';
 
 		return $html;
 	}
@@ -180,14 +186,17 @@ class Powered_Cache_Admin_Helper {
 	 *
 	 * @return string
 	 */
-	public static function export_settings_button(){
-		$url = add_query_arg( array(
-			'page'                         => esc_attr( 'powered-cache' ),
-			'section'                      => 'misc',
-			'action'                       => 'export_settings',
-			'wp_http_referer'              => urlencode( wp_unslash( $_SERVER['REQUEST_URI'] ) ),
-			'powered_cache_settings_nonce' => wp_create_nonce( 'powered_cache_update_settings' ),
-		), admin_url( 'admin.php' ) );
+	public static function export_settings_button() {
+		$url = add_query_arg(
+			array(
+				'page'                         => esc_attr( 'powered-cache' ),
+				'section'                      => 'misc',
+				'action'                       => 'export_settings',
+				'wp_http_referer'              => urlencode( wp_unslash( $_SERVER['REQUEST_URI'] ) ),
+				'powered_cache_settings_nonce' => wp_create_nonce( 'powered_cache_update_settings' ),
+			),
+			admin_url( 'admin.php' )
+		);
 
 		$html = '<a href="' . esc_url( $url ) . '" class="button" >' . esc_html__( 'Download Settings', 'powered-cache' ) . '</a>';
 
@@ -202,14 +211,17 @@ class Powered_Cache_Admin_Helper {
 	 *
 	 * @return string
 	 */
-	public static function reset_settings_button(){
-		$url = add_query_arg( array(
-			'page'                         => esc_attr( 'powered-cache' ),
-			'section'                      => 'misc',
-			'action'                       => 'reset_settings',
-			'wp_http_referer'              => urlencode( wp_unslash( $_SERVER['REQUEST_URI'] ) ),
-			'powered_cache_settings_nonce' => wp_create_nonce( 'powered_cache_update_settings' ),
-		), admin_url( 'admin.php' ) );
+	public static function reset_settings_button() {
+		$url = add_query_arg(
+			array(
+				'page'                         => esc_attr( 'powered-cache' ),
+				'section'                      => 'misc',
+				'action'                       => 'reset_settings',
+				'wp_http_referer'              => urlencode( wp_unslash( $_SERVER['REQUEST_URI'] ) ),
+				'powered_cache_settings_nonce' => wp_create_nonce( 'powered_cache_update_settings' ),
+			),
+			admin_url( 'admin.php' )
+		);
 
 		$html = '<a href="' . esc_url( $url ) . '" class="button" >' . esc_html__( 'Reset Settings', 'powered-cache' ) . '</a>';
 
@@ -223,12 +235,15 @@ class Powered_Cache_Admin_Helper {
 	 * @return string
 	 */
 	public static function diagnostic_button() {
-		$url = add_query_arg( array(
-			'page'                         => esc_attr( 'powered-cache' ),
-			'section'                      => 'misc',
-			'action'                       => 'run-diagnostic',
-			'powered_cache_settings_nonce' => wp_create_nonce( 'powered_cache_update_settings' ),
-		), admin_url( 'admin.php' ) );
+		$url = add_query_arg(
+			array(
+				'page'                         => esc_attr( 'powered-cache' ),
+				'section'                      => 'misc',
+				'action'                       => 'run-diagnostic',
+				'powered_cache_settings_nonce' => wp_create_nonce( 'powered_cache_update_settings' ),
+			),
+			admin_url( 'admin.php' )
+		);
 
 		$html = '<a href="' . esc_url( $url ) . '" class="button" >' . esc_html__( 'Run Diagnostic', 'powered-cache' ) . '</a>';
 
@@ -244,8 +259,8 @@ class Powered_Cache_Admin_Helper {
 	 */
 	public static function check_cap_and_nonce( $cap ) {
 		if ( isset( $_REQUEST['action'] )
-		     && ( ! current_user_can( $cap ) || empty( $_REQUEST['powered_cache_settings_nonce'] )
-		          || ! wp_verify_nonce( $_REQUEST['powered_cache_settings_nonce'], 'powered_cache_update_settings' ) )
+			 && ( ! current_user_can( $cap ) || empty( $_REQUEST['powered_cache_settings_nonce'] )
+				  || ! wp_verify_nonce( $_REQUEST['powered_cache_settings_nonce'], 'powered_cache_update_settings' ) )
 		) {
 			wp_die( esc_html__( 'Cheatin, uh?', 'powered-cache' ) );
 		}
@@ -343,7 +358,6 @@ class Powered_Cache_Admin_Helper {
 			'description' => $config_file_desc,
 		);
 
-
 		// check cache directory
 		$cache_dir        = powered_cache_get_cache_dir();
 		$cache_dir_status = false;
@@ -360,7 +374,6 @@ class Powered_Cache_Admin_Helper {
 			'status'      => $cache_dir_status,
 			'description' => $cache_dir_desc,
 		);
-
 
 		// check .htaccess file
 		if ( $is_apache && powered_cache_get_option( 'configure_htaccess' ) ) {
@@ -381,7 +394,6 @@ class Powered_Cache_Admin_Helper {
 			);
 		}
 
-
 		// check page cache
 		if ( powered_cache_get_option( 'enable_page_caching' ) ) {
 			$advanced_cache_file        = untrailingslashit( WP_CONTENT_DIR ) . '/advanced-cache.php';
@@ -401,7 +413,6 @@ class Powered_Cache_Admin_Helper {
 			);
 		}
 
-
 		// check object cache
 		if ( 'off' !== powered_cache_get_option( 'object_cache' ) ) {
 			$object_cache_file        = untrailingslashit( WP_CONTENT_DIR ) . '/object-cache.php';
@@ -420,7 +431,6 @@ class Powered_Cache_Admin_Helper {
 				'description' => $object_cache_file_desc,
 			);
 		}
-
 
 		return $checks;
 	}

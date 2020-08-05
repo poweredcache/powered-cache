@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<td>
 				<label>
 					<select id="powered_cache_preload_bot_interval" name="preload[bot_interval]"  <?php echo( ! powered_cache_is_premium() ? 'disabled="disabled"' : '' ); ?> >
-					<?php foreach ( $this->interval_options as $micro_seconds => $val ): ?>
+					<?php foreach ( $this->interval_options as $micro_seconds => $val ) : ?>
 						<option <?php selected( $this->get_option( 'bot_interval' ), $micro_seconds ); ?> value="<?php echo intval( $micro_seconds ); ?>"><?php echo esc_attr( $val ); ?></option>
 					<?php endforeach; ?>
 					</select>

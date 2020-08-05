@@ -53,12 +53,14 @@ class Powered_Cache_Object_Cache {
 			return;
 		}
 
-		$wp_admin_bar->add_menu( array(
-			'id'     => 'object-cache-purge',
-			'title'  => __( 'Purge Object Cache', 'powered-cache' ),
-			'href'   => wp_nonce_url( admin_url( 'admin-post.php?action=powered_cache_purge_object_cache' ), 'powered_cache_purge_object_cache' ),
-			'parent' => 'powered-cache',
-		) );
+		$wp_admin_bar->add_menu(
+			array(
+				'id'     => 'object-cache-purge',
+				'title'  => __( 'Purge Object Cache', 'powered-cache' ),
+				'href'   => wp_nonce_url( admin_url( 'admin-post.php?action=powered_cache_purge_object_cache' ), 'powered_cache_purge_object_cache' ),
+				'parent' => 'powered-cache',
+			)
+		);
 	}
 
 
@@ -73,7 +75,7 @@ class Powered_Cache_Object_Cache {
 		}
 
 		if ( is_multisite() && ! current_user_can( 'manage_network' ) ) {
-			Powered_Cache_Admin_Helper::set_flash_message( __( "You don't have permission to perform this action!", 'powered-cache' ) ,'error' );
+			Powered_Cache_Admin_Helper::set_flash_message( __( "You don't have permission to perform this action!", 'powered-cache' ), 'error' );
 			wp_safe_redirect( wp_get_referer() );
 			die();
 		}
@@ -101,9 +103,9 @@ class Powered_Cache_Object_Cache {
 	 */
 	public function maybe_clear_alloptions_cache( $option ) {
 		if ( ! wp_installing() ) {
-			$alloptions = wp_load_alloptions(); //alloptions should be cached at this point
+			$alloptions = wp_load_alloptions(); // alloptions should be cached at this point
 
-			if ( isset( $alloptions[ $option ] ) ) { //only if option is among alloptions
+			if ( isset( $alloptions[ $option ] ) ) { // only if option is among alloptions
 				wp_cache_delete( 'alloptions', 'options' );
 			}
 		}

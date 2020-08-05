@@ -20,7 +20,14 @@ class Powered_Cache_Cloudflare_Api {
 	public function get_zones() {
 		$endpoint = $this->end_point . '/zones';
 
-		$result = $this->remote_request( $endpoint, 'GET', array( 'page' => 1, 'per_page' => 1000 ) );
+		$result = $this->remote_request(
+			$endpoint,
+			'GET',
+			array(
+				'page'     => 1,
+				'per_page' => 1000,
+			)
+		);
 
 		return $result;
 	}
@@ -41,7 +48,7 @@ class Powered_Cache_Cloudflare_Api {
 
 		$endpoint = $this->end_point . '/zones/' . $zone_id . '/purge_cache';
 
-		$result = $this->remote_request( $endpoint, 'DELETE'  );
+		$result = $this->remote_request( $endpoint, 'DELETE' );
 		return $result;
 	}
 
@@ -62,8 +69,7 @@ class Powered_Cache_Cloudflare_Api {
 			$args['body'] = json_encode( $data );
 		}
 
-
-		$response = wp_remote_request( $url, $args);
+		$response = wp_remote_request( $url, $args );
 
 		if ( is_wp_error( $response ) ) {
 			return $response->get_error_message();

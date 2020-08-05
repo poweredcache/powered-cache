@@ -104,9 +104,9 @@ function powered_cache_save_settings( $old_settings, $new_settings ) {
  * @since 1.0
  * @return mixed|void
  */
-function powered_cache_mobile_browsers_regex(){
-	$browsers = powered_cache_mobile_browsers();
-	$regex_str = addcslashes( implode( '|', explode( ',', $browsers ) ),' ');
+function powered_cache_mobile_browsers_regex() {
+	$browsers  = powered_cache_mobile_browsers();
+	$regex_str = addcslashes( implode( '|', explode( ',', $browsers ) ), ' ' );
 
 	return apply_filters( 'powered_cache_mobile_browsers_regex', $regex_str, $browsers );
 }
@@ -117,9 +117,9 @@ function powered_cache_mobile_browsers_regex(){
  * @since 1.0
  * @return mixed|void
  */
-function powered_cache_mobile_prefixes_regex(){
-	$prefixes = powered_cache_mobile_prefixes();
-	$regex_str = addcslashes( implode( '|', explode( ',', $prefixes ) ),' ');
+function powered_cache_mobile_prefixes_regex() {
+	$prefixes  = powered_cache_mobile_prefixes();
+	$regex_str = addcslashes( implode( '|', explode( ',', $prefixes ) ), ' ' );
 
 	return apply_filters( 'powered_cache_mobile_prefixes_regex', $regex_str, $prefixes );
 }
@@ -195,7 +195,7 @@ function powered_cache_maybe_require_premium_html() {
 		<div class="<?php echo( ! powered_cache_is_premium() ? 'need-upgrade' : '' ); ?>">
 			<span class="upgrade-msg"><?php echo __( 'This feature available only premium users', 'powered-cache' ); ?></span>
 		</div>
-	<?php
+		<?php
 	}
 }
 
@@ -305,9 +305,10 @@ function powered_cache_get_extension_settings( $extension_id ) {
 
 /**
  * Update options of extension
+ *
  * @since 1.0
  * @param       $extension_id
- * @param array $settings
+ * @param array        $settings
  *
  * @return bool
  */
@@ -329,8 +330,8 @@ function powered_cache_update_extension_option( $extension_id, $settings = array
  *
  * @since 1.0
  * @param            $extension_id
- * @param string     $option_name
- * @param bool|false $default
+ * @param string       $option_name
+ * @param bool|false   $default
  *
  * @return bool
  */
@@ -429,9 +430,9 @@ function powered_cache_get_post_related_urls( $post_id ) {
 		array_push( $related_urls, get_permalink( $post_id ) );
 
 		// Also clean URL for trashed post.
-		if ( $current_post_status == "trash" ) {
+		if ( $current_post_status == 'trash' ) {
 			$trashpost = get_permalink( $post_id );
-			$trashpost = str_replace( "__trashed", "", $trashpost );
+			$trashpost = str_replace( '__trashed', '', $trashpost );
 			array_push( $related_urls, $trashpost, $trashpost . 'feed/' );
 		}
 
@@ -480,12 +481,11 @@ function powered_cache_get_debug_info() {
 
 	foreach ( $active_plugins_option as $aplugin ) {
 		$active_plugins[ $plugins[ $aplugin ]['Name'] ] = array(
-			'file' => $aplugin,
+			'file'    => $aplugin,
 			'Name'    => $plugins[ $aplugin ]['Name'],
 			'Version' => $plugins[ $aplugin ]['Version'],
 		);
 	}
-
 
 	$theme = wp_get_theme();
 
@@ -495,15 +495,14 @@ function powered_cache_get_debug_info() {
 		'ThemeURI' => $theme->get( 'ThemeURI' ),
 	);
 
-
 	$mysql_version = $wpdb->get_var( 'select version() as mysqlversion' );
 	$php_version   = phpversion();
 
-	$debug_info['php_version']   = $php_version;
-	$debug_info['mysql_version'] = $mysql_version;
+	$debug_info['php_version']    = $php_version;
+	$debug_info['mysql_version']  = $mysql_version;
 	$debug_info['active_plugins'] = $active_plugins;
-	$debug_info['active_theme'] = $theme_info;
-	$debug_info['is_multisite']  = is_multisite();
+	$debug_info['active_theme']   = $theme_info;
+	$debug_info['is_multisite']   = is_multisite();
 
 	if ( is_multisite() && function_exists( 'is_subdomain_install' ) ) {
 		$debug_info['is_subdomain_install'] = is_subdomain_install();
@@ -517,7 +516,7 @@ function powered_cache_get_debug_info() {
  * Get list of expired files for given directory
  *
  * @param string $path
- * @param int $lifespan lifespan in seconds
+ * @param int    $lifespan lifespan in seconds
  *
  * @since 1.1
  * @return array expired file list
@@ -533,7 +532,7 @@ function powered_cache_get_exprired_files( $path, $lifespan = 0 ) {
 		return $expired_files;
 	}
 
-	$files         = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $path ) );
+	$files = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $path ) );
 
 	foreach ( $files as $file ) {
 
@@ -541,13 +540,11 @@ function powered_cache_get_exprired_files( $path, $lifespan = 0 ) {
 			continue;
 		}
 
-
 		$path = $file->getPathname();
 
 		if ( @filemtime( $path ) + $lifespan <= $current_time ) {
 			$expired_files[] = $path;
 		}
-
 	}
 
 	return $expired_files;
@@ -624,7 +621,7 @@ function powered_cache_get_response_headers() {
 		'P3P',
 		'Pragma',
 		'Proxy-Authenticate',
-		"Referrer-Policy",
+		'Referrer-Policy',
 		'Refresh',
 		'Retry-After',
 		'Server',
@@ -641,7 +638,7 @@ function powered_cache_get_response_headers() {
 		'Public-Key-Pins',
 		'X-XSS-Protection',
 		'Content-Security-Policy',
-		"X-Pingback",
+		'X-Pingback',
 		'X-Content-Security-Policy',
 		'X-WebKit-CSP',
 		'X-Content-Type-Options',
@@ -668,7 +665,6 @@ function powered_cache_get_response_headers() {
 			$headers[ $header_name ] = $header_value;
 		}
 	}
-
 
 	foreach ( $headers as $key => $value ) {
 		if ( ! in_array( strtolower( $key ), $known_headers ) ) {
@@ -699,6 +695,7 @@ if ( ! function_exists( 'boolval' ) ) {
  * remove directories recursively
  *
  * Adopted from W3TC Utility
+ *
  * @param string $path
  * @param array  $exclude
  *

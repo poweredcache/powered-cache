@@ -23,20 +23,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</td>
 	</tr>
 
-	<?php if ( $this->get_zones() ): ?>
+	<?php if ( $this->get_zones() ) : ?>
 		<tr>
 			<th scope="row"><label for="powered_cache_cloudflare_domain"><?php _e( 'Domain', 'powered-cache' ); ?></label></th>
 			<td>
 				<select name="cloudflare[zone]" id="powered_cache_cloudflare_domain">
 					<option value=""><?php echo __( 'Select domain', 'powered-cache' ); ?></option>
-					<?php foreach ( $this->get_option( 'zone_list' ) as $zone ): ?>
+					<?php foreach ( $this->get_option( 'zone_list' ) as $zone ) : ?>
 						<option <?php selected( $this->get_option( 'zone' ), $zone->id ); ?> value="<?php echo $zone->id; ?>"><?php echo $zone->name; ?></option>
 					<?php endforeach; ?>
 				</select>
 			</td>
 		</tr>
 
-		<?php if ( $this->get_option( 'zone' ) ): ?>
+		<?php if ( $this->get_option( 'zone' ) ) : ?>
 			<tr>
 				<th scope="row"><label for="powered_cache_clear_cache"><?php _e( 'Clear Cache', 'powered-cache' ); ?></label></th>
 				<td>

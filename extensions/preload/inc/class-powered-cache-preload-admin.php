@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! class_exists( 'Powered_Cache_Preload_Admin' ) ):
+if ( ! class_exists( 'Powered_Cache_Preload_Admin' ) ) :
 
 	class Powered_Cache_Preload_Admin extends Powered_Cache_Extension_Admin_Base {
 		public $options;
@@ -25,27 +25,27 @@ if ( ! class_exists( 'Powered_Cache_Preload_Admin' ) ):
 			);
 
 			$this->fields = array(
-				'post_count' => array(
+				'post_count'          => array(
 					'default'   => 1000,
 					'sanitizer' => 'intval',
 				),
-				'interval' => array(
+				'interval'            => array(
 					'default'   => 60,
 					'sanitizer' => 'intval',
 				),
-				'taxonomies'      => array(
+				'taxonomies'          => array(
 					'default'   => true,
 					'sanitizer' => 'boolval',
 				),
-				'homepage'   => array(
+				'homepage'            => array(
 					'default'   => true,
 					'sanitizer' => 'boolval',
 				),
-				'bot' => array(
+				'bot'                 => array(
 					'default'   => false,
 					'sanitizer' => 'boolval',
 				),
-				'bot_interval' => array(
+				'bot_interval'        => array(
 					'default'   => '500000',
 					'sanitizer' => 'intval',
 				),
@@ -57,16 +57,18 @@ if ( ! class_exists( 'Powered_Cache_Preload_Admin' ) ):
 					'default'   => false,
 					'sanitizer' => 'boolval',
 				),
-				'sitemaps'   => array(
+				'sitemaps'            => array(
 					'default'   => '',
 					'sanitizer' => 'wp_kses_post',
 				),
 			);
 
-			parent::__construct( array(
-				'extension_id'   => 'preload',
-				'extension_name' => __( 'Preload', 'powered-cache' ),
-			) );
+			parent::__construct(
+				array(
+					'extension_id'   => 'preload',
+					'extension_name' => __( 'Preload', 'powered-cache' ),
+				)
+			);
 
 			add_action( 'admin_notices', array( $this, 'admin_notice' ) );
 			add_action( 'admin_post_powered-cache-do-preload', array( $this, 'update_preloader_status' ) );
@@ -86,7 +88,7 @@ if ( ! class_exists( 'Powered_Cache_Preload_Admin' ) ):
 			if ( true !== powered_cache_get_option( 'enable_page_caching' ) ) {
 				?>
 				<div id="setting-error-settings_updated" class="error notice">
-					<p><?php printf( __( '<b>%s:</b> You need enable page cache for preload feature.', 'powered-cache' ), __( 'Powered Cache', 'powered-cache' ) ) ?></strong></p>
+					<p><?php printf( __( '<b>%s:</b> You need enable page cache for preload feature.', 'powered-cache' ), __( 'Powered Cache', 'powered-cache' ) ); ?></strong></p>
 				</div>
 				<?php
 			}
@@ -109,7 +111,7 @@ if ( ! class_exists( 'Powered_Cache_Preload_Admin' ) ):
 		public function preload_cache_button() {
 
 			$action = ( $this->is_running() ? 'stop' : 'start' );
-			$url = wp_nonce_url( admin_url( 'admin-post.php?action=powered-cache-do-preload&preload-status=' . $action ), 'powered-cache-do-preload' );
+			$url    = wp_nonce_url( admin_url( 'admin-post.php?action=powered-cache-do-preload&preload-status=' . $action ), 'powered-cache-do-preload' );
 
 			$text = ( $this->is_running() ? esc_html__( 'Stop Preload', 'powered-cache' ) : esc_html__( 'Start Preload', 'powered-cache' ) );
 			$html = '<a href="' . esc_url( $url ) . '" class="button" >' . $text . '</a>';
