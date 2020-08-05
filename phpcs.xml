@@ -4,6 +4,9 @@
 
 	<rule ref="10up-Default">
 		<exclude name="WordPress.WP.GlobalVariablesOverride.Prohibited"/>
+		<exclude name="WordPress.WP.AlternativeFunctions.file_system_read_fopen"/>
+		<exclude name="WordPress.WP.AlternativeFunctions.file_system_read_fwrite"/>
+		<exclude name="WordPress.WP.AlternativeFunctions.file_system_read_fclose"/>
 	</rule>
 
 	<exclude-pattern>*/node_modules/*</exclude-pattern>
