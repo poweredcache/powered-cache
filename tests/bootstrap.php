@@ -5,12 +5,6 @@
  * @package Powered_Cache
  */
 
-/**
- * Compatibility with PHPUnit 6+
- */
-if ( class_exists( 'PHPUnit\Runner\Version' ) ) {
-	require_once __DIR__ . '/phpunit6-compat.php';
-}
 
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
 if ( ! $_tests_dir ) {
