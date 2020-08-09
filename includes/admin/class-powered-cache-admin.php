@@ -31,6 +31,14 @@ class Powered_Cache_Admin {
 	public $slug = 'powered-cache';
 
 	/**
+	 * Settings name
+	 *
+	 * @var string $slug
+	 * @since 2.0
+	 */
+	public $settings_name = 'powered_cache_settings';
+
+	/**
 	 * Powered_Cache_Admin constructor.
 	 */
 	public function __construct() { }
@@ -47,6 +55,7 @@ class Powered_Cache_Admin {
 			add_action( 'network_admin_menu', array( $this, 'admin_menu' ) );
 		}
 
+//		add_action( 'admin_init', array( $this, 'admin_init' ) );
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 		add_action( 'admin_bar_menu', array( $this, 'admin_bar_menu' ), 999 );
 		add_filter( 'plugin_action_links_' . plugin_basename( POWERED_CACHE_PLUGIN_FILE ), array( $this, 'action_links' ) );
@@ -55,6 +64,16 @@ class Powered_Cache_Admin {
 		add_action( 'admin_post_deactivate_plugin', array( $this, 'deactivate_plugin' ) );
 		add_action( 'admin_post_powered_cache_download_rewrite_settings', array( $this, 'download_rewrite_config' ) );
 
+	}
+
+	public function admin_init() {
+		register_setting(
+			$this->settings_name,
+			$this->settings_name,
+			array(
+				'sanitize_callback' => array( $this, 'update_options' ),
+			)
+		);
 	}
 
 
@@ -148,7 +167,7 @@ class Powered_Cache_Admin {
 		/**
 		 * Different name submenu item, url point same address with parent.
 		 */
-		add_submenu_page( $this->slug, __( 'Powered Cache Settings', 'powered-cache' ), __( 'Settings', 'powered-cache' ), $this->capability, $this->slug );
+		add_submenu_page( $this->slug, esc_html__( 'Powered Cache Settings', 'powered-cache' ), esc_html__( 'Settings', 'powered-cache' ), $this->capability, $this->slug );
 	}
 
 	/**
@@ -220,6 +239,7 @@ class Powered_Cache_Admin {
 		wp_safe_redirect( wp_get_referer() );
 		die();
 	}
+
 
 
 	/**

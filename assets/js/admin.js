@@ -21,6 +21,16 @@ function powered_cache_remove_cdn_item() {
 
 jQuery(document).ready(function ($) {
 
+	var active_section = $('.powered-cache-settings-nav').find('.nav-tab-active').data('target-section');
+	$('#'+active_section).show();
+
+	$('.nav-tab').click(function () {
+		$('.powered-cache-settings-nav').find('.nav-tab').removeClass('nav-tab-active');
+		$(this).addClass('nav-tab-active');
+		$('.powered-cache-settings-tab').hide();
+		$('#' + $(this).data('target-section')).show();
+	});
+
 	$('body').on('click', '.remove-cdn-item', function () {
 		$(this).parent().remove();
 	});

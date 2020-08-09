@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 <?php $extentions = Powered_Cache_Extensions::factory()->get_extentions(); ?>
 
-<div class="powered-cache-extension-page">
+<div id="extensions" class="powered-cache-extension-page powered-cache-settings-tab">
 	<?php foreach ( $extentions as $extension_id => $extention ) : ?>
 		<div class="powered-cache-extension"><h3 class="powered-cache-extension-title"><?php echo esc_attr( $extention['Name'] ); ?></h3>
 			<a href="<?php echo esc_url( $extention['ExtensionURI'] ); ?>" title="<?php echo esc_attr( $extention['Name'] ); ?>">

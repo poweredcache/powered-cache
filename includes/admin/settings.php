@@ -30,63 +30,45 @@ if ( in_array( $current_section, array( 'misc', 'extensions', 'premium', 'suppor
 
 	<div id="post-body" class="metabox-holder columns-<?php echo( powered_cache_is_premium() ? '1' : '2' ); ?>">
 
+
 	<h2 class="nav-tab-wrapper powered-cache-settings-nav">
 		<?php
-
-			$sections = Powered_Cache_Admin_Helper::admin_sections();
-		foreach ( $sections as $section => $title ) :
-			?>
-				<a
-					href="
-					<?php
-					echo esc_url(
-						admin_url(
-							add_query_arg(
-								array(
-									'page'    => 'powered-cache',
-									'section' => $section,
-								),
-								'admin.php'
-							)
-						)
-					);
-					?>
-							"
-					title="<?php esc_attr_e( $title, 'powered-cache' ); // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText ?>"
-					class="nav-tab <?php echo $current_section === $section ? 'nav-tab-active' : ''; ?>"
-					>
-					<?php esc_attr_e( $title, 'powered-cache' ); // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText ?>
-				</a>
-			<?php endforeach; ?>
-		</h2>
-
-
+		$sections = Powered_Cache_Admin_Helper::admin_sections();
+		foreach ( $sections as $section => $title ) {
+			printf(
+				'<a href="%1$s" title="%2$s" class="nav-tab %3$s" data-target-section="%4$s">%2$s</a>',
+				esc_url( admin_url( add_query_arg( array( 'page' => 'powered-cache', ), 'admin.php' ) ) . '#top#' . $section ),
+				esc_attr__( $title, 'powered-cache' ), // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
+				esc_attr( ( $current_section === $section ? 'nav-tab-active' : '' ) ),
+				esc_attr( $section )
+			);
+		}
+		?>
+	</h2>
 
 		<!-- main content -->
 		<div id="post-body-content">
-			<form  id="powered-cache-settings-form" method="post" action="" enctype="multipart/form-data" class="powered-cache-form">
+			<form id="powered-cache-settings-form" method="post" action="" enctype="multipart/form-data" class="powered-cache-form">
 				<?php wp_nonce_field( 'powered_cache_update_settings', 'powered_cache_settings_nonce' ); ?>
 				<input type="hidden" name="action" value="powered_cache_update_settings">
-				<input type="hidden" name="wp_http_referer" value="<?php echo esc_attr( wp_unslash( $_SERVER['REQUEST_URI'] ) ); ?>'" />
+				<input type="hidden" name="wp_http_referer" value="<?php echo esc_attr( wp_unslash( $_SERVER['REQUEST_URI'] ) ); ?>'"/>
 
 				<?php
-				$page = POWERED_CACHE_ADMIN_DIR . 'settings/' . $current_section . '.php';
-				if ( file_exists( $page ) ) {
-					do_action( 'powered_cache_before_load_settings_template_' . $current_section );
-					include $page;
-					do_action( 'powered_cache_after_load_settings_template_' . $current_section );
+				$sections = Powered_Cache_Admin_Helper::admin_sections();
+				foreach ( $sections as $section => $section_title ) {
+					if('support' === $section){
+						continue;
+					}
+					$template = POWERED_CACHE_ADMIN_DIR . 'settings/' . $section . '.php';
+					if ( file_exists( $template ) ) {
+						include $template;
+					}
 				}
 				?>
-
-
-				<!-- .meta-box-sortables .ui-sortable -->
-				<?php if ( true === $show_submit ) : ?>
-					<div class="save">
-						<?php submit_button( __( 'Save Changes', 'powered-cache' ), 'primary', 'submit', false ); ?>
-					</div>
-				<?php endif; ?>
+				<div class="save">
+					<?php submit_button( __( 'Save Changes', 'powered-cache' ), 'primary', 'submit', false ); ?>
+				</div>
 			</form>
-
 		</div>
 		<!-- post-body-content -->
 

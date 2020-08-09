@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 ?>
 
-<div class="meta-box-sortables ui-sortable">
+<div id="basic-options" class="powered-cache-settings-tab meta-box-sortables ui-sortable">
 	<div class="postbox">
 		<div class="inside">
 

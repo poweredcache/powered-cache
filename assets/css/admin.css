@@ -20,6 +20,10 @@
 	clear: both;
 }
 
+.powered-cache-settings-tab {
+	display: none;
+}
+
 h2.powered-cache-settings-nav{
 	padding: 0!important;
 	margin:0 0 15px!important;
