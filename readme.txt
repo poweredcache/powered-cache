@@ -3,7 +3,7 @@ Contributors:  poweredcache, skopco, m_uysl
 Tags: powered cache, web vitals, page speed, optimization, cdn, cache, caching, object cache, minify
 Requires at least:  5.0
 Tested up to:  5.8
-Stable tag:  2.0-beta
+Stable tag:  2.0
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
