@@ -1,47 +1,54 @@
 {
-  "name": "skopco/powered-cache",
+  "name": "poweredcache/powered-cache",
   "description": "Comprehensive caching and performance plugin for WordPress.",
   "type": "wordpress-plugin",
-  "keywords": [
-    "wordpress",
-    "powered-cache",
-    "cache",
-    "object-cache"
-  ],
-  "license": [
-    "GPLv2 (or later)"
-  ],
-  "minimum-stability": "dev",
+  "license": "GPL-2.0-or-later",
   "authors": [
     {
-      "name": "PoweredCache",
-      "homepage": "https://poweredcache.com"
-    }
-  ],
-  "repositories": [
-    {
-      "type": "composer",
-      "url": "https://wpackagist.org"
+      "name": "poweredcache",
+      "email": "support@poweredcache.com",
+      "homepage": "https://poweredcache.com",
+      "role": "Developer"
     }
   ],
   "require": {
     "php": ">=5.6"
   },
+  "autoload": {
+    "psr-4": {
+      "PoweredCache\\": "includes/classes/"
+    }
+  },
   "require-dev": {
+    "phpunit/phpunit": "^8.2",
+    "10up/wp_mock": "dev-master",
     "10up/phpcs-composer": "dev-master",
-    "phpunit/phpunit": "^7"
+    "coenjacobs/mozart": "^0.7.1",
+    "matthiasmullie/minify": "^1.3",
+    "deliciousbrains/wp-background-processing": "^1.0"
   },
   "scripts": {
-    "lint": "phpcs powered-cache.php includes extensions",
-    "lint-fix": "phpcbf powered-cache.php includes extensions",
-    "test": "phpunit",
-    "setup-local-tests": "bash bin/install-wp-tests.sh pc_wp_test root password mysql trunk true"
+    "lint": "phpcs powered-cache.php uninstall.php ./includes -s",
+    "lint-fix": "phpcbf powered-cache.php uninstall.php ./includes",
+    "setup-local-tests": "bash bin/install-wp-tests.sh pc_wp_test root root localhost trunk true",
+    "post-install-cmd": [
+      "\"vendor/bin/mozart\" compose",
+      "composer dump-autoload"
+    ],
+    "post-update-cmd": [
+      "\"vendor/bin/mozart\" compose",
+      "composer dump-autoload"
+    ]
   },
   "extra": {
-    "installer-paths": {
-      "vendor/{$name}/": [
-        "type:wordpress-plugin",
-        "type:wordpress-theme"
+    "mozart": {
+      "dep_namespace": "PoweredCache\\Dependencies\\",
+      "dep_directory": "/includes/classes/Dependencies/",
+      "classmap_directory": "/includes/package/",
+      "classmap_prefix": "Powered_Cache_",
+      "packages": [
+        "matthiasmullie/minify",
+        "deliciousbrains/wp-background-processing"
       ]
     }
   }

@@ -1,0 +1,6 @@
+{
+  "extends": "@10up/stylelint-config",
+  "ignoreFiles": [
+    "dist/**"
+  ]
+}

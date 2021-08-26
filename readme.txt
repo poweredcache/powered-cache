@@ -1,70 +1,99 @@
-=== Powered Cache ===
-
-Contributors:  skopco, m_uysl
-Tags: cache, caching, powered cache, cdn, super cache, fastest cache, total cache
-Requires at least:  4.5
-Tested up to:  5.4.1
-Stable tag:  1.2.8
+=== Powered Cache – Caching and Optimization for WordPress – Easily Improve PageSpeed & Web Vitals Score ===
+Contributors:  poweredcache, skopco, m_uysl
+Tags: powered cache, web vitals, page speed, optimization, cdn, cache, caching, object cache, minify
+Requires at least:  5.0
+Tested up to:  5.8
+Stable tag:  2.0-beta
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
-Requires PHP: 5.2.4
+Requires PHP: 5.6
 
-Comprehensive caching and performance plugin for WordPress.
+The most powerful caching and performance suite for WordPress. Easily Improve PageSpeed & Web Vitals Score.
 
 == Description ==
 
-Powered Cache is a comprehensive caching and performance plugin for WordPress. It comes with built-in extensions that improve your website's performance.
+Powered Cache is a comprehensive caching and optimization plugin for WordPress. It's easy to use and dramatically boosts site performance in a few clicks.
 
-__Plugin Website__: [poweredcache.com](https://poweredcache.com)
+Powered Cache Free contains everything that you need to optimize your website performance, and the [Powered Cache Premium](https://poweredcache.com) plugin and its extensions unlock even more tools and functionality.
 
 = Features =
 
-- Simple and easily configurable. You can import and export settings via one click.
-- Page Caching
-- Object Caching (redis, memcached, memcache, apcu)
-- Support mod_rewrite (automatic .htaccess rules)
-- Mobile support (separate cache file for mobile)
-- Logged-in user cache
-- SSL support
-- CDN support
-- Cache Preloading
-- Page cache rule management
-- Gzip support
-- Built-in extensions: Lazy Load, Preloader, Cloudflare
-- Multisite support
-- Smart cache purging (automatic cache purging on post update/publish)
+__Simple and easily configurable__: You can import and export settings with a single click.
 
-= Built-in extensions =
+__Page Caching__: Lightning-fast pages. (Trusted by enterprise grade websites)
 
-Built-in extensions (aka add-ons) come with Powered Cache to provide more functionality.
+__Object Caching__: Speedup dynamic pageviews. It supports Redis, Memcached, Memcache and APCu.
 
-[__Cloudflare__](https://poweredcache.com/extensions/cloudflare) – Cloudflare compatibility and functionalities ***Free***
-[__Lazy Load__](https://poweredcache.com/extensions/lazy-load/) – Loads images and iframes only when visible to the user ***Free***
-[__Preload__](https://poweredcache.com/extensions/preload/) – Preload posts before actual user request page  ***Free***
-[__Varnish__](https://poweredcache.com/extensions/varnish/) – Varnish cache purging ***Premium only***
-[__Minifier__](https://poweredcache.com/extensions/minifier/) – Reduce size of HTML,CSS,JS files by compressing and concatenating them. ***Premium only***
-[__Remote Cron__](https://poweredcache.com/extensions/remote-cron/) – Trigger WordPress cron remotely ***Premium only***
+__Page Cache Rule Management__: Need advanced caching configurations? Got it covered under advanced options. [Details](https://docs.poweredcache.com/advanced-options/)
+
+__File Optimization__: Easily minify and combine CSS, JS files.
+
+__Database Optimization__: Keep redundant data away from your database.
+
+__Media Optimization__: Enable Lazy Load, control WordPress embeds, remove emoji scripts.
+
+__Combine Google Fonts__: Combine Google Fonts URLs into a single URL and optimize the font loading.
+
+__Rewrite Support__: Automatic .htaccess configuration for ideal setup. The cached file can be served without executing PHP at all.
+
+__Mobile Support__: Separate cache file for mobile, in case want to use the separate theme for the mobile.
+
+__Logged-in User Cache__: If you have user-specific content or running a membership site, it creates cache for user.
+
+__CDN Integration__: Integrate your website with CDN, you just need to enter CNAME(s) and corresponding zones.
+
+__Cache Preloading__: Creating cached pages in advance. This feature will keep caching layer warm.
+
+__Prefetched DNS__: Resolve domain names before resources get requested. Reduce DNS lookup time.
+
+__Gzip Support__: Compress caching files with gzip.
+
+__Built-in Extensions__: Cloudflare, Heartbeat
+
+__Multisite Support__: You can activate network-wide or site basis. It's compatible with domain mapping.
+
+__Smart Cache Purging__: Only purge the cache that is affected by the content changes.
+
+__Compatible__: Tested and compatible for popular plugins.
+
+__Battle Tested__: Trusted by enterprise-grade websites.
 
 
-> <strong>Premium Support</strong><br>
-> We don't always provide active support on the WordPress.org forums. Premium (directly) support is available to people who bought the [Powered Cache Premium](https://poweredcache.com/) only.
+= Built-in Extensions =
+Built-in extensions (aka add-ons) shipped with Powered Cache to provide more functionality.
 
+__Cloudflare__: Cloudflare compatibility and functionalities ***Free***
+__Heartbeat__: Manage the frequency of the WordPress Heartbeat API. ***Free***
+__Varnish__: Varnish cache purging ***Premium only***
+__Google Tracking__: Powered Cache will host Google scripts on your server to help satisfy the PageSpeed recommendation. ***Premium only***
+__Facebook Tracking__: Powered Cache will host Google scripts on your server to help satisfy the PageSpeed recommendation. ***Premium only***
 
 = Premium Features =
-- All current and future premium extensions
-- Get benefits from our bots like regular cron checks, preloading, etc...
-- WP-CLI commands ready to save your time
-- We are providing top-notch premium support to premium users
-- No Ads on plugin page
+Here is a list of the amazing features included in Powered Cache Premium:
 
-[youtube https://www.youtube.com/watch?v=4tHfHfWNVF0]
+- Sitemap Preloading
+- Scheduled Database cleanups.
+- Varnish extension.
+- Google tracking extension.
+- Facebook tracking extension.
+- WP-CLI commands ready to save your time.
+- Top-notch premium support.
+- No Ads on plugin page.
+
+By upgrading to Powered Cache Premium you also get access to one-on-one help from our knowledgeable support team and our extensive documentation site.
+
+**[Learn more about Powered Cache Premium](https://poweredcache.com/)**
 
 = Contributing & Bug Report =
-Bug reports and pull requests are welcome on [Github](https://github.com/skopco/powered-cache). Some of our features are premium only, please consider before sending PR.
+Bug reports and pull requests are welcome on [Github](https://github.com/poweredcache/powered-cache). Some of our features are premium only, please consider before sending PR.
 
 = Documentation =
-Our documentation can be found on [GitHub](https://github.com/skopco/powered-cache/wiki)
+
+__Documentation site__: [https://docs.poweredcache.com/](https://docs.poweredcache.com/)
+
+__Developer Docs__: [https://poweredcache.github.io/docs/](https://poweredcache.github.io/docs/)  (***Hook referance***)
+
 
 == Installation ==
 
@@ -81,11 +110,14 @@ Our documentation can be found on [GitHub](https://github.com/skopco/powered-cac
 
 == Frequently Asked Questions ==
 
-= Is it compatible with multisite? =
-Yes, it works with subdirectory/subdomain setups.
+= How do I know my site is being cached? =
+The easiest way is to make sure your site is being cached. Open your site in incognito mode of your browser and right-click on the page. If you see `<!-- Cache served by PoweredCache -->` information that means you are getting a cached result.
 
-= Is it compatible with PHP 7? =
-Yes, it's compatible with PHP7+
+= Is it compatible with multisite? =
+Yes, it's 100% compatible with multisite. You can activate it on the network-wide or per-site basis.
+
+= Is it compatible with domain mapping? =
+Yes, it's compatible with Mercator and native domain mapping feature with WordPress core.
 
 = What is the built-in extension? =
 We designed Powered Cache is a complete optimization solution for WordPress. However, we believe that your system should be tailored to your needs without the added weight of unwanted functionality. We strive to perfect this balance with our built-in extensions.
@@ -97,31 +129,77 @@ We support mobile devices and user agents, if your template is not responsive yo
 You can buy from [poweredcache.com](https://poweredcache.com/)
 
 = Is it compatible with Cloudflare? =
-Yes, definitely!
+Yes, you just need to enable Cloudflare extension.
 
 = Is it compatible with Jetpack? =
 Yes, we don't get any problems with Jetpack.
 
+= Is it compatible with WPML? =
+Yes, you can use on your multilingual website.
+
 = Is it compatible with ecommerce plugins? =
-We didn't test all of them, but principally it must be worked, you consider excluding dynamic pages from the page cache. (like checkout page)
+Yes, you can use with WooCommerce, Easy Digital Downloads and BigCommerce. If you are using any other eCommerce plugin, just make sure dynamic pages are excluded from the cache.
+
+= How can I disable caching for a particular page? =
+You can disable caching from the meta box in the post editing page or enter pages in the "Never cache the following pages" under the "Advanced Options" section.
+
+= Can I export/import settings? =
+Yes, you can find export/import options in the "Misc" sections of the settings page.
+
+= Does it cache API requests? =
+Yes, it caches GET requests on API. If you have query parameters on the request, you will need to allow query parameter in the"Accepted query strings" under the "Advanced Options" section.
+
+= Is it compatible with PHP 8+ =
+Yes, it’s compatible with PHP 8+
 
 
 == Screenshots ==
 1. Basic Options
 2. Advanced Options
-3. CDN configuration
-4. Extensions page
+3. File Optimization
+4. Media Optimization
+5. CDN Integration
+6. Preload Options
+7. Database Optimization
+8. Extensions
 
 
 == Changelog ==
 
-= 1.2.8 =
- - fix: XSS issue in memcache & memcached backend
- - fix: Cloudflare API bug
+= 2.0 =
+- The vast majority of the codebase has been refactored.
+- Revamped UI.
+- Increased compatibility with 3rd party plugins.
+- Increased multisite and domain mapping compatibility.
+- New Feature: Control caching and lazy load status through the editor.
+- New Feature: Page cache can create a separate cache based on the varied cookie matches.
+- Redis drop-in updated.
+- APCu drop-in updated. (switched to another drop-in)
+- Memcache drop-in updated. (Requires PHP 5.6.20 at minimum)
+- Improved: Accepted query strings recognition.
+- Improved: Deletion of expired cache.
+- New Feature: File Optimization - minify/combine CSS, JS, Google Fonts easily.
+- New Feature: Media Optimization -  Control lazyload, WordPress embeds and emoji scripts.
+- New Feature: Database Optimization -  clears out all of the unnecessary data.
+- Removed: Remove query string feature, no longer necessary.
+- Removed: SSL Cache option. It will automatically configure the caching for both HTTP/HTTPS.
+- Removed: Preloader extension. (consolidated into Preload feature)
+- Removed: Minifier extension. (consolidated into File Optimization)
+- Removed: Lazy-load extension. (consolidated into Media Optimization)
+- Updated: Cloudflare Extension. Enter Zone ID without listing all domains.
+- New Feature: Heartbeat Extension. Manage the frequency of the WordPress Heartbeat API.
+- Updated: File export/import format. (now it uses json)
+- Tested with WordPress 5.8 and Multisite.
+- Several bug fixes and improvements.
 
 Detailed changelog located in [changelog page](https://poweredcache.com/changelog)
 
 == Upgrade notice ==
+
+= 2.0 =
+ - Requirements have been updated.
+ - Includes some breaking changes. If you have been using the plugin functions or hooks, consider testing it before the upgrade.
+
 
 = 1.2 =
  - Default `WP_CACHE_KEY_SALT` has been changed, be careful about upgrading

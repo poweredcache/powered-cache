@@ -1,8 +1,8 @@
 <?php
 /**
- * File based caching drop-in based on Taylor Lovett's Simple Cache
- * @link https://github.com/tlovett1/simple-cache/blob/master/inc/dropins/file-based-page-cache.php
+ * Forked from https://github.com/tlovett1/simple-cache/
  */
+
 defined( 'ABSPATH' ) || exit;
 
 $powered_cache_start_time = microtime( true );
@@ -22,55 +22,45 @@ if ( is_admin() ) {
 	return;
 }
 
-
-
 $file_extension = $_SERVER['REQUEST_URI'];
 $file_extension = preg_replace( '#^(.*?)\?.*$#', '$1', $file_extension );
 $file_extension = trim( preg_replace( '#^.*\.(.*)$#', '$1', $file_extension ) );
 
 // Don't cache disallowed extensions. Prevents wp-cron.php, xmlrpc.php, etc.
-if ( ! preg_match( '#index\.php$#i', $_SERVER['REQUEST_URI'] ) && in_array( $file_extension, array( 'php', 'xml', 'xsl' ) ) ) {
+if ( ! preg_match( '#index\.php$#i', $_SERVER['REQUEST_URI'] ) && in_array( $file_extension, array( 'php', 'xml', 'xsl' ), true ) ) {
 	return;
 }
 
-if ( ! $GLOBALS['powered_cache_options']['enable_page_caching'] ) {
+if ( ! $GLOBALS['powered_cache_options']['enable_page_cache'] ) {
 	return;
 }
 
 // Don't cache page with these user agents
-if ( ! empty( $GLOBALS['powered_cache_options']['rejected_user_agents'] ) ) {
-	$rejected_user_agents = preg_split( '#(\r\n|\r|\n)#', $GLOBALS['powered_cache_options']['rejected_user_agents'] );
-	$rejected_user_agents = implode( '|', $rejected_user_agents );
-	if ( ! empty( $rejected_user_agents ) && isset( $_SERVER['HTTP_USER_AGENT'] )  && preg_match( '#(' . $rejected_user_agents . ')#', $_SERVER['HTTP_USER_AGENT'] ) ) {
+if ( isset( $powered_cache_rejected_user_agents ) && ! empty( $powered_cache_rejected_user_agents ) ) {
+	$rejected_user_agents = implode( '|', $powered_cache_rejected_user_agents );
+	if ( ! empty( $rejected_user_agents ) && isset( $_SERVER['HTTP_USER_AGENT'] ) && preg_match( '#(' . $rejected_user_agents . ')#', $_SERVER['HTTP_USER_AGENT'] ) ) {
 		return;
 	}
 }
 
-
-// Don't cache SSL
-if ( powered_cache_is_ssl() && ( ! isset( $GLOBALS['powered_cache_options']['ssl_cache'] ) || false === $GLOBALS['powered_cache_options']['ssl_cache'] ) ) {
-	return;
-}
-
-
 // dont cache mobile
-if ( ! isset( $GLOBALS['powered_cache_options']['cache_mobile'] ) || true !== $GLOBALS['powered_cache_options']['cache_mobile'] ) {
+if ( empty( $GLOBALS['powered_cache_options']['cache_mobile'] ) ) {
 	global $powered_cache_mobile_browsers, $powered_cache_mobile_prefixes;
 
 	$mobile_browsers = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', $powered_cache_mobile_browsers ) ), ' ' );
 	$mobile_prefixes = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', $powered_cache_mobile_prefixes ) ), ' ' );
 	// Don't cache if mobile detection is activated
-	if ( (preg_match( '#^.*(' . $mobile_browsers . ').*#i', $_SERVER['HTTP_USER_AGENT'] ) || preg_match( '#^(' . $mobile_prefixes . ').*#i', substr( $_SERVER['HTTP_USER_AGENT'], 0, 4 ) ) ) ) {
-		return '';
+	if ( ( preg_match( '#^.*(' . $mobile_browsers . ').*#i', $_SERVER['HTTP_USER_AGENT'] ) || preg_match( '#^(' . $mobile_prefixes . ').*#i', substr( $_SERVER['HTTP_USER_AGENT'], 0, 4 ) ) ) ) {
+		return;
 	}
 }
 
 
 if ( ! empty( $_COOKIE ) ) {
+	$wp_cookies = array( 'wordpressuser_', 'wordpresspass_', 'wordpress_sec_', 'wordpress_logged_in_' );
+
 	//Don't cache if logged in
 	if ( ! isset( $GLOBALS['powered_cache_options']['loggedin_user_cache'] ) || false === $GLOBALS['powered_cache_options']['loggedin_user_cache'] ) {
-		$wp_cookies = array( 'wordpressuser_', 'wordpresspass_', 'wordpress_sec_', 'wordpress_logged_in_' );
-
 		// check logged-in cookie
 		foreach ( $_COOKIE as $key => $value ) {
 			foreach ( $wp_cookies as $cookie ) {
@@ -93,20 +83,18 @@ if ( ! empty( $_COOKIE ) ) {
 	}
 
 	// don't cache specific cookie
-	if ( ! empty( $GLOBALS['powered_cache_options']['rejected_cookies'] ) ) {
-		$rejected_cookies = preg_split( '#(\r\n|\r|\n)#', $GLOBALS['powered_cache_options']['rejected_cookies'] );
+	if ( isset( $powered_cache_rejected_cookies ) && ! empty( $powered_cache_rejected_cookies ) ) {
+		$rejected_cookies = array_diff( $powered_cache_rejected_cookies, $wp_cookies ); // use diff in case caching for logged-in user
 		$rejected_cookies = implode( '|', $rejected_cookies );
 		if ( preg_match( '#(' . $rejected_cookies . ')#', var_export( $_COOKIE, true ) ) ) {
 			return;
 		}
 	}
-} // End if().
+}
 
-// Deal with optional cache exceptions
-if ( ! empty( $GLOBALS['powered_cache_options']['rejected_uri'] ) ) {
-	$exceptions = preg_split( '#(\r\n|\r|\n)#', $GLOBALS['powered_cache_options']['rejected_uri'] );
-
-	foreach ( $exceptions as $exception ) {
+// Don't cache rejected pages
+if ( ! empty( $powered_cache_rejected_uri ) ) {
+	foreach ( (array) $powered_cache_rejected_uri as $exception ) {
 		if ( preg_match( '#^[\s]*$#', $exception ) ) {
 			continue;
 		}
@@ -116,6 +104,10 @@ if ( ! empty( $GLOBALS['powered_cache_options']['rejected_uri'] ) ) {
 			$exception = parse_url( $exception, PHP_URL_PATH );
 		}
 
+		if ( empty( $exception ) ) {
+			continue;
+		}
+
 		if ( preg_match( '#^(' . $exception . ')$#', $_SERVER['REQUEST_URI'] ) ) {
 			return;
 		}
@@ -123,14 +115,17 @@ if ( ! empty( $GLOBALS['powered_cache_options']['rejected_uri'] ) ) {
 }
 
 
-$accepted_query_strings = array();
-// cache url with allowed query string
-if ( ! empty( $GLOBALS['powered_cache_options']['accepted_query_strings'] ) ) {
-	$accepted_query_strings = preg_split( '#(\r\n|\r|\n)#', $GLOBALS['powered_cache_options']['accepted_query_strings'] );
-}
+if ( ! empty( $_GET ) ) {
+	if ( ! isset( $powered_cache_accepted_query_strings ) ) {
+		$powered_cache_accepted_query_strings = [];
+	}
 
-if ( ! empty( $_GET ) && isset( $accepted_query_strings ) && is_array( $accepted_query_strings ) && ! array_intersect( array_keys( $_GET ), $accepted_query_strings ) ) {
-	return;
+	$query_params = array_diff_key( $_GET, array_flip( $powered_cache_accepted_query_strings ) );
+
+	// don't cache when there is not allowed query parameter exists
+	if ( ! empty( $query_params ) ) {
+		return;
+	}
 }
 
 powered_cache_serve_cache();
@@ -140,10 +135,11 @@ ob_start( 'powered_cache_page_buffer' );
 /**
  * Cache output before it goes to the browser
  *
- * @param  string $buffer
- * @param  int $flags
- * @since  1.0
+ * @param string $buffer
+ * @param int    $flags
+ *
  * @return string
+ * @since  1.0
  */
 function powered_cache_page_buffer( $buffer, $flags ) {
 	global $powered_cache_start_time, $post;
@@ -158,61 +154,74 @@ function powered_cache_page_buffer( $buffer, $flags ) {
 	}
 
 	// maybe we shouldn't cache template file has this constant
-	if ( defined( 'DONOTCACHEPAGE' ) && true === DONOTCACHEPAGE ) {
+	// dont check DONOTCACHEPAGE strictly some plugins define string instead bool flag
+	if ( defined( 'DONOTCACHEPAGE' ) && DONOTCACHEPAGE ) {
+		\PoweredCache\Utils\log( sprintf( 'DONOTCACHEPAGE DEFINED on %s', $_SERVER['REQUEST_URI'] ) );
+
 		return $buffer;
 	}
 
-	// plugins might want to use filter
+	/**
+	 * Filter whether to enable page cache for this request
+	 *
+	 * @hook  powered_cache_page_cache_enable
+	 *
+	 * @param {boolean} $enable true for caching
+	 *
+	 * @since 1.0
+	 */
 	if ( true !== apply_filters( 'powered_cache_page_cache_enable', true ) ) {
 		return $buffer;
 	}
 
-	if ( ! defined( 'FS_CHMOD_DIR' ) ) {
-		define( 'FS_CHMOD_DIR', ( fileperms( ABSPATH ) & 0777 | 0755 ) );
+	// only cache when http ok
+	if ( 200 !== http_response_code() ) {
+		return $buffer;
 	}
 
-	if ( ! defined( 'FS_CHMOD_FILE' ) ) {
-		define( 'FS_CHMOD_FILE', ( fileperms( ABSPATH . 'index.php' ) & 0777 | 0644 ) );
-	}
-
-	include_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
-	include_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
-
-	$filesystem = new WP_Filesystem_Direct( new StdClass() );
-
-	if ( ! function_exists( 'powered_cache_get_cache_dir' ) ) {
+	if ( ! function_exists( '\PoweredCache\Utils\get_cache_dir' ) ) {
 		return $buffer;
 	}
 
 	// Make sure we can read/write files and that proper folders exist
-	if ( ! $filesystem->exists( untrailingslashit( powered_cache_get_cache_dir() ) ) ) {
-		if ( ! $filesystem->mkdir( untrailingslashit( powered_cache_get_cache_dir() ) ) ) {
+	if ( ! file_exists( untrailingslashit( \PoweredCache\Utils\get_cache_dir() ) ) ) {
+		if ( ! @mkdir( untrailingslashit( \PoweredCache\Utils\get_cache_dir() ) ) ) {
 			// Can not cache!
 			return $buffer;
 		}
 	}
 
-	if ( ! $filesystem->exists( powered_cache_get_page_cache_dir() ) ) {
-		if ( ! $filesystem->mkdir( powered_cache_get_page_cache_dir() ) ) {
+	if ( ! file_exists( \PoweredCache\Utils\get_page_cache_dir() ) ) {
+		if ( ! @mkdir( \PoweredCache\Utils\get_page_cache_dir() ) ) {
 			// Can not cache!
 			return $buffer;
 		}
 	}
 
+	/**
+	 * Filters HTML buffer
+	 *
+	 * @hook   powered_cache_page_caching_buffer
+	 *
+	 * @param  {string} $buffer Output buffer.
+	 *
+	 * @return {string} New value.
+	 * @since  1.0
+	 */
 	$buffer = apply_filters( 'powered_cache_page_caching_buffer', $buffer );
 
 	$url_path = powered_cache_get_url_path();
 
 	$dirs = explode( '/', $url_path );
 
-	$path = untrailingslashit( powered_cache_get_page_cache_dir() );
+	$path = untrailingslashit( \PoweredCache\Utils\get_page_cache_dir() );
 
 	foreach ( $dirs as $dir ) {
 		if ( ! empty( $dir ) ) {
 			$path .= '/' . $dir;
 
-			if ( ! $filesystem->exists( $path ) ) {
-				if ( ! $filesystem->mkdir( $path ) ) {
+			if ( ! file_exists( $path ) ) {
+				if ( ! @mkdir( $path ) ) {
 					// Can not cache!
 					return $buffer;
 				}
@@ -220,20 +229,18 @@ function powered_cache_page_buffer( $buffer, $flags ) {
 		}
 	}
 
-
 	$modified_time   = time(); // Make sure modified time is consistent
 	$generation_time = number_format( microtime( true ) - $powered_cache_start_time, 3 );
 
-	// Prevent mixed content when there's an http request but the site URL uses https
-	// @see https://github.com/tlovett1/simple-cache/issues/67
 	$home_url = get_home_url();
+	// prevent mixed content
 	if ( ! is_ssl() && 'https' === strtolower( parse_url( $home_url, PHP_URL_SCHEME ) ) ) {
 		$https_home_url = $home_url;
 		$http_home_url  = str_replace( 'https://', 'http://', $https_home_url );
 		$buffer         = str_replace( esc_url( $http_home_url ), esc_url( $https_home_url ), $buffer );
 	}
 
-	if ( array_key_exists( 'show_cache_message', $GLOBALS['powered_cache_options'] ) && true === $GLOBALS['powered_cache_options']['show_cache_message'] ) {
+	if ( array_key_exists( 'cache_footprint', $GLOBALS['powered_cache_options'] ) && true === $GLOBALS['powered_cache_options']['cache_footprint'] ) {
 		if ( preg_match( '#</html>#i', $buffer ) ) {
 			$buffer .= PHP_EOL;
 			$buffer .= "<!-- Cache served by PoweredCache -->";
@@ -249,41 +256,73 @@ function powered_cache_page_buffer( $buffer, $flags ) {
 
 
 	$meta_file_name = 'meta.php';
-	$meta_file = '<?php exit; ?>' . PHP_EOL;
+	$meta_file      = '<?php exit; ?>' . PHP_EOL;
 
 	$meta_params = array(); // holds to metadata for cached file
 
-	$response_headers = powered_cache_get_response_headers();
+	$response_headers = \PoweredCache\Utils\get_response_headers();
 
 	foreach ( (array) $response_headers as $key => $value ) {
 		$meta_params['headers'][ $key ] = "$key: $value";
 	}
 
-	$meta_params = apply_filters( 'powered_cache_page_cache_meta_params', $meta_params, $response_headers );
-	$meta_file_contents = $meta_file . serialize( $meta_params );
+	/**
+	 * Filters meta parameters.
+	 *
+	 * @hook   powered_cache_page_cache_meta_params
+	 *
+	 * @param  {array} $meta_params Meta parameters.
+	 * @param  {array} $response_headers Supported response header list.
+	 *
+	 * @return {array} New value.
+	 * @since  1.2
+	 */
+	$meta_params        = apply_filters( 'powered_cache_page_cache_meta_params', $meta_params, $response_headers );
+	$meta_file_contents = $meta_file . json_encode( $meta_params );
 
+	/**
+	 * Filters meta file contents.
+	 *
+	 * @hook   powered_cache_page_cache_meta_info
+	 *
+	 * @param  {string} $meta_file_contents The content of the meta file.*
+	 *
+	 * @return {array} New value.
+	 * @since  1.2
+	 */
 	$meta_file_contents = apply_filters( 'powered_cache_page_cache_meta_info', $meta_file_contents );
 
-	$filesystem->put_contents( $path . '/' . $meta_file_name, $meta_file_contents, FS_CHMOD_FILE );
-	$filesystem->touch( $path . '/' . $meta_file_name, $modified_time );
+	file_put_contents( $path . '/' . $meta_file_name, $meta_file_contents );
+	touch( $path . '/' . $meta_file_name, $modified_time );
 
-	if ( isset( $meta_params['headers']['Content-Type'] ) ) {
+	if ( ! empty( $meta_params['headers']['Content-Type'] ) ) {
 		$index_name = powered_cache_index_file( $meta_params['headers']['Content-Type'] );
 	} else {
 		$index_name = powered_cache_index_file();
 	}
 
 	if ( $GLOBALS['powered_cache_options']['gzip_compression'] && function_exists( 'gzencode' ) ) {
-		$filesystem->put_contents( $path . '/' . $index_name, gzencode( $buffer, 3 ), FS_CHMOD_FILE );
-		$filesystem->touch( $path . '/' . $index_name, $modified_time );
+		file_put_contents( $path . '/' . $index_name, gzencode( $buffer, 3 ) );
+		touch( $path . '/' . $index_name, $modified_time );
 	} else {
-		$filesystem->put_contents( $path . '/' . $index_name, $buffer, FS_CHMOD_FILE );
-		$filesystem->touch( $path . '/' . $index_name, $modified_time );
+		file_put_contents( $path . '/' . $index_name, $buffer );
+		touch( $path . '/' . $index_name, $modified_time );
 	}
 
+	/**
+	 * Fires after caching a page.
+	 *
+	 * @hook  powered_cache_page_cached
+	 *
+	 * @param {string} $buffer HTML Output.
+	 *
+	 * @since 1.0
+	 */
 	do_action( 'powered_cache_page_cached', $buffer );
 
 	header( 'Cache-Control: no-cache' ); // Check back every time to see if re-download is necessary
+
+	header( 'X-Powered-Cache: MISS' );
 
 	header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s', $modified_time ) . ' GMT' );
 
@@ -305,28 +344,38 @@ function powered_cache_serve_cache() {
 
 	$path = rtrim( $GLOBALS['powered_cache_options']['cache_location'], '/' ) . '/powered-cache/' . rtrim( powered_cache_get_url_path(), '/' ) . '/';
 
-	$meta_file = $path.'/meta.php';
+	$meta_file = $path . '/meta.php';
 
+	$header_params = [];
+	$content_type  = 'text/html';
 
 	if ( @file_exists( $meta_file ) ) {
 		$meta_contents = trim( file_get_contents( $meta_file ) );
 		$meta_contents = str_replace( '<?php exit; ?>', '', $meta_contents );
-		$meta_params   = unserialize( trim( $meta_contents ) );
+		$meta_params   = json_decode( trim( $meta_contents ), true );
 		$header_params = $meta_params['headers'];
 	}
 
-	$content_type = @$header_params['Content-Type'];
+	if ( ! empty( $header_params['Content-Type'] ) ) {
+		$content_type = $header_params['Content-Type'];
+	}
+
 
 	$file_name = powered_cache_index_file( $content_type );
-	$file_path = $path.$file_name;
+	$file_path = $path . $file_name;
+
+	// check file exists?
+	if ( ! file_exists( $file_path ) ) {
+		return;
+	}
 
 	$modified_time = (int) @filemtime( $file_path );
 
 	header( 'Cache-Control: no-cache' ); // Check back in an hour
 
 	if ( ! empty( $modified_time ) && ! empty( $_SERVER['HTTP_IF_MODIFIED_SINCE'] ) && strtotime( $_SERVER['HTTP_IF_MODIFIED_SINCE'] ) === $modified_time ) {
-		  header( $_SERVER['SERVER_PROTOCOL'] . ' 304 Not Modified', true, 304 );
-		  exit;
+		header( $_SERVER['SERVER_PROTOCOL'] . ' 304 Not Modified', true, 304 );
+		exit;
 	}
 
 	// trailingslash check
@@ -362,13 +411,15 @@ function powered_cache_serve_cache() {
 /**
  * Get URL path for caching
  *
- * @since  1.0
  * @return string
+ * @since  1.0
+ * @since  2.0 $request_uri without query string
  */
 function powered_cache_get_url_path() {
-
 	$host        = ( isset( $_SERVER['HTTP_HOST'] ) ? $_SERVER['HTTP_HOST'] : '' );
-	$request_uri = preg_replace( '/(\/+)/', '/', $_SERVER['REQUEST_URI'] );
+	$request_uri = explode( '?', $_SERVER['REQUEST_URI'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	$request_uri = reset( $request_uri );
+	$request_uri = preg_replace( '/(\/+)/', '/', $request_uri );
 	$request_uri = str_replace( '..', '', preg_replace( '/[ <>\'\"\r\n\t\(\)]/', '', $request_uri ) );
 
 	return rtrim( $host, '/' ) . $request_uri;
@@ -394,37 +445,31 @@ function powered_cache_get_user_cookie() {
  *
  * @param string $content_type
  *
- * @since 1.0
- * @since 1.2 `$content_type`
  * @return string
+ * @since 1.2 `$content_type`
+ * @since 1.0
  */
 function powered_cache_index_file( $content_type = 'text/html' ) {
+	global $powered_cache_mobile_browsers, $powered_cache_mobile_prefixes, $powered_cache_vary_cookies;
+
 	$file_name = 'index';
 
-	if ( powered_cache_is_ssl() ) {
+	if ( is_ssl() ) {
 		$file_name .= '-https';
 	}
 
 	// separate file for mobile cache
-	if ( isset( $GLOBALS['powered_cache_options']['cache_mobile'], $GLOBALS['powered_cache_options']['cache_mobile_separate_file'] )
-	     && true === $GLOBALS['powered_cache_options']['cache_mobile']
-	     && true === $GLOBALS['powered_cache_options']['cache_mobile_separate_file']
-	) {
-
-		global $powered_cache_mobile_browsers, $powered_cache_mobile_prefixes;
-
+	if ( ! empty( $GLOBALS['powered_cache_options']['cache_mobile'] ) && ! empty( $GLOBALS['powered_cache_options']['cache_mobile_separate_file'] ) ) {
 		$mobile_browsers = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', $powered_cache_mobile_browsers ) ), ' ' );
 		$mobile_prefixes = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', $powered_cache_mobile_prefixes ) ), ' ' );
 
 		// Don't cache if mobile detection is activated
-		if ( (preg_match( '#^.*(' . $mobile_browsers . ').*#i', $_SERVER['HTTP_USER_AGENT'] ) || preg_match( '#^(' . $mobile_prefixes . ').*#i', substr( $_SERVER['HTTP_USER_AGENT'], 0, 4 ) ) ) ) {
+		if ( ( preg_match( '#^.*(' . $mobile_browsers . ').*#i', $_SERVER['HTTP_USER_AGENT'] ) || preg_match( '#^(' . $mobile_prefixes . ').*#i', substr( $_SERVER['HTTP_USER_AGENT'], 0, 4 ) ) ) ) {
 			$file_name .= '-mobile';
 		}
 	}
 
-	if ( isset( $GLOBALS['powered_cache_options']['loggedin_user_cache'] )
-	     && true === $GLOBALS['powered_cache_options']['loggedin_user_cache']
-	) {
+	if ( ! empty( $GLOBALS['powered_cache_options']['loggedin_user_cache'] ) ) {
 		$usr_cookie = powered_cache_get_user_cookie();
 		if ( false !== $usr_cookie ) {
 			$cookie_info = explode( '|', $usr_cookie );
@@ -434,15 +479,43 @@ function powered_cache_index_file( $content_type = 'text/html' ) {
 		}
 	}
 
-	if ( ! empty( $_SERVER['QUERY_STRING'] ) ) {
-		$file_name .= '_' . sha1( $_SERVER['QUERY_STRING'] );
+	// change filename based on vary cookies
+	if ( ! empty( $powered_cache_vary_cookies ) ) {
+		$cookie_file_name = '';
+		foreach ( $powered_cache_vary_cookies as $key => $vary_cookie ) {
+			if ( is_array( $vary_cookie ) ) {
+				if ( ! empty( $_COOKIE[ $key ] ) ) {
+					foreach ( $vary_cookie as $vary_sub_cookie ) {
+						if ( isset( $_COOKIE[ $key ][ $vary_sub_cookie ] ) ) {
+							$cookie_file_name .= strtolower( $key . $vary_sub_cookie . $_COOKIE[ $key ][ $vary_sub_cookie ] );
+						}
+					}
+				}
+
+				continue;
+			}
+
+			if ( isset( $_COOKIE[ $vary_cookie ] ) && ! empty( $_COOKIE[ $vary_cookie ] ) ) {
+				$cookie_file_name .= strtolower( $vary_cookie . $_COOKIE[ $vary_cookie ] );
+			}
+		}
+
+		if ( ! empty( $cookie_file_name ) ) {
+			/**
+			 * Hashing for no particular reason
+			 * preg_replace( '/[^a-z0-9_\-]/', '', strtolower( $cookie_file_name ) )
+			 * can create a messy filename
+			 */
+			$file_name .= '-' . sha1( $cookie_file_name );
+		}
+
 	}
+
 
 	/**
 	 * Content-Type is not always text/html (like feed, wp-json etc..)
-	 * We should respect proper format!
-	 * Alternatively, we can add multiple level lookup for apache/nginx config
-	 * but that makes things much more complicated.
+	 * Adding hash by simply escaping from rewrite matches in htaccess or nginx
+	 * Different types of content should be serve via PHP, in order to restore header info
 	 */
 	if ( false === strpos( $content_type, 'text/html' ) ) {
 		$file_name .= '-' . substr( sha1( $content_type ), 0, 6 );
@@ -451,30 +524,9 @@ function powered_cache_index_file( $content_type = 'text/html' ) {
 	$file_name .= '.html';
 
 	if ( function_exists( 'gzencode' ) && $GLOBALS['powered_cache_options']['gzip_compression'] ) {
-		$file_name .= '_gzip';
+		$file_name .= '.gz';
 	}
 
 	return $file_name;
 }
 
-
-/**
- * is_ssl moved load.php in WP 4.6 but we support WP 4.1+
- *
- * @return bool
- */
-function powered_cache_is_ssl() {
-	if ( isset( $_SERVER['HTTPS'] ) ) {
-		if ( 'on' == strtolower( $_SERVER['HTTPS'] ) ) {
-			return true;
-		}
-
-		if ( '1' == $_SERVER['HTTPS'] ) {
-			return true;
-		}
-	} elseif ( isset( $_SERVER['SERVER_PORT'] ) && ( '443' == $_SERVER['SERVER_PORT'] ) ) {
-		return true;
-	}
-
-	return false;
-}

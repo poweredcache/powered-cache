@@ -1,15 +1,10 @@
 <?xml version="1.0"?>
 <ruleset name="10up PHPCS">
-	<description>10up PHPCS extended.</description>
+    <description>10up PHPCS extended.</description>
 
-	<rule ref="10up-Default">
-		<exclude name="WordPress.WP.GlobalVariablesOverride.Prohibited"/>
-		<exclude name="WordPress.WP.AlternativeFunctions.file_system_read_fopen"/>
-		<exclude name="WordPress.WP.AlternativeFunctions.file_system_read_fwrite"/>
-		<exclude name="WordPress.WP.AlternativeFunctions.file_system_read_fclose"/>
-	</rule>
+    <rule ref="10up-Default"/>
+    <exclude-pattern>/dropins/</exclude-pattern>
+    <exclude-pattern>/includes/package/</exclude-pattern>
+    <exclude-pattern>/classes/Dependencies/</exclude-pattern>
 
-	<exclude-pattern>*/node_modules/*</exclude-pattern>
-	<exclude-pattern>*/vendor/*</exclude-pattern>
-	<exclude-pattern>*/dropins/*</exclude-pattern>
 </ruleset>

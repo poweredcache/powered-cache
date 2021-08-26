@@ -1,148 +1,154 @@
 <?php
 /**
- * Powered Cache Notices
+ * Admin Notices
  *
  * @package PoweredCache
  */
 
-// Exit if accessed directly
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
+namespace PoweredCache\Admin\Notices;
 
-add_action( 'admin_notices', 'powered_cache_flash_messages' );
+use function PoweredCache\Utils\can_configure_htaccess;
+use function PoweredCache\Utils\can_configure_object_cache;
+use function PoweredCache\Utils\can_control_all_settings;
+use function PoweredCache\Utils\get_object_cache_dropins;
 
 /**
- * Display flash messages
+ * Default setup routine
  *
- * @since 1.0
+ * @return void
  */
-function powered_cache_flash_messages() {
-	Powered_Cache_Admin_Helper::get_flash_message();
+function setup() {
+	if ( POWERED_CACHE_IS_NETWORK ) {
+		add_action( 'network_admin_notices', __NAMESPACE__ . '\\maybe_display_plugin_compatability_notices' );
+		add_action( 'network_admin_notices', __NAMESPACE__ . '\\maybe_display_advanced_cache_notices' );
+		add_action( 'network_admin_notices', __NAMESPACE__ . '\\maybe_display_object_cache_notices' );
+		add_action( 'network_admin_notices', __NAMESPACE__ . '\\maybe_display_htaccess_notice' );
+	} else {
+		add_action( 'admin_notices', __NAMESPACE__ . '\\maybe_display_plugin_compatability_notices' );
+		add_action( 'admin_notices', __NAMESPACE__ . '\\maybe_display_advanced_cache_notices' );
+		add_action( 'admin_notices', __NAMESPACE__ . '\\maybe_display_object_cache_notices' );
+		add_action( 'admin_notices', __NAMESPACE__ . '\\maybe_display_htaccess_notice' );
+	}
 }
-
-
-add_action( 'admin_notices', 'powered_cache_plugin_compatability_notices' );
 
 /**
  * Display incompatible plugins
  *
  * @since 1.0
  */
-function powered_cache_plugin_compatability_notices() {
-
+function maybe_display_plugin_compatability_notices() {
 	$plugins = array(
-		'w3-total-cache'                             => 'w3-total-cache/w3-total-cache.php',
-		'wp-super-cache'                             => 'wp-super-cache/wp-cache.php',
-		'quick-cache'                                => 'quick-cache/quick-cache.php',
-		'hyper-cache'                                => 'hyper-cache/plugin.php',
-		'hyper-cache-extended'                       => 'hyper-cache-extended/plugin.php',
-		'wp-fast-cache'                              => 'wp-fast-cache/wp-fast-cache.php',
-		'flexicache'                                 => 'flexicache/wp-plugin.php',
-		'wp-fastest-cache'                           => 'wp-fastest-cache/wpFastestCache.php',
-		'lite-cache'                                 => 'lite-cache/plugin.php',
-		'gator-cache'                                => 'gator-cache/gator-cache.php',
-		'wp-http-compression'                        => 'wp-http-compression/wp-http-compression.php',
-		'wordpress-gzip-compression'                 => 'wordpress-gzip-compression/ezgz.php',
-		'gzip-ninja-speed-compression'               => 'gzip-ninja-speed-compression/gzip-ninja-speed.php',
-		'speed-booster-pack'                         => 'speed-booster-pack/speed-booster-pack.php',
-		'wp-performance-score-booster'               => 'wp-performance-score-booster/wp-performance-score-booster.php',
-		'remove-query-strings-from-static-resources' => 'remove-query-strings-from-static-resources/remove-query-strings.php',
-		'query-strings-remover'                      => 'query-strings-remover/query-strings-remover.php',
-		'wp-ffpc'                                    => 'wp-ffpc/wp-ffpc.php',
-		'far-future-expiry-header'                   => 'far-future-expiry-header/far-future-expiration.php',
-		'combine-css'                                => 'combine-css/combine-css.php',
-		'super-static-cache'                         => 'super-static-cache/super-static-cache.php',
-		'wpcompressor'                               => 'wpcompressor/wpcompressor.php',
-		'check-and-enable-gzip-compression'          => 'check-and-enable-gzip-compression/richards-toolbox.php',
-		'leverage-browser-caching-ninjas'            => 'leverage-browser-caching-ninjas/leverage-browser-caching-ninja.php',
-		'force-gzip'                                 => 'force-gzip/force-gzip.php',
+		'hummingbird-performance'           => 'hummingbird-performance/wp-hummingbird.php',
+		'wp-rocket'                         => 'wp-rocket/wp-rocket.php',
+		'w3-total-cache'                    => 'w3-total-cache/w3-total-cache.php',
+		'wp-super-cache'                    => 'wp-super-cache/wp-cache.php',
+		'hyper-cache'                       => 'hyper-cache/plugin.php',
+		'hyper-cache-extended'              => 'hyper-cache-extended/plugin.php',
+		'wp-fast-cache'                     => 'wp-fast-cache/wp-fast-cache.php',
+		'flexicache'                        => 'flexicache/wp-plugin.php',
+		'wp-fastest-cache'                  => 'wp-fastest-cache/wpFastestCache.php',
+		'wp-http-compression'               => 'wp-http-compression/wp-http-compression.php',
+		'wordpress-gzip-compression'        => 'wordpress-gzip-compression/ezgz.php',
+		'gzip-ninja-speed-compression'      => 'gzip-ninja-speed-compression/gzip-ninja-speed.php',
+		'speed-booster-pack'                => 'speed-booster-pack/speed-booster-pack.php',
+		'wp-performance-score-booster'      => 'wp-performance-score-booster/wp-performance-score-booster.php',
+		'check-and-enable-gzip-compression' => 'check-and-enable-gzip-compression/richards-toolbox.php',
 	);
 
-	$plugins = array_filter( $plugins, 'is_plugin_active' );
+	$callback = POWERED_CACHE_IS_NETWORK ? 'is_plugin_active_for_network' : 'is_plugin_active';
 
-	if ( count( $plugins ) > 0 && current_user_can( apply_filters( 'powered_cache_cap', 'manage_options' ) ) ) { ?>
+	$plugins = array_filter( $plugins, $callback );
+
+	if ( 0 >= count( $plugins ) ) {
+		return;
+	}
+	?>
+
+	<?php if ( current_user_can( 'activate_plugins' ) ) : ?>
 		<div class="error">
-			<h2><?php esc_html_e( 'Powered Cache', 'powered-cache' ); ?></h2>
-
-			<p>
-				<?php
-				printf(
-					'%s <b>%s</b> %s',
-					esc_html__( 'The following plugins are not compatible with', 'powered-cache' ),
-					esc_html__( 'Powered Cache', 'powered-cache' ),
-					esc_html__( 'and will cause unintended results:', 'powered-cache' )
-				);
-				?>
-			</p>
-
+			<p><?php esc_html_e( 'The following plugins are not compatible with  Powered Cache and may cause unintended results:', 'powered-cache' ); ?></p>
 			<ul class="incompatible-plugin-list">
 				<?php
 				foreach ( $plugins as $plugin ) {
 					$plugin_data = get_plugin_data( WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . $plugin );
-					echo '<li>' . esc_attr( $plugin_data['Name'] ) . '</span> <a href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=deactivate_plugin&plugin=' . rawurlencode( $plugin ) ), 'deactivate_plugin' ) ) . '" class="button-secondary">' . esc_html__( 'Deactivate', 'powered-cache' ) . '</a></li>';
+					echo '<li>' . esc_attr( $plugin_data['Name'] ) . '</span> <a href="' . esc_url_raw( wp_nonce_url( admin_url( 'admin-post.php?action=deactivate_plugin&plugin=' . rawurlencode( $plugin ) ), 'deactivate_plugin' ) ) . '" class="button-secondary">' . esc_html__( 'Deactivate', 'powered-cache' ) . '</a></li>';
 				}
 				?>
 			</ul>
 		</div>
-		<?php
-	}
+	<?php endif; ?>
+
+	<?php
 }
 
-add_action( 'admin_notices', 'powered_cache_advanced_cache_notices' );
 
 /**
  * Show notices about page cache
  *
  * @since 1.0
  */
-function powered_cache_advanced_cache_notices() {
-
+function maybe_display_advanced_cache_notices() {
 	/**
-	 * Users might want to control this notice.
+	 * Determine whether show or not show advanced cache related notices
 	 * eg: Varnish users don't need to turning on page cache.
-	 * Yeah! they can use remove_action as well
 	 *
-	 * @since 1.2
+	 * @hook   powered_cache_disable_advanced_cache_notices
+	 *
+	 * @param  {boolean} $status false
+	 *
+	 * @return {boolean} New value
+	 * @since  1.2
 	 */
 	if ( apply_filters( 'powered_cache_disable_advanced_cache_notices', false ) ) {
 		return;
 	}
 
-	if ( powered_cache_is_saving_options() ) {
-		return;
-	}
+	$settings = \PoweredCache\Utils\get_settings();
 
-	if ( true !== powered_cache_get_option( 'enable_page_caching' ) ) {
+	if ( ! $settings['enable_page_cache'] ) {
+
+		$settings_page = POWERED_CACHE_IS_NETWORK ? network_admin_url( 'admin.php?page=powered-cache#basic-options' ) : admin_url( 'admin.php?page=powered-cache#basic-options' );
+
+		/* translators: %s: Powered Cache settings page URL */
+		$message = sprintf( __( '<strong>Powered Cache:</strong> Page caching needs to be activated in order to speed up your website. Please activate it on <a href="%s">settings page</a>', 'powered-cache' ), esc_url( $settings_page ) );
 		?>
 		<div class="notice notice-warning">
 			<p>
-				<?php
-				printf(
-					'<strong>%1$s:</strong> %2$s <a href="%3$s">%4$s</a>',
-					esc_html__( 'Important', 'powered-cache' ),
-					esc_html__( 'please enable page caching on the Powered Cache', 'powered-cache' ),
-					esc_url( admin_url( 'admin.php?page=powered-cache' ) ),
-					esc_html__( 'settings page', 'powered-cache' )
-				);
-				?>
+				<?php echo wp_kses_post( $message ); ?>
 			</p>
 		</div>
 		<?php
 		return;
 	}
 
+	if ( file_exists( untrailingslashit( WP_CONTENT_DIR ) . '/advanced-cache.php' ) ) {
+		$modify_time = filemtime( untrailingslashit( WP_CONTENT_DIR ) . '/advanced-cache.php' );
+		if ( time() - absint( $modify_time ) < 10 ) {
+			/**
+			 * Modify drop-ins and can take ~5 seconds to place the configuration and it might cause misinformation to the user
+			 * So, suppress the error message here when doing something related to settings.
+			 *
+			 * This wouldn't be an issue if there is no immediate redirection right after saving the settings. However, in that case
+			 * the admin bar items won't be properly utilized unless refreshing the page
+			 */
+			return;
+		}
+	}
+
 	$err = array();
 
 	if ( ! defined( 'WP_CACHE' ) || true !== WP_CACHE ) {
-		$err['wp_cache'] = sprintf( __( '<code>%s</code> is not in wp-config.php.', 'powered-cache' ), 'define("WP_CACHE", true);' );
+		/* translators: %s: WP_CACHE definition*/
+		$err['wp_cache'] = sprintf( __( '<code>%s</code> is not found in wp-config.php.', 'powered-cache' ), 'define("WP_CACHE", true);' );
 	}
 
-	if ( ! defined( 'POWERED_CACHE_PAGE_CACHING' ) || true !== POWERED_CACHE_PAGE_CACHING ) {
-		$err['powered_cache_page_cache'] = sprintf( __( '<code>%s</code> file was edited or deleted. You can re-create correct configuration files by saving settings.', 'powered-cache' ), basename( WP_CONTENT_DIR ) . '/advanced-cache.php' );
+	if ( defined( 'WP_CACHE' ) && WP_CACHE && ( ! defined( 'POWERED_CACHE_PAGE_CACHING' ) || true !== POWERED_CACHE_PAGE_CACHING ) ) {
+		/* translators: %s: advanced-cache.php drop-in path */
+		$err['powered_cache_page_cache'] = sprintf( __( '<code>%s</code> file was edited or deleted. You can recreate the correct configuration files by saving Powered Cache settings.', 'powered-cache' ), basename( WP_CONTENT_DIR ) . '/advanced-cache.php' );
 	}
 
-	if ( defined( 'POWERED_CACHE_PAGE_CACHING_HAS_PROBLEM' ) && true === POWERED_CACHE_PAGE_CACHING_HAS_PROBLEM ) {
+	if ( defined( 'POWERED_CACHE_PAGE_CACHING_HAS_PROBLEM' ) && POWERED_CACHE_PAGE_CACHING_HAS_PROBLEM ) {
+		/* translators: %s: page-cache.php drop-in path */
 		$err['powered_cache_page_cache_has_problem'] = sprintf( __( 'Powered Cache could not access dropin. Please check <code>%s</code> exist and accessible on your server.', 'powered-cache' ), POWERED_CACHE_DROPIN_DIR . 'page-cache.php' );
 	}
 
@@ -151,73 +157,84 @@ function powered_cache_advanced_cache_notices() {
 		return;
 	}
 
-	if ( ! current_user_can( apply_filters( 'powered_cache_cap', 'manage_options' ) ) ) {
+	// dont show when settings just saved
+	if ( did_action( 'powered_cache_settings_saved' ) ) {
+		return;
+	}
+
+	$capability = POWERED_CACHE_IS_NETWORK ? 'manage_network' : 'manage_options';
+
+	if ( ! current_user_can( $capability ) ) {
 		return;
 	}
 	?>
 	<div class="error">
-		<h2><?php esc_html_e( 'Powered Cache', 'powered-cache' ); ?></h2>
-		<strong><?php esc_html_e( 'Page Caching feature could not work because:', 'powered-cache' ); ?></strong>
-
+		<p>
+			<strong><?php esc_html_e( 'Page Cache is not working, because:', 'powered-cache' ); ?></strong>
+		</p>
 		<?php foreach ( $err as $error_msg ) : ?>
-			<p><?php echo $error_msg; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
+			<p><?php echo wp_kses_post( $error_msg ); ?></p>
 		<?php endforeach; ?>
 	</div>
 	<?php
 
 }
 
-add_action( 'admin_notices', 'powered_cache_object_cache_notices' );
 
 /**
  * Display object cache broken msg
  *
  * @since 1.0
  */
-function powered_cache_object_cache_notices() {
-	$object_cache_backends = Powered_Cache_Admin_Helper::object_cache_dropins();
-	$object_cache_driver   = powered_cache_get_option( 'object_cache' );
+function maybe_display_object_cache_notices() {
+	$settings = \PoweredCache\Utils\get_settings();
+
+	$object_cache_backends = get_object_cache_dropins();
+	$object_cache_driver   = $settings['object_cache'];
 	$object_cache_dropin   = untrailingslashit( WP_CONTENT_DIR ) . '/object-cache.php';
 
-	if ( ! current_user_can( apply_filters( 'powered_cache_cap', 'manage_options' ) ) ) {
+	if ( ! can_configure_object_cache() ) {
 		return;
+	}
+
+	// dont show when settings just saved
+	if ( did_action( 'powered_cache_settings_saved' ) ) {
+		return;
+	}
+
+	if ( file_exists( $object_cache_dropin ) ) {
+		$modify_time = filemtime( $object_cache_dropin );
+		if ( time() - absint( $modify_time ) < 10 ) { // just created
+			return;
+		}
 	}
 
 	// first check object cache file exist
 	if ( isset( $object_cache_backends[ $object_cache_driver ] ) && ! file_exists( $object_cache_dropin ) ) {
+		/* translators: %s: object cache dropin path */
+		$message = sprintf( __( 'The object cache file seems missing. Please check <code>%s</code> exist, writable and accessible on your server.', 'powered-cache' ), $object_cache_dropin );
 		?>
 		<div class="error">
-			<p><strong><?php echo esc_html__( 'Powered Cache:', 'powered-cache' ); ?></strong>
-				<?php
-				printf(
-					'%1$s <code>%2$s</code> %3$s',
-					esc_html__( 'Phew! It looks your object cache file missing. Please check', 'powered-cache' ),
-					esc_attr( $object_cache_dropin ),
-					esc_html__( 'exist, writable and accessible on your server.', 'powered-cache' )
-				);
-				?>
+			<p><strong><?php esc_html_e( 'Powered Cache:', 'powered-cache' ); ?></strong>
+				<?php echo wp_kses_post( $message ); ?>
 			</p>
 		</div>
 		<?php
 		return;
 	}
 
-	if ( defined( 'POWERED_OBJECT_CACHE_HAS_PROBLEM' ) && true === POWERED_OBJECT_CACHE_HAS_PROBLEM ) {
+	if ( defined( 'POWERED_OBJECT_CACHE_HAS_PROBLEM' ) && POWERED_OBJECT_CACHE_HAS_PROBLEM ) {
+		$broken_file = '';
+
 		if ( isset( $object_cache_backends[ $object_cache_driver ] ) ) {
 			$broken_file = $object_cache_backends[ $object_cache_driver ];
 		}
-
+		/* translators: %s: object cache dropin path */
+		$message = sprintf( __( 'The object cache file couldn\'t be loaded. Please check <code>%s</code> exist and accessible on your server.', 'powered-cache' ), $broken_file );
 		?>
 		<div class="error">
-			<p><strong><?php echo esc_html__( 'Powered Cache:', 'powered-cache' ); ?></strong>
-				<?php
-				printf(
-					'%1$s <code>%2$s</code> %3$s',
-					esc_html__( 'Powered Cache could not access object cache backend. Please check', 'powered-cache' ),
-					esc_attr( $broken_file ),
-					esc_html__( 'exist and accessible on your server.', 'powered-cache' )
-				);
-				?>
+			<p><strong><?php esc_html_e( 'Powered Cache:', 'powered-cache' ); ?></strong>
+				<?php echo wp_kses_post( $message ); ?>
 			</p>
 		</div>
 		<?php
@@ -225,34 +242,48 @@ function powered_cache_object_cache_notices() {
 
 }
 
-add_action( 'admin_notices', 'powered_cache_maybe_htaccess_warning' );
-
 /**
  * Notices for the .htaccess
  *
  * @since 1.2
  */
-function powered_cache_maybe_htaccess_warning() {
+function maybe_display_htaccess_notice() {
 	global $is_apache;
-
-	if ( true !== powered_cache_get_option( 'configure_htaccess' ) ) {
-		return;
-	}
 
 	if ( ! $is_apache ) {
 		return;
 	}
 
-	if ( ! current_user_can( apply_filters( 'powered_cache_cap', 'manage_options' ) ) ) {
+	$settings = \PoweredCache\Utils\get_settings();
+
+	if ( ! $settings['auto_configure_htaccess'] ) {
+		return;
+	}
+
+	if ( ! can_configure_htaccess() ) {
+		return;
+	}
+
+	// dont show when settings just saved
+	if ( did_action( 'powered_cache_settings_saved' ) ) {
 		return;
 	}
 
 	$htaccess_file = get_home_path() . '.htaccess';
-	$message       = '';
+
+	if ( file_exists( $htaccess_file ) ) {
+		$modify_time = filemtime( $htaccess_file );
+		if ( time() - absint( $modify_time ) < 10 ) { // just modified
+			return;
+		}
+	}
+
+	$message = '';
+
 	if ( ! file_exists( $htaccess_file ) ) {
-		$message = sprintf( __( 'We can\'t find <code>%1$s</code> file on your server. Please create a new <code>.htaccess</code> file. <a href="%2$s">Codex</a> might help!.', 'powered-cache' ), '.htaccess', 'https://codex.wordpress.org/htaccess' );
+		$message = __( 'The <code>.htaccess</code> couldn\'t be found on your server. Please create a new <code>.htaccess</code> file. (<a href="https://wordpress.org/support/article/htaccess/" target="_blank" rel="noopener">?</a>)', 'powered-cache' );
 	} elseif ( ! is_writeable( $htaccess_file ) ) {
-		$message = sprintf( __( 'Oh no! It looks your <code>%s</code> file is not writable. Please make sure it is writable by the web server. Your website will much more faster when configured for Powered Cache.', 'powered-cache' ), '.htaccess' );
+		$message = __( 'Oh no! It looks <code>.htaccess</code> file is not writable. Please make sure it is writable by the application server. Your website will be much faster when .htaccess is configured for Powered Cache.', 'powered-cache' );
 	}
 
 	if ( empty( $message ) ) {
@@ -262,11 +293,10 @@ function powered_cache_maybe_htaccess_warning() {
 	?>
 
 	<div class="error">
-		<p><strong><?php echo esc_html__( 'Powered Cache:', 'powered-cache' ); ?></strong>
+		<p><strong><?php esc_html_e( 'Powered Cache:', 'powered-cache' ); ?></strong>
 			<?php echo wp_kses_post( $message ); ?>
 		</p>
 	</div>
 
 	<?php
-
 }

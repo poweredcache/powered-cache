@@ -1,57 +1,94 @@
-Powered Cache [![Build Status](https://travis-ci.org/skopco/powered-cache.svg?branch=master)](https://travis-ci.org/skopco/powered-cache)
+Powered Cache 
 =============
 
-Comprehensive caching and performance plugin for WordPress.
+![Support Level](https://img.shields.io/badge/support-active-green.svg) [![Release Version](https://img.shields.io/wordpress/plugin/v/powered-cache?label=Release%20Version)](https://github.com/skopco/powered-cache/releases) ![WordPress tested up to version](https://img.shields.io/wordpress/plugin/tested/powered-cache?label=WordPress) ![Required PHP Version](https://img.shields.io/wordpress/plugin/required-php/powered-cache?label=PHP)
+
+The most powerful caching and performance suite for WordPress. Easily Improve PageSpeed & Web Vitals Score.
 
 __Plugin Website__: [poweredcache.com](https://poweredcache.com)  
+__Docs__: [poweredcache.com](https://poweredcache.com)  
+__Developer Docs__: [https://poweredcache.github.io/docs/](https://poweredcache.github.io/powered-cache/)  
 
 ### Features
 
-- Simple and easily configurable. You can import and export settings via one click.
-- Page Caching
-- Object Caching (redis, memcached, memcache)
-- Support mod_rewrite (automatic .htaccess rules)
-- Mobile support (separate cache file for mobile)
-- Logged-in user cache
-- SSL support
-- CDN support
-- Cache Preloading
-- Page cache rule management
-- Gzip support
-- Built-in extensions: Lazy Load, Preloader, Cloudflare
-- Multisite support
-- Smart cache purging (automatic cache purging on post update/publish)
-- Query string removal from CSS & JS resources
+- __Simple and easily configurable__: You can import and export settings with a single click.
+
+- __Page Caching__: Lightning-fast pages. (Trusted by enterprise grade websites)
+
+- __Object Caching__: Speedup dynamic pageviews. It supports Redis, Memcached, Memcache and APCu.
+
+- __Page Cache Rule Management__: Need advanced caching configurations? Got it covered under advanced options. [Details](https://docs.poweredcache.com/advanced-options/)
+
+- __File Optimization__: Easily minify and combine CSS, JS files.
+
+- __Database Optimization__: Keep redundant data away from your database.
+
+- __Media Optimization__: Enable Lazy Load, control WordPress embeds, remove emoji scripts.
+
+- __Combine Google Fonts__: Combine Google Fonts URLs into a single URL and optimize the font loading.
+
+- __Rewrite Support__: Automatic .htaccess configuration for ideal setup. The cached file can be served without executing PHP at all.
+
+- __Mobile Support__: Separate cache file for mobile, in case want to use the separate theme for the mobile.
+
+- __Logged-in User Cache__: If you have user-specific content or running a membership site, it creates cache for user.
+
+- __CDN Integration__: Integrate your website with CDN, you just need to enter CNAME(s) and corresponding zones.
+
+- __Cache Preloading__: Creating cached pages in advance. This feature will keep caching layer warm.
+
+- __Prefetched DNS__: Resolve domain names before resources get requested. Reduce DNS lookup time.
+
+- __Gzip Support__: Compress caching files with gzip.
+ 
+- __Built-in Extensions__: Cloudflare, Heartbeat
+
+- __Multisite Support__: You can activate network-wide or site basis. It's compatible with domain mapping.
+
+- __Smart Cache Purging__: Only purge the cache that is affected by the content changes.
+
+- __Compatible__: Tested and compatible for popular plugins.
+
+- __Battle Tested__: Trusted by enterprise-grade websites.
 
 ### Built-in extensions
 
-Built-in extensions (aka add-ons) come with Powered Cache to provide more functionality.
+Built-in extensions (aka add-ons) shipped with Powered Cache to provide more functionality.
 
-[__Cloudflare__](https://poweredcache.com/extensions/cloudflare) – Cloudflare compatibility and functionalities ***Free***  
-[__Lazy Load__](https://poweredcache.com/extensions/lazy-load/) – Loads images and iframes only when visible to the user ***Free***  
-[__Preload__](https://poweredcache.com/extensions/preload/) – Preload posts before actual user request page  ***Free***  
-[__Varnish__](https://poweredcache.com/extensions/varnish/) – Varnish cache purging ***Premium only***  
-[__Minifier__](https://poweredcache.com/extensions/minifier/) – Reduce size of HTML,CSS,JS files by compressing and concatenating them. ***Premium only***  
-[__Remote Cron__](https://poweredcache.com/extensions/remote-cron/) – Trigger WordPress cron remotely ***Premium only***  
+- __Cloudflare__: Cloudflare compatibility and functionalities ***Free***  
 
+- __Heartbeat__: Manage the frequency of the WordPress Heartbeat API. ***Free***  
 
-> <strong>Premium Support</strong><br>
-> We don't always provide active support on the WordPress.org forums. Premium (directly) support is available to people who bought the [Powered Cache Premium](https://poweredcache.com/) only.
+- __Varnish__: Varnish cache purging ***Premium only***  
+
+- __Google Tracking__: Powered Cache will host Google scripts on your server to help satisfy the PageSpeed recommendation. ***Premium only***  
+
+- __Facebook Tracking__: Powered Cache will host Google scripts on your server to help satisfy the PageSpeed recommendation. ***Premium only***  
 
 
 ### Premium Features   
-- All current and future premium extensions
-- Get benefits from our bots like regular cron checks, preloading, etc...
-- WP-CLI commands ready to save your time
-- We are providing top-notch premium support to premium users
-- No Ads on plugin page
 
+Here is a list of the amazing features included in Powered Cache Premium:
+
+- Sitemap Preloading
+- Scheduled Database cleanups.
+- Varnish extension.
+- Google tracking extension.
+- Facebook tracking extension.
+- WP-CLI commands ready to save your time.
+- Top-notch premium support.
+- No Ads on plugin page.
+
+By upgrading to Powered Cache Premium you also get access to one-on-one help from our knowledgeable support team and our extensive documentation site.
+
+**[Learn more about Powered Cache Premium](https://poweredcache.com/)**
 
 ## Contributing & Bug Report  
-Bug reports and pull requests are welcome on [Github](https://github.com/skopco/powered-cache). Some of our features are premium only, please consider before sending PR.
+Bug reports and pull requests are welcome on [Github](https://github.com/poweredcache/powered-cache). Some of our features are premium only, please consider before sending PR.
 
 ## Documentation  
-Our documentation can be found on [GitHub](https://github.com/skopco/powered-cache/wiki)
+__Documentation site__: [https://docs.poweredcache.com/](https://docs.poweredcache.com/)    
+__Developer Docs :__ [https://poweredcache.github.io/docs/](https://poweredcache.github.io/powered-cache/)  (***Hook referance***)   
 
 
 ## Setup  
@@ -64,12 +101,16 @@ Our documentation can be found on [GitHub](https://github.com/skopco/powered-cac
 We have used code or ideas from the following projects:
 
 * [Simple Cache](https://github.com/tlovett1/simple-cache) for page cache drop-in.
-* [WP Super Cache](https://github.com/Automattic/wp-super-cache) for local preloading concept
-* [bj-lazy-load](https://github.com/Angrycreative/bj-lazy-load) for lazy load extension
-* [minify](https://github.com/mrclay/minify) for concatenation and minification
+* [WP Background Processing](https://github.com/deliciousbrains/wp-background-processing) for performing async tasks.
+* [bj-lazy-load](https://github.com/Angrycreative/bj-lazy-load) for lazy load feature.
+* [minify](https://github.com/matthiasmullie/minify) for concatenation and minification
+* [nginx-http-concat](https://github.com/Automattic/nginx-http-concat) for concatenation.
 * [varnish-http-purge](https://github.com/Ipstenu/varnish-http-purge) for varnish extension
 * [Memcached Object Cache](https://wordpress.org/plugins/memcached/) for memcache drop-in.
 * [Memcached Redux](https://github.com/Ipstenu/memcached-redux/) for memcached drop-in.
 * [WP Redis](https://wordpress.org/plugins/wp-redis/) for redis drop-in.
-* [APCu](https://wordpress.org/plugins/apcu/) for APCu drop-in.
+* [APCu](https://github.com/l3rady/WordPress-APCu-Object-Cache) for APCu drop-in.
+* [10up Toolkit](https://github.com/10up/10up-toolkit) for building tools.
+* [Shared UI](https://github.com/wpmudev/shared-ui) for admin UI.
+* [Mozart](https://github.com/coenjacobs/mozart) for wrapping dependencies.
 

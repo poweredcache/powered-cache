@@ -1,7 +1,29 @@
+node_modules
+bower_components
+release
+vendor
+.idea
+*.log
+
+# Project Files
+
+
+# Editors
+*.esproj
+*.tmproj
+*.tmproject
+tmtags
+.*.sw[a-z]
+*.un~
+Session.vim
+*.swp
+
+# Mac OSX
 .DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
 Thumbs.db
-wp-cli.local.yml
-node_modules/
-*.zip
-*.tar.gz
-vendor/
+Desktop.ini

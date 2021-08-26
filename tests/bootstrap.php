@@ -1,34 +1,31 @@
 <?php
-/**
- * PHPUnit bootstrap file
- *
- * @package Powered_Cache
- */
-
-
-$_tests_dir = getenv( 'WP_TESTS_DIR' );
-if ( ! $_tests_dir ) {
-	$_tests_dir = '/tmp/wordpress-tests-lib';
+if ( ! defined( 'PROJECT' ) ) {
+	define( 'PROJECT', __DIR__ . '/../includes/' );
 }
 
-// Give access to tests_add_filter() function.
-require_once $_tests_dir . '/includes/functions.php';
-
-if ( ! defined( 'FS_CHMOD_DIR' ) && defined( 'ABSPATH' ) ) {
-	define( 'FS_CHMOD_DIR', ( fileperms( ABSPATH ) & 0777 | 0755 ) );
+if ( ! defined( 'POWERED_CACHE_DIR' ) ) {
+	define( 'POWERED_CACHE_DIR', __DIR__ . '/' );
 }
 
-if ( ! defined( 'FS_CHMOD_FILE' ) && defined( 'ABSPATH' ) ) {
-	define( 'FS_CHMOD_FILE', ( fileperms( ABSPATH . 'index.php' ) & 0777 | 0644 ) );
+// Place any additional bootstrapping requirements here for PHP Unit.
+if ( ! defined( 'WP_LANG_DIR' ) ) {
+	define( 'WP_LANG_DIR', 'lang_dir' );
+}
+if ( ! defined( 'POWERED_CACHE_PATH' ) ) {
+	define( 'POWERED_CACHE_PATH', 'path' );
 }
 
-/**
- * Manually load the plugin being tested.
- */
-function _manually_load_plugin() {
-	require dirname( dirname( __FILE__ ) ) . '/powered-cache.php';
+if ( ! file_exists( __DIR__ . '/../vendor/autoload.php' ) ) {
+	throw new PHPUnit_Framework_Exception(
+		'ERROR' . PHP_EOL . PHP_EOL .
+		'You must use Composer to install the test suite\'s dependencies!' . PHP_EOL
+	);
 }
-tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 
-// Start up the WP testing environment.
-require $_tests_dir . '/includes/bootstrap.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+
+require_once __DIR__ . '/../tests/phpunit/test-tools/TestCase.php';
+
+WP_Mock::setUsePatchwork( true );
+WP_Mock::bootstrap();
+WP_Mock::tearDown();

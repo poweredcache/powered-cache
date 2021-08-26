@@ -2,51 +2,80 @@
 /**
  * Uninstall Powered Cache
  * Deletes all plugin related data and configurations
+ *
+ * @package PoweredCache
  */
+
+// phpcs:disable WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+// phpcs:disable WordPress.WhiteSpace.PrecisionAlignment.Found
 
 // Exit if accessed directly.
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
-include_once( 'powered-cache.php' );
+require_once 'powered-cache.php';
 
-global $powered_cache_fs;
+// flush cache
+\PoweredCache\Utils\powered_cache_flush();
 
-// clean cache
-powered_cache_flush();
+if ( is_multisite() ) {
+	$sites = get_sites();
+	foreach ( $sites as $site ) {
+		switch_to_blog( $site->blog_id );
+		\PoweredCache\Utils\log( sprintf( 'Uninstalling site %s', $site->blog_id ) );
+		powered_cache_uninstall_site();
+		restore_current_blog();
+	}
+} else {
+	\PoweredCache\Utils\log( sprintf( 'Uninstalling...' ) );
+	powered_cache_uninstall_site();
+}
 
-// delete settings
-delete_option( 'powered_cache_settings' );
-// delete preloader runtime option, just in case
-delete_option( 'powered_cache_preload_runtime_option' );
-
-// turn off page cache
-Powered_Cache_Config::factory()->define_wp_cache( false );
+\PoweredCache\Config::factory()->define_wp_cache( false );
 
 // delete object cache file
-if ( file_exists( untrailingslashit( WP_CONTENT_DIR ) . '/object-cache.php' ) ) {
-	$powered_cache_fs->delete( untrailingslashit( WP_CONTENT_DIR ) . '/object-cache.php' );
+if ( file_exists( untrailingslashit( WP_CONTENT_DIR ) . '/object-cache.php' )
+	 && false !== strpos( file_get_contents( $file ), 'POWERED_OBJECT_CACHE' ) ) {
+	\PoweredCache\Utils\log( sprintf( 'Removing: %s', 'object-cache.php' ) );
+
+	unlink( untrailingslashit( WP_CONTENT_DIR ) . '/object-cache.php' );
 }
 
 // delete advanced cache file
 if ( file_exists( untrailingslashit( WP_CONTENT_DIR ) . '/advanced-cache.php' ) ) {
-	$powered_cache_fs->delete( untrailingslashit( WP_CONTENT_DIR ) . '/advanced-cache.php' );
+	\PoweredCache\Utils\log( sprintf( 'Removing: %s', 'advanced-cache.php' ) );
+
+	unlink( untrailingslashit( WP_CONTENT_DIR ) . '/advanced-cache.php' );
 }
 
 // delete cache directory
-if ( file_exists( powered_cache_get_cache_dir() ) ) {
-	$powered_cache_fs->delete( powered_cache_get_cache_dir(), true );
+if ( file_exists( \PoweredCache\Utils\get_cache_dir() ) ) {
+	\PoweredCache\Utils\log( sprintf( 'Removing dir: %s', \PoweredCache\Utils\get_cache_dir() ) );
+	\PoweredCache\Utils\remove_dir( \PoweredCache\Utils\get_cache_dir() );
 }
 
 // delete configuration files
 if ( file_exists( WP_CONTENT_DIR . '/pc-config' ) ) {
-	$powered_cache_fs->delete( WP_CONTENT_DIR . '/pc-config', true );
+	\PoweredCache\Utils\log( 'Removing config dir...' );
+	\PoweredCache\Utils\remove_dir( WP_CONTENT_DIR . '/pc-config' );
 }
 
+/**
+ * Uninstall Powered Cache
+ *
+ * @since 2.0
+ */
+function powered_cache_uninstall_site() {
+	// delete network settings
+	delete_site_option( \PoweredCache\Constants\SETTING_OPTION );
+	delete_site_option( \PoweredCache\Constants\DB_VERSION_OPTION_NAME );
 
-// remove cron tasks
-wp_clear_scheduled_hook( 'powered_cache_preload_hook' );
-wp_clear_scheduled_hook( 'powered_cache_preload_child_process' );
-wp_clear_scheduled_hook( 'powered_cache_purge_cache' );
+	// delete site settings
+	delete_option( \PoweredCache\Constants\SETTING_OPTION );
+	delete_option( \PoweredCache\Constants\DB_VERSION_OPTION_NAME );
 
+	// remove cron tasks
+	wp_clear_scheduled_hook( \PoweredCache\Constants\PURGE_CACHE_CRON_NAME );
+	wp_clear_scheduled_hook( \PoweredCache\Constants\PURGE_FO_CRON_NAME );
+}
