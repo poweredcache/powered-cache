@@ -21,7 +21,7 @@ Powered Cache Free contains everything that you need to optimize your website pe
 
 __Simple and easily configurable__: You can import and export settings with a single click.
 
-__Page Caching__: Lightning-fast pages. (Trusted by enterprise grade websites)
+__Page Caching__: Lightning-fast pages. (Trusted by enterprise-grade websites)
 
 __Object Caching__: Speedup dynamic pageviews. It supports Redis, Memcached, Memcache and APCu.
 
@@ -41,7 +41,7 @@ __Mobile Support__: Separate cache file for mobile, in case want to use the sepa
 
 __Logged-in User Cache__: If you have user-specific content or running a membership site, it creates cache for user.
 
-__CDN Integration__: Integrate your website with CDN, you just need to enter CNAME(s) and corresponding zones.
+__CDN Integration__: Integrate your website with CDN; you just need to enter CNAME(s) and corresponding zones.
 
 __Cache Preloading__: Creating cached pages in advance. This feature will keep caching layer warm.
 
@@ -55,7 +55,7 @@ __Multisite Support__: You can activate network-wide or site basis. It's compati
 
 __Smart Cache Purging__: Only purge the cache that is affected by the content changes.
 
-__Compatible__: Tested and compatible for popular plugins.
+__Compatible__: Tested and compatible with popular plugins.
 
 __Battle Tested__: Trusted by enterprise-grade websites.
 
@@ -77,9 +77,9 @@ Here is a list of the amazing features included in Powered Cache Premium:
 - Varnish extension.
 - Google tracking extension.
 - Facebook tracking extension.
-- WP-CLI commands ready to save your time.
+- WP-CLI commands are ready to save your time.
 - Top-notch premium support.
-- No Ads on plugin page.
+- No Ads on the plugin page.
 
 By upgrading to Powered Cache Premium you also get access to one-on-one help from our knowledgeable support team and our extensive documentation site.
 
