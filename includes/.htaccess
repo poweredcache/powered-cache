@@ -1,0 +1,10 @@
+# Allow to execute file optimizer
+<Files "file-optimizer.php">
+	<IfModule mod_authz_core.c>
+	        Require all granted
+	</IfModule>
+	<IfModule !mod_authz_core.c>
+	        Order deny,allow
+	        Allow from all
+	</IfModule>
+</Files>
