@@ -501,7 +501,7 @@ $settings = \PoweredCache\Utils\get_settings();
 												rows="5"
 										><?php echo esc_textarea( $settings['purge_additional_pages'] ); ?></textarea>
 										<span id="purge_additional_pages_description" class="sui-description">
-											<?php esc_html_e( 'Powered Cache smart enough to purge only necessary pages during the post changes, however sometimes particular pages need to purge. (eg. the pages that use custom shortcode)', 'powered-cache' ); ?>
+											<?php esc_html_e( 'Powered Cache is smart enough to purge only necessary pages during the post changes, however sometimes particular pages need to purge. (eg. the pages that use custom shortcode)', 'powered-cache' ); ?>
 											(<a href="<?php echo esc_url( get_doc_url( '/advanced-options/', 'purge-additional-pages' ) ); ?>" target="_blank">?</a>)
 										</span>
 									</div>
@@ -742,7 +742,7 @@ $settings = \PoweredCache\Utils\get_settings();
 									>
 									<span class="sui-toggle-slider" aria-hidden="true"></span>
 									<span id="js_execution_optimized_only_label" class="sui-toggle-label"><?php esc_html_e( 'Use execution method for the optimized scripts only', 'powered-cache' ); ?></span>
-									<span id="js_execution_optimized_only_description" class="sui-description"><?php esc_html_e( 'When this option turned off all JS scripts will be executed by the same way.', 'powered-cache' ); ?></span>
+									<span id="js_execution_optimized_only_description" class="sui-description"><?php esc_html_e( 'When this option is turned off all JS scripts will be executed in the same way.', 'powered-cache' ); ?></span>
 								</label>
 							</div>
 
@@ -1962,7 +1962,7 @@ $settings = \PoweredCache\Utils\get_settings();
 								<?php if ( ! is_premium() ) : ?>
 									<div class="sui-box-settings-row sui-upsell-row">
 										<div class="sui-upsell-notice" style="padding-left: 0;">
-											<p><?php esc_html_e( 'With our premium version of Powered Cache you can use Varnish extension and unluck some other speedbooster features.', 'powered-cache' ); ?><br>
+											<p><?php esc_html_e( 'With our premium version of Powered Cache you can use Varnish extension and unlock some other speedbooster features.', 'powered-cache' ); ?><br>
 												<button class="sui-button sui-button-purple" style="margin-top: 10px;"><?php esc_html_e( 'Try Premium today', 'powered-cache' ); ?></button>
 											</p>
 										</div>
@@ -2011,7 +2011,7 @@ $settings = \PoweredCache\Utils\get_settings();
 								<?php if ( ! is_premium() ) : ?>
 									<div class="sui-box-settings-row sui-upsell-row">
 										<div class="sui-upsell-notice" style="padding-left: 0;">
-											<p><?php esc_html_e( 'With our premium version of Powered Cache you can use this extension and unluck some other speedbooster features.', 'powered-cache' ); ?><br>
+											<p><?php esc_html_e( 'With our premium version of Powered Cache you can use this extension and unlock some other speedbooster features.', 'powered-cache' ); ?><br>
 												<button class="sui-button sui-button-purple" style="margin-top: 10px;"><?php esc_html_e( 'Try Premium today', 'powered-cache' ); ?></button>
 											</p>
 										</div>
@@ -2064,7 +2064,7 @@ $settings = \PoweredCache\Utils\get_settings();
 								<?php if ( ! is_premium() ) : ?>
 									<div class="sui-box-settings-row sui-upsell-row">
 										<div class="sui-upsell-notice" style="padding-left: 0;">
-											<p><?php esc_html_e( 'With our premium version of Powered Cache you can use this extension and unluck some other speedbooster features.', 'powered-cache' ); ?><br>
+											<p><?php esc_html_e( 'With our premium version of Powered Cache you can use this extension and unlock some other speedbooster features.', 'powered-cache' ); ?><br>
 												<button class="sui-button sui-button-purple" style="margin-top: 10px;"><?php esc_html_e( 'Try Premium today', 'powered-cache' ); ?></button>
 											</p>
 										</div>

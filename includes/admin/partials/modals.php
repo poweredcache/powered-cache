@@ -46,7 +46,7 @@
 					</ul>
 
 					<button id="pcmodal--powered-cache-diagnostic-test" class="sui-button sui-button-blue" aria-controls="pcmodal--powered-cache-diagnostic-progress">
-						<?php esc_html_e( 'Run Diagnastic Test', 'powered-cache' ); ?>
+						<?php esc_html_e( 'Run Diagnostic Test', 'powered-cache' ); ?>
 					</button>
 				</div>
 
