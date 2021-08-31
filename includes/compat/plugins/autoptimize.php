@@ -49,7 +49,7 @@ if ( defined( 'AUTOPTIMIZE_PLUGIN_VERSION' ) && class_exists( '\autoptimizeCache
 				<div class="sui-notice-message">
 					<span class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></span>
 					<p><?php esc_html_e( 'It seems autoptimize is activated on your site. No worries, Powered Cache works perfectly fine with autoptimize but you cannot use file optimization options that conflic with autoptimize unless you deactivate it.', 'powered-cache' ); ?><br>
-						<a class="sui-button sui-button-yellow" href="<?php echo esc_url( admin_url( '/options-general.php?page=autoptimize' ) ); ?>" style="margin-top: 10px;"><?php esc_html_e( 'Configure Autoptimize', 'powered-cahce' ); ?></a>
+						<a class="sui-button sui-button-yellow" href="<?php echo esc_url( admin_url( '/options-general.php?page=autoptimize' ) ); ?>" style="margin-top: 10px;"><?php esc_html_e( 'Configure Autoptimize', 'powered-cache' ); ?></a>
 					</p>
 				</div>
 
