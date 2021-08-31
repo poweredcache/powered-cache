@@ -92,7 +92,7 @@ class MetaBox {
 				<fieldset>
 					<legend class="screen-reader-text"><?php esc_html_e( 'Powered Cache Status', 'powered-cache' ); ?></legend>
 					<input <?php checked( $is_cache_disabled, true ); ?> type="checkbox" id="<?php echo esc_attr( POST_META_DISABLE_CACHE_KEY ); ?>" name="<?php echo esc_attr( POST_META_DISABLE_CACHE_KEY ); ?>" value="1">
-					<label for="<?php echo esc_attr( POST_META_DISABLE_CACHE_KEY ); ?>"><?php esc_html_e( 'Don\'t cache this page', 'powered-cache' ); ?></label>
+					<label for="<?php echo esc_attr( POST_META_DISABLE_CACHE_KEY ); ?>"><?php esc_html_e( 'Don\'t cache this post', 'powered-cache' ); ?></label>
 				</fieldset>
 			<?php endif; ?>
 			<?php if ( $settings['enable_lazy_load'] ) : ?>
@@ -100,7 +100,7 @@ class MetaBox {
 				<fieldset>
 					<legend class="screen-reader-text"><?php esc_html_e( 'Disable Lazy Load', 'powered-cache' ); ?></legend>
 					<input <?php checked( $is_lazyload_disabled, true ); ?> type="checkbox" id="<?php echo esc_attr( POST_META_DISABLE_LAZYLOAD_KEY ); ?>" name="<?php echo esc_attr( POST_META_DISABLE_LAZYLOAD_KEY ); ?>" value="1">
-					<label for="<?php echo esc_attr( POST_META_DISABLE_LAZYLOAD_KEY ); ?>"><?php esc_html_e( 'Skip lazy loading for this post', 'powered-cache' ); ?></label>
+					<label for="<?php echo esc_attr( POST_META_DISABLE_LAZYLOAD_KEY ); ?>"><?php esc_html_e( 'Disable lazy loading for this post', 'powered-cache' ); ?></label>
 				</fieldset>
 			<?php endif; ?>
 		</div>

@@ -26,7 +26,7 @@ const PoweredCacheMetaBox = () => {
 		>
 			{'powered_cache_disable_cache' in meta && (
 				<CheckboxControl
-					label={__("Don't cache this page", 'powered-cache')}
+					label={__("Don't cache this post", 'powered-cache')}
 					checked={disableCache}
 					onChange={() => {
 						dispatch('core/editor').editPost({
@@ -38,7 +38,7 @@ const PoweredCacheMetaBox = () => {
 
 			{'powered_cache_disable_lazyload' in meta && (
 				<CheckboxControl
-					label={__('Skip lazy loading for this post', 'powered-cache')}
+					label={__('Disable lazy loading for this post', 'powered-cache')}
 					checked={disableLazyLoad}
 					onChange={() => {
 						dispatch('core/editor').editPost({
