@@ -135,7 +135,8 @@ Yes, you just need to enable Cloudflare extension.
 Yes, we don't get any problems with Jetpack.
 
 = Is it compatible with WPML? =
-Yes, you can use on your multilingual website.
+Yes, it's compatible with [WPML](https://wpml.org/).
+
 
 = Is it compatible with ecommerce plugins? =
 Yes, you can use with WooCommerce, Easy Digital Downloads and BigCommerce. If you are using any other eCommerce plugin, just make sure dynamic pages are excluded from the cache.
