@@ -161,7 +161,7 @@ function admin_scripts() {
 	}
 
 	wp_enqueue_script(
-		'powered_cache_admin',
+		'powered-cache-admin',
 		script_url( 'admin', 'admin' ),
 		[
 			'jquery',
@@ -171,6 +171,13 @@ function admin_scripts() {
 		POWERED_CACHE_VERSION,
 		true
 	);
+
+	wp_set_script_translations(
+		'powered-cache-admin',
+		'powered-cache',
+		plugin_dir_path( POWERED_CACHE_PLUGIN_FILE ) . 'languages'
+	);
+
 }
 
 /**
@@ -186,8 +193,8 @@ function block_editor_assets() {
 	 * The post meta-box works with compat mode vice-versa...
 	 */
 	if ( version_compare( get_bloginfo( 'version' ), '5.3', '>=' ) ) {
-		wp_enqueue_script(
-			'powered_cache_admin',
+		wp_register_script(
+			'powered-cache-editor',
 			script_url( 'editor', 'admin' ),
 			[
 				'jquery',
@@ -204,6 +211,15 @@ function block_editor_assets() {
 			POWERED_CACHE_VERSION,
 			true
 		);
+
+		wp_enqueue_script( 'powered-cache-editor' );
+
+		wp_set_script_translations(
+			'powered-cache-editor',
+			'powered-cache',
+			plugin_dir_path( POWERED_CACHE_PLUGIN_FILE ) . 'languages'
+		);
+
 	}
 }
 
@@ -219,7 +235,7 @@ function admin_styles() {
 	}
 
 	wp_enqueue_style(
-		'powered_cache_admin',
+		'powered-cache-admin',
 		style_url( 'admin-style', 'admin' ),
 		[],
 		POWERED_CACHE_VERSION

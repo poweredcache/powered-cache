@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Powered Cache 2.0\n"
+"Project-Id-Version: Powered Cache 2.0.1-beta\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/powered-cache\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-08-26T10:25:09+00:00\n"
+"POT-Creation-Date: 2021-08-31T08:51:47+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: powered-cache\n"
@@ -75,7 +75,7 @@ msgid "Settings have been reset!"
 msgstr ""
 
 #: includes/admin/dashboard.php:438
-msgid "Settings has been imported!"
+msgid "Settings have been imported!"
 msgstr ""
 
 #: includes/admin/dashboard.php:439
@@ -95,7 +95,7 @@ msgid "You don't have permission to perform this action!"
 msgstr ""
 
 #: includes/admin/dashboard.php:449
-msgid "Could not flushed Cloudflare cache. Please make sure you entered the correct credentials and zone id!"
+msgid "Could not flush Cloudflare cache. Please make sure you entered the correct credentials and zone id!"
 msgstr ""
 
 #: includes/admin/dashboard.php:491
@@ -241,7 +241,7 @@ msgid "Welcome to Powered Cache Diagnostic. Running the diagnostic test helps to
 msgstr ""
 
 #: includes/admin/partials/modals.php:49
-msgid "Run Diagnastic Test"
+msgid "Run Diagnostic Test"
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:36
@@ -486,7 +486,7 @@ msgid "Enter additional pages will purged (one per line)"
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:504
-msgid "Powered Cache smart enough to purge only necessary pages during the post changes, however sometimes particular pages need to purge. (eg. the pages that use custom shortcode)"
+msgid "Powered Cache is smart enough to purge only necessary pages during the post changes, however sometimes particular pages need to purge. (eg. the pages that use custom shortcode)"
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:545
@@ -567,7 +567,7 @@ msgid "Use execution method for the optimized scripts only"
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:745
-msgid "When this option turned off all JS scripts will be executed by the same way."
+msgid "When this option is turned off all JS scripts will be executed in the same way."
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:778
@@ -988,7 +988,7 @@ msgid "Varnish IP"
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:1965
-msgid "With our premium version of Powered Cache you can use Varnish extension and unluck some other speedbooster features."
+msgid "With our premium version of Powered Cache you can use Varnish extension and unlock some other speedbooster features."
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:1966
@@ -1007,7 +1007,7 @@ msgstr ""
 
 #: includes/admin/partials/settings-page.php:2014
 #: includes/admin/partials/settings-page.php:2067
-msgid "With our premium version of Powered Cache you can use this extension and unluck some other speedbooster features."
+msgid "With our premium version of Powered Cache you can use this extension and unlock some other speedbooster features."
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:2031
@@ -1140,7 +1140,7 @@ msgstr ""
 
 #: includes/classes/MetaBox.php:95
 #: assets/js/admin/metabox.js:29
-msgid "Don't cache this page"
+msgid "Don't cache this post"
 msgstr ""
 
 #: includes/classes/MetaBox.php:101
@@ -1149,7 +1149,7 @@ msgstr ""
 
 #: includes/classes/MetaBox.php:103
 #: assets/js/admin/metabox.js:41
-msgid "Skip lazy loading for this post"
+msgid "Disable lazy loading for this post"
 msgstr ""
 
 #: includes/classes/ObjectCache.php:79

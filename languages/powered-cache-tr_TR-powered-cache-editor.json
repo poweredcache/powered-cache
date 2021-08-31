@@ -1,0 +1,26 @@
+{
+  "translation-revision-date": "2021-08-30 22:34:47+0000",
+  "generator": "GlotPress\/3.0.0-alpha.2",
+  "domain": "messages",
+  "locale_data": {
+    "messages": {
+      "": {
+        "domain": "messages",
+        "plural-forms": "nplurals=2; plural=n > 1;",
+        "lang": "tr"
+      },
+      "Disable lazy loading for this post": [
+        "Bu yaz\u0131da ge\u00e7 y\u00fcklemeyi devre d\u0131\u015f\u0131 b\u0131rak"
+      ],
+      "Don't cache this post": [
+        "Bu yaz\u0131y\u0131 \u00f6nbelle\u011fe alma"
+      ],
+      "Powered Cache": [
+        "Powered Cache"
+      ]
+    }
+  },
+  "comment": {
+    "reference": "assets\/js\/admin\/metabox.js"
+  }
+}
