@@ -708,7 +708,7 @@ function get_post_related_urls( $post_id ) {
 	// array to collect all our URLs
 	$related_urls = array();
 
-	if ( get_permalink( $post_id ) === true ) {
+	if ( get_permalink( $post_id ) ) {
 		// we're going to add a ton of things to flush.
 
 		// related category urls
