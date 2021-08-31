@@ -1,0 +1,6 @@
+<wpml-config>
+    <custom-fields>
+        <custom-field action="ignore">powered_cache_disable_cache</custom-field>
+        <custom-field action="ignore">powered_cache_disable_lazyload</custom-field>
+    </custom-fields>
+</wpml-config>
