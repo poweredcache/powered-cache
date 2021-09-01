@@ -11,12 +11,17 @@ const { registerPlugin } = wp.plugins;
  */
 const PoweredCacheMetaBox = () => {
 	const meta = useSelect((select) => select('core/editor').getEditedPostAttribute('meta'));
-	const disableCache = meta.powered_cache_disable_cache || false;
-	const disableLazyLoad = meta.powered_cache_disable_lazyload || false;
+
+	if (!meta) {
+		return null;
+	}
 
 	if (!('powered_cache_disable_cache' in meta) && !('powered_cache_disable_lazyload' in meta)) {
 		return null; // nothing to control
 	}
+
+	const disableCache = meta.powered_cache_disable_cache || false;
+	const disableLazyLoad = meta.powered_cache_disable_lazyload || false;
 
 	return (
 		<PluginDocumentSettingPanel
