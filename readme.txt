@@ -3,7 +3,7 @@ Contributors:  poweredcache, skopco, m_uysl
 Tags: powered cache, web vitals, page speed, optimization, cdn, cache, caching, object cache, minify
 Requires at least:  5.0
 Tested up to:  5.8
-Stable tag:  2.0
+Stable tag:  2.0.1
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -167,31 +167,11 @@ Yes, it’s compatible with PHP 8+
 
 == Changelog ==
 
-= 2.0 =
-- The vast majority of the codebase has been refactored.
-- Revamped UI.
-- Increased compatibility with 3rd party plugins.
-- Increased multisite and domain mapping compatibility.
-- New Feature: Control caching and lazy load status through the editor.
-- New Feature: Page cache can create a separate cache based on the varied cookie matches.
-- Redis drop-in updated.
-- APCu drop-in updated. (switched to another drop-in)
-- Memcache drop-in updated. (Requires PHP 5.6.20 at minimum)
-- Improved: Accepted query strings recognition.
-- Improved: Deletion of expired cache.
-- New Feature: File Optimization - minify/combine CSS, JS, Google Fonts easily.
-- New Feature: Media Optimization -  Control lazyload, WordPress embeds and emoji scripts.
-- New Feature: Database Optimization -  clears out all of the unnecessary data.
-- Removed: Remove query string feature, no longer necessary.
-- Removed: SSL Cache option. It will automatically configure the caching for both HTTP/HTTPS.
-- Removed: Preloader extension. (consolidated into Preload feature)
-- Removed: Minifier extension. (consolidated into File Optimization)
-- Removed: Lazy-load extension. (consolidated into Media Optimization)
-- Updated: Cloudflare Extension. Enter Zone ID without listing all domains.
-- New Feature: Heartbeat Extension. Manage the frequency of the WordPress Heartbeat API.
-- Updated: File export/import format. (now it uses json)
-- Tested with WordPress 5.8 and Multisite.
-- Several bug fixes and improvements.
+= 2.0.1 =
+- Fix: Smart cache purge on post update.
+- Localization improvements: Set script localization correctly.
+- Improved WPML compatibility.
+- Added `.htaccess` execution rule for file optimizer.
 
 Detailed changelog located in [changelog page](https://poweredcache.com/changelog)
 
