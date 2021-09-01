@@ -3,7 +3,7 @@ Contributors:  poweredcache, skopco, m_uysl
 Tags: powered cache, web vitals, page speed, optimization, cdn, cache, caching, object cache, minify
 Requires at least:  5.0
 Tested up to:  5.8
-Stable tag:  2.0.1
+Stable tag:  2.0.2
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -166,6 +166,9 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 2.0.2 =
+- Hotfix: don't break block editor on reusable blocks
 
 = 2.0.1 =
 - Fix: Smart cache purge on post update.

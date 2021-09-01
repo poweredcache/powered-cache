@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Powered Cache 2.0.1\n"
+"Project-Id-Version: Powered Cache 2.0.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/powered-cache\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-09-01T09:38:28+00:00\n"
+"POT-Creation-Date: 2021-09-01T11:34:20+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: powered-cache\n"
@@ -19,7 +19,7 @@ msgstr ""
 #: includes/admin/dashboard.php:403
 #: includes/admin/partials/settings-page.php:38
 #: includes/classes/MetaBox.php:64
-#: assets/js/admin/metabox.js:24
+#: assets/js/admin/metabox.js:29
 msgid "Powered Cache"
 msgstr ""
 
@@ -1139,7 +1139,7 @@ msgid "Powered Cache Status"
 msgstr ""
 
 #: includes/classes/MetaBox.php:95
-#: assets/js/admin/metabox.js:29
+#: assets/js/admin/metabox.js:34
 msgid "Don't cache this post"
 msgstr ""
 
@@ -1148,7 +1148,7 @@ msgid "Disable Lazy Load"
 msgstr ""
 
 #: includes/classes/MetaBox.php:103
-#: assets/js/admin/metabox.js:41
+#: assets/js/admin/metabox.js:46
 msgid "Disable lazy loading for this post"
 msgstr ""
 
