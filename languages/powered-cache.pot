@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Powered Cache 2.0.1-beta\n"
+"Project-Id-Version: Powered Cache 2.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/powered-cache\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-08-31T08:51:47+00:00\n"
+"POT-Creation-Date: 2021-09-01T09:38:28+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: powered-cache\n"
@@ -1174,6 +1174,10 @@ msgstr ""
 
 #: includes/compat/plugins/autoptimize.php:51
 msgid "It seems autoptimize is activated on your site. No worries, Powered Cache works perfectly fine with autoptimize but you cannot use file optimization options that conflic with autoptimize unless you deactivate it."
+msgstr ""
+
+#: includes/compat/plugins/autoptimize.php:52
+msgid "Configure Autoptimize"
 msgstr ""
 
 #: includes/utils.php:343
