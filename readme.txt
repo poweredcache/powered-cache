@@ -23,7 +23,7 @@ __Simple and easily configurable__: You can import and export settings with a si
 
 __Page Caching__: Lightning-fast pages. (Trusted by enterprise-grade websites)
 
-__Object Caching__: Speedup dynamic pageviews. It supports Redis, Memcached, Memcache and APCu.
+__Object Caching__: Speed up dynamic pageviews. It supports Redis, Memcached, Memcache, and APCu.
 
 __Page Cache Rule Management__: Need advanced caching configurations? Got it covered under advanced options. [Details](https://docs.poweredcache.com/advanced-options/)
 
@@ -35,11 +35,11 @@ __Media Optimization__: Enable Lazy Load, control WordPress embeds, remove emoji
 
 __Combine Google Fonts__: Combine Google Fonts URLs into a single URL and optimize the font loading.
 
-__Rewrite Support__: Automatic .htaccess configuration for ideal setup. The cached file can be served without executing PHP at all.
+__Rewrite Support__: Automatic .htaccess configuration for the ideal setup. The cached file can be served without executing PHP at all.
 
 __Mobile Support__: Separate cache file for mobile, in case want to use the separate theme for the mobile.
 
-__Logged-in User Cache__: If you have user-specific content or running a membership site, it creates cache for user.
+__Logged-in User Cache__: If you have user-specific content or running a membership site, it creates cached results for the logged-in users.
 
 __CDN Integration__: Integrate your website with CDN; you just need to enter CNAME(s) and corresponding zones.
 
