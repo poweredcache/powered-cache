@@ -3,7 +3,7 @@ Contributors:  poweredcache, skopco, m_uysl
 Tags: powered cache, web vitals, page speed, optimization, cdn, cache, caching, object cache, minify
 Requires at least:  5.0
 Tested up to:  5.8
-Stable tag:  2.0.2
+Stable tag:  2.0.3
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -17,7 +17,7 @@ Powered Cache is a comprehensive caching and optimization plugin for WordPress. 
 
 Powered Cache Free contains everything that you need to optimize your website performance, and the [Powered Cache Premium](https://poweredcache.com) plugin and its extensions unlock even more tools and functionality.
 
-= Features =
+= Features ⚡️ =
 
 __Simple and easily configurable__: You can import and export settings with a single click.
 
@@ -166,6 +166,10 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 2.0.3 =
+- Small UI updates
+- Fix: metabox registration on the screens other than post
 
 = 2.0.2 =
 - Hotfix: don't break block editor on reusable blocks
