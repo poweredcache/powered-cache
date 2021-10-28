@@ -63,7 +63,7 @@ class MetaBox {
 			'powered_cache_post_meta',
 			esc_html__( 'Powered Cache', 'powered-cache' ),
 			[ $this, 'meta_box' ],
-			'post',
+			'',
 			'side',
 			'high',
 			[
