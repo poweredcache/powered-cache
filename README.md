@@ -7,7 +7,7 @@ The most powerful caching and performance suite for WordPress. Easily Improve Pa
 
 __Plugin Website__: [poweredcache.com](https://poweredcache.com)  
 __Docs__: [poweredcache.com](https://poweredcache.com)  
-__Developer Docs__: [https://poweredcache.github.io/docs/](https://poweredcache.github.io/powered-cache/)  
+__Developer Docs__: [https://poweredcache.github.io/docs/](https://poweredcache.github.io/docs/)  
 
 ### Features
 
