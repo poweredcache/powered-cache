@@ -2,8 +2,8 @@
 Contributors:  poweredcache, skopco, m_uysl
 Tags: powered cache, web vitals, page speed, optimization, cdn, cache, caching, object cache, minify
 Requires at least:  5.0
-Tested up to:  5.8
-Stable tag:  2.0.3
+Tested up to:  5.9
+Stable tag:  2.0.4
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -166,6 +166,11 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 2.0.4 =
+- Tested with WP 5.9
+- UI Update
+- Fix a potential notice about the user agent
 
 = 2.0.3 =
 - Small UI updates
