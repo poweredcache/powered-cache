@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@wordpress/element": "^4.0.0",
-    "@wpmudev/shared-ui": "^2.11.1",
+    "@wpmudev/shared-ui": "^2.12.2",
     "10up-toolkit": "^1.0"
   },
   "dependencies": {

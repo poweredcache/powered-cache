@@ -2029,12 +2029,10 @@
     "stylelint-config-recommended-scss" "^4.2.0"
     "stylelint-scss" "^3.17.2"
 
-"@wpmudev/shared-ui@^2.11.1":
-  "integrity" "sha512-c7X5dbVc4hjAXtFlNqquxkLxDwHnATp5qOGxu4IRKNRWYsuXgUOwdYoA8RbkQuoBS+B9i6UtM/18SvC0Pr0z2Q=="
-  "resolved" "https://registry.npmjs.org/@wpmudev/shared-ui/-/shared-ui-2.11.1.tgz"
-  "version" "2.11.1"
-  dependencies:
-    "webpack" "^3.11.0"
+"@wpmudev/shared-ui@^2.12.2":
+  "integrity" "sha512-6W0ZL2Bdys7Vc44Tfts1c8NynyL2sHgBWAuO8//HnD/qxSPjOeFk1+/zb/WomHfPBAhavU+Ve6UJ8SNcsLVDmQ=="
+  "resolved" "https://registry.npmjs.org/@wpmudev/shared-ui/-/shared-ui-2.12.2.tgz"
+  "version" "2.12.2"
 
 "@xtuc/ieee754@^1.2.0":
   "integrity" "sha512-DX8nKgqcGwsc0eJSqYt5lwP4DH5FlHnmuWWBRy7X0NcaGR0ZtuyeESgMwTYVEtxmsNGY+qit4QYT/MIYTOTPeA=="
@@ -13581,7 +13579,7 @@
   "resolved" "https://registry.npmjs.org/webpack-sources/-/webpack-sources-3.2.0.tgz"
   "version" "3.2.0"
 
-"webpack@^1 || ^2 || ^3 || ^4 || ^5", "webpack@^1.9 || ^2 || ^2.1.0-beta || ^2.2.0-rc || ^3.0.0", "webpack@^3.11.0", "webpack@>=2":
+"webpack@^1 || ^2 || ^3 || ^4 || ^5", "webpack@^1.9 || ^2 || ^2.1.0-beta || ^2.2.0-rc || ^3.0.0", "webpack@>=2":
   "integrity" "sha512-Sw7MdIIOv/nkzPzee4o0EdvCuPmxT98+vVpIvwtcwcF1Q4SDSNp92vwcKc4REe7NItH9f1S4ra9FuQ7yuYZ8bQ=="
   "resolved" "https://registry.npmjs.org/webpack/-/webpack-3.12.0.tgz"
   "version" "3.12.0"
