@@ -17,6 +17,10 @@ if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || 'GET' !== $_SERVER['REQUEST_METHOD
 	return;
 }
 
+if ( ! isset( $_SERVER['HTTP_USER_AGENT'] ) ) {
+	$_SERVER['HTTP_USER_AGENT'] = '';
+}
+
 // Don't cache wp-admin
 if ( is_admin() ) {
 	return;
