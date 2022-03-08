@@ -35,6 +35,7 @@
     "entry": {
       "admin": "./assets/js/admin/admin.js",
       "editor": "./assets/js/admin/editor.js",
+      "classic-editor": "./assets/js/admin/classic-editor.js",
       "lazyload": "./assets/js/frontend/lazyload.js",
       "admin-style": "./assets/css/admin/admin-style.css"
     },

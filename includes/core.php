@@ -111,7 +111,7 @@ function deactivate( $network_wide ) {
  * @return array
  */
 function get_enqueue_contexts() {
-	return [ 'admin', 'frontend', 'shared' ];
+	return [ 'admin', 'frontend', 'shared', 'classic-editor' ];
 }
 
 /**
@@ -153,9 +153,26 @@ function style_url( $stylesheet, $context ) {
 /**
  * Enqueue scripts for admin.
  *
+ * @param string $hook Current hook.
+ *
  * @return void
  */
-function admin_scripts() {
+function admin_scripts( $hook ) {
+
+	$classic_editor_hooks = [ 'post-new.php', 'post.php' ];
+
+	if ( in_array( $hook, $classic_editor_hooks, true ) ) {
+		wp_enqueue_script(
+			'powered-cache-classic-editor',
+			script_url( 'classic-editor', 'classic-editor' ),
+			[
+				'jquery',
+			],
+			POWERED_CACHE_VERSION,
+			true
+		);
+	}
+
 	if ( empty( $_GET['page'] ) || MENU_SLUG !== $_GET['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		return;
 	}
