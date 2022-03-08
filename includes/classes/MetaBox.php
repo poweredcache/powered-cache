@@ -7,7 +7,9 @@
 
 namespace PoweredCache;
 
+use const PoweredCache\Constants\POST_META_SPECIFIC_CRITICAL_CSS_KEY;
 use const PoweredCache\Constants\POST_META_DISABLE_CACHE_KEY;
+use const PoweredCache\Constants\POST_META_DISABLE_CRITICAL_CSS_KEY;
 use const PoweredCache\Constants\POST_META_DISABLE_LAZYLOAD_KEY;
 
 /**
@@ -45,6 +47,31 @@ class MetaBox {
 		add_action( 'init', [ $this, 'register_meta_field' ] );
 		add_action( 'add_meta_boxes', [ $this, 'add_meta_boxes' ] );
 		add_action( 'save_post', [ $this, 'save_post_meta' ], 10, 2 );
+
+		foreach ( self::get_available_post_types() as $post_type ) {
+			add_action( 'rest_after_insert_' . $post_type, [ $this, 'maybe_remove_default_meta' ], 10, 2 );
+		}
+	}
+
+	/**
+	 * Get available post types for meta register
+	 *
+	 * @return array
+	 * @since 2.1
+	 */
+	private static function get_available_post_types() {
+		$public_posts_types = get_post_types(
+			[
+				'public'             => true,
+				'publicly_queryable' => true,
+			],
+			'names',
+			'or'
+		);
+
+		unset( $public_posts_types['attachment'] );
+
+		return (array) $public_posts_types;
 	}
 
 	/**
@@ -103,26 +130,34 @@ class MetaBox {
 					<label for="<?php echo esc_attr( POST_META_DISABLE_LAZYLOAD_KEY ); ?>"><?php esc_html_e( 'Disable lazy loading for this post', 'powered-cache' ); ?></label>
 				</fieldset>
 			<?php endif; ?>
+			<?php if ( $settings['critical_css'] ) : ?>
+				<?php $disable_critical = (bool) get_post_meta( $post->ID, POST_META_DISABLE_CRITICAL_CSS_KEY, true ); ?>
+				<?php $generate_post_specific_critical = (bool) get_post_meta( $post->ID, POST_META_SPECIFIC_CRITICAL_CSS_KEY, true ); ?>
+				<fieldset>
+					<legend class="screen-reader-text"><?php esc_html_e( 'Disable Critical CSS on this post', 'powered-cache' ); ?></legend>
+					<input <?php disabled( $generate_post_specific_critical, true ); ?> <?php checked( $disable_critical, true ); ?> type="checkbox" id="<?php echo esc_attr( POST_META_DISABLE_CRITICAL_CSS_KEY ); ?>" name="<?php echo esc_attr( POST_META_DISABLE_CRITICAL_CSS_KEY ); ?>" value="1">
+					<label for="<?php echo esc_attr( POST_META_DISABLE_CRITICAL_CSS_KEY ); ?>"><?php esc_html_e( 'Disable Critical CSS on this post', 'powered-cache' ); ?></label>
+				</fieldset>
+
+				<fieldset>
+					<legend class="screen-reader-text"><?php esc_html_e( 'Generate specific Critical CSS', 'powered-cache' ); ?></legend>
+					<input <?php disabled( $disable_critical, true ); ?> <?php checked( $generate_post_specific_critical, true ); ?> type="checkbox" id="<?php echo esc_attr( POST_META_SPECIFIC_CRITICAL_CSS_KEY ); ?>" name="<?php echo esc_attr( POST_META_SPECIFIC_CRITICAL_CSS_KEY ); ?>" value="1">
+					<label for="<?php echo esc_attr( POST_META_SPECIFIC_CRITICAL_CSS_KEY ); ?>"><?php esc_html_e( 'Generate specific Critical CSS', 'powered-cache' ); ?></label>
+				</fieldset>
+			<?php endif; ?>
+
 		</div>
 		<?php
 	}
 
 
 	/**
-	 * Register meta field for block editor
+	 * Register meta fields for block editor
 	 */
 	public function register_meta_field() {
-		$settings           = \PoweredCache\Utils\get_settings();
-		$public_posts_types = get_post_types(
-			[
-				'public'             => true,
-				'publicly_queryable' => true,
-			],
-			'names',
-			'or'
-		);
+		$settings = \PoweredCache\Utils\get_settings();
 
-		foreach ( (array) $public_posts_types as $post_type ) {
+		foreach ( self::get_available_post_types() as $post_type ) {
 			if ( $settings['enable_page_cache'] ) {
 				register_post_meta(
 					$post_type,
@@ -145,6 +180,36 @@ class MetaBox {
 					[
 						'show_in_rest'  => true,
 						'single'        => true,
+						'type'          => 'boolean',
+						'auth_callback' => function () {
+							return current_user_can( 'edit_posts' );
+						},
+					]
+				);
+			}
+
+			if ( $settings['critical_css'] ) {
+				register_post_meta(
+					$post_type,
+					POST_META_DISABLE_CRITICAL_CSS_KEY,
+					[
+						'show_in_rest'  => true,
+						'single'        => true,
+						'default'       => false,
+						'type'          => 'boolean',
+						'auth_callback' => function () {
+							return current_user_can( 'edit_posts' );
+						},
+					]
+				);
+
+				register_post_meta(
+					$post_type,
+					POST_META_SPECIFIC_CRITICAL_CSS_KEY,
+					[
+						'show_in_rest'  => true,
+						'single'        => true,
+						'default'       => false,
 						'type'          => 'boolean',
 						'auth_callback' => function () {
 							return current_user_can( 'edit_posts' );
@@ -208,6 +273,48 @@ class MetaBox {
 			delete_post_meta( $post_id, POST_META_DISABLE_LAZYLOAD_KEY );
 		}
 
+		if ( isset( $_POST[ POST_META_DISABLE_CRITICAL_CSS_KEY ] ) ) {
+			$critical_status = (bool) $_POST[ POST_META_DISABLE_CRITICAL_CSS_KEY ];
+			update_post_meta( $post_id, POST_META_DISABLE_CRITICAL_CSS_KEY, $critical_status );
+		} else {
+			delete_post_meta( $post_id, POST_META_DISABLE_CRITICAL_CSS_KEY );
+		}
+
+		if ( isset( $_POST[ POST_META_SPECIFIC_CRITICAL_CSS_KEY ] ) ) {
+			$specific_critical_status = (bool) $_POST[ POST_META_SPECIFIC_CRITICAL_CSS_KEY ];
+			update_post_meta( $post_id, POST_META_SPECIFIC_CRITICAL_CSS_KEY, $specific_critical_status );
+		} else {
+			delete_post_meta( $post_id, POST_META_SPECIFIC_CRITICAL_CSS_KEY );
+		}
+
+	}
+
+	/**
+	 * Don't keep postmeta with default value. Block editor saves them?
+	 *
+	 * @param Object $post    \WP_Post
+	 * @param Object $request \WP_REST_Request
+	 *
+	 * @since 2.1
+	 */
+	public function maybe_remove_default_meta( $post, $request ) {
+		if ( ! current_user_can( 'edit_post', $post->ID ) ) {
+			return;
+		}
+
+		$powered_cache_meta_keys = [
+			POST_META_DISABLE_CACHE_KEY,
+			POST_META_DISABLE_LAZYLOAD_KEY,
+			POST_META_DISABLE_CRITICAL_CSS_KEY,
+			POST_META_SPECIFIC_CRITICAL_CSS_KEY,
+		];
+
+		foreach ( $powered_cache_meta_keys as $meta_key ) {
+			$meta_status = (bool) get_post_meta( $post->ID, $meta_key, true );
+			if ( ! $meta_status ) {
+				delete_post_meta( $post->ID, $meta_key );
+			}
+		}
 	}
 
 
