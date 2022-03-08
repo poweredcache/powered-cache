@@ -128,7 +128,7 @@ class CDN {
 	 * @since 1.2
 	 */
 	public function srcset_url( $sources ) {
-		foreach ( $sources as $key => $source ) {
+		foreach ( (array) $sources as $key => $source ) {
 			$sources[ $key ]['url'] = $this->cdn_url( $source['url'] );
 		}
 
