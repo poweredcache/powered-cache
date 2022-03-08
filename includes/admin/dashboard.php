@@ -27,6 +27,7 @@ use function PoweredCache\Utils\is_premium;
 use function PoweredCache\Utils\js_execution_methods;
 use function PoweredCache\Utils\powered_cache_flush;
 use function PoweredCache\Utils\remove_dir;
+use function PoweredCache\Utils\sanitize_css;
 
 // phpcs:disable WordPress.WhiteSpace.PrecisionAlignment.Found
 // phpcs:disable Generic.WhiteSpace.DisallowSpaceIndent.SpacesUsed
@@ -277,6 +278,7 @@ function sanitize_options( $options ) {
 	$sanitized_options['combine_google_fonts']        = ! empty( $options['combine_google_fonts'] );
 	$sanitized_options['minify_css']                  = ! empty( $options['minify_css'] );
 	$sanitized_options['combine_css']                 = ! empty( $options['combine_css'] );
+	$sanitized_options['critical_css']                = ! empty( $options['critical_css'] );
 	$sanitized_options['excluded_css_files']          = sanitize_textarea_field( $options['excluded_css_files'] );
 	$sanitized_options['minify_js']                   = ! empty( $options['minify_js'] );
 	$sanitized_options['combine_js']                  = ! empty( $options['combine_js'] );
@@ -363,6 +365,10 @@ function sanitize_options( $options ) {
 	$sanitized_options['enable_google_tracking']         = ! empty( $options['enable_google_tracking'] );
 	$sanitized_options['enable_fb_tracking']             = ! empty( $options['enable_fb_tracking'] );
 
+	if ( isset( $options['critical_css_fallback'] ) ) {
+		$sanitized_options['critical_css_fallback'] = sanitize_css( $options['critical_css_fallback'] );
+	}
+
 	/**
 	 * Filters sanitized options.
 	 *
@@ -433,6 +439,7 @@ function maybe_display_message() {
 		'flush_object_cache'         => esc_html__( 'Object cache deleted successfully!', 'powered-cache' ),
 		'flush_all_cache'            => esc_html__( 'All cached items flushed successfully!', 'powered-cache' ),
 		'start_preload'              => esc_html__( 'The cache preloading has been initialized!', 'powered-cache' ),
+		'generate_critical'          => esc_html__( 'The Critical CSS generation process has been initialized!', 'powered-cache' ),
 		'flush_cf_cache'             => esc_html__( 'Cloudflare cache flushed, it can take up to 30 seconds to delete all cache from Cloudflare!', 'powered-cache' ),
 		'reset_settings'             => esc_html__( 'Settings have been reset!', 'powered-cache' ),
 		'import_settings'            => esc_html__( 'Settings have been imported!', 'powered-cache' ),
@@ -446,6 +453,7 @@ function maybe_display_message() {
 		'flush_object_cache_err_permission'       => esc_html__( 'You don\'t have permission to perform this action!', 'powered-cache' ),
 		'flush_all_cache_err_permission'          => esc_html__( 'You don\'t have permission to perform this action!', 'powered-cache' ),
 		'start_preload_err_permission'            => esc_html__( 'You don\'t have permission to perform this action!', 'powered-cache' ),
+		'start_critical_err_permission'           => esc_html__( 'You don\'t have permission to perform this action!', 'powered-cache' ),
 		'flush_cf_cache_failed'                   => esc_html__( 'Could not flush Cloudflare cache. Please make sure you entered the correct credentials and zone id!', 'powered-cache' ),
 	];
 

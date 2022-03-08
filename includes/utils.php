@@ -66,6 +66,8 @@ function get_settings( $force_network_wide = false ) {
 		'combine_google_fonts'           => false,
 		'minify_css'                     => false,
 		'combine_css'                    => false,
+		'critical_css'                   => false,
+		'critical_css_fallback'          => '',
 		'excluded_css_files'             => '',
 		'minify_js'                      => false,
 		'combine_js'                     => false,
@@ -1243,4 +1245,41 @@ function get_doc_url( $path = null, $fragment = '' ) {
 	}
 
 	return $doc_url;
+}
+
+/**
+ * Sanitize CSS
+ *
+ * @param string $css Input
+ *
+ * @return string|string[] $css
+ * @since 2.1
+ */
+function sanitize_css( $css ) {
+	$css = wp_strip_all_tags( $css );
+
+	if ( false !== strpos( $css, '<' ) ) {
+		$css = preg_replace( '#<(\/?\w+)#', '\00003C$1', $css );
+	}
+
+	return $css;
+}
+
+
+/**
+ *  Test if the current browser runs on a mobile device (smart phone, tablet, etc.)
+ *  Sort of custom version of wp_is_mobile
+ */
+function powered_cache_is_mobile() {
+
+	global $powered_cache_mobile_browsers, $powered_cache_mobile_prefixes;
+
+	$mobile_browsers = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', $powered_cache_mobile_browsers ) ), ' ' );
+	$mobile_prefixes = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', $powered_cache_mobile_prefixes ) ), ' ' );
+
+	if ( ( preg_match( '#^.*(' . $mobile_browsers . ').*#i', $_SERVER['HTTP_USER_AGENT'] ) || preg_match( '#^(' . $mobile_prefixes . ').*#i', substr( $_SERVER['HTTP_USER_AGENT'], 0, 4 ) ) ) ) {
+		return true;
+	}
+
+	return false;
 }

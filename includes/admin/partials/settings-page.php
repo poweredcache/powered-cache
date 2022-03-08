@@ -17,6 +17,7 @@ use function PoweredCache\Utils\get_doc_url;
 use function PoweredCache\Utils\get_timeout_with_interval;
 use function PoweredCache\Utils\is_premium;
 use function PoweredCache\Utils\js_execution_methods;
+use function PoweredCache\Utils\sanitize_css;
 use function PoweredCache\Utils\scheduled_cleanup_frequency_options;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -528,7 +529,7 @@ $settings = \PoweredCache\Utils\get_settings();
 					<h2 class="sui-box-title"><?php esc_html_e( 'File Optimization', 'powered-cache' ); ?></h2>
 				</div>
 
-				<div class="sui-box-body">
+				<div class="sui-box-body sui-upsell-items">
 					<?php
 					/**
 					 * Fires before file optimization section
@@ -645,9 +646,64 @@ $settings = \PoweredCache\Utils\get_settings();
 									</div>
 								</div>
 							</div>
-
 						</div>
 					</div>
+
+					<!-- Critical CSS -->
+						<div class="sui-box-settings-row <?php echo( ! is_premium() ? 'sui-disabled' : '' ); ?>">
+							<div class="sui-box-settings-col-1">
+								<span class="sui-settings-label"><?php esc_html_e( 'Critical CSS', 'powered-cache' ); ?>
+									<?php if ( ! is_premium() ) : ?>
+										<span class="sui-tag sui-tag-pro"><?php esc_html_e( 'Premium', 'powered-cache' ); ?></span>
+									<?php endif; ?>
+								</span>
+								<span class="sui-description"><?php esc_html_e( 'Extract & Inline Critical-path CSS from HTML', 'powered-cache' ); ?></span>
+							</div>
+
+							<div class="sui-box-settings-col-2">
+
+							<div class="sui-form-field">
+								<label for="critical_css" class="sui-toggle">
+									<input
+											type="checkbox"
+											id="critical_css"
+											name="critical_css"
+											aria-labelledby="critical_css_label"
+											aria-controls="critical_css_fallback_controls"
+											value="1"
+										<?php checked( 1, $settings['critical_css'] ); ?>
+									>
+									<span class="sui-toggle-slider" aria-hidden="true"></span>
+									<span id="critical_css_label" class="sui-toggle-label"><?php esc_html_e( ' Critical CSS' ); ?></span>
+									<span id="critical_css_description" class="sui-description"><?php esc_html_e( 'Critical CSS is a technique that extracts the CSS above the fold to display the page as quickly as possible.', 'powered-cache' ); ?></span>
+								</label>
+							</div>
+							<div style=" <?php echo( ! $settings['critical_css'] ? 'display:none' : '' ); ?>" tabindex="0" id="critical_css_fallback_controls">
+
+
+								<div class="sui-row">
+									<div class="sui-col-md-8">
+										<div class="sui-form-field">
+											<label for="critical_css_fallback" class="sui-label"><i><?php esc_html_e( 'Fallback Critical CSS ', 'powered-cache' ); ?></i></label>
+											<textarea
+													id="critical_css_fallback"
+													name="critical_css_fallback"
+													class="sui-form-control"
+													aria-labelledby="label-unique-id"
+													aria-describedby="critical_css_fallback_description"
+													rows="5"
+											><?php echo wp_unslash( sanitize_css( $settings['critical_css_fallback'] ) ); // phpcs:ignore ?></textarea>
+											<span id="critical_css_fallback_description" class="sui-description">
+												<?php esc_html_e( 'The fallback CSS if auto-generated CSS is incomplete.', 'powered-cache' ); ?>
+											</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+
 
 					<!-- JS Files -->
 					<div class="<?php echo esc_attr( apply_filters( 'powered_cache_admin_page_fo_js_classes', 'sui-box-settings-row ' ) ); ?>">
