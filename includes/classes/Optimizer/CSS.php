@@ -194,7 +194,11 @@ class CSS extends WP_Styles {
 
 					$href = Helper::get_optimized_url( $path_str, $this->do_minify );
 				} else {
-					$href = $this->cache_bust_mtime( $siteurl . current( $css ), $siteurl );
+					if ( $this->do_minify ) {
+						$href = Helper::get_optimized_url( current( $css ), $this->do_minify );
+					} else {
+						$href = $this->cache_bust_mtime( $siteurl . current( $css ), $siteurl );
+					}
 				}
 
 				$handles = array_keys( $css );
