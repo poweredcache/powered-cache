@@ -16,12 +16,19 @@ const PoweredCacheMetaBox = () => {
 		return null;
 	}
 
-	if (!('powered_cache_disable_cache' in meta) && !('powered_cache_disable_lazyload' in meta)) {
+	if (
+		!('powered_cache_disable_cache' in meta) &&
+		!('powered_cache_disable_lazyload' in meta) &&
+		!('powered_cache_disable_critical_css' in meta) &&
+		!('powered_cache_specific_critical_css' in meta)
+	) {
 		return null; // nothing to control
 	}
 
 	const disableCache = meta.powered_cache_disable_cache || false;
 	const disableLazyLoad = meta.powered_cache_disable_lazyload || false;
+	const disableCritical = meta.powered_cache_disable_critical_css || false;
+	const specificCritical = meta.powered_cache_specific_critical_css || false;
 
 	return (
 		<PluginDocumentSettingPanel
@@ -48,6 +55,34 @@ const PoweredCacheMetaBox = () => {
 					onChange={() => {
 						dispatch('core/editor').editPost({
 							meta: { powered_cache_disable_lazyload: !disableLazyLoad },
+						});
+					}}
+				/>
+			)}
+
+			{'powered_cache_disable_critical_css' in meta && !specificCritical && (
+				<CheckboxControl
+					label={__('Disable Critical CSS for this post', 'powered-cache')}
+					checked={disableCritical}
+					onChange={() => {
+						dispatch('core/editor').editPost({
+							meta: {
+								powered_cache_disable_critical_css: !disableCritical,
+							},
+						});
+					}}
+				/>
+			)}
+
+			{'powered_cache_specific_critical_css' in meta && !disableCritical && (
+				<CheckboxControl
+					label={__('Generate specific Critical CSS', 'powered-cache')}
+					checked={specificCritical}
+					onChange={() => {
+						dispatch('core/editor').editPost({
+							meta: {
+								powered_cache_specific_critical_css: !specificCritical,
+							},
 						});
 					}}
 				/>
