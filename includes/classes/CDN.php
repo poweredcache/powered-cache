@@ -48,6 +48,22 @@ class CDN {
 			return;
 		}
 
+		/**
+		 * Filters CDN integration
+		 *
+		 * @hook   powered_cache_cdn_disable
+		 *
+		 * @param  {boolean} False by default.
+		 *
+		 * @return {array} New value.
+		 * @since  2.1
+		 */
+		$disable_cdn = apply_filters( 'powered_cache_cdn_disable', false );
+
+		if ( $disable_cdn ) {
+			return;
+		}
+
 		add_filter( 'wp_get_attachment_url', array( $this, 'cdn_url' ), 9999 );
 		add_filter( 'stylesheet_uri', array( $this, 'cdn_url' ), 9999 );
 		add_filter( 'smilies_src', array( $this, 'cdn_url' ), 9999 );
