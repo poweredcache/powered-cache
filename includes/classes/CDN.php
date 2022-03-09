@@ -195,6 +195,10 @@ class CDN {
 			return $content;
 		}
 
+		if ( function_exists( 'libxml_use_internal_errors' ) ) {
+			libxml_use_internal_errors( true );
+		}
+
 		$document = new DOMDocument();
 		@$document->loadHTML( $content ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 		$images = $document->getElementsByTagName( 'img' );
