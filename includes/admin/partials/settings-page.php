@@ -41,7 +41,7 @@ $settings = \PoweredCache\Utils\get_settings();
 
 		<!-- Float element to Right -->
 		<div class="sui-actions-right">
-			<a href="<?php echo esc_url( get_doc_url( '/' ) ); ?>" target="_blank" class="sui-button sui-button-blue">
+			<a href="<?php echo esc_url( get_doc_url( '/' ) ); ?>" target="_blank" class="sui-button sui-hidden-sm sui-button-blue">
 				<i class="sui-icon-academy" aria-hidden="true"></i>
 				<?php esc_html_e( 'Documentation', 'powered-cache' ); ?>
 			</a>
@@ -107,7 +107,7 @@ $settings = \PoweredCache\Utils\get_settings();
 
 				</ul>
 
-				<button type="submit" name="powered_cache_form_action" class="sui-button sui-button-blue" value="save_settings"><?php esc_html_e( 'Save Changes', 'powered-cache' ); ?></button>
+				<button type="submit" name="powered_cache_form_action" class="sui-button sui-margin-bottom sui-hidden-sm sui-button-blue" value="save_settings"><?php esc_html_e( 'Save Changes', 'powered-cache' ); ?></button>
 			</div>
 
 			<!-- TAB: Regular -->
@@ -678,9 +678,8 @@ $settings = \PoweredCache\Utils\get_settings();
 									<span id="critical_css_description" class="sui-description"><?php esc_html_e( 'Critical CSS is a technique that extracts the CSS above the fold to display the page as quickly as possible.', 'powered-cache' ); ?></span>
 								</label>
 							</div>
+
 							<div style=" <?php echo( ! $settings['critical_css'] ? 'display:none' : '' ); ?>" tabindex="0" id="critical_css_fallback_controls">
-
-
 								<div class="sui-row">
 									<div class="sui-col-md-8">
 										<div class="sui-form-field">
