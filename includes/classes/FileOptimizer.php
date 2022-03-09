@@ -102,7 +102,6 @@ class FileOptimizer {
 		if ( $this->settings['combine_google_fonts'] ) {
 			add_action( 'wp_enqueue_scripts', [ $this, 'combine_google_fonts' ], 99 );
 		}
-		add_action( 'wp_enqueue_scripts', [ $this, 'combine_google_fonts' ], 99 );
 
 	}
 
