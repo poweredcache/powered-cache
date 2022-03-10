@@ -833,6 +833,13 @@ class Config {
 		$contents .= '  set $cache_uri \'null cache\';' . PHP_EOL;
 		$contents .= '}' . PHP_EOL . PHP_EOL;
 
+		// Add CORS rules
+		if ( $settings['enable_cdn'] ) {
+			$contents .= 'location ~* .(jpg|jpeg|png|gif|ico|css|js|svg|eot|woff|woff2|ttf|otf)$ {' . PHP_EOL;
+			$contents .= 'add_header Access-Control-Allow-Origin *;' . PHP_EOL;
+			$contents .= '}' . PHP_EOL . PHP_EOL;
+		}
+
 		/**
 		 * Documented in htaccess config
 		 */
