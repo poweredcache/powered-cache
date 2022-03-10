@@ -7,6 +7,8 @@
 
 namespace PoweredCache;
 
+use const PoweredCache\Constants\POST_META_DISABLE_CSS_OPTIMIZATION;
+use const PoweredCache\Constants\POST_META_DISABLE_JS_OPTIMIZATION;
 use PoweredCache\Optimizer\CSS;
 use PoweredCache\Optimizer\Helper;
 use PoweredCache\Optimizer\JS;
@@ -103,6 +105,30 @@ class FileOptimizer {
 			add_action( 'wp_enqueue_scripts', [ $this, 'combine_google_fonts' ], 99 );
 		}
 
+		add_action( 'template_redirect', [ $this, 'maybe_suppress_optimizations' ] );
+	}
+
+
+	/**
+	 * Maybe suppress optimizations based on the post meta options
+	 *
+	 * @since 2.1
+	 */
+	public function maybe_suppress_optimizations() {
+		if ( is_singular() ) {
+			$disable_css_optimization = (bool) get_post_meta( get_the_ID(), POST_META_DISABLE_CSS_OPTIMIZATION, true );
+			$disable_js_optimization  = (bool) get_post_meta( get_the_ID(), POST_META_DISABLE_JS_OPTIMIZATION, true );
+
+			if ( $disable_css_optimization ) {
+				add_filter( 'powered_cache_fo_css_do_concat', '__return_false' );
+				add_filter( 'powered_cache_fo_disable_css_minify', '__return_true' );
+			}
+
+			if ( $disable_js_optimization ) {
+				add_filter( 'powered_cache_fo_js_do_concat', '__return_false' );
+				add_filter( 'powered_cache_fo_disable_js_minify', '__return_true' );
+			}
+		}
 	}
 
 	/**

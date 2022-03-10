@@ -7,6 +7,8 @@
 
 namespace PoweredCache;
 
+use const PoweredCache\Constants\POST_META_DISABLE_CSS_OPTIMIZATION;
+use const PoweredCache\Constants\POST_META_DISABLE_JS_OPTIMIZATION;
 use const PoweredCache\Constants\POST_META_SPECIFIC_CRITICAL_CSS_KEY;
 use const PoweredCache\Constants\POST_META_DISABLE_CACHE_KEY;
 use const PoweredCache\Constants\POST_META_DISABLE_CRITICAL_CSS_KEY;
@@ -130,6 +132,24 @@ class MetaBox {
 					<label for="<?php echo esc_attr( POST_META_DISABLE_LAZYLOAD_KEY ); ?>"><?php esc_html_e( 'Disable lazy loading for this post', 'powered-cache' ); ?></label>
 				</fieldset>
 			<?php endif; ?>
+			<?php if ( $settings['minify_css'] || $settings['combine_css'] ) : ?>
+				<?php $is_css_optimization_disabled = (bool) get_post_meta( $post->ID, POST_META_DISABLE_CSS_OPTIMIZATION, true ); ?>
+				<fieldset>
+					<legend class="screen-reader-text"><?php esc_html_e( 'Disable CSS optimization (minify/concat) for this post', 'powered-cache' ); ?></legend>
+					<input <?php checked( $is_css_optimization_disabled, true ); ?> type="checkbox" id="<?php echo esc_attr( POST_META_DISABLE_CSS_OPTIMIZATION ); ?>" name="<?php echo esc_attr( POST_META_DISABLE_CSS_OPTIMIZATION ); ?>" value="1">
+					<label for="<?php echo esc_attr( POST_META_DISABLE_CSS_OPTIMIZATION ); ?>"><?php esc_html_e( 'Disable CSS optimization (minify/concat) for this post', 'powered-cache' ); ?></label>
+				</fieldset>
+			<?php endif; ?>
+			<?php if ( $settings['minify_js'] || $settings['combine_js'] ) : ?>
+				<?php $is_js_optimization_disabled = (bool) get_post_meta( $post->ID, POST_META_DISABLE_JS_OPTIMIZATION, true ); ?>
+				<fieldset>
+					<legend class="screen-reader-text"><?php esc_html_e( 'Disable JS optimization (minify/concat) for this post', 'powered-cache' ); ?></legend>
+					<input <?php checked( $is_js_optimization_disabled, true ); ?> type="checkbox" id="<?php echo esc_attr( POST_META_DISABLE_JS_OPTIMIZATION ); ?>" name="<?php echo esc_attr( POST_META_DISABLE_JS_OPTIMIZATION ); ?>" value="1">
+					<label for="<?php echo esc_attr( POST_META_DISABLE_JS_OPTIMIZATION ); ?>"><?php esc_html_e( 'Disable JS optimization (minify/concat) for this post', 'powered-cache' ); ?></label>
+				</fieldset>
+			<?php endif; ?>
+
+
 			<?php if ( $settings['critical_css'] ) : ?>
 				<?php $disable_critical = (bool) get_post_meta( $post->ID, POST_META_DISABLE_CRITICAL_CSS_KEY, true ); ?>
 				<?php $generate_post_specific_critical = (bool) get_post_meta( $post->ID, POST_META_SPECIFIC_CRITICAL_CSS_KEY, true ); ?>
@@ -217,6 +237,38 @@ class MetaBox {
 					]
 				);
 			}
+
+			if ( $settings['minify_css'] || $settings['combine_css'] ) {
+				register_post_meta(
+					$post_type,
+					POST_META_DISABLE_CSS_OPTIMIZATION,
+					[
+						'show_in_rest'  => true,
+						'single'        => true,
+						'default'       => false,
+						'type'          => 'boolean',
+						'auth_callback' => function () {
+							return current_user_can( 'edit_posts' );
+						},
+					]
+				);
+			}
+
+			if ( $settings['minify_js'] || $settings['combine_js'] ) {
+				register_post_meta(
+					$post_type,
+					POST_META_DISABLE_JS_OPTIMIZATION,
+					[
+						'show_in_rest'  => true,
+						'single'        => true,
+						'default'       => false,
+						'type'          => 'boolean',
+						'auth_callback' => function () {
+							return current_user_can( 'edit_posts' );
+						},
+					]
+				);
+			}
 		}
 
 	}
@@ -257,36 +309,35 @@ class MetaBox {
 			return;
 		}
 
-		if ( isset( $_POST[ POST_META_DISABLE_CACHE_KEY ] ) ) {
-			$cache_status = (bool) $_POST[ POST_META_DISABLE_CACHE_KEY ];
-			update_post_meta( $post_id, POST_META_DISABLE_CACHE_KEY, $cache_status );
-		} else {
-			// don't need to store default value in meta
-			delete_post_meta( $post_id, POST_META_DISABLE_CACHE_KEY );
+		$meta_keys = self::get_meta_keys();
+
+		foreach ( $meta_keys as $meta_key ) {
+			if ( isset( $_POST[ $meta_key ] ) ) {
+				$value = (bool) $_POST[ $meta_key ];
+				update_post_meta( $post_id, $meta_key, $value );
+			} else {
+				// don't need to store default value in meta
+				delete_post_meta( $post_id, $meta_key );
+			}
 		}
 
-		if ( isset( $_POST[ POST_META_DISABLE_LAZYLOAD_KEY ] ) ) {
-			$lazyload_status = (bool) $_POST[ POST_META_DISABLE_LAZYLOAD_KEY ];
-			update_post_meta( $post_id, POST_META_DISABLE_LAZYLOAD_KEY, $lazyload_status );
-		} else {
-			// don't need to store default value in meta
-			delete_post_meta( $post_id, POST_META_DISABLE_LAZYLOAD_KEY );
-		}
+	}
 
-		if ( isset( $_POST[ POST_META_DISABLE_CRITICAL_CSS_KEY ] ) ) {
-			$critical_status = (bool) $_POST[ POST_META_DISABLE_CRITICAL_CSS_KEY ];
-			update_post_meta( $post_id, POST_META_DISABLE_CRITICAL_CSS_KEY, $critical_status );
-		} else {
-			delete_post_meta( $post_id, POST_META_DISABLE_CRITICAL_CSS_KEY );
-		}
-
-		if ( isset( $_POST[ POST_META_SPECIFIC_CRITICAL_CSS_KEY ] ) ) {
-			$specific_critical_status = (bool) $_POST[ POST_META_SPECIFIC_CRITICAL_CSS_KEY ];
-			update_post_meta( $post_id, POST_META_SPECIFIC_CRITICAL_CSS_KEY, $specific_critical_status );
-		} else {
-			delete_post_meta( $post_id, POST_META_SPECIFIC_CRITICAL_CSS_KEY );
-		}
-
+	/**
+	 * Get powered cache meta keys
+	 *
+	 * @return array
+	 * @since 2.1
+	 */
+	private static function get_meta_keys() {
+		return [
+			POST_META_DISABLE_CACHE_KEY,
+			POST_META_DISABLE_LAZYLOAD_KEY,
+			POST_META_DISABLE_CRITICAL_CSS_KEY,
+			POST_META_SPECIFIC_CRITICAL_CSS_KEY,
+			POST_META_DISABLE_CSS_OPTIMIZATION,
+			POST_META_DISABLE_JS_OPTIMIZATION,
+		];
 	}
 
 	/**
@@ -302,12 +353,7 @@ class MetaBox {
 			return;
 		}
 
-		$powered_cache_meta_keys = [
-			POST_META_DISABLE_CACHE_KEY,
-			POST_META_DISABLE_LAZYLOAD_KEY,
-			POST_META_DISABLE_CRITICAL_CSS_KEY,
-			POST_META_SPECIFIC_CRITICAL_CSS_KEY,
-		];
+		$powered_cache_meta_keys = self::get_meta_keys();
 
 		foreach ( $powered_cache_meta_keys as $meta_key ) {
 			$meta_status = (bool) get_post_meta( $post->ID, $meta_key, true );

@@ -17,5 +17,7 @@ const POST_META_DISABLE_CACHE_KEY         = 'powered_cache_disable_cache';
 const POST_META_DISABLE_LAZYLOAD_KEY      = 'powered_cache_disable_lazyload';
 const POST_META_DISABLE_CRITICAL_CSS_KEY  = 'powered_cache_disable_critical_css';
 const POST_META_SPECIFIC_CRITICAL_CSS_KEY = 'powered_cache_specific_critical_css';
+const POST_META_DISABLE_CSS_OPTIMIZATION  = 'powered_cache_disable_css_optimization';
+const POST_META_DISABLE_JS_OPTIMIZATION   = 'powered_cache_disable_js_optimization';
 const DB_VERSION_OPTION_NAME              = 'powered_cache_db_version';
 const DB_CLEANUP_COUNT_CACHE_KEY          = 'powered_cache_db_cleanup_counts';

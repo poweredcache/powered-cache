@@ -19,6 +19,8 @@ const PoweredCacheMetaBox = () => {
 	if (
 		!('powered_cache_disable_cache' in meta) &&
 		!('powered_cache_disable_lazyload' in meta) &&
+		!('powered_cache_disable_css_optimization' in meta) &&
+		!('powered_cache_disable_js_optimization' in meta) &&
 		!('powered_cache_disable_critical_css' in meta) &&
 		!('powered_cache_specific_critical_css' in meta)
 	) {
@@ -27,6 +29,8 @@ const PoweredCacheMetaBox = () => {
 
 	const disableCache = meta.powered_cache_disable_cache || false;
 	const disableLazyLoad = meta.powered_cache_disable_lazyload || false;
+	const disableCSSOptimization = meta.powered_cache_disable_css_optimization || false;
+	const disableJSOptimization = meta.powered_cache_disable_js_optimization || false;
 	const disableCritical = meta.powered_cache_disable_critical_css || false;
 	const specificCritical = meta.powered_cache_specific_critical_css || false;
 
@@ -55,6 +59,32 @@ const PoweredCacheMetaBox = () => {
 					onChange={() => {
 						dispatch('core/editor').editPost({
 							meta: { powered_cache_disable_lazyload: !disableLazyLoad },
+						});
+					}}
+				/>
+			)}
+
+			{'powered_cache_disable_css_optimization' in meta && (
+				<CheckboxControl
+					label={__('Disable CSS optimization', 'powered-cache')}
+					checked={disableCSSOptimization}
+					onChange={() => {
+						dispatch('core/editor').editPost({
+							meta: {
+								powered_cache_disable_css_optimization: !disableCSSOptimization,
+							},
+						});
+					}}
+				/>
+			)}
+
+			{'powered_cache_disable_js_optimization' in meta && (
+				<CheckboxControl
+					label={__('Disable JS optimization', 'powered-cache')}
+					checked={disableJSOptimization}
+					onChange={() => {
+						dispatch('core/editor').editPost({
+							meta: { powered_cache_disable_js_optimization: !disableJSOptimization },
 						});
 					}}
 				/>
