@@ -239,7 +239,7 @@ function process_form_submit() {
 			$redirect_url
 		);
 
-		wp_safe_redirect( $redirect_url );
+		wp_safe_redirect( esc_url_raw( $redirect_url ) );
 		exit;
 	}
 }
@@ -449,6 +449,7 @@ function maybe_display_message() {
 	];
 
 	$err_messages = [
+		'generic_permission_err'                  => esc_html__( 'You don\'t have permission to perform this action!', 'powered-cache' ),
 		'flush_page_cache_network_err_permission' => esc_html__( 'You don\'t have permission to perform this action!', 'powered-cache' ),
 		'flush_page_cache_err_permission'         => esc_html__( 'You don\'t have permission to perform this action!', 'powered-cache' ),
 		'flush_object_cache_err_permission'       => esc_html__( 'You don\'t have permission to perform this action!', 'powered-cache' ),
@@ -518,8 +519,13 @@ function purge_all_cache() {
 
 	if ( is_multisite() && ! current_user_can( 'manage_network' ) ) {
 		$redirect_url = add_query_arg( 'pc_action', 'flush_all_cache_err_permission', wp_get_referer() );
+		wp_safe_redirect( esc_url_raw( $redirect_url ) );
+		exit;
+	}
 
-		wp_safe_redirect( $redirect_url );
+	if ( ! current_user_can( 'manage_options' ) ) {
+		$redirect_url = add_query_arg( 'pc_action', 'flush_all_cache_err_permission', wp_get_referer() );
+		wp_safe_redirect( esc_url_raw( $redirect_url ) );
 		exit;
 	}
 
@@ -536,7 +542,7 @@ function purge_all_cache() {
 
 	$redirect_url = add_query_arg( 'pc_action', 'flush_all_cache', wp_get_referer() );
 
-	wp_safe_redirect( $redirect_url );
+	wp_safe_redirect( esc_url_raw( $redirect_url ) );
 	exit;
 }
 
@@ -552,7 +558,8 @@ function download_rewrite_config() {
 	}
 
 	if ( ! can_control_all_settings() ) {
-		wp_safe_redirect( wp_get_referer() );
+		$redirect_url = add_query_arg( 'pc_action', 'generic_permission_err', wp_get_referer() );
+		wp_safe_redirect( esc_url_raw( $redirect_url ) );
 		exit;
 	}
 
@@ -732,7 +739,8 @@ function deactivate_plugin() {
 	}
 
 	if ( ! current_user_can( 'activate_plugins' ) ) {
-		wp_safe_redirect( wp_get_referer() );
+		$redirect_url = add_query_arg( 'pc_action', 'generic_permission_err', wp_get_referer() );
+		wp_safe_redirect( esc_url_raw( $redirect_url ) );
 		exit;
 	}
 

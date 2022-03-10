@@ -80,6 +80,14 @@ class Cloudflare {
 	 * @param Object $wp_admin_bar admin bar object
 	 */
 	public function admin_bar_menu( $wp_admin_bar ) {
+		if ( POWERED_CACHE_IS_NETWORK && ! current_user_can( 'manage_network' ) ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
 		$wp_admin_bar->add_menu(
 			array(
 				'id'     => 'cf-purge-cache',
@@ -105,13 +113,26 @@ class Cloudflare {
 			wp_nonce_ays( '' );
 		}
 
-		if ( $this->cf_api->purge( $this->settings['zone'] ) ) {
-			$redirect_url = add_query_arg( 'pc_action', 'flush_cf_cache', wp_get_referer() );
-			wp_safe_redirect( $redirect_url );
+		if ( POWERED_CACHE_IS_NETWORK && ! current_user_can( 'manage_network' ) ) {
+			$redirect_url = add_query_arg( 'pc_action', 'generic_permission_err', wp_get_referer() );
+			wp_safe_redirect( esc_url_raw( $redirect_url ) );
 			exit;
 		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			$redirect_url = add_query_arg( 'pc_action', 'generic_permission_err', wp_get_referer() );
+			wp_safe_redirect( esc_url_raw( $redirect_url ) );
+			exit;
+		}
+
+		if ( $this->cf_api->purge( $this->settings['zone'] ) ) {
+			$redirect_url = add_query_arg( 'pc_action', 'flush_cf_cache', wp_get_referer() );
+			wp_safe_redirect( esc_url_raw( $redirect_url ) );
+			exit;
+		}
+
 		$redirect_url = add_query_arg( 'pc_action', 'flush_cf_cache_failed', wp_get_referer() );
-		wp_safe_redirect( $redirect_url );
+		wp_safe_redirect( esc_url_raw( $redirect_url ) );
 		exit;
 	}
 

@@ -96,7 +96,13 @@ class ObjectCache {
 
 		if ( is_multisite() && ! current_user_can( 'manage_network' ) ) {
 			$redirect_url = add_query_arg( 'pc_action', 'flush_object_cache_err_permission', wp_get_referer() );
-			wp_safe_redirect( $redirect_url );
+			wp_safe_redirect( esc_url_raw( $redirect_url ) );
+			exit;
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			$redirect_url = add_query_arg( 'pc_action', 'flush_object_cache_err_permission', wp_get_referer() );
+			wp_safe_redirect( esc_url_raw( $redirect_url ) );
 			exit;
 		}
 
@@ -105,7 +111,7 @@ class ObjectCache {
 		}
 
 		$redirect_url = add_query_arg( 'pc_action', 'flush_object_cache', wp_get_referer() );
-		wp_safe_redirect( $redirect_url );
+		wp_safe_redirect( esc_url_raw( $redirect_url ) );
 		exit;
 	}
 

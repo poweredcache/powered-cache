@@ -84,7 +84,7 @@ class Preloader {
 	 * @since 1.0
 	 */
 	public function admin_bar_menu( $wp_admin_bar ) {
-		if ( is_multisite() && ! current_user_can( 'manage_network' ) ) {
+		if ( POWERED_CACHE_IS_NETWORK && ! current_user_can( 'manage_network' ) ) {
 			return;
 		}
 
@@ -110,16 +110,22 @@ class Preloader {
 			wp_nonce_ays( '' );
 		}
 
-		if ( is_multisite() && ! current_user_can( 'manage_network' ) ) {
+		if ( POWERED_CACHE_IS_NETWORK && ! current_user_can( 'manage_network' ) ) {
 			$redirect_url = add_query_arg( 'pc_action', 'start_preload_err_permission', wp_get_referer() );
-			wp_safe_redirect( $redirect_url );
+			wp_safe_redirect( esc_url_raw( $redirect_url ) );
+			exit;
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			$redirect_url = add_query_arg( 'pc_action', 'start_preload_err_permission', wp_get_referer() );
+			wp_safe_redirect( esc_url_raw( $redirect_url ) );
 			exit;
 		}
 
 		$this->setup_preload_queue();
 
 		$redirect_url = add_query_arg( 'pc_action', 'start_preload', wp_get_referer() );
-		wp_safe_redirect( $redirect_url );
+		wp_safe_redirect( esc_url_raw( $redirect_url ) );
 		exit;
 	}
 
