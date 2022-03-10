@@ -455,6 +455,7 @@ function maybe_display_message() {
 		'flush_all_cache_err_permission'          => esc_html__( 'You don\'t have permission to perform this action!', 'powered-cache' ),
 		'start_preload_err_permission'            => esc_html__( 'You don\'t have permission to perform this action!', 'powered-cache' ),
 		'start_critical_err_permission'           => esc_html__( 'You don\'t have permission to perform this action!', 'powered-cache' ),
+		'start_critical_err_license'              => esc_html__( 'Your license key does not seem valid. A valid license is required for the Critical CSS!', 'powered-cache' ),
 		'flush_cf_cache_failed'                   => esc_html__( 'Could not flush Cloudflare cache. Please make sure you entered the correct credentials and zone id!', 'powered-cache' ),
 	];
 
