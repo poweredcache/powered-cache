@@ -393,7 +393,7 @@ class Config {
 			$contents = file_get_contents( $htaccess_file );
 
 			// clean up
-			$contents = preg_replace( '/# BEGIN POWERED CACHE(.*)# END POWERED CACHE/is', '', $contents );
+			$contents = preg_replace( '/# BEGIN POWERED CACHE(.*)# END POWERED CACHE\s*?/isU', '', $contents );
 
 			if ( false === $enable ) {
 				return file_put_contents( $htaccess_file, $contents );
@@ -500,6 +500,32 @@ class Config {
 			}
 
 			$rules .= '</IfModule>' . PHP_EOL;
+		}
+
+		// Add cors rules
+		if ( $settings['enable_cdn'] ) {
+
+			/**
+			 * Add CORS configuration
+			 *
+			 * @link  https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image
+			 * @since 2.1
+			 */
+			$rules .= '<IfModule mod_setenvif.c>' . PHP_EOL;
+			$rules .= '  <IfModule mod_headers.c>' . PHP_EOL;
+			$rules .= '    <FilesMatch "\.(avifs?|bmp|cur|gif|ico|jpe?g|jxl|a?png|svgz?|webp)$">' . PHP_EOL;
+			$rules .= '      SetEnvIf Origin ":" IS_CORS' . PHP_EOL;
+			$rules .= '      Header set Access-Control-Allow-Origin "*" env=IS_CORS' . PHP_EOL;
+			$rules .= '    </FilesMatch>' . PHP_EOL;
+			$rules .= '  </IfModule>' . PHP_EOL;
+			$rules .= '</IfModule>' . PHP_EOL . PHP_EOL;
+
+			// configure fonts
+			$rules .= '<FilesMatch "\.(ttf|ttc|otf|eot|woff|woff2|font.css)$">' . PHP_EOL;
+			$rules .= '  <IfModule mod_headers.c>' . PHP_EOL;
+			$rules .= '    Header set Access-Control-Allow-Origin "*"' . PHP_EOL;
+			$rules .= '  </IfModule>' . PHP_EOL;
+			$rules .= '</FilesMatch>' . PHP_EOL . PHP_EOL;
 		}
 
 		// gzip
@@ -654,7 +680,7 @@ class Config {
 		 */
 		$rules .= apply_filters( 'powered_cache_after_htaccess', '' );
 
-		$rules .= '# END POWERED CACHE';
+		$rules .= '# END POWERED CACHE' . PHP_EOL;
 
 		return $rules;
 	}
