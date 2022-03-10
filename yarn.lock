@@ -2029,10 +2029,10 @@
     "stylelint-config-recommended-scss" "^4.2.0"
     "stylelint-scss" "^3.17.2"
 
-"@wpmudev/shared-ui@^2.12.2":
-  "integrity" "sha512-6W0ZL2Bdys7Vc44Tfts1c8NynyL2sHgBWAuO8//HnD/qxSPjOeFk1+/zb/WomHfPBAhavU+Ve6UJ8SNcsLVDmQ=="
-  "resolved" "https://registry.npmjs.org/@wpmudev/shared-ui/-/shared-ui-2.12.2.tgz"
-  "version" "2.12.2"
+"@wpmudev/shared-ui@^2.12.4":
+  "integrity" "sha512-U4y82f8t1YKP0aIW9J2R1nod+p04XeDm4zQZMfLCCyKEov9xkJEGHdRBKnRy8lLsVqt2hSyrHBhn8iS03d/n2g=="
+  "resolved" "https://registry.npmjs.org/@wpmudev/shared-ui/-/shared-ui-2.12.4.tgz"
+  "version" "2.12.4"
 
 "@xtuc/ieee754@^1.2.0":
   "integrity" "sha512-DX8nKgqcGwsc0eJSqYt5lwP4DH5FlHnmuWWBRy7X0NcaGR0ZtuyeESgMwTYVEtxmsNGY+qit4QYT/MIYTOTPeA=="
