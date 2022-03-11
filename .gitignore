@@ -27,3 +27,5 @@ Session.vim
 # Windows
 Thumbs.db
 Desktop.ini
+*.js.map
+*.css.map

@@ -21,12 +21,12 @@
     "build-release": "npm install && composer install && npm run build && npm run make-pot"
   },
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=16"
   },
   "devDependencies": {
-    "@wordpress/element": "^4.0.0",
+    "@wordpress/element": "^4.0",
     "@wpmudev/shared-ui": "^2.12.4",
-    "10up-toolkit": "^1.0"
+    "10up-toolkit": "^3.0"
   },
   "dependencies": {
     "normalize.css": "^8.0.1"
