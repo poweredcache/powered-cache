@@ -12,7 +12,6 @@ use function PoweredCache\Utils\can_configure_object_cache;
 use function PoweredCache\Utils\can_control_all_settings;
 use function PoweredCache\Utils\cdn_zones;
 use function PoweredCache\Utils\get_available_object_caches;
-use function PoweredCache\Utils\get_db_cleanup_counts;
 use function PoweredCache\Utils\get_doc_url;
 use function PoweredCache\Utils\get_timeout_with_interval;
 use function PoweredCache\Utils\is_premium;
@@ -680,6 +679,7 @@ $settings = \PoweredCache\Utils\get_settings();
 							</div>
 
 							<div style=" <?php echo( ! $settings['critical_css'] ? 'display:none' : '' ); ?>" tabindex="0" id="critical_css_fallback_controls">
+
 								<div class="sui-row">
 									<div class="sui-col-md-8">
 										<div class="sui-form-field">

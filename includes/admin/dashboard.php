@@ -21,7 +21,6 @@ use function PoweredCache\Utils\cdn_zones;
 use function PoweredCache\Utils\clean_site_cache_dir;
 use function PoweredCache\Utils\get_available_object_caches;
 use function PoweredCache\Utils\get_cache_dir;
-use function PoweredCache\Utils\get_db_cleanup_counts;
 use function PoweredCache\Utils\get_timeout_with_interval;
 use function PoweredCache\Utils\is_premium;
 use function PoweredCache\Utils\js_execution_methods;

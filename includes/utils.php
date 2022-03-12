@@ -389,24 +389,6 @@ function cdn_zones() {
 }
 
 /**
- * Get counts for db entities
- *
- * @return array
- */
-function get_db_cleanup_counts() {
-	return [
-		'post_revision'     => 0,
-		'post_auto_draft'   => 1,
-		'post_trashed'      => 4,
-		'comment_spam'      => 4,
-		'comment_trashed'   => 4,
-		'transient_expired' => 4,
-		'transient_all'     => 4,
-		'table_count'       => 0,
-	];
-}
-
-/**
  * Which version of plugin running
  *
  * @return bool
