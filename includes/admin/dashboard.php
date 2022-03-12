@@ -259,43 +259,45 @@ function sanitize_options( $options ) {
 		$sanitized_options['object_cache'] = 'off';
 	}
 
-	$sanitized_options['enable_page_cache']           = ! empty( $options['enable_page_cache'] );
-	$sanitized_options['cache_mobile']                = ! empty( $options['cache_mobile'] );
-	$sanitized_options['cache_mobile_separate_file']  = ! empty( $options['cache_mobile_separate_file'] );
-	$sanitized_options['loggedin_user_cache']         = ! empty( $options['loggedin_user_cache'] );
-	$sanitized_options['gzip_compression']            = ! empty( $options['gzip_compression'] );
-	$sanitized_options['cache_timeout']               = absint( $options['cache_timeout'] );
-	$sanitized_options['auto_configure_htaccess']     = ! empty( $options['auto_configure_htaccess'] );
-	$sanitized_options['rejected_user_agents']        = sanitize_textarea_field( $options['rejected_user_agents'] );
-	$sanitized_options['rejected_cookies']            = sanitize_textarea_field( $options['rejected_cookies'] );
-	$sanitized_options['vary_cookies']                = sanitize_textarea_field( $options['vary_cookies'] );
-	$sanitized_options['rejected_uri']                = sanitize_textarea_field( $options['rejected_uri'] );
-	$sanitized_options['accepted_query_strings']      = sanitize_textarea_field( $options['accepted_query_strings'] );
-	$sanitized_options['purge_additional_pages']      = sanitize_textarea_field( $options['purge_additional_pages'] );
-	$sanitized_options['purge_additional_pages']      = sanitize_textarea_field( $options['purge_additional_pages'] );
-	$sanitized_options['minify_html']                 = ! empty( $options['minify_html'] );
-	$sanitized_options['combine_google_fonts']        = ! empty( $options['combine_google_fonts'] );
-	$sanitized_options['minify_css']                  = ! empty( $options['minify_css'] );
-	$sanitized_options['combine_css']                 = ! empty( $options['combine_css'] );
-	$sanitized_options['critical_css']                = ! empty( $options['critical_css'] );
-	$sanitized_options['excluded_css_files']          = sanitize_textarea_field( $options['excluded_css_files'] );
-	$sanitized_options['minify_js']                   = ! empty( $options['minify_js'] );
-	$sanitized_options['combine_js']                  = ! empty( $options['combine_js'] );
-	$sanitized_options['excluded_js_files']           = sanitize_textarea_field( $options['excluded_js_files'] );
-	$sanitized_options['excluded_js_files']           = sanitize_textarea_field( $options['excluded_js_files'] );
-	$sanitized_options['js_execution_method']         = sanitize_text_field( $options['js_execution_method'] );
-	$sanitized_options['js_execution_optimized_only'] = ! empty( $options['js_execution_optimized_only'] );
-	$sanitized_options['enable_lazy_load']            = ! empty( $options['enable_lazy_load'] );
-	$sanitized_options['lazy_load_post_content']      = ! empty( $options['lazy_load_post_content'] );
-	$sanitized_options['lazy_load_images']            = ! empty( $options['lazy_load_images'] );
-	$sanitized_options['lazy_load_iframes']           = ! empty( $options['lazy_load_iframes'] );
-	$sanitized_options['lazy_load_widgets']           = ! empty( $options['lazy_load_widgets'] );
-	$sanitized_options['lazy_load_post_thumbnail']    = ! empty( $options['lazy_load_post_thumbnail'] );
-	$sanitized_options['lazy_load_avatars']           = ! empty( $options['lazy_load_avatars'] );
-	$sanitized_options['disable_wp_lazy_load']        = ! empty( $options['disable_wp_lazy_load'] );
-	$sanitized_options['disable_wp_embeds']           = ! empty( $options['disable_wp_embeds'] );
-	$sanitized_options['disable_emoji_scripts']       = ! empty( $options['disable_emoji_scripts'] );
-	$sanitized_options['enable_cdn']                  = ! empty( $options['enable_cdn'] );
+	$sanitized_options['enable_page_cache']             = ! empty( $options['enable_page_cache'] );
+	$sanitized_options['cache_mobile']                  = ! empty( $options['cache_mobile'] );
+	$sanitized_options['cache_mobile_separate_file']    = ! empty( $options['cache_mobile_separate_file'] );
+	$sanitized_options['loggedin_user_cache']           = ! empty( $options['loggedin_user_cache'] );
+	$sanitized_options['gzip_compression']              = ! empty( $options['gzip_compression'] );
+	$sanitized_options['cache_timeout']                 = absint( $options['cache_timeout'] );
+	$sanitized_options['auto_configure_htaccess']       = ! empty( $options['auto_configure_htaccess'] );
+	$sanitized_options['rejected_user_agents']          = sanitize_textarea_field( $options['rejected_user_agents'] );
+	$sanitized_options['rejected_cookies']              = sanitize_textarea_field( $options['rejected_cookies'] );
+	$sanitized_options['vary_cookies']                  = sanitize_textarea_field( $options['vary_cookies'] );
+	$sanitized_options['rejected_uri']                  = sanitize_textarea_field( $options['rejected_uri'] );
+	$sanitized_options['accepted_query_strings']        = sanitize_textarea_field( $options['accepted_query_strings'] );
+	$sanitized_options['purge_additional_pages']        = sanitize_textarea_field( $options['purge_additional_pages'] );
+	$sanitized_options['purge_additional_pages']        = sanitize_textarea_field( $options['purge_additional_pages'] );
+	$sanitized_options['minify_html']                   = ! empty( $options['minify_html'] );
+	$sanitized_options['combine_google_fonts']          = ! empty( $options['combine_google_fonts'] );
+	$sanitized_options['minify_css']                    = ! empty( $options['minify_css'] );
+	$sanitized_options['combine_css']                   = ! empty( $options['combine_css'] );
+	$sanitized_options['critical_css']                  = ! empty( $options['critical_css'] );
+	$sanitized_options['critical_css_additional_files'] = sanitize_textarea_field( $options['critical_css_additional_files'] );
+	$sanitized_options['critical_css_excluded_files']   = sanitize_textarea_field( $options['critical_css_excluded_files'] );
+	$sanitized_options['excluded_css_files']            = sanitize_textarea_field( $options['excluded_css_files'] );
+	$sanitized_options['minify_js']                     = ! empty( $options['minify_js'] );
+	$sanitized_options['combine_js']                    = ! empty( $options['combine_js'] );
+	$sanitized_options['excluded_js_files']             = sanitize_textarea_field( $options['excluded_js_files'] );
+	$sanitized_options['excluded_js_files']             = sanitize_textarea_field( $options['excluded_js_files'] );
+	$sanitized_options['js_execution_method']           = sanitize_text_field( $options['js_execution_method'] );
+	$sanitized_options['js_execution_optimized_only']   = ! empty( $options['js_execution_optimized_only'] );
+	$sanitized_options['enable_lazy_load']              = ! empty( $options['enable_lazy_load'] );
+	$sanitized_options['lazy_load_post_content']        = ! empty( $options['lazy_load_post_content'] );
+	$sanitized_options['lazy_load_images']              = ! empty( $options['lazy_load_images'] );
+	$sanitized_options['lazy_load_iframes']             = ! empty( $options['lazy_load_iframes'] );
+	$sanitized_options['lazy_load_widgets']             = ! empty( $options['lazy_load_widgets'] );
+	$sanitized_options['lazy_load_post_thumbnail']      = ! empty( $options['lazy_load_post_thumbnail'] );
+	$sanitized_options['lazy_load_avatars']             = ! empty( $options['lazy_load_avatars'] );
+	$sanitized_options['disable_wp_lazy_load']          = ! empty( $options['disable_wp_lazy_load'] );
+	$sanitized_options['disable_wp_embeds']             = ! empty( $options['disable_wp_embeds'] );
+	$sanitized_options['disable_emoji_scripts']         = ! empty( $options['disable_emoji_scripts'] );
+	$sanitized_options['enable_cdn']                    = ! empty( $options['enable_cdn'] );
 
 	// convert TTL in minute
 	if ( $options['cache_timeout'] > 0 && isset( $options['cache_timeout_interval'] ) ) {
@@ -363,6 +365,10 @@ function sanitize_options( $options ) {
 	$sanitized_options['cache_footprint']                = ! empty( $options['cache_footprint'] );
 	$sanitized_options['enable_google_tracking']         = ! empty( $options['enable_google_tracking'] );
 	$sanitized_options['enable_fb_tracking']             = ! empty( $options['enable_fb_tracking'] );
+
+	if ( isset( $options['critical_css_appended_content'] ) ) {
+		$sanitized_options['critical_css_appended_content'] = sanitize_css( $options['critical_css_appended_content'] );
+	}
 
 	if ( isset( $options['critical_css_fallback'] ) ) {
 		$sanitized_options['critical_css_fallback'] = sanitize_css( $options['critical_css_fallback'] );

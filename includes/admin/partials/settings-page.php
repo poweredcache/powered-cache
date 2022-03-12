@@ -679,7 +679,60 @@ $settings = \PoweredCache\Utils\get_settings();
 							</div>
 
 							<div style=" <?php echo( ! $settings['critical_css'] ? 'display:none' : '' ); ?>" tabindex="0" id="critical_css_fallback_controls">
-
+								<div class="sui-row">
+									<div class="sui-col-md-8">
+										<div class="sui-form-field">
+											<label for="additional_critical_css_files" class="sui-label"><i><?php esc_html_e( 'Additonal files to critical (one per line)', 'powered-cache' ); ?></i></label>
+											<textarea
+													id="critical_css_additional_files"
+													name="critical_css_additional_files"
+													class="sui-form-control"
+													aria-labelledby="label-unique-id"
+													aria-describedby="critical_css_additional_files_description"
+													rows="5"
+											><?php echo  esc_textarea( $settings['critical_css_additional_files'] ); // phpcs:ignore ?></textarea>
+											<span id="critical_css_additional_files_description" class="sui-description">
+												<?php esc_html_e( 'Critical CSS uses resources found in the head section of the page. If you need to include additional resources, add them here.', 'powered-cache' ); ?>
+											</span>
+										</div>
+									</div>
+								</div>
+								<div class="sui-row">
+									<div class="sui-col-md-8">
+										<div class="sui-form-field">
+											<label for="critical_css_excluded_files" class="sui-label"><i><?php esc_html_e( 'Excluded files from critical (one per line)', 'powered-cache' ); ?></i></label>
+											<textarea
+													id="critical_css_excluded_files"
+													name="critical_css_excluded_files"
+													class="sui-form-control"
+													aria-labelledby="label-unique-id"
+													aria-describedby="critical_css_excluded_files_description"
+													rows="5"
+											><?php echo esc_textarea( $settings['critical_css_excluded_files'] ); // phpcs:ignore ?></textarea>
+											<span id="critical_css_excluded_files_description" class="sui-description">
+												<?php esc_html_e( 'Ignore these files during the Critical CSS generation.', 'powered-cache' ); ?>
+											</span>
+										</div>
+									</div>
+								</div>
+								<div class="sui-row">
+									<div class="sui-col-md-8">
+										<div class="sui-form-field">
+											<label for="critical_css_appended_content" class="sui-label"><i><?php esc_html_e( 'Append to Critical CSS', 'powered-cache' ); ?></i></label>
+											<textarea
+													id="critical_css_appended_content"
+													name="critical_css_appended_content"
+													class="sui-form-control"
+													aria-labelledby="label-unique-id"
+													aria-describedby="critical_css_appended_content_description"
+													rows="5"
+											><?php echo wp_unslash( sanitize_css( $settings['critical_css_appended_content'] ) ); // phpcs:ignore ?></textarea>
+											<span id="critical_css_appended_content_description" class="sui-description">
+												<?php esc_html_e( 'Extend Critical CSS by appending custom CSS here.', 'powered-cache' ); ?>
+											</span>
+										</div>
+									</div>
+								</div>
 								<div class="sui-row">
 									<div class="sui-col-md-8">
 										<div class="sui-form-field">
@@ -698,6 +751,7 @@ $settings = \PoweredCache\Utils\get_settings();
 										</div>
 									</div>
 								</div>
+
 							</div>
 						</div>
 					</div>
