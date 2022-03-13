@@ -1,6 +1,6 @@
 === Powered Cache – Caching and Optimization for WordPress – Easily Improve PageSpeed & Web Vitals Score ===
 Contributors:  poweredcache, skopco, m_uysl
-Tags: powered cache, web vitals, page speed, optimization, cdn, cache, caching, object cache, minify
+Tags: cache, caching, web vitals, performance, fastest, page speed, optimization, cdn, object cache, minify, powered cache
 Requires at least:  5.0
 Tested up to:  5.9
 Stable tag:  2.0.4
@@ -72,7 +72,8 @@ __Facebook Tracking__: Powered Cache will host Google scripts on your server to 
 = Premium Features =
 Here is a list of the amazing features included in Powered Cache Premium:
 
-- Sitemap Preloading
+- Critical CSS & Load CSS Asynchronously.
+- Sitemap Preloading.
 - Scheduled Database cleanups.
 - Varnish extension.
 - Google tracking extension.
