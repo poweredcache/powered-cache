@@ -133,6 +133,9 @@ class Preloader {
 	 * Setup preload
 	 */
 	public function setup_preload_queue() {
+		// cancel existing process before populating
+		$this->cache_preloader->cancel_process();
+
 		if ( POWERED_CACHE_IS_NETWORK ) {
 			$sites = get_sites( [ 'fields' => 'ids' ] );
 			foreach ( $sites as $site_id ) {
@@ -144,6 +147,12 @@ class Preloader {
 		} else {
 			$this->populate_preload_queue();
 		}
+
+		$this->cache_preloader->save()->dispatch();
+
+		if ( $this->settings['enable_sitemap_preload'] && function_exists( '\PoweredCachePremium\Utils\preload_sitemap' ) ) {
+			\PoweredCachePremium\Utils\preload_sitemap();
+		}
 	}
 
 	/**
@@ -151,9 +160,6 @@ class Preloader {
 	 */
 	protected function populate_preload_queue() {
 		$preload_urls = [];
-
-		// cancel existing process before populating
-		$this->cache_preloader->cancel_process();
 
 		if ( $this->settings['preload_homepage'] ) {
 			$front_page = get_option( 'page_on_front' );
@@ -193,12 +199,6 @@ class Preloader {
 
 		foreach ( $preload_urls as $url ) {
 			$this->cache_preloader->push_to_queue( $url );
-		}
-
-		$this->cache_preloader->save()->dispatch();
-
-		if ( $this->settings['enable_sitemap_preload'] && function_exists( '\PoweredCachePremium\Utils\preload_sitemap' ) ) {
-			\PoweredCachePremium\Utils\preload_sitemap();
 		}
 	}
 
