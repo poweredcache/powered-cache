@@ -27,6 +27,7 @@ function load_compat_files() {
 	require_once POWERED_CACHE_COMPAT_DIR . 'plugins/cookie-notice.php';
 	require_once POWERED_CACHE_COMPAT_DIR . 'plugins/eu-cookie-law.php';
 	require_once POWERED_CACHE_COMPAT_DIR . 'plugins/gdpr.php';
+	require_once POWERED_CACHE_COMPAT_DIR . 'plugins/jetpack-boost.php';
 
 	if ( is_multisite() && defined( 'SUNRISE' ) && SUNRISE ) {
 		require POWERED_CACHE_COMPAT_DIR . 'domain-mapping.php';
@@ -41,7 +42,7 @@ function load_compat_files() {
  */
 function add_conflict_message( $plugin_name, $feature ) {
 	?>
-	<div class="sui-notice sui-notice-warning">
+	<div class="sui-notice sui-notice-warning sui-padding">
 
 		<div class="sui-notice-content">
 
