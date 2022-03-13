@@ -649,7 +649,7 @@ $settings = \PoweredCache\Utils\get_settings();
 					</div>
 
 					<!-- Critical CSS -->
-						<div class="sui-box-settings-row <?php echo( ! is_premium() ? 'sui-disabled' : '' ); ?>">
+						<div class="<?php echo esc_attr( apply_filters( 'powered_cache_admin_page_fo_critical_css_classes', 'sui-box-settings-row ' ) ); ?> <?php echo( ! is_premium() ? 'sui-disabled' : '' ); ?>">
 							<div class="sui-box-settings-col-1">
 								<span class="sui-settings-label"><?php esc_html_e( 'Critical CSS', 'powered-cache' ); ?>
 									<?php if ( ! is_premium() ) : ?>

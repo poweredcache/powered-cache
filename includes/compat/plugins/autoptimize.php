@@ -43,7 +43,7 @@ if ( defined( 'AUTOPTIMIZE_PLUGIN_VERSION' ) && class_exists( '\autoptimizeCache
 	 */
 	function add_notice() {
 		?>
-		<div class="sui-notice sui-notice-warning">
+		<div class="sui-notice sui-notice-warning sui-padding">
 			<div class="sui-notice-content">
 
 				<div class="sui-notice-message">
@@ -74,6 +74,11 @@ if ( defined( 'AUTOPTIMIZE_PLUGIN_VERSION' ) && class_exists( '\autoptimizeCache
 		add_action( 'powered_cache_admin_page_fo_js_classes', __NAMESPACE__ . '\\disable_ui_option' );
 		add_filter( 'powered_cache_fo_disable_js_minify', '__return_true' );
 		add_filter( 'powered_cache_fo_disable_js_combine', '__return_true' );
+	}
+
+	if ( 'on' === get_option( 'autoptimize_css_defer' ) ) {
+		add_action( 'powered_cache_admin_page_fo_critical_css_classes', __NAMESPACE__ . '\\disable_ui_option' );
+		add_filter( 'powered_cache_critical_css_disable', '__return_true' );
 	}
 
 
