@@ -156,6 +156,18 @@ class Preloader {
 		$this->cache_preloader->cancel_process();
 
 		if ( $this->settings['preload_homepage'] ) {
+			$front_page = get_option( 'page_on_front' );
+			if ( ! empty( $front_page ) ) {
+				$preload_urls[] = get_permalink( $front_page );
+				\PoweredCache\Utils\log( sprintf( 'Front page URL added to preload queue: %s', get_permalink( $front_page ) ) );
+			}
+
+			$posts_page = get_option( 'page_for_posts' );
+			if ( ! empty( $posts_page ) ) {
+				$preload_urls[] = get_permalink( $posts_page );
+				\PoweredCache\Utils\log( sprintf( 'Posts Page URL added to preload queue: %s', get_permalink( $posts_page ) ) );
+			}
+
 			$preload_urls[] = get_home_url();
 			\PoweredCache\Utils\log( sprintf( 'Home URL added to preload queue: %s', get_home_url() ) );
 		}
