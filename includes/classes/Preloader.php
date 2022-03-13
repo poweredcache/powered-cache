@@ -158,18 +158,25 @@ class Preloader {
 		if ( $this->settings['preload_homepage'] ) {
 			$front_page = get_option( 'page_on_front' );
 			if ( ! empty( $front_page ) ) {
-				$preload_urls[] = get_permalink( $front_page );
-				\PoweredCache\Utils\log( sprintf( 'Front page URL added to preload queue: %s', get_permalink( $front_page ) ) );
+				$front_page_url = get_permalink( $front_page );
+				$preload_urls[] = $front_page_url;
+				\PoweredCache\Utils\log( sprintf( 'Front page URL added to preload queue: %s', $front_page_url ) );
 			}
 
 			$posts_page = get_option( 'page_for_posts' );
 			if ( ! empty( $posts_page ) ) {
-				$preload_urls[] = get_permalink( $posts_page );
-				\PoweredCache\Utils\log( sprintf( 'Posts Page URL added to preload queue: %s', get_permalink( $posts_page ) ) );
+				$posts_page_url = get_permalink( $posts_page );
+				$preload_urls[] = $posts_page_url;
+				\PoweredCache\Utils\log( sprintf( 'Posts Page URL added to preload queue: %s', $posts_page_url ) );
 			}
 
-			$preload_urls[] = get_home_url();
-			\PoweredCache\Utils\log( sprintf( 'Home URL added to preload queue: %s', get_home_url() ) );
+			/**
+			 * trailingslashit important here,
+			 * likely redirection is not followed for non-blocking preload request
+			 */
+			$home_url       = trailingslashit( get_home_url() );
+			$preload_urls[] = $home_url;
+			\PoweredCache\Utils\log( sprintf( 'Home URL added to preload queue: %s', $home_url ) );
 		}
 
 		if ( $this->settings['preload_public_posts'] ) {
