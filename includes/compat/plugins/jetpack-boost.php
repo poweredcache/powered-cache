@@ -45,21 +45,3 @@ if ( class_exists( '\Automattic\Jetpack_Boost\Modules\Lazy_Images\Lazy_Images' )
 	add_filter( 'powered_cache_lazy_load_enabled', '__return_false' );
 	add_filter( 'powered_cache_disable_native_lazyload', '__return_false' );
 }
-
-if ( class_exists( '\Automattic\Jetpack_Boost\Modules\Critical_CSS\Critical_CSS' ) && ! empty( $boost_config['critical-css']['enabled'] ) ) {
-	add_action(
-		'powered_cache_admin_page_before_file_optimization',
-		function () {
-			add_conflict_message( 'Jetpack Boost', esc_html__( 'Critical CSS', 'powered-cache' ) );
-		}
-	);
-
-	add_filter(
-		'powered_cache_admin_page_fo_critical_css_classes',
-		function ( $classes ) {
-			return $classes . ' sui-disabled';
-		}
-	);
-
-	add_filter( 'powered_cache_critical_css_disable', '__return_true' );
-}

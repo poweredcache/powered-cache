@@ -59,28 +59,22 @@ if ( defined( 'AUTOPTIMIZE_PLUGIN_VERSION' ) && class_exists( '\autoptimizeCache
 	}
 
 	if ( 'on' === get_option( 'autoptimize_html' ) ) {
-		add_action( 'powered_cache_admin_page_fo_basic_settings_classes', __NAMESPACE__ . '\\disable_ui_option' );
+		add_filter( 'powered_cache_admin_page_fo_basic_settings_classes', __NAMESPACE__ . '\\disable_ui_option' );
 		add_filter( 'powered_cache_fo_disable_html_minify', '__return_true' );
 	}
 
 	if ( 'on' === get_option( 'autoptimize_css' ) ) {
-		add_action( 'powered_cache_admin_page_fo_css_classes', __NAMESPACE__ . '\\disable_ui_option' );
+		add_filter( 'powered_cache_admin_page_fo_css_classes', __NAMESPACE__ . '\\disable_ui_option' );
 		add_filter( 'powered_cache_fo_disable_css_minify', '__return_true' );
 		add_filter( 'powered_cache_fo_disable_css_combine', '__return_true' );
 	}
 
 
 	if ( 'on' === get_option( 'autoptimize_js' ) ) {
-		add_action( 'powered_cache_admin_page_fo_js_classes', __NAMESPACE__ . '\\disable_ui_option' );
+		add_filter( 'powered_cache_admin_page_fo_js_classes', __NAMESPACE__ . '\\disable_ui_option' );
 		add_filter( 'powered_cache_fo_disable_js_minify', '__return_true' );
 		add_filter( 'powered_cache_fo_disable_js_combine', '__return_true' );
 	}
-
-	if ( 'on' === get_option( 'autoptimize_css_defer' ) ) {
-		add_action( 'powered_cache_admin_page_fo_critical_css_classes', __NAMESPACE__ . '\\disable_ui_option' );
-		add_filter( 'powered_cache_critical_css_disable', '__return_true' );
-	}
-
 
 	/**
 	 * Disable UI element
