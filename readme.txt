@@ -1,9 +1,9 @@
 === Powered Cache – Caching and Optimization for WordPress – Easily Improve PageSpeed & Web Vitals Score ===
 Contributors:  poweredcache, skopco, m_uysl
 Tags: cache, caching, web vitals, performance, fastest, page speed, optimization, cdn, object cache, minify, powered cache
-Requires at least:  5.0
-Tested up to:  5.9
-Stable tag:  2.0.4
+Requires at least:  5.1
+Tested up to:  5.9.2
+Stable tag:  2.1
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -167,6 +167,19 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 2.1 (March 14,2022) =
+- Added: Critical CSS Settings.
+- Added: Post specific file optimization options.
+- Added: Jetpack boost compatibility
+- Improvements: Settings page UI on mobile.
+- Improvements: CDN Integration.
+- Improvements: Cache Preloading.
+- Fixed: Google fonts combine.
+- Fixed: CSS minification should work when the group contains a single file.
+- Fixed: CDN integration warnings.
+- Added: Automatic CORS configuration for .htaccess and nginx.
+- Bumped minimum WP requirement to 5.1
 
 = 2.0.4 =
 - Tested with WP 5.9
