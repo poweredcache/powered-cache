@@ -2,5 +2,9 @@
     <custom-fields>
         <custom-field action="ignore">powered_cache_disable_cache</custom-field>
         <custom-field action="ignore">powered_cache_disable_lazyload</custom-field>
+        <custom-field action="ignore">powered_cache_specific_critical_css</custom-field>
+        <custom-field action="ignore">powered_cache_disable_critical_css</custom-field>
+        <custom-field action="ignore">powered_cache_disable_css_optimization</custom-field>
+        <custom-field action="ignore">powered_cache_disable_js_optimization</custom-field>
     </custom-fields>
 </wpml-config>
