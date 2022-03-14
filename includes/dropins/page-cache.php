@@ -491,7 +491,8 @@ function powered_cache_index_file( $content_type = 'text/html' ) {
 				if ( ! empty( $_COOKIE[ $key ] ) ) {
 					foreach ( $vary_cookie as $vary_sub_cookie ) {
 						if ( isset( $_COOKIE[ $key ][ $vary_sub_cookie ] ) ) {
-							$cookie_file_name .= strtolower( $key . $vary_sub_cookie . $_COOKIE[ $key ][ $vary_sub_cookie ] );
+							$cookie_value = preg_replace( '/[^A-Za-z0-9. -]/', '', $_COOKIE[ $key ][ $vary_sub_cookie ] );
+							$cookie_file_name .= strtolower( $key . $vary_sub_cookie . $cookie_value);
 						}
 					}
 				}
@@ -500,7 +501,8 @@ function powered_cache_index_file( $content_type = 'text/html' ) {
 			}
 
 			if ( isset( $_COOKIE[ $vary_cookie ] ) && ! empty( $_COOKIE[ $vary_cookie ] ) ) {
-				$cookie_file_name .= strtolower( $vary_cookie . $_COOKIE[ $vary_cookie ] );
+				$cookie_value = preg_replace( '/[^A-Za-z0-9. -]/', '', $_COOKIE[ $vary_cookie ] );
+				$cookie_file_name .= strtolower( $vary_cookie . $cookie_value );
 			}
 		}
 
