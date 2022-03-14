@@ -204,6 +204,10 @@ function admin_scripts( $hook ) {
  */
 function block_editor_assets() {
 
+	if ( ! current_user_can( 'edit_others_posts' ) ) {
+		return;
+	}
+
 	/**
 	 * Min. WP 5.3 required for block editor plugin due to useSelect
 	 * Likely the older version of react didn't support hooks.

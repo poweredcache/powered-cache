@@ -80,6 +80,11 @@ class MetaBox {
 	 * Add metabox
 	 */
 	public function add_meta_boxes() {
+
+		if ( ! current_user_can( 'edit_others_posts' ) ) {
+			return;
+		}
+
 		$is_block_editor_compatible = false;
 		$back_compat                = true;
 
@@ -187,7 +192,7 @@ class MetaBox {
 						'single'        => true,
 						'type'          => 'boolean',
 						'auth_callback' => function () {
-							return current_user_can( 'edit_posts' );
+							return current_user_can( 'edit_others_posts' );
 						},
 					]
 				);
@@ -202,7 +207,7 @@ class MetaBox {
 						'single'        => true,
 						'type'          => 'boolean',
 						'auth_callback' => function () {
-							return current_user_can( 'edit_posts' );
+							return current_user_can( 'edit_others_posts' );
 						},
 					]
 				);
@@ -218,7 +223,7 @@ class MetaBox {
 						'default'       => false,
 						'type'          => 'boolean',
 						'auth_callback' => function () {
-							return current_user_can( 'edit_posts' );
+							return current_user_can( 'edit_others_posts' );
 						},
 					]
 				);
@@ -232,7 +237,7 @@ class MetaBox {
 						'default'       => false,
 						'type'          => 'boolean',
 						'auth_callback' => function () {
-							return current_user_can( 'edit_posts' );
+							return current_user_can( 'edit_others_posts' );
 						},
 					]
 				);
@@ -248,7 +253,7 @@ class MetaBox {
 						'default'       => false,
 						'type'          => 'boolean',
 						'auth_callback' => function () {
-							return current_user_can( 'edit_posts' );
+							return current_user_can( 'edit_others_posts' );
 						},
 					]
 				);
@@ -264,7 +269,7 @@ class MetaBox {
 						'default'       => false,
 						'type'          => 'boolean',
 						'auth_callback' => function () {
-							return current_user_can( 'edit_posts' );
+							return current_user_can( 'edit_others_posts' );
 						},
 					]
 				);
@@ -296,7 +301,7 @@ class MetaBox {
 		}
 
 		// Check user has permission to edit.
-		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+		if ( ! current_user_can( 'edit_others_posts' ) ) {
 			return;
 		}
 
@@ -349,7 +354,7 @@ class MetaBox {
 	 * @since 2.1
 	 */
 	public function maybe_remove_default_meta( $post, $request ) {
-		if ( ! current_user_can( 'edit_post', $post->ID ) ) {
+		if ( ! current_user_can( 'edit_others_posts' ) ) {
 			return;
 		}
 
