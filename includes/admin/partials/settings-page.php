@@ -1146,6 +1146,10 @@ $settings = \PoweredCache\Utils\get_settings();
 								if ( empty( $settings['cdn_hostname'] ) ) {
 									$settings['cdn_hostname'] = [ '' ];
 								}
+
+								if ( empty( $settings['cdn_zone'] ) ) {
+									$settings['cdn_zone'] = [ '' ];
+								}
 								?>
 
 								<?php foreach ( $settings['cdn_hostname'] as $key => $cdn ) : ?>

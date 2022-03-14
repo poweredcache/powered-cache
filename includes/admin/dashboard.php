@@ -329,6 +329,14 @@ function sanitize_options( $options ) {
 		}
 	}
 
+	if ( empty( $cdn_hostname ) ) {
+		$cdn_hostname = [ '' ];
+	}
+
+	if ( empty( $cdn_zone ) ) {
+		$cdn_zone = [ '' ];
+	}
+
 	$sanitized_options['cdn_hostname']                   = $cdn_hostname;
 	$sanitized_options['cdn_zone']                       = $cdn_zone;
 	$sanitized_options['cdn_rejected_files']             = sanitize_textarea_field( $options['cdn_rejected_files'] );
