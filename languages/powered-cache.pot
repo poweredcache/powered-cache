@@ -2,16 +2,16 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Powered Cache 2.1\n"
+"Project-Id-Version: Powered Cache 2.1.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/powered-cache\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-03-15T06:57:10+00:00\n"
+"POT-Creation-Date: 2022-03-28T12:02:08+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.5.0\n"
+"X-Generator: WP-CLI 2.6.0\n"
 "X-Domain: powered-cache\n"
 
 #. Plugin Name of the plugin
@@ -19,7 +19,6 @@ msgstr ""
 #: includes/admin/dashboard.php:422
 #: includes/admin/partials/settings-page.php:38
 #: includes/classes/MetaBox.php:98
-#: assets/js/admin/metabox.js:40
 msgid "Powered Cache"
 msgstr ""
 
@@ -242,7 +241,6 @@ msgstr ""
 
 #: includes/admin/partials/modals.php:29
 #: includes/admin/partials/settings-page.php:2267
-#: assets/js/admin/modules/modal.js:33
 msgid "Diagnostic"
 msgstr ""
 
@@ -1202,7 +1200,6 @@ msgid "Powered Cache Status"
 msgstr ""
 
 #: includes/classes/MetaBox.php:129
-#: assets/js/admin/metabox.js:45
 msgid "Don't cache this post"
 msgstr ""
 
@@ -1211,7 +1208,6 @@ msgid "Disable Lazy Load"
 msgstr ""
 
 #: includes/classes/MetaBox.php:137
-#: assets/js/admin/metabox.js:57
 msgid "Disable lazy loading for this post"
 msgstr ""
 
@@ -1232,7 +1228,6 @@ msgstr ""
 
 #: includes/classes/MetaBox.php:168
 #: includes/classes/MetaBox.php:170
-#: assets/js/admin/metabox.js:109
 msgid "Generate specific Critical CSS"
 msgstr ""
 
@@ -1303,20 +1298,4 @@ msgstr ""
 
 #: includes/utils.php:416
 msgid "Monthly"
-msgstr ""
-
-#: assets/js/admin/metabox.js:69
-msgid "Disable CSS optimization"
-msgstr ""
-
-#: assets/js/admin/metabox.js:83
-msgid "Disable JS optimization"
-msgstr ""
-
-#: assets/js/admin/metabox.js:95
-msgid "Disable Critical CSS for this post"
-msgstr ""
-
-#: assets/js/admin/modules/modal.js:41
-msgid "Running Diagnostic Tests…"
 msgstr ""
