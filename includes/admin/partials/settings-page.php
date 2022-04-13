@@ -1154,7 +1154,7 @@ $settings = \PoweredCache\Utils\get_settings();
 
 								<?php foreach ( $settings['cdn_hostname'] as $key => $cdn ) : ?>
 									<div id="cdn-zone-<?php echo absint( $key ); ?>" class="cdn-zone sui-form-field">
-										<input id="cdn_hostname" value="<?php echo esc_url( $cdn ); ?>" name="cdn_hostname[]" style="width: 300px" placeholder="https://cdn.example.org" class="cdn_hostname sui-form-control sui-input-md sui-field-has-suffix" aria-labelledby="label-unique-id">
+										<input id="cdn_hostname" value="<?php echo esc_attr( $cdn ); ?>" name="cdn_hostname[]" style="width: 300px" placeholder="cdn.example.org" class="cdn_hostname sui-form-control sui-input-md sui-field-has-suffix" aria-labelledby="label-unique-id">
 										<span><?php esc_html_e( 'for', 'powered-cache' ); ?></span>
 										<span class="sui-field-suffix" style="width: 120px">
 											<div class="sui-form-field sui-input-md">
