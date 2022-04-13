@@ -61,10 +61,12 @@ $concat_types     = array(
 	'js'  => 'application/javascript',
 );
 
-/*
- Constants */
+
+$current_dir = file_optimizer_normalize_path( realpath( dirname( __DIR__ ) ) );
+
+/* Constants */
 // By default determine the document root from this scripts path in the plugins dir (you can hardcode this define)
-define( 'CONCAT_FILES_ROOT', substr( dirname( __DIR__ ), 0, strpos( dirname( __DIR__ ), '/wp-content' ) ) );
+define( 'CONCAT_FILES_ROOT', substr( $current_dir, 0, strpos( $current_dir, '/wp-content' ) ) );
 define( 'POWERED_CACHE_FO_CACHE_DIR', CONCAT_FILES_ROOT . '/wp-content/cache/min/' );
 
 if ( ! file_exists( POWERED_CACHE_FO_CACHE_DIR ) ) {
@@ -342,3 +344,35 @@ if ( 'application/javascript' == $mime_type ) {
 }
 
 file_put_contents( $cache_file_name, $pre_output . $output );
+
+
+/**
+ * Normalize a filesystem path.
+ *
+ * On windows systems, replaces backslashes with forward slashes
+ * and forces upper-case drive letters.
+ * Allows for two leading slashes for Windows network shares, but
+ * ensures that all other duplicate slashes are reduced to a single.
+ *
+ * @param string $path Path to normalize.
+ *
+ * @return string Normalized path.
+ * @see wp_normalize_path
+ *
+ */
+function file_optimizer_normalize_path( $path ) {
+	$wrapper = '';
+
+	// Standardise all paths to use '/'.
+	$path = str_replace( '\\', '/', $path );
+
+	// Replace multiple slashes down to a singular, allowing for network shares having two slashes.
+	$path = preg_replace( '|(?<=.)/+|', '/', $path );
+
+	// Windows paths should uppercase the drive letter.
+	if ( ':' === substr( $path, 1, 1 ) ) {
+		$path = ucfirst( $path );
+	}
+
+	return $wrapper . $path;
+}
