@@ -56,6 +56,7 @@ class CSS extends WP_Styles {
 	 * @return string[]
 	 */
 	public function do_items( $handles = false, $group = false ) {
+		$abspath     = wp_normalize_path( ABSPATH );
 		$handles     = false === $handles ? $this->queue : (array) $handles;
 		$stylesheets = array();
 		/**
@@ -121,12 +122,12 @@ class CSS extends WP_Styles {
 			}
 
 			// Concat and canonicalize the paths only for
-			// existing scripts that aren't outside ABSPATH
+			// existing scripts that aren't outside $abspath
 			$css_realpath = Helper::realpath( $css_url, $siteurl );
-			if ( ! $css_realpath || 0 !== strpos( $css_realpath, ABSPATH ) ) {
+			if ( ! $css_realpath || 0 !== strpos( $css_realpath, $abspath ) ) {
 				$do_concat = false;
 			} else {
-				$css_url_parsed['path'] = substr( $css_realpath, strlen( ABSPATH ) - 1 );
+				$css_url_parsed['path'] = substr( $css_realpath, strlen( $abspath ) - 1 );
 			}
 
 			if ( Helper::is_excluded_css( $css_url ) ) {
@@ -177,8 +178,8 @@ class CSS extends WP_Styles {
 					continue;
 				} elseif ( count( $css ) > 1 ) {
 					$paths    = array_map(
-						function ( $url ) {
-							return ABSPATH . $url;
+						function ( $url ) use ( $abspath ) {
+							return $abspath . $url;
 						},
 						$css
 					);
