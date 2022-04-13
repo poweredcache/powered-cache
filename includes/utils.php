@@ -78,6 +78,7 @@ function get_settings( $force_network_wide = false ) {
 		'js_execution_method'            => 'blocking',
 		'js_execution_optimized_only'    => true,
 		// media optimization
+		'image_optimization'             => false,
 		// lazyload
 		'enable_lazy_load'               => false,
 		'lazy_load_post_content'         => true,

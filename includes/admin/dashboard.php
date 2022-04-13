@@ -287,6 +287,7 @@ function sanitize_options( $options ) {
 	$sanitized_options['excluded_js_files']             = sanitize_textarea_field( $options['excluded_js_files'] );
 	$sanitized_options['js_execution_method']           = sanitize_text_field( $options['js_execution_method'] );
 	$sanitized_options['js_execution_optimized_only']   = ! empty( $options['js_execution_optimized_only'] );
+	$sanitized_options['image_optimization']            = ! empty( $options['image_optimization'] );
 	$sanitized_options['enable_lazy_load']              = ! empty( $options['enable_lazy_load'] );
 	$sanitized_options['lazy_load_post_content']        = ! empty( $options['lazy_load_post_content'] );
 	$sanitized_options['lazy_load_images']              = ! empty( $options['lazy_load_images'] );
