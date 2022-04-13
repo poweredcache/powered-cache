@@ -67,7 +67,7 @@ __Cloudflare__: Cloudflare compatibility and functionalities ***Free***
 __Heartbeat__: Manage the frequency of the WordPress Heartbeat API. ***Free***
 __Varnish__: Varnish cache purging ***Premium only***
 __Google Tracking__: Powered Cache will host Google scripts on your server to help satisfy the PageSpeed recommendation. ***Premium only***
-__Facebook Tracking__: Powered Cache will host Google scripts on your server to help satisfy the PageSpeed recommendation. ***Premium only***
+__Facebook Tracking__: Powered Cache will host Facebook scripts on your server to help satisfy the PageSpeed recommendation. ***Premium only***
 
 = Premium Features =
 Here is a list of the amazing features included in Powered Cache Premium:
