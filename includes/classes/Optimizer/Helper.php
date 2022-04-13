@@ -65,7 +65,7 @@ class Helper {
 			return wp_normalize_path( realpath( ABSPATH . $url_path_without_subdir ) );
 		}
 
-		return wp_normalize_path( ealpath( ABSPATH . $url_path ) );
+		return wp_normalize_path( realpath( ABSPATH . $url_path ) );
 	}
 
 	/**
