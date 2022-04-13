@@ -64,22 +64,7 @@ class CDN {
 			return;
 		}
 
-		add_filter( 'wp_get_attachment_url', array( $this, 'cdn_url' ), 9999 );
-		add_filter( 'stylesheet_uri', array( $this, 'cdn_url' ), 9999 );
-		add_filter( 'smilies_src', array( $this, 'cdn_url' ), 9999 );
-		add_filter( 'bp_core_fetch_avatar_url', array( $this, 'cdn_url' ), 9999 );
-		add_filter( 'style_loader_src', array( $this, 'cdn_url' ), 9999 );
-		add_filter( 'script_loader_src', array( $this, 'cdn_url' ), 9999 );
-		add_filter( 'powered_cache_cdn_assets', array( $this, 'cdn_url' ), 9999 );
-		add_filter( 'wp_calculate_image_srcset', array( $this, 'srcset_url' ), 9999 );
-		add_filter( 'wp_get_attachment_image_src', array( $this, 'attachment_image_src' ), 9999 );
-		add_filter( 'the_content', array( $this, 'cdn_images' ), 9999 );
-		add_filter( 'post_thumbnail_html', array( $this, 'cdn_images' ), 9999 );
-		add_filter( 'get_avatar', array( $this, 'cdn_images' ), 9999 );
-		add_filter( 'bp_core_fetch_avatar', array( $this, 'cdn_images' ), 9999 );
-		add_filter( 'widget_text', array( $this, 'cdn_images' ), 9999 );
-		add_filter( 'media_image', array( $this, 'cdn_images' ), 9999 );
-		add_filter( 'powered_cache_page_caching_buffer', array( $this, 'cdn_images' ), 9999 );
+		add_action( 'setup_theme', [ $this, 'start_buffer' ] );
 		add_filter( 'powered_cache_fo_optimized_url', array( $this, 'cdn_optimizer_url' ), 9999, 2 );
 
 		/**
@@ -90,6 +75,153 @@ class CDN {
 		 * @since 1.0
 		 */
 		do_action( 'powered_cache_cdn_setup' );
+	}
+
+	/**
+	 * Start output buffering
+	 *
+	 * @since 2.2
+	 */
+	public function start_buffer() {
+		ob_start( 'self::end_buffering' );
+	}
+
+	/**
+	 * Replace origin URLs with CDN.
+	 *
+	 * @param string $contents Output buffer.
+	 * @param int    $phase    Bitmask of PHP_OUTPUT_HANDLER_* constants.
+	 *
+	 * @return string|string[]|null
+	 * @since 2.2
+	 */
+	private static function end_buffering( $contents, $phase ) {
+		if ( $phase & PHP_OUTPUT_HANDLER_FINAL || $phase & PHP_OUTPUT_HANDLER_END ) {
+
+			if ( ! self::skip_cdn_integration() ) {
+				$rewritten_contents = self::rewriter( $contents );
+
+				return $rewritten_contents;
+			}
+		}
+
+		return $contents;
+	}
+
+	/**
+	 * Whether integrate or not integrate CDN.
+	 *
+	 * @return bool
+	 * @since 2.2
+	 */
+	private static function skip_cdn_integration() {
+		// check request method
+		if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || 'GET' !== $_SERVER['REQUEST_METHOD'] ) {
+			return true;
+		}
+
+		// check conditional tags
+		if ( is_admin() || is_trackback() || is_robots() || is_preview() ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Rewrite contents
+	 *
+	 * @param string $contents HTML Output.
+	 *
+	 * @return string|string[]|null
+	 * @since 2.2
+	 */
+	public static function rewriter( $contents ) {
+		// check rewrite requirements
+		if ( ! is_string( $contents ) || empty( self::get_file_extensions() ) ) {
+			return $contents;
+		}
+
+		$included_file_extensions_regex = quotemeta( implode( '|', self::get_file_extensions() ) );
+		$urls_regex                     = '#(?:(?:[\"\'\s=>,;]|url\()\K|^)[^\"\'\s(=>,;]+(' . $included_file_extensions_regex . ')(\?[^\/?\\\"\'\s)>,]+)?(?:(?=\/?[?\\\"\'\s)>,&])|$)#i';
+		$rewritten_contents             = preg_replace_callback( $urls_regex, 'self::rewrite_url', $contents );
+
+		return $rewritten_contents;
+	}
+
+	/**
+	 * Rewrite the matched url.
+	 *
+	 * @param array $matches Matched part of content.
+	 *
+	 * @return mixed|string
+	 * @since 2.2
+	 */
+	private static function rewrite_url( $matches ) {
+		$file_url       = $matches[0];
+		$site_hostname  = ( ! empty( $_SERVER['HTTP_HOST'] ) ) ? $_SERVER['HTTP_HOST'] : wp_parse_url( home_url(), PHP_URL_HOST );
+		$site_hostnames = (array) apply_filters( 'cdn_enabler_site_hostnames', array( $site_hostname ) );
+
+		$zone         = self::get_zone_by_ext( $matches[1] );
+		$cdn_hostname = self::get_best_possible_cdn_host( $zone );
+		if ( empty( $cdn_hostname ) ) {
+			return $file_url;
+		}
+
+		// if excluded or already using CDN hostname
+		if ( self::is_excluded( $file_url ) || false !== stripos( $file_url, $cdn_hostname ) ) {
+			return $file_url;
+		}
+
+		// rewrite full URL (e.g. https://www.example.com/wp..., https:\/\/www.example.com\/wp..., or //www.example.com/wp...)
+		foreach ( $site_hostnames as $site_hostname ) {
+			if ( stripos( $file_url, '//' . $site_hostname ) !== false || stripos( $file_url, '\/\/' . $site_hostname ) !== false ) {
+				return substr_replace( $file_url, $cdn_hostname, stripos( $file_url, $site_hostname ), strlen( $site_hostname ) );
+			}
+		}
+
+		if ( apply_filters( 'powered_cache_cdn_rewrite_relative_urls', true ) ) {        // rewrite relative URLs hook
+			// rewrite relative URL (e.g. /wp-content/uploads/example.jpg)
+			if ( strpos( $file_url, '//' ) !== 0 && strpos( $file_url, '/' ) === 0 ) {
+				return '//' . $cdn_hostname . $file_url;
+			}
+
+			// rewrite escaped relative URL (e.g. \/wp-content\/uploads\/example.jpg)
+			if ( strpos( $file_url, '\/\/' ) !== 0 && strpos( $file_url, '\/' ) === 0 ) {
+				return '\/\/' . $cdn_hostname . $file_url;
+			}
+		}
+
+		return $file_url;
+	}
+
+	/**
+	 * Check whether given url excluded or not.
+	 *
+	 * @param string $file_url File URL.
+	 *
+	 * @return bool
+	 * @since 2.2
+	 */
+	private static function is_excluded( $file_url ) {
+		$settings = \PoweredCache\Utils\get_settings();
+
+		// rejected file
+		if ( ! empty( $settings['cdn_rejected_files'] ) ) {
+			$cdn_rejected_files = preg_split( '#(\r\n|\r|\n)#', $settings['cdn_rejected_files'], - 1, PREG_SPLIT_NO_EMPTY );
+			$cdn_rejected_files = implode( '|', $cdn_rejected_files );
+
+			if ( preg_match( '#(' . $cdn_rejected_files . ')#', $file_url ) ) {
+				return true;
+			}
+		}
+
+		// don't replace for base64 encoded images
+		if ( false !== strpos( $file_url, 'data:image' ) ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -119,184 +251,6 @@ class CDN {
 		return $optimized_url;
 	}
 
-	/**
-	 * Replace CDN url for srcset
-	 *
-	 * @param array $sources Source files
-	 *
-	 * @return mixed
-	 * @since 1.2
-	 */
-	public function srcset_url( $sources ) {
-		foreach ( (array) $sources as $key => $source ) {
-			$sources[ $key ]['url'] = $this->cdn_url( $source['url'] );
-		}
-
-		return $sources;
-	}
-
-	/**
-	 * Replace given url with the CDN host
-	 *
-	 * @param string $url URL
-	 *
-	 * @return string
-	 */
-	public function cdn_url( $url ) {
-		if ( is_admin() || is_preview() ) {
-			return $url;
-		}
-
-		return $this->maybe_cdn_replace( $url );
-	}
-
-
-	/**
-	 * Replace URL for wp_get_attachment_image_src function
-	 *
-	 * @param array|false $image Either array with src, width & height, icon src, or false
-	 *
-	 * @return array $image
-	 * @since 1.2.4
-	 */
-	public function attachment_image_src( $image ) {
-		if ( is_admin() || is_preview() ) {
-			return $image;
-		}
-
-		if ( ! (bool) $image ) {
-			return $image;
-		}
-
-		$cdn_url = self::get_best_possible_cdn_host( 'image' );
-		// no host found
-		if ( false === $cdn_url ) {
-			return $image;
-		}
-
-		$image[0] = str_replace( home_url(), $cdn_url, $image[0] );
-
-		return $image;
-	}
-
-	/**
-	 * Replace images with CDN host
-	 *
-	 * @param string $content Content
-	 *
-	 * @return mixed
-	 */
-	public function cdn_images( $content ) {
-		if ( is_admin() || is_preview() || empty( $content ) ) {
-			return $content;
-		}
-
-		if ( ! class_exists( 'DOMDocument' ) ) {
-			return $content;
-		}
-
-		if ( function_exists( 'libxml_use_internal_errors' ) ) {
-			libxml_use_internal_errors( true );
-		}
-
-		$document = new DOMDocument();
-		@$document->loadHTML( $content ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
-		$images = $document->getElementsByTagName( 'img' );
-
-		$img_url = array();
-		foreach ( $images as $img ) {
-			if ( $img->hasAttribute( 'src' ) ) {
-				$img_url[] = $img->getAttribute( 'src' );
-			}
-
-			if ( $img->hasAttribute( 'srcset' ) ) {
-				$imgset = explode( ',', $img->getAttribute( 'srcset' ) );
-				foreach ( $imgset as $src_item ) {
-					$imgsrc = explode( ' ', trim( $src_item ) );
-					// first item is url, second width
-					$img_url[] = $imgsrc[0];
-				}
-			}
-		}
-
-		$img_url = array_unique( $img_url );
-		$cdn_url = array();
-
-		foreach ( $img_url as $replace_url ) {
-			$cdn_url[] = $this->maybe_cdn_replace( $replace_url );
-		}
-
-		return str_replace( $img_url, $cdn_url, $content );
-	}
-
-
-	/**
-	 * this method decide to url replacement.
-	 * rejected files & external resources will be ignored
-	 *
-	 * @param string $url URL
-	 *
-	 * @return string cdn url
-	 * @since 1.0
-	 */
-	public static function maybe_cdn_replace( $url ) {
-		$settings = \PoweredCache\Utils\get_settings();
-
-		// rejected file
-		if ( ! empty( $settings['cdn_rejected_files'] ) ) {
-			$cdn_rejected_files = preg_split( '#(\r\n|\r|\n)#', $settings['cdn_rejected_files'], - 1, PREG_SPLIT_NO_EMPTY );
-			$cdn_rejected_files = implode( '|', $cdn_rejected_files );
-
-			if ( preg_match( '#(' . $cdn_rejected_files . ')#', $url ) ) {
-				return $url;
-			}
-		}
-
-		// external resource
-		if ( false === strpos( $url, home_url() ) ) {
-			return $url;
-		}
-
-		// don't replace for base64 encoded images
-		if ( false !== strpos( $url, 'data:image' ) ) {
-			return $url;
-		}
-
-		$url_path = wp_parse_url( $url, PHP_URL_PATH );
-		$ext      = explode( '.', $url_path );
-		$ext      = strtolower( end( $ext ) );
-
-		$zone = 'all';
-
-		/**
-		 * Filters supported image extensions.
-		 *
-		 * @hook   powered_cache_cdn_image_extensions
-		 *
-		 * @param  {array} $image_extensions Supported image extensions.
-		 *
-		 * @return {array} New value.
-		 * @since  1.0
-		 */
-		$image_extensions = apply_filters( 'powered_cache_cdn_image_extensions', array( 'jpg', 'jpeg', 'gif', 'png', 'bmp', 'ico', 'webp' ) );
-
-		if ( in_array( $ext, $image_extensions, true ) ) {
-			$zone = 'image';
-		} elseif ( 'css' === $ext ) {
-			$zone = 'css';
-		} elseif ( 'js' === $ext ) {
-			$zone = 'js';
-		}
-
-		$cdn_url = self::get_best_possible_cdn_host( $zone );
-
-		// no host found
-		if ( false === $cdn_url ) {
-			return $url;
-		}
-
-		return str_replace( home_url(), $cdn_url, $url );
-	}
 
 	/**
 	 * try to catch best cdn address to given zone
@@ -327,6 +281,70 @@ class CDN {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get CDN zone by given extension.
+	 *
+	 * @param string $ext File extensions. Eg: .jpg, .gif, .mp3...
+	 *
+	 * @return string
+	 * @since 2.2
+	 */
+	private static function get_zone_by_ext( $ext ) {
+		$zone = 'all';
+
+		$image_extensions = apply_filters( 'powered_cache_cdn_image_extensions', array( 'jpg', 'jpeg', 'gif', 'png', 'bmp', 'ico', 'webp', 'avif', 'svg' ) );
+		$image_extensions = array_map(
+			function ( $ext ) {
+				return '.' . $ext;
+			},
+			$image_extensions
+		);
+
+		if ( in_array( $ext, $image_extensions, true ) ) {
+			$zone = 'image';
+		} elseif ( '.css' === $ext ) {
+			$zone = 'css';
+		} elseif ( '.js' === $ext ) {
+			$zone = 'js';
+		}
+
+		return $zone;
+	}
+
+	/**
+	 * Get the list of supported file extensions for CDN integration.
+	 *
+	 * @return array|mixed|void
+	 * @since 2.2
+	 */
+	public static function get_file_extensions() {
+		/**
+		 * Filters supported image extensions.
+		 *
+		 * @hook       powered_cache_cdn_image_extensions
+		 *
+		 * @param      {array} $image_extensions Supported image extensions.
+		 *
+		 * @return     {array} New value.
+		 * @deprecated since 2.2. Use powered_cache_cdn_extensions instead.
+		 * @since      1.0
+		 */
+		$image_extensions = apply_filters( 'powered_cache_cdn_image_extensions', array( 'jpg', 'jpeg', 'gif', 'png', 'bmp', 'ico', 'webp', 'avif', 'svg' ) );
+
+		$extensions = [ 'css', 'js', 'pdf', 'mp3', 'mp4', 'woff2', 'woff', 'ttf', 'otf' ];
+
+		$cdn_extensions = array_map(
+			function ( $ext ) {
+				return '.' . $ext;
+			},
+			array_merge( $image_extensions, $extensions )
+		);
+
+		$cdn_extensions = apply_filters( 'powered_cache_cdn_extensions', $cdn_extensions );
+
+		return $cdn_extensions;
 	}
 
 }
