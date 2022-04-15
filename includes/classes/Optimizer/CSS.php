@@ -76,15 +76,7 @@ class CSS extends WP_Styles {
 		foreach ( $this->to_do as $key => $handle ) {
 			$obj = $this->registered[ $handle ];
 
-			if ( $this->enable_cdn ) { // since CDN replaces hostname, it breaks is_internal_url checks.
-				remove_filter( 'style_loader_src', array( CDN::factory(), 'cdn_url' ), PHP_INT_MAX );
-			}
-
 			$obj->src = apply_filters( 'style_loader_src', $obj->src, $obj->handle );
-
-			if ( $this->enable_cdn ) { // add filter back
-				add_filter( 'style_loader_src', array( CDN::factory(), 'cdn_url' ), PHP_INT_MAX );
-			}
 
 			// Core is kind of broken and returns "true" for src of "colors" handle
 			// http://core.trac.wordpress.org/attachment/ticket/16827/colors-hacked-fixed.diff

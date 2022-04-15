@@ -59,7 +59,7 @@ class Helper {
 		// In a multisite install, the subdir is virtual and therefore not needed in the path.
 		// In a single-site subdir install, the subdir is included in the ABSPATH and therefore ends up duplicated.
 		if ( $site_url_path && '/' !== $site_url_path
-		     && 0 === strpos( $url_path, $site_url_path ) ) {
+			 && 0 === strpos( $url_path, $site_url_path ) ) {
 			$url_path_without_subdir = preg_replace( '#^' . $site_url_path . '#', '', $url_path, 1 );
 
 			return wp_normalize_path( realpath( ABSPATH . $url_path_without_subdir ) );

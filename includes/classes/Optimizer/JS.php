@@ -85,7 +85,7 @@ class JS extends WP_Scripts {
 	 * @return array|string[]
 	 */
 	public function do_items( $handles = false, $group = false ) {
-		$abspath = wp_normalize_path( ABSPATH );
+		$abspath     = wp_normalize_path( ABSPATH );
 		$handles     = false === $handles ? $this->queue : (array) $handles;
 		$javascripts = array();
 		$siteurl     = apply_filters( 'powered_cache_fo_site_url', $this->base_url );
@@ -136,7 +136,6 @@ class JS extends WP_Scripts {
 
 			// Concat and canonicalize the paths only for
 			// existing scripts that aren't outside ABSPATH
-
 
 			$js_realpath = Helper::realpath( $js_url, $siteurl );
 			if ( ! $js_realpath || 0 !== strpos( $js_realpath, $abspath ) ) {
@@ -201,7 +200,7 @@ class JS extends WP_Scripts {
 				array_map( array( $this, 'print_extra_script' ), $js_array['handles'] );
 
 				if ( isset( $js_array['paths'] ) && count( $js_array['paths'] ) > 1 ) {
-					$paths = array_map(
+					$paths    = array_map(
 						function ( $url ) use ( $abspath ) {
 							return $abspath . $url;
 						},

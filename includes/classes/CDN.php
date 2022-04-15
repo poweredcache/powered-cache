@@ -158,9 +158,21 @@ class CDN {
 	 * @since 2.2
 	 */
 	private static function rewrite_url( $matches ) {
-		$file_url       = $matches[0];
-		$site_hostname  = ( ! empty( $_SERVER['HTTP_HOST'] ) ) ? $_SERVER['HTTP_HOST'] : wp_parse_url( home_url(), PHP_URL_HOST );
-		$site_hostnames = (array) apply_filters( 'cdn_enabler_site_hostnames', array( $site_hostname ) );
+		$file_url      = $matches[0];
+		$site_hostname = ( ! empty( $_SERVER['HTTP_HOST'] ) ) ? $_SERVER['HTTP_HOST'] : wp_parse_url( home_url(), PHP_URL_HOST );
+
+		/**
+		 * Filters site hostname(s).
+		 *
+		 * @hook   powered_cache_cdn_site_hostnames
+		 *
+		 * @param  {array} Site hostnames for CDN replacement.
+		 *
+		 * @return {array} New value.
+		 *
+		 * @since  2.2
+		 */
+		$site_hostnames = (array) apply_filters( 'powered_cache_cdn_site_hostnames', array( $site_hostname ) );
 
 		$zone         = self::get_zone_by_ext( $matches[1] );
 		$cdn_hostname = self::get_best_possible_cdn_host( $zone );
@@ -180,7 +192,18 @@ class CDN {
 			}
 		}
 
-		if ( apply_filters( 'powered_cache_cdn_rewrite_relative_urls', true ) ) {        // rewrite relative URLs hook
+		/**
+		 * Filters whether relative urls needs to rewritten or not
+		 *
+		 * @hook   powered_cache_cdn_rewrite_relative_urls
+		 *
+		 * @param  {boolean} true to automatic update.
+		 *
+		 * @return {boolean} New value.
+		 *
+		 * @since  2.2
+		 */
+		if ( apply_filters( 'powered_cache_cdn_rewrite_relative_urls', true ) ) { // rewrite relative URLs hook
 			// rewrite relative URL (e.g. /wp-content/uploads/example.jpg)
 			if ( strpos( $file_url, '//' ) !== 0 && strpos( $file_url, '/' ) === 0 ) {
 				return '//' . $cdn_hostname . $file_url;
@@ -245,6 +268,7 @@ class CDN {
 		}
 
 		$cdn_url = self::get_best_possible_cdn_host( $zone );
+		set_url_scheme( $cdn_url );
 
 		$optimized_url = str_replace( home_url(), $cdn_url, $optimized_url );
 
@@ -294,6 +318,7 @@ class CDN {
 	private static function get_zone_by_ext( $ext ) {
 		$zone = 'all';
 
+		/* documented in get_file_extensions */
 		$image_extensions = apply_filters( 'powered_cache_cdn_image_extensions', array( 'jpg', 'jpeg', 'gif', 'png', 'bmp', 'ico', 'webp', 'avif', 'svg' ) );
 		$image_extensions = array_map(
 			function ( $ext ) {
@@ -335,16 +360,26 @@ class CDN {
 
 		$extensions = [ 'css', 'js', 'pdf', 'mp3', 'mp4', 'woff2', 'woff', 'ttf', 'otf' ];
 
-		$cdn_extensions = array_map(
+		$file_extensions = array_map(
 			function ( $ext ) {
 				return '.' . $ext;
 			},
 			array_merge( $image_extensions, $extensions )
 		);
 
-		$cdn_extensions = apply_filters( 'powered_cache_cdn_extensions', $cdn_extensions );
+		/**
+		 * Filters supported file extensions.
+		 *
+		 * @hook       powered_cache_cdn_extensions
+		 *
+		 * @param      {array} $file_extensions Supported file extensions.
+		 *
+		 * @return     {array} New value.
+		 * @since      2.2
+		 */
+		$file_extensions = apply_filters( 'powered_cache_cdn_extensions', $file_extensions );
 
-		return $cdn_extensions;
+		return $file_extensions;
 	}
 
 }

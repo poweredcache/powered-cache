@@ -154,6 +154,8 @@ if ( ! $args || false === strpos( $args, '?' ) ) {
 
 $args = substr( $args, strpos( $args, '?' ) + 1 );
 
+
+
 // /foo/bar.css,/foo1/bar/baz.css?m=293847g
 // or
 // -eJzTT8vP109KLNJLLi7W0QdyDEE8IK4CiVjn2hpZGluYmKcDABRMDPM=
@@ -176,6 +178,14 @@ if ( false !== $version_string_pos ) {
 $args = explode( ',', $args );
 if ( ! $args ) {
 	concat_http_status_exit( 400 );
+}
+
+// array('/wp-content/foo/bar.css','//cdn.cname.com/wp-content/foo/bar.css')
+// get real path when it masked from cdn
+foreach ( $args as $index => $arg ) {
+	if ( 0 === stripos( $arg, '//' ) ) {
+		$args[ $index ] = parse_url( str_replace( '//', 'http://', $arg ), PHP_URL_PATH );
+	}
 }
 
 // array( '/foo/bar.css', '/foo1/bar/baz.css' )
