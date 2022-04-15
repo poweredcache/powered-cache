@@ -267,8 +267,8 @@ class CDN {
 			$zone = 'js';
 		}
 
-		$cdn_url = self::get_best_possible_cdn_host( $zone );
-		set_url_scheme( $cdn_url );
+		$cdn_hostname = self::get_best_possible_cdn_host( $zone );
+		$cdn_url      = '//' . $cdn_hostname;
 
 		$optimized_url = str_replace( home_url(), $cdn_url, $optimized_url );
 
