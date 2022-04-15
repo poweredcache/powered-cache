@@ -1624,7 +1624,7 @@ $settings = \PoweredCache\Utils\get_settings();
 													<i class="sui-icon-info" aria-hidden="true"></i>
 												</span>
 											</span>
-											<span id="db_cleanup_all_transients_description" class="sui-description"><?php printf( esc_html__( '%s expired transient in database', 'powered-cache' ), absint( $db_info['db_cleanup_all_transients'] ) ); ?></span>
+											<span id="db_cleanup_all_transients_description" class="sui-description"><?php printf( esc_html__( '%s transient in database', 'powered-cache' ), absint( $db_info['db_cleanup_all_transients'] ) ); ?></span>
 										</label>
 									</div>
 								</div>
