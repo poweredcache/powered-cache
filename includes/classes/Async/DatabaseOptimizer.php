@@ -178,9 +178,29 @@ class DatabaseOptimizer extends Powered_Cache_WP_Background_Process {
 				if ( $query ) {
 					foreach ( $query as $transient ) {
 						if ( strpos( $transient, '_site_transient_' ) !== false ) {
-							delete_site_transient( str_replace( '_site_transient_', '', $transient ) );
+							$transient = str_replace( '_site_transient_', '', $transient );
+							delete_site_transient( $transient );
+							if ( wp_using_ext_object_cache() ) { // make sure transients deleted from db
+								$option_timeout = '_site_transient_timeout_' . $transient;
+								$option         = '_site_transient_' . $transient;
+								$result         = delete_site_option( $option );
+
+								if ( $result ) {
+									delete_site_option( $option_timeout );
+								}
+							}
 						} else {
-							delete_transient( str_replace( '_transient_', '', $transient ) );
+							$transient = str_replace( '_transient_', '', $transient );
+							delete_transient( $transient );
+							if ( wp_using_ext_object_cache() ) { // make sure transients deleted from db
+								$option_timeout = '_transient_timeout_' . $transient;
+								$option         = '_transient_' . $transient;
+								$result         = delete_option( $option );
+
+								if ( $result ) {
+									delete_option( $option_timeout );
+								}
+							}
 						}
 					}
 				}

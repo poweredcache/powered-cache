@@ -56,6 +56,7 @@ class CSS extends WP_Styles {
 	 * @return string[]
 	 */
 	public function do_items( $handles = false, $group = false ) {
+		$abspath     = wp_normalize_path( ABSPATH );
 		$handles     = false === $handles ? $this->queue : (array) $handles;
 		$stylesheets = array();
 		/**
@@ -75,15 +76,7 @@ class CSS extends WP_Styles {
 		foreach ( $this->to_do as $key => $handle ) {
 			$obj = $this->registered[ $handle ];
 
-			if ( $this->enable_cdn ) { // since CDN replaces hostname, it breaks is_internal_url checks.
-				remove_filter( 'style_loader_src', array( CDN::factory(), 'cdn_url' ), PHP_INT_MAX );
-			}
-
 			$obj->src = apply_filters( 'style_loader_src', $obj->src, $obj->handle );
-
-			if ( $this->enable_cdn ) { // add filter back
-				add_filter( 'style_loader_src', array( CDN::factory(), 'cdn_url' ), PHP_INT_MAX );
-			}
 
 			// Core is kind of broken and returns "true" for src of "colors" handle
 			// http://core.trac.wordpress.org/attachment/ticket/16827/colors-hacked-fixed.diff
@@ -121,12 +114,12 @@ class CSS extends WP_Styles {
 			}
 
 			// Concat and canonicalize the paths only for
-			// existing scripts that aren't outside ABSPATH
+			// existing scripts that aren't outside $abspath
 			$css_realpath = Helper::realpath( $css_url, $siteurl );
-			if ( ! $css_realpath || 0 !== strpos( $css_realpath, ABSPATH ) ) {
+			if ( ! $css_realpath || 0 !== strpos( $css_realpath, $abspath ) ) {
 				$do_concat = false;
 			} else {
-				$css_url_parsed['path'] = substr( $css_realpath, strlen( ABSPATH ) - 1 );
+				$css_url_parsed['path'] = substr( $css_realpath, strlen( $abspath ) - 1 );
 			}
 
 			if ( Helper::is_excluded_css( $css_url ) ) {
@@ -177,8 +170,8 @@ class CSS extends WP_Styles {
 					continue;
 				} elseif ( count( $css ) > 1 ) {
 					$paths    = array_map(
-						function ( $url ) {
-							return ABSPATH . $url;
+						function ( $url ) use ( $abspath ) {
+							return $abspath . $url;
 						},
 						$css
 					);

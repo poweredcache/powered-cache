@@ -848,6 +848,10 @@ function cdn_addresses() {
 
 	$cdn_addresses = array();
 	foreach ( $hostnames as $host_key => $host ) {
+		if ( filter_var( $host, FILTER_VALIDATE_URL ) ) {
+			$host = wp_parse_url( $host, PHP_URL_HOST );
+		}
+
 		if ( ! empty( $host ) ) {
 			$cdn_addresses[ $zones[ $host_key ] ][] = $host;
 		}

@@ -62,10 +62,10 @@ class Helper {
 			 && 0 === strpos( $url_path, $site_url_path ) ) {
 			$url_path_without_subdir = preg_replace( '#^' . $site_url_path . '#', '', $url_path, 1 );
 
-			return realpath( ABSPATH . $url_path_without_subdir );
+			return wp_normalize_path( realpath( ABSPATH . $url_path_without_subdir ) );
 		}
 
-		return realpath( ABSPATH . $url_path );
+		return wp_normalize_path( realpath( ABSPATH . $url_path ) );
 	}
 
 	/**
@@ -96,6 +96,8 @@ class Helper {
 	 * @return string
 	 */
 	public static function get_optimized_url( $path, $minify ) {
+		$path = wp_normalize_path( $path );
+
 		$optimizer_url = POWERED_CACHE_URL . 'includes/file-optimizer.php??';
 		$optimized_url = $optimizer_url . $path . '?minify=' . absint( $minify );
 
