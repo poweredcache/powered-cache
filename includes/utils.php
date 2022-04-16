@@ -567,7 +567,6 @@ function site_cache_dir() {
  */
 function get_page_cache_dir() {
 	$path = get_cache_dir() . 'powered-cache/';
-	$path = wp_normalize_path( $path );
 
 	/**
 	 * Filter page cache base directory.
