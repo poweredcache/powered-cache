@@ -879,28 +879,34 @@ $settings = \PoweredCache\Utils\get_settings();
 
 				<div class="sui-box-body">
 					<?php do_action( 'powered_cache_admin_page_before_media_optimization' ); ?>
-					<div class="sui-box-settings-row">
+					<div class="sui-box-settings-row <?php echo( ! is_premium() ? 'sui-disabled' : '' ); ?>">
 
 						<div class="sui-box-settings-col-1">
-							<span class="sui-settings-label"><?php esc_html_e( 'Optimized Images', 'powered-cache' ); ?></span>
+							<span class="sui-settings-label"><?php esc_html_e( 'Optimized Images', 'powered-cache' ); ?>
+								<?php if ( ! is_premium() ) : ?>
+									<span class="sui-tag sui-tag-pro"><?php esc_html_e( 'Premium', 'powered-cache' ); ?></span>
+								<?php else : ?>
+									<span class="sui-tag sui-tag-pro"><?php esc_html_e( 'Beta', 'powered-cache' ); ?></span>
+								<?php endif; ?>
+							</span>
 							<span class="sui-description"></span>
 						</div>
 
 						<div class="sui-box-settings-col-2">
 							<div class="sui-form-field">
-								<label for="image_optimization" class="sui-toggle">
+								<label for="enable_image_optimization" class="sui-toggle">
 									<input
 											type="checkbox"
-											id="image_optimization"
-											name="image_optimization"
-											aria-labelledby="image_optimization_label"
-											aria-describedby="image_optimization_description"
+											id="enable_image_optimization"
+											name="enable_image_optimization"
+											aria-labelledby="enable_image_optimization_label"
+											aria-describedby="enable_image_optimization_description"
 											value="1"
-										<?php checked( 1, $settings['image_optimization'] ); ?>
+										<?php checked( 1, $settings['enable_image_optimization'] ); ?>
 									>
 									<span class="sui-toggle-slider" aria-hidden="true"></span>
-									<span id="image_optimization_label" class="sui-toggle-label"><?php esc_html_e( 'Enable Powered Cache Image Optimization Service', 'powered-cache' ); ?></span>
-									<span id="image_optimization_description" class="sui-description"><?php esc_html_e( 'Powered Cache Image Optimization Service will replace original image URLs to deliver faster image results. It works similar to CDNs but built-in image optimization is included.', 'powered-cache' ); ?>
+									<span id="enable_image_optimization_label" class="sui-toggle-label"><?php esc_html_e( 'Enable Powered Cache Image Optimization Service', 'powered-cache' ); ?></span>
+									<span id="enable_image_optimization_description" class="sui-description"><?php esc_html_e( 'Powered Cache Image Optimization Service will replace original image URLs to deliver faster image results. It works similar to CDNs but built-in image optimization is included.', 'powered-cache' ); ?>
 										(<a href="<?php echo esc_url( get_doc_url( '/image-optimization/' ) ); ?>" target="_blank">?</a>)
 									</span>
 								</label>

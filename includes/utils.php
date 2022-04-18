@@ -78,7 +78,7 @@ function get_settings( $force_network_wide = false ) {
 		'js_execution_method'            => 'blocking',
 		'js_execution_optimized_only'    => true,
 		// media optimization
-		'image_optimization'             => false,
+		'enable_image_optimization'      => false,
 		// lazyload
 		'enable_lazy_load'               => false,
 		'lazy_load_post_content'         => true,
@@ -1279,7 +1279,6 @@ function powered_cache_is_mobile() {
  *
  * @return bool
  * @since 2.2
- *
  */
 function is_local_site() {
 	$site_url = site_url();
@@ -1318,7 +1317,6 @@ function is_local_site() {
 	 * @param bool $is_local If the current site is a local site.
 	 *
 	 * @since 2.2
-	 *
 	 */
 	$is_local = apply_filters( 'powered_cache_is_local_site', $is_local );
 
