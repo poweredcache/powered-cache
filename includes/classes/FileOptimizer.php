@@ -80,6 +80,23 @@ class FileOptimizer {
 			return;
 		}
 
+		/**
+		 * Filters FileOptimizer integration
+		 *
+		 * @hook   powered_cache_fo_disable
+		 *
+		 * @param  {boolean} False by default.
+		 *
+		 * @return {boolean} New value.
+		 * @since  2.2
+		 */
+		$disable_file_optimizer = apply_filters( 'powered_cache_fo_disable', false );
+
+		if ( $disable_file_optimizer ) {
+			return;
+		}
+
+
 		add_action( 'init', [ $this, 'setup_css_combine' ] );
 		add_action( 'init', [ $this, 'setup_js_combine' ] );
 		add_filter( 'script_loader_tag', [ $this, 'js_minify' ], 10, 3 );
