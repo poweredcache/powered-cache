@@ -57,6 +57,12 @@ class FileOptimizer {
 	 */
 	public function setup() {
 		$this->settings = \PoweredCache\Utils\get_settings();
+
+		// Check request method
+		if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || in_array( $_SERVER['REQUEST_METHOD'], [ 'GET', 'HEAD' ] ) ) {
+			return true;
+		}
+
 		/**
 		 * Filters whether apply or not apply file optimizations on wp-admin.
 		 *
