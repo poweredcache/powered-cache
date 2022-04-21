@@ -1,100 +1,129 @@
 /* eslint-disable no-unused-vars, radix */
 // eslint-disable-next-line no-use-before-define
-"use strict";
+// eslint-disable-next-line camelcase
+
+'use strict';
 
 var PCLL_options = PCLL_options || {};
 
-var PCLL = {
+var PCLL = ( function() {
+	var PCLL = {
 
-	_ticking: false,
+		_lastCheckTs: 0,
+		_checkDebounceTimeoutRunning: false,
 
-	check: function () {
+		init: function() {
+			PCLL.threshold = PCLL.getOptionIntValue( 'threshold', 200 );
+			PCLL.recheckDelay = PCLL.getOptionIntValue( 'recheck_delay', 250 );
+			PCLL.debounce = PCLL.getOptionIntValue( 'debounce', 50 );
+			PCLL.checkRecurring();
+			return PCLL;
+		},
 
-		if ( PCLL._ticking ) {
-			return;
-		}
-
-		PCLL._ticking = true;
-
-		if ( 'undefined' == typeof ( PCLL.threshold ) ) {
-			if ( 'undefined' != typeof ( PCLL_options.threshold ) ) {
-				PCLL.threshold = parseInt( PCLL_options.threshold );
-			} else {
-				PCLL.threshold = 200;
+		check: function( fromDebounceTimeout ) {
+			var tstamp, winH, updated, els;
+			if ( true === fromDebounceTimeout ) {
+				PCLL._checkDebounceTimeoutRunning = false;
 			}
-		}
-
-		var winH = document.documentElement.clientHeight || body.clientHeight;
-
-		var updated = false;
-
-		var els = document.getElementsByClassName('lazy-hidden');
-		[].forEach.call( els, function( el, index, array ) {
-
-			var elemRect = el.getBoundingClientRect();
-
-			if ( winH - elemRect.top + PCLL.threshold > 0 ) {
-				PCLL.show( el );
-				updated = true;
+			tstamp = performance.now();
+			if ( tstamp < PCLL._lastCheckTs + PCLL.debounce ) {
+				if ( ! PCLL._checkDebounceTimeoutRunning ) {
+					PCLL._checkDebounceTimeoutRunning = true;
+					setTimeout( function() {
+						PCLL.check( true );
+					}, PCLL.debounce );
+				}
+				return;
 			}
+			PCLL._lastCheckTs = tstamp;
 
-		} );
+			winH = document.documentElement.clientHeight || body.clientHeight;
+			updated = false;
+			els = document.getElementsByClassName( 'lazy-hidden' );
 
-		PCLL._ticking = false;
-		if ( updated ) {
+			[].forEach.call( els, function( el, index, array ) {
+				var elemRect = el.getBoundingClientRect();
+
+				// do not lazy-load images that are hidden with display:none or have a width/height of 0
+				if ( ! elemRect.width || ! elemRect.height ) {
+					return;
+				}
+
+				if ( 0 < winH - elemRect.top + PCLL.threshold ) {
+					PCLL.show( el );
+					updated = true;
+				}
+			});
+
+			if ( updated ) {
+				PCLL.check();
+			}
+		},
+
+		checkRecurring: function() {
 			PCLL.check();
-		}
-	},
+			setTimeout( PCLL.checkRecurring, PCLL.recheckDelay );
+		},
 
-	show: function( el ) {
-		el.className = el.className.replace( /(?:^|\s)lazy-hidden(?!\S)/g , '' );
-		el.addEventListener( 'load', function() {
-			el.className += " lazy-loaded";
-			PCLL.customEvent( el, 'lazyloaded' );
-		}, false );
+		show: function( el ) {
+			var type, s, div, iframe;
+			el.className = el.className.replace( /(?:^|\s)lazy-hidden(?!\S)/g, '' );
+			el.addEventListener( 'load', function() {
+				el.className += ' lazy-loaded';
+				PCLL.customEvent( el, 'lazyloaded' );
+			}, false );
 
-		var type = el.getAttribute('data-lazy-type');
+			type = el.getAttribute( 'data-lazy-type' );
 
-		if ( 'image' == type ) {
-			if ( null != el.getAttribute('data-lazy-srcset') ) {
-				el.setAttribute( 'srcset', el.getAttribute('data-lazy-srcset') );
+			if ( 'image' == type ) {
+				if ( null != el.getAttribute( 'data-lazy-srcset' ) ) {
+					el.setAttribute( 'srcset', el.getAttribute( 'data-lazy-srcset' ) );
+				}
+				if ( null != el.getAttribute( 'data-lazy-sizes' ) ) {
+					el.setAttribute( 'sizes', el.getAttribute( 'data-lazy-sizes' ) );
+				}
+				el.setAttribute( 'src', el.getAttribute( 'data-lazy-src' ) );
+			} else if ( 'iframe' == type ) {
+				s = el.getAttribute( 'data-lazy-src' );
+				div = document.createElement( 'div' );
+
+				div.innerHTML = s;
+				iframe = div.firstChild;
+				el.parentNode.replaceChild( iframe, el );
 			}
-			if ( null != el.getAttribute('data-lazy-sizes') ) {
-				el.setAttribute( 'sizes', el.getAttribute('data-lazy-sizes') );
+		},
+
+		customEvent: function( el, eventName ) {
+			var event;
+
+			if ( document.createEvent ) {
+				event = document.createEvent( 'HTMLEvents' );
+				event.initEvent( eventName, true, true );
+			} else {
+				event = document.createEventObject();
+				event.eventType = eventName;
 			}
-			el.setAttribute( 'src', el.getAttribute('data-lazy-src') );
-		} else if ( 'iframe' == type ) {
-			var s = el.getAttribute('data-lazy-src'),
-				div = document.createElement('div');
 
-			div.innerHTML = s;
-			var iframe = div.firstChild;
-			el.parentNode.replaceChild( iframe, el );
+			event.eventName = eventName;
+
+			if ( document.createEvent ) {
+				el.dispatchEvent( event );
+			} else {
+				el.fireEvent( 'on' + event.eventType, event );
+			}
+		},
+
+		getOptionIntValue: function( name, defaultValue ) {
+			// eslint-disable-next-line camelcase
+			if ( 'undefined' !== typeof ( PCLL_options[name]) ) {
+				// eslint-disable-next-line camelcase
+				return parseInt( PCLL_options[name]);
+			}
+			return defaultValue;
 		}
-
-	},
-
-	customEvent: function( el, eventName ) {
-		var event;
-
-		if ( document.createEvent ) {
-			event = document.createEvent( "HTMLEvents" );
-			event.initEvent( eventName, true, true );
-		} else {
-			event = document.createEventObject();
-			event.eventType = eventName;
-		}
-
-		event.eventName = eventName;
-
-		if ( document.createEvent ) {
-			el.dispatchEvent( event );
-		} else {
-			el.fireEvent( "on" + event.eventType, event );
-		}
-	}
-
-}
+	};
+	return PCLL.init();
+}() );
 
 window.addEventListener( 'load', PCLL.check, false );
 window.addEventListener( 'scroll', PCLL.check, false );
