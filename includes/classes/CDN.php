@@ -55,7 +55,7 @@ class CDN {
 		 *
 		 * @param  {boolean} False by default.
 		 *
-		 * @return {array} New value.
+		 * @return {boolean} New value.
 		 * @since  2.1
 		 */
 		$disable_cdn = apply_filters( 'powered_cache_cdn_disable', false );
