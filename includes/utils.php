@@ -64,6 +64,7 @@ function get_settings( $force_network_wide = false ) {
 		// file optimization
 		'minify_html'                    => false,
 		'combine_google_fonts'           => false,
+		'swap_google_fonts_display'      => true,
 		'minify_css'                     => false,
 		'combine_css'                    => false,
 		'critical_css'                   => false,

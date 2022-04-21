@@ -275,6 +275,7 @@ function sanitize_options( $options ) {
 	$sanitized_options['purge_additional_pages']        = sanitize_textarea_field( $options['purge_additional_pages'] );
 	$sanitized_options['minify_html']                   = ! empty( $options['minify_html'] );
 	$sanitized_options['combine_google_fonts']          = ! empty( $options['combine_google_fonts'] );
+	$sanitized_options['swap_google_fonts_display']     = ! empty( $options['swap_google_fonts_display'] );
 	$sanitized_options['minify_css']                    = ! empty( $options['minify_css'] );
 	$sanitized_options['combine_css']                   = ! empty( $options['combine_css'] );
 	$sanitized_options['critical_css']                  = ! empty( $options['critical_css'] );

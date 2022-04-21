@@ -569,6 +569,7 @@ $settings = \PoweredCache\Utils\get_settings();
 											id="combine_google_fonts"
 											name="combine_google_fonts"
 											aria-labelledby="combine_google_fonts_label"
+											aria-controls="swap_google_fonts_display_control"
 											value="1"
 										<?php checked( 1, $settings['combine_google_fonts'] ); ?>
 									>
@@ -580,6 +581,25 @@ $settings = \PoweredCache\Utils\get_settings();
 									</span>
 								</label>
 							</div>
+
+							<div style=" <?php echo( ! $settings['combine_google_fonts'] ? 'display:none' : '' ); ?>" tabindex="0" id="swap_google_fonts_display_control">
+								<div class="sui-form-field">
+									<label for="swap_google_fonts_display" class="sui-toggle">
+										<input type="checkbox"
+										       value="1"
+										       name="swap_google_fonts_display"
+										       id="swap_google_fonts_display"
+											<?php checked( 1, $settings['swap_google_fonts_display'] ); ?>
+										>
+										<span class="sui-toggle-slider" aria-hidden="true"></span>
+										<span id="swap_google_fonts_display_label" class="sui-toggle-label"><?php esc_html_e( 'Swap Google Fonts Display', 'powered-cache' ); ?></span>
+										<span id="swap_google_fonts_display_description" class="sui-description">
+											<?php esc_html_e( 'Ensure text remains visible during webfont load.', 'powered-cache' ); ?>
+										</span>
+									</label>
+								</div>
+							</div>
+
 
 						</div>
 					</div>

@@ -495,6 +495,15 @@ class FileOptimizer {
 					}
 
 					/**
+					 * Force font display: swap
+					 *
+					 * @since 2.2
+					 */
+					if ( $this->settings['swap_google_fonts_display'] ) {
+						$font_display = 'swap';
+					}
+
+					/**
 					 * Filters font display attribute of the google fonts.
 					 *
 					 * @hook   powered_cache_fo_google_font_display
