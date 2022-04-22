@@ -59,7 +59,7 @@ class FileOptimizer {
 		$this->settings = \PoweredCache\Utils\get_settings();
 
 		// Check request method
-		if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || in_array( $_SERVER['REQUEST_METHOD'], [ 'GET', 'HEAD' ] ) ) {
+		if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || in_array( $_SERVER['REQUEST_METHOD'], [ 'GET', 'HEAD' ], true ) ) {
 			return true;
 		}
 
@@ -101,7 +101,6 @@ class FileOptimizer {
 		if ( $disable_file_optimizer ) {
 			return;
 		}
-
 
 		add_action( 'init', [ $this, 'setup_css_combine' ] );
 		add_action( 'init', [ $this, 'setup_js_combine' ] );
