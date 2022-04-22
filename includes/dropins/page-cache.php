@@ -9,11 +9,15 @@ $powered_cache_start_time = microtime( true );
 
 // Don't cache robots.txt or htacesss
 if ( strpos( $_SERVER['REQUEST_URI'], 'robots.txt' ) !== false || strpos( $_SERVER['REQUEST_URI'], '.htaccess' ) !== false ) {
+	powered_cache_add_cache_miss_header( "Uncacheable file" );
+
 	return;
 }
 
 // Don't cache non-GET requests
 if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || 'GET' !== $_SERVER['REQUEST_METHOD'] ) {
+	powered_cache_add_cache_miss_header( "Invalid request method" );
+
 	return;
 }
 
@@ -32,10 +36,14 @@ $file_extension = trim( preg_replace( '#^.*\.(.*)$#', '$1', $file_extension ) );
 
 // Don't cache disallowed extensions. Prevents wp-cron.php, xmlrpc.php, etc.
 if ( ! preg_match( '#index\.php$#i', $_SERVER['REQUEST_URI'] ) && in_array( $file_extension, array( 'php', 'xml', 'xsl' ), true ) ) {
+	powered_cache_add_cache_miss_header( "Disallowed file extension" );
+
 	return;
 }
 
 if ( ! $GLOBALS['powered_cache_options']['enable_page_cache'] ) {
+	powered_cache_add_cache_miss_header( "Page Caching is not enabled" );
+
 	return;
 }
 
@@ -43,6 +51,8 @@ if ( ! $GLOBALS['powered_cache_options']['enable_page_cache'] ) {
 if ( isset( $powered_cache_rejected_user_agents ) && ! empty( $powered_cache_rejected_user_agents ) ) {
 	$rejected_user_agents = implode( '|', $powered_cache_rejected_user_agents );
 	if ( ! empty( $rejected_user_agents ) && isset( $_SERVER['HTTP_USER_AGENT'] ) && preg_match( '#(' . $rejected_user_agents . ')#', $_SERVER['HTTP_USER_AGENT'] ) ) {
+		powered_cache_add_cache_miss_header( "Rejected user agent" );
+
 		return;
 	}
 }
@@ -55,6 +65,8 @@ if ( empty( $GLOBALS['powered_cache_options']['cache_mobile'] ) ) {
 	$mobile_prefixes = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', $powered_cache_mobile_prefixes ) ), ' ' );
 	// Don't cache if mobile detection is activated
 	if ( ( preg_match( '#^.*(' . $mobile_browsers . ').*#i', $_SERVER['HTTP_USER_AGENT'] ) || preg_match( '#^(' . $mobile_prefixes . ').*#i', substr( $_SERVER['HTTP_USER_AGENT'], 0, 4 ) ) ) ) {
+		powered_cache_add_cache_miss_header( "Mobile request" );
+
 		return;
 	}
 }
@@ -70,6 +82,8 @@ if ( ! empty( $_COOKIE ) ) {
 			foreach ( $wp_cookies as $cookie ) {
 				if ( strpos( $key, $cookie ) !== false ) {
 					// Logged in!
+					powered_cache_add_cache_miss_header( "User logged-in" );
+
 					return;
 				}
 			}
@@ -81,6 +95,8 @@ if ( ! empty( $_COOKIE ) ) {
 		foreach ( $_COOKIE['powered_cache_commented_posts'] as $path ) {
 			if ( rtrim( $path, '/' ) === rtrim( $_SERVER['REQUEST_URI'], '/' ) ) {
 				// User commented on this post
+				powered_cache_add_cache_miss_header( "User commented" );
+
 				return;
 			}
 		}
@@ -91,6 +107,8 @@ if ( ! empty( $_COOKIE ) ) {
 		$rejected_cookies = array_diff( $powered_cache_rejected_cookies, $wp_cookies ); // use diff in case caching for logged-in user
 		$rejected_cookies = implode( '|', $rejected_cookies );
 		if ( preg_match( '#(' . $rejected_cookies . ')#', var_export( $_COOKIE, true ) ) ) {
+			powered_cache_add_cache_miss_header( "Rejected cookie" );
+
 			return;
 		}
 	}
@@ -113,6 +131,8 @@ if ( ! empty( $powered_cache_rejected_uri ) ) {
 		}
 
 		if ( preg_match( '#^(' . $exception . ')$#', $_SERVER['REQUEST_URI'] ) ) {
+			powered_cache_add_cache_miss_header( "Rejected page" );
+
 			return;
 		}
 	}
@@ -128,6 +148,8 @@ if ( ! empty( $_GET ) ) {
 
 	// don't cache when there is not allowed query parameter exists
 	if ( ! empty( $query_params ) ) {
+		powered_cache_add_cache_miss_header( "Disallowed query parameter exists" );
+
 		return;
 	}
 }
@@ -491,8 +513,8 @@ function powered_cache_index_file( $content_type = 'text/html' ) {
 				if ( ! empty( $_COOKIE[ $key ] ) ) {
 					foreach ( $vary_cookie as $vary_sub_cookie ) {
 						if ( isset( $_COOKIE[ $key ][ $vary_sub_cookie ] ) ) {
-							$cookie_value = preg_replace( '/[^A-Za-z0-9. -]/', '', $_COOKIE[ $key ][ $vary_sub_cookie ] );
-							$cookie_file_name .= strtolower( $key . $vary_sub_cookie . $cookie_value);
+							$cookie_value     = preg_replace( '/[^A-Za-z0-9. -]/', '', $_COOKIE[ $key ][ $vary_sub_cookie ] );
+							$cookie_file_name .= strtolower( $key . $vary_sub_cookie . $cookie_value );
 						}
 					}
 				}
@@ -501,7 +523,7 @@ function powered_cache_index_file( $content_type = 'text/html' ) {
 			}
 
 			if ( isset( $_COOKIE[ $vary_cookie ] ) && ! empty( $_COOKIE[ $vary_cookie ] ) ) {
-				$cookie_value = preg_replace( '/[^A-Za-z0-9. -]/', '', $_COOKIE[ $vary_cookie ] );
+				$cookie_value     = preg_replace( '/[^A-Za-z0-9. -]/', '', $_COOKIE[ $vary_cookie ] );
 				$cookie_file_name .= strtolower( $vary_cookie . $cookie_value );
 			}
 		}
@@ -536,3 +558,19 @@ function powered_cache_index_file( $content_type = 'text/html' ) {
 	return $file_name;
 }
 
+/**
+ * Add cache miss header and reason
+ *
+ * @param string $reason Cache Miss info
+ *
+ * @since 2.2
+ */
+function powered_cache_add_cache_miss_header( $reason ) {
+	header( 'X-Powered-Cache: MISS' );
+
+	if ( ( defined( 'POWERED_CACHE_ENABLE_LOG' ) && POWERED_CACHE_ENABLE_LOG )
+	     || ( defined( 'POWERED_CACHE_MISS_REASON' ) && POWERED_CACHE_MISS_REASON )
+	) {
+		header( "X-Powered-Cache-Miss-Reason: $reason" );
+	}
+}
