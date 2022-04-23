@@ -902,7 +902,7 @@ $settings = \PoweredCache\Utils\get_settings();
 					<div class="sui-box-settings-row <?php echo( ! is_premium() ? 'sui-disabled' : '' ); ?>">
 
 						<div class="sui-box-settings-col-1">
-							<span class="sui-settings-label"><?php esc_html_e( 'Optimized Images', 'powered-cache' ); ?>
+							<span class="sui-settings-label"><?php esc_html_e( 'Image Optimization', 'powered-cache' ); ?>
 								<?php if ( ! is_premium() ) : ?>
 									<span class="sui-tag sui-tag-pro"><?php esc_html_e( 'Premium', 'powered-cache' ); ?></span>
 								<?php else : ?>
@@ -925,8 +925,8 @@ $settings = \PoweredCache\Utils\get_settings();
 										<?php checked( 1, $settings['enable_image_optimization'] ); ?>
 									>
 									<span class="sui-toggle-slider" aria-hidden="true"></span>
-									<span id="enable_image_optimization_label" class="sui-toggle-label"><?php esc_html_e( 'Enable Powered Cache Image Optimization Service', 'powered-cache' ); ?></span>
-									<span id="enable_image_optimization_description" class="sui-description"><?php esc_html_e( 'Powered Cache Image Optimization Service will replace original image URLs to deliver faster image results. It works similar to CDNs but built-in image optimization is included.', 'powered-cache' ); ?>
+									<span id="enable_image_optimization_label" class="sui-toggle-label"><?php esc_html_e( 'Enable Image Optimization Service', 'powered-cache' ); ?></span>
+									<span id="enable_image_optimization_description" class="sui-description"><?php esc_html_e( 'Powered Cache image optimization service instantly optimizes images from our global network of servers. The images will be served in WebP format when browsers support the WebP.', 'powered-cache' ); ?>
 										(<a href="<?php echo esc_url( get_doc_url( '/image-optimization/' ) ); ?>" target="_blank">?</a>)
 									</span>
 								</label>
