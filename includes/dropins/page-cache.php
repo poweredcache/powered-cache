@@ -566,6 +566,10 @@ function powered_cache_index_file( $content_type = 'text/html' ) {
  * @since 2.2
  */
 function powered_cache_add_cache_miss_header( $reason ) {
+	if ( headers_sent() ) {
+		return;
+	}
+
 	header( 'X-Powered-Cache: MISS' );
 
 	if ( ( defined( 'POWERED_CACHE_ENABLE_LOG' ) && POWERED_CACHE_ENABLE_LOG )
