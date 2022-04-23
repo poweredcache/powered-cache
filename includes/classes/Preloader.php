@@ -52,6 +52,8 @@ class Preloader {
 	 */
 	public function setup() {
 		$this->settings = \PoweredCache\Utils\get_settings();
+		add_filter( 'wp_resource_hints', [ $this, 'dns_prefetch' ], 10, 2 );
+		add_filter( 'wp_resource_hints', [ $this, 'preconnect_resources' ], 10, 2 );
 
 		// bail if the preload not activated
 		if ( ! $this->settings['enable_cache_preload'] ) {
@@ -59,7 +61,6 @@ class Preloader {
 		}
 
 		$this->cache_preloader = CachePreloader::factory();
-		add_filter( 'wp_resource_hints', [ $this, 'dns_prefetch' ], 10, 2 );
 
 		/**
 		 * Page cache needs to be activated to get benefits of preloading
@@ -447,15 +448,35 @@ class Preloader {
 	 * @param string $relation_type The relation type the URLs are printed for, e.g. 'preconnect' or 'prerender'.
 	 *
 	 * @return array $urls resource hints
+	 * @since 2.2 "preconnect" hint split from dns prefetch
 	 */
 	public function dns_prefetch( $urls, $relation_type ) {
 		$domains = $this->get_prefetch_dns();
 		if ( $domains && is_array( $domains ) ) {
 			foreach ( $domains as $domain ) {
 				if ( 'dns-prefetch' === $relation_type ) {
+					$domain = str_replace( [ 'http://', 'https://' ], '//', $domain );
 					$urls[] = $domain;
 				}
+			}
+		}
 
+		return $urls;
+	}
+
+	/**
+	 * Add "preconnect" hint for critical resources
+	 *
+	 * @param array  $urls          URLs
+	 * @param string $relation_type the type of hint
+	 *
+	 * @return array $urls Resource list
+	 * @since 2.2
+	 */
+	public function preconnect_resources( $urls, $relation_type ) {
+		$domains = $this->get_preconnect_resources();
+		if ( $domains && is_array( $domains ) ) {
+			foreach ( $domains as $domain ) {
 				if ( 'preconnect' === $relation_type ) {
 					$parsed = wp_parse_url( $domain );
 					if ( empty( $parsed['scheme'] ) ) {
@@ -493,6 +514,30 @@ class Preloader {
 		 * @since  2.0
 		 */
 		return apply_filters( 'powered_cache_prefetch_dns', $prefetch_dns );
+	}
+
+	/**
+	 * Get the list of preconnect domains
+	 *
+	 * @return mixed|void
+	 * @since 2.2
+	 */
+	public function get_preconnect_resources() {
+		$settings = \PoweredCache\Utils\get_settings();
+
+		$preconnect_resources = preg_split( '#(\r\n|\r|\n)#', $settings['preconnect_resource'], - 1, PREG_SPLIT_NO_EMPTY );
+
+		/**
+		 * Filters Preconnect  resource list.
+		 *
+		 * @hook   powered_cache_preconnect_resource
+		 *
+		 * @param  {array} $preconnect_resources The list of prefetch domains.
+		 *
+		 * @return {array} New value.
+		 * @since  2.2
+		 */
+		return apply_filters( 'powered_cache_preconnect_resource', $preconnect_resources );
 	}
 
 
