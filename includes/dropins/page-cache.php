@@ -176,6 +176,8 @@ function powered_cache_page_buffer( $buffer, $flags ) {
 
 	// Don't cache search, 404, or password protected
 	if ( is_404() || is_search() || ! empty( $post->post_password ) ) {
+		powered_cache_add_cache_miss_header( "404, search results or password protected posts are not cached" );
+
 		return $buffer;
 	}
 
@@ -183,6 +185,7 @@ function powered_cache_page_buffer( $buffer, $flags ) {
 	// dont check DONOTCACHEPAGE strictly some plugins define string instead bool flag
 	if ( defined( 'DONOTCACHEPAGE' ) && DONOTCACHEPAGE ) {
 		\PoweredCache\Utils\log( sprintf( 'DONOTCACHEPAGE DEFINED on %s', $_SERVER['REQUEST_URI'] ) );
+		powered_cache_add_cache_miss_header( "DONOTCACHEPAGE defined" );
 
 		return $buffer;
 	}
@@ -197,11 +200,15 @@ function powered_cache_page_buffer( $buffer, $flags ) {
 	 * @since 1.0
 	 */
 	if ( true !== apply_filters( 'powered_cache_page_cache_enable', true ) ) {
+		powered_cache_add_cache_miss_header( "Page Cache not enabled for this post" );
+
 		return $buffer;
 	}
 
 	// only cache when http ok
 	if ( 200 !== http_response_code() ) {
+		powered_cache_add_cache_miss_header( "Response code is not 200" );
+
 		return $buffer;
 	}
 
@@ -213,6 +220,8 @@ function powered_cache_page_buffer( $buffer, $flags ) {
 	if ( ! file_exists( untrailingslashit( \PoweredCache\Utils\get_cache_dir() ) ) ) {
 		if ( ! @mkdir( untrailingslashit( \PoweredCache\Utils\get_cache_dir() ) ) ) {
 			// Can not cache!
+			powered_cache_add_cache_miss_header( "The cache directory does not exist for storing cached output" );
+
 			return $buffer;
 		}
 	}
@@ -220,6 +229,8 @@ function powered_cache_page_buffer( $buffer, $flags ) {
 	if ( ! file_exists( \PoweredCache\Utils\get_page_cache_dir() ) ) {
 		if ( ! @mkdir( \PoweredCache\Utils\get_page_cache_dir() ) ) {
 			// Can not cache!
+			powered_cache_add_cache_miss_header( "The page cache directory does not exist for storing cached output" );
+
 			return $buffer;
 		}
 	}
