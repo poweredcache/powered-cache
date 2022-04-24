@@ -1492,7 +1492,7 @@ $settings = \PoweredCache\Utils\get_settings();
 										><?php echo esc_textarea( $settings['preconnect_resource'] ); ?></textarea>
 										<span id="preconnect_resource_description" class="sui-description">
 											<?php esc_html_e( 'The preconnect hint is best used for only the most critical connections.', 'powered-cache' ); ?>
-											(<a href="<?php echo esc_url( get_doc_url( '/preconnect-resouces/' ) ); ?>" target="_blank">?</a>)
+											(<a href="<?php echo esc_url( get_doc_url( '/preconnect-resources/' ) ); ?>" target="_blank">?</a>)
 										</span>
 									</div>
 								</div>
