@@ -268,6 +268,11 @@ class CDN {
 		}
 
 		$cdn_hostname = self::get_best_possible_cdn_host( $zone );
+
+		if ( empty( $cdn_hostname ) ) {
+			return $optimized_url;
+		}
+
 		$cdn_url      = '//' . $cdn_hostname;
 
 		$optimized_url = str_replace( home_url(), $cdn_url, $optimized_url );
