@@ -59,7 +59,7 @@ class FileOptimizer {
 		$this->settings = \PoweredCache\Utils\get_settings();
 
 		// Check request method
-		if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || in_array( $_SERVER['REQUEST_METHOD'], [ 'GET', 'HEAD' ], true ) ) {
+		if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || ! in_array( $_SERVER['REQUEST_METHOD'], [ 'GET', 'HEAD' ], true ) ) {
 			return true;
 		}
 
