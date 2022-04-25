@@ -2,8 +2,8 @@
 Contributors:  poweredcache, skopco, m_uysl
 Tags: cache, caching, web vitals, performance, fastest, page speed, optimization, cdn, object cache, minify, powered cache
 Requires at least:  5.1
-Tested up to:  5.9.2
-Stable tag:  2.1.2
+Tested up to:  6.0
+Stable tag:  2.2
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -73,6 +73,7 @@ __Facebook Tracking__: Powered Cache will host Facebook scripts on your server t
 Here is a list of the amazing features included in Powered Cache Premium:
 
 - Critical CSS & Load CSS Asynchronously.
+- Image Optimizer. On the fly Image Compression and WebP conversation.
 - Sitemap Preloading.
 - Scheduled Database cleanups.
 - Varnish extension.
@@ -167,6 +168,22 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 2.2 (April 25, 2022) =
+- Added: Image optimizer.
+- Added: Swap Google Fonts.
+- Added: Cache miss reason.
+- Added: Preconnect resource hint.
+- Improvements: CDN module (refactored).
+- Improvements: Lazy Load (modernized).
+- Fix: Windows compatibility issues.
+- Fix: Transients clean-up from DB when object cache in place.
+- New filter: `powered_cache_fo_disable` to control file optimizer.
+- New filter: `powered_cache_is_local_site`.
+- New filter: `powered_cache_cdn_extensions`.
+- New filter: `powered_cache_preconnect_resource`.
+- New compat: Cornerstone builder.
+- Tested: WordPress 6.0
 
 = 2.1.2 (March 28, 2022) =
 - Fix: Lazy Load issue.
