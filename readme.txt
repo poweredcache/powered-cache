@@ -3,7 +3,7 @@ Contributors:  poweredcache, skopco, m_uysl
 Tags: cache, caching, web vitals, performance, fastest, page speed, optimization, cdn, object cache, minify, powered cache
 Requires at least:  5.1
 Tested up to:  6.0
-Stable tag:  2.2
+Stable tag:  2.2.1
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -73,7 +73,7 @@ __Facebook Tracking__: Powered Cache will host Facebook scripts on your server t
 Here is a list of the amazing features included in Powered Cache Premium:
 
 - Critical CSS & Load CSS Asynchronously.
-- Image Optimizer. On the fly Image Compression and WebP conversation.
+- Image Optimizer. On the fly Image Compression and WebP conversion.
 - Sitemap Preloading.
 - Scheduled Database cleanups.
 - Varnish extension.
@@ -168,6 +168,9 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 2.2.1 (April 26, 2022) =
+- File Optimizer CDN integration fix.
 
 = 2.2 (April 25, 2022) =
 - Added: Image optimizer.
