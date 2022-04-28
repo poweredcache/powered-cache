@@ -1,7 +1,7 @@
 Powered Cache 
 =============
 
-![Support Level](https://img.shields.io/badge/support-active-green.svg) [![Release Version](https://img.shields.io/wordpress/plugin/v/powered-cache?label=Release%20Version)](https://github.com/skopco/powered-cache/releases) ![WordPress tested up to version](https://img.shields.io/wordpress/plugin/tested/powered-cache?label=WordPress) ![Required PHP Version](https://img.shields.io/wordpress/plugin/required-php/powered-cache?label=PHP)
+![Support Level](https://img.shields.io/badge/support-active-green.svg) [![Release Version](https://img.shields.io/wordpress/plugin/v/powered-cache?label=Release%20Version)](https://github.com/poweredcache/powered-cache/releases) ![WordPress tested up to version](https://img.shields.io/wordpress/plugin/tested/powered-cache?label=WordPress) ![Required PHP Version](https://img.shields.io/wordpress/plugin/required-php/powered-cache?label=PHP)
 
 The most powerful caching and performance suite for WordPress. Easily Improve PageSpeed & Web Vitals Score.
 
