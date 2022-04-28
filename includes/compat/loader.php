@@ -31,6 +31,7 @@ function load_compat_files() {
 	require_once POWERED_CACHE_COMPAT_DIR . 'plugins/cookies-and-content-security-policy.php';
 
 	require_once POWERED_CACHE_COMPAT_DIR . 'plugins/cornerstone-builder.php';
+	require_once POWERED_CACHE_COMPAT_DIR . 'plugins/wpml.php';
 
 	if ( is_multisite() && defined( 'SUNRISE' ) && SUNRISE ) {
 		require POWERED_CACHE_COMPAT_DIR . 'domain-mapping.php';
