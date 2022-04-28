@@ -273,7 +273,7 @@ class CDN {
 			return $optimized_url;
 		}
 
-		$cdn_url      = '//' . $cdn_hostname;
+		$cdn_url = '//' . $cdn_hostname;
 
 		$optimized_url = str_replace( home_url(), $cdn_url, $optimized_url );
 
