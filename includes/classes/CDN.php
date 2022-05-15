@@ -48,6 +48,14 @@ class CDN {
 			return;
 		}
 
+		add_action( 'plugins_loaded', [ $this, 'cdn_setup' ] );
+
+	}
+
+	/**
+	 * Setup CDN
+	 */
+	public function cdn_setup() {
 		/**
 		 * Filters CDN integration
 		 *
