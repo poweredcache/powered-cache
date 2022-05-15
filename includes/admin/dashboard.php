@@ -367,6 +367,7 @@ function sanitize_options( $options ) {
 	$sanitized_options['enable_cloudflare']              = ! empty( $options['enable_cloudflare'] );
 	$sanitized_options['cloudflare_email']               = sanitize_email( $options['cloudflare_email'] );
 	$sanitized_options['cloudflare_api_key']             = sanitize_text_field( $options['cloudflare_api_key'] );
+	$sanitized_options['cloudflare_api_token']           = sanitize_text_field( $options['cloudflare_api_token'] );
 	$sanitized_options['cloudflare_zone']                = sanitize_text_field( $options['cloudflare_zone'] );
 	$sanitized_options['enable_heartbeat']               = ! empty( $options['enable_heartbeat'] );
 	$sanitized_options['heartbeat_dashboard_status']     = sanitize_text_field( $options['heartbeat_dashboard_status'] );

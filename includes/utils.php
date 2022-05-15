@@ -118,6 +118,7 @@ function get_settings( $force_network_wide = false ) {
 		'scheduled_db_cleanup_frequency' => 'daily',
 		// add-ons
 		'enable_cloudflare'              => false,
+		'cloudflare_api_token'           => '',
 		'cloudflare_email'               => '',
 		'cloudflare_api_key'             => '',
 		'cloudflare_zone'                => '',

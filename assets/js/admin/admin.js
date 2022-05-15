@@ -54,6 +54,14 @@ import './modules/modal';
 		}
 	});
 
+	$('#cloudflare-api-token').on('keyup keypress change', function () {
+		if ($(this).val().length > 0) {
+			$('#cloudflare-api-details').hide();
+		} else {
+			$('#cloudflare-api-details').show();
+		}
+	});
+
 	$('.heartbeat_dashboard_status').on('change', function () {
 		if ($(this).val() === 'modify') {
 			$('#heartbeat-dashboard-interval').show();

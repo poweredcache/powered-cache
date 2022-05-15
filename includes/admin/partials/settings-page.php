@@ -1853,32 +1853,53 @@ $settings = \PoweredCache\Utils\get_settings();
 								<p><?php esc_html_e( 'Cloudflare extension for PoweredCache. It allows to purge Cloudflare cache within WordPress.', 'powered-cache' ); ?></p>
 								<div id="cloudflare-details" style="<?php echo( ! $settings['enable_cloudflare'] ? 'display:none' : '' ); ?>">
 									<div class="sui-form-field">
-
-										<label for="cloudflare-email" id="cloudflare-email-label" class="sui-label"><?php esc_html_e( 'Cloudflare Email', 'powered-cache' ); ?></label>
+										<label for="cloudflare-api-token" id="cloudflare-api-token-label" class="sui-label"><?php esc_html_e( 'API Token', 'powered-cache' ); ?></label>
 										<input
-												placeholder="john@example.com"
-												name="cloudflare_email"
-												value="<?php echo esc_attr( $settings['cloudflare_email'] ); ?>"
-												id="cloudflare-email"
+												name="cloudflare_api_token"
+												value="<?php echo esc_attr( $settings['cloudflare_api_token'] ); ?>"
+												id="cloudflare-api-token"
 												class="sui-form-control"
 										/>
+										<span id="cloudflare_api_token_description" class="sui-description">
+											<?php esc_html_e( 'Recommended authentication method.', 'powered-cache' ); ?>
+											<a href="<?php echo esc_url( 'https://dash.cloudflare.com/profile/api-tokens' ); ?>" rel="noopener" target="_blank">
+												<?php esc_html_e( 'Create a new token', 'powered-cache' ); ?>
+											</a>
+											<?php esc_html_e( 'Or you can enter Cloudflare email and API Key.', 'powered-cache' ); ?>
+										</span>
 									</div>
 
+
+										<div id="cloudflare-api-details" class="sui-row" style="<?php echo( ! empty( $settings['cloudflare_api_token'] ) ? 'display:none' : '' ); ?>">
+											<div class="sui-col">
+												<div class="sui-form-field">
+													<label for="cloudflare-email" id="cloudflare-email-label" class="sui-label"><?php esc_html_e( 'Cloudflare Email', 'powered-cache' ); ?></label>
+													<input
+															placeholder="john@example.com"
+															name="cloudflare_email"
+															value="<?php echo esc_attr( $settings['cloudflare_email'] ); ?>"
+															id="cloudflare-email"
+															class="sui-form-control"
+													/>
+												</div>
+											</div>
+
+											<div class="sui-col">
+												<div class="sui-form-field">
+													<label for="cloudflare-api-key" id="cloudflare-api-key-label" class="sui-label"><?php esc_html_e( 'API Key', 'powered-cache' ); ?></label>
+													<input
+															name="cloudflare_api_key"
+															value="<?php echo esc_attr( $settings['cloudflare_api_key'] ); ?>"
+															id="cloudflare-api-key"
+															class="sui-form-control"
+															type="password"
+													/>
+												</div>
+											</div>
+										</div>
+
+
 									<div class="sui-form-field">
-
-										<label for="cloudflare-api-key" id="cloudflare-api-key-label" class="sui-label"><?php esc_html_e( 'API Key', 'powered-cache' ); ?></label>
-
-										<input
-												name="cloudflare_api_key"
-												value="<?php echo esc_attr( $settings['cloudflare_api_key'] ); ?>"
-												id="cloudflare-api-key"
-												class="sui-form-control"
-												type="password"
-										/>
-									</div>
-
-									<div class="sui-form-field">
-
 										<label for="cloudflare-zone" id="cloudflare-zone-label" class="sui-label"><?php esc_html_e( 'Zone ID', 'powered-cache' ); ?></label>
 
 										<input
