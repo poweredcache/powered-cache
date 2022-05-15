@@ -34,14 +34,24 @@ class API {
 	private $email;
 
 	/**
+	 * Bearer Token
+	 *
+	 * @link https://api.cloudflare.com/#getting-started-requests
+	 * @var string $api_token
+	 */
+	private $api_token;
+
+	/**
 	 * API constructor.
 	 *
-	 * @param string $email   CF Email
-	 * @param string $api_key CF API Key
+	 * @param string $email     CF Email
+	 * @param string $api_key   CF API Key
+	 * @param string $api_token Bearer Token
 	 */
-	public function __construct( $email, $api_key ) {
-		$this->email   = $email;
-		$this->api_key = $api_key;
+	public function __construct( $email = '', $api_key = '', $api_token = '' ) {
+		$this->email     = $email;
+		$this->api_key   = $api_key;
+		$this->api_token = $api_token;
 	}
 
 	/**
@@ -106,12 +116,17 @@ class API {
 			'method'    => $type,
 			'timeout'   => 5,
 			'headers'   => array(
-				'X-Auth-Email' => $this->email,
-				'X-Auth-Key'   => $this->api_key,
 				'Content-Type' => 'application/json',
 			),
 			'sslverify' => false,
 		);
+
+		if ( ! empty( $this->api_token ) ) {
+			$args['headers']['Authorization'] = "Bearer {$this->api_token}";
+		} else {
+			$args['headers']['X-Auth-Email'] = $this->email;
+			$args['headers']['X-Auth-Key']   = $this->api_key;
+		}
 
 		if ( ! empty( $data ) ) {
 			$args['body'] = wp_json_encode( $data );
@@ -134,11 +149,11 @@ class API {
 	 *
 	 * @return API
 	 */
-	public static function factory( $email, $api_key ) {
+	public static function factory( $email, $api_key, $api_token ) {
 		static $instance = false;
 
 		if ( ! $instance ) {
-			$instance = new self( $email, $api_key );
+			$instance = new self( $email, $api_key, $api_token );
 		}
 
 		return $instance;

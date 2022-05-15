@@ -79,19 +79,18 @@ class Extensions {
 			return false;
 		}
 
-		$required_settings = [
-			'cloudflare_email',
-			'cloudflare_api_key',
-			'cloudflare_zone',
-		];
-
-		foreach ( $required_settings as $field ) {
-			if ( empty( $this->settings[ $field ] ) ) {
-				return false;
-			}
+		if ( empty( $this->settings['cloudflare_zone'] ) ) {
+			return false;
 		}
 
-		return true;
+		if (
+			( ! empty( $this->settings['cloudflare_email'] ) && ! empty( $this->settings['cloudflare_email'] ) )
+			|| ( ! empty( $this->settings['cloudflare_api_token'] ) )
+		) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**

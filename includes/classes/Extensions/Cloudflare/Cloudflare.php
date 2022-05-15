@@ -56,7 +56,7 @@ class Cloudflare {
 	 */
 	public function setup() {
 		$this->settings = \PoweredCache\Utils\get_settings();
-		$this->cf_api   = API::factory( $this->settings['cloudflare_email'], $this->settings['cloudflare_api_key'] );
+		$this->cf_api   = API::factory( $this->settings['cloudflare_email'], $this->settings['cloudflare_api_key'], $this->settings['cloudflare_api_token'] );
 
 		// Fixes Flexible SSL
 		if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $_SERVER['HTTP_X_FORWARDED_PROTO'] ) {
