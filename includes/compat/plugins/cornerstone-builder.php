@@ -9,7 +9,7 @@
 namespace PoweredCache\Compat\CornerstoneBuilder;
 
 /**
- * Cornerstore builder escapes form is_admin() checks
+ * Cornerstone builder escapes form is_admin() checks
  * Dont use file optimizer when the page on builder mode.
  *
  * @since 2.2
