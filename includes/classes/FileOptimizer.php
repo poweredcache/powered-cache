@@ -63,6 +63,14 @@ class FileOptimizer {
 			return true;
 		}
 
+		add_action( 'plugins_loaded', [ $this, 'setup_file_optimizer' ] );
+
+	}
+
+	/**
+	 * Setup file optimizer module
+	 */
+	public function setup_file_optimizer() {
 		/**
 		 * Filters whether apply or not apply file optimizations on wp-admin.
 		 *
@@ -106,6 +114,9 @@ class FileOptimizer {
 		add_action( 'init', [ $this, 'setup_js_combine' ] );
 		add_filter( 'script_loader_tag', [ $this, 'js_minify' ], 10, 3 );
 		add_filter( 'style_loader_tag', [ $this, 'css_minify' ], 10, 4 );
+		add_filter( 'powered_cache_fo_script_loader_tag', [ $this, 'change_js_execute_method' ] );
+		add_action( 'after_setup_theme', [ $this, 'html_minify' ] );
+		add_action( 'template_redirect', [ $this, 'maybe_suppress_optimizations' ] );
 
 		if ( ! $this->settings['combine_js'] ) {
 			add_filter( 'powered_cache_fo_js_do_concat', '__return_false' );
@@ -115,19 +126,13 @@ class FileOptimizer {
 			add_filter( 'powered_cache_fo_css_do_concat', '__return_false' );
 		}
 
-		add_filter( 'powered_cache_fo_script_loader_tag', [ $this, 'change_js_execute_method' ] );
-
 		if ( ! $this->settings['js_execution_optimized_only'] ) {
 			add_filter( 'script_loader_tag', [ $this, 'change_js_execute_method' ], 99 );
 		}
 
-		add_action( 'after_setup_theme', [ $this, 'html_minify' ] );
-
 		if ( $this->settings['combine_google_fonts'] ) {
 			add_action( 'wp_enqueue_scripts', [ $this, 'combine_google_fonts' ], 99 );
 		}
-
-		add_action( 'template_redirect', [ $this, 'maybe_suppress_optimizations' ] );
 	}
 
 
