@@ -144,8 +144,9 @@ class API {
 	/**
 	 * Return an instance of the current class, create one if it doesn't exist
 	 *
-	 * @param string $email   CF Email
-	 * @param string $api_key CF API Key
+	 * @param string $email     CF Email
+	 * @param string $api_key   CF API Key
+	 * @param string $api_token CF API Token
 	 *
 	 * @return API
 	 */
