@@ -68,6 +68,7 @@ $current_dir = file_optimizer_normalize_path( realpath( dirname( __DIR__ ) ) );
 // By default determine the document root from this scripts path in the plugins dir (you can hardcode this define)
 define( 'CONCAT_FILES_ROOT', substr( $current_dir, 0, strpos( $current_dir, '/wp-content' ) ) );
 define( 'POWERED_CACHE_FO_CACHE_DIR', CONCAT_FILES_ROOT . '/wp-content/cache/min/' );
+define( 'POWERED_CACHE_FO_DEBUG', false );
 
 if ( ! file_exists( POWERED_CACHE_FO_CACHE_DIR ) ) {
 	mkdir( POWERED_CACHE_FO_CACHE_DIR, 0775, true );
@@ -118,10 +119,12 @@ function concat_get_mtype( $file ) {
 
 function concat_get_path( $uri ) {
 	if ( ! strlen( $uri ) ) {
+		maybe_add_debug_log( sprintf( "File Optimizer 400 - could not retrieve file path for uri %s", $uri ) );
 		concat_http_status_exit( 400 );
 	}
 
 	if ( false !== strpos( $uri, '..' ) || false !== strpos( $uri, "\0" ) ) {
+		maybe_add_debug_log( sprintf( "File Optimizer 400 - could not retrieve file path for uri %s", $uri ) );
 		concat_http_status_exit( 400 );
 	}
 
@@ -141,6 +144,7 @@ function relative_path_replace( $buf, $dirpath ) {
 
 /* Main() */
 if ( ! in_array( $_SERVER['REQUEST_METHOD'], array( 'GET', 'HEAD' ) ) ) {
+	maybe_add_debug_log( sprintf( "File Optimizer 400 - unsupported request method: %s", $_SERVER['REQUEST_METHOD'] ) );
 	concat_http_status_exit( 400 );
 }
 
@@ -149,11 +153,11 @@ if ( ! in_array( $_SERVER['REQUEST_METHOD'], array( 'GET', 'HEAD' ) ) ) {
 // /_static/??-eJzTT8vP109KLNJLLi7W0QdyDEE8IK4CiVjn2hpZGluYmKcDABRMDPM=
 $args = parse_url( $_SERVER['REQUEST_URI'], PHP_URL_QUERY );
 if ( ! $args || false === strpos( $args, '?' ) ) {
+	maybe_add_debug_log( sprintf( "File Optimizer 400 - empty query arg or not ? exists" ) );
 	concat_http_status_exit( 400 );
 }
 
 $args = substr( $args, strpos( $args, '?' ) + 1 );
-
 
 
 // /foo/bar.css,/foo1/bar/baz.css?m=293847g
@@ -164,6 +168,7 @@ if ( '-' == $args[0] ) {
 
 	// Invalid data, abort!
 	if ( false === $args ) {
+		maybe_add_debug_log( sprintf( "File Optimizer 400 - Invalid Data" ) );
 		concat_http_status_exit( 400 );
 	}
 }
@@ -177,6 +182,7 @@ if ( false !== $version_string_pos ) {
 // /foo/bar.css,/foo1/bar/baz.css
 $args = explode( ',', $args );
 if ( ! $args ) {
+	maybe_add_debug_log( sprintf( "File Optimizer 400 - Empty args" ) );
 	concat_http_status_exit( 400 );
 }
 
@@ -190,6 +196,7 @@ foreach ( $args as $index => $arg ) {
 
 // array( '/foo/bar.css', '/foo1/bar/baz.css' )
 if ( 0 == count( $args ) || count( $args ) > $concat_max_files ) {
+	maybe_add_debug_log( sprintf( "File Optimizer 400 - Concating too many or zero file: %s files on queue", count( $args ) ) );
 	concat_http_status_exit( 400 );
 }
 
@@ -207,8 +214,8 @@ $last_modified = 0;
 $pre_output    = '';
 $output        = '';
 
-$do_minify = (bool) stripos( $_SERVER['REQUEST_URI'], 'minify=1' );
-$hash      = sha1( $_SERVER['REQUEST_URI'] );
+$do_minify   = (bool) stripos( $_SERVER['REQUEST_URI'], 'minify=1' );
+$hash        = sha1( $_SERVER['REQUEST_URI'] );
 $latest_file = end( $args );
 
 $cache_file_name = POWERED_CACHE_FO_CACHE_DIR . $hash;
@@ -237,11 +244,13 @@ foreach ( $args as $uri ) {
 	$fullpath = concat_get_path( $uri );
 
 	if ( ! file_exists( $fullpath ) ) {
+		maybe_add_debug_log( sprintf( "File Optimizer 404 - Missing file: %s", $fullpath ) );
 		concat_http_status_exit( 404 );
 	}
 
 	$mime_type = concat_get_mtype( $fullpath );
 	if ( ! in_array( $mime_type, $concat_types ) ) {
+		maybe_add_debug_log( sprintf( "File Optimizer 400 - Unsupported mime type: %s", $mime_type ) );
 		concat_http_status_exit( 400 );
 	}
 
@@ -251,12 +260,14 @@ foreach ( $args as $uri ) {
 		}
 
 		if ( $last_mime_type != $mime_type ) {
+			maybe_add_debug_log( sprintf( "File Optimizer 400 - Different mime type: last mime %s vs current mime: %s", $last_mime_type, $mime_type ) );
 			concat_http_status_exit( 400 );
 		}
 	}
 
 	$stat = stat( $fullpath );
 	if ( false === $stat ) {
+		maybe_add_debug_log( sprintf( "File Optimizer 500 - false stat" ) );
 		concat_http_status_exit( 500 );
 	}
 
@@ -266,6 +277,7 @@ foreach ( $args as $uri ) {
 
 	$buf = file_get_contents( $fullpath );
 	if ( false === $buf ) {
+		maybe_add_debug_log( sprintf( "File Optimizer 500 - false buffer" ) );
 		concat_http_status_exit( 500 );
 	}
 
@@ -385,4 +397,17 @@ function file_optimizer_normalize_path( $path ) {
 	}
 
 	return $wrapper . $path;
+}
+
+/**
+ * Maybe add debug message
+ *
+ * @param string $message Debug message
+ *
+ * @since 2.3
+ */
+function maybe_add_debug_log( $message ) {
+	if ( defined( 'POWERED_CACHE_FO_DEBUG' ) && POWERED_CACHE_FO_DEBUG ) {
+		error_log( $message );
+	}
 }
