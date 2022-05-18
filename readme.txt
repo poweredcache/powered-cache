@@ -3,7 +3,7 @@ Contributors:  poweredcache, skopco, m_uysl
 Tags: cache, caching, web vitals, performance, fastest, page speed, optimization, cdn, object cache, minify, powered cache
 Requires at least:  5.1
 Tested up to:  6.0
-Stable tag:  2.2.1
+Stable tag:  2.3
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -168,6 +168,13 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 2.3 (May 18, 2022) =
+- Improvements on file optimizer.
+- Improvements on CDN and file optimizer module bootstrapping.
+- Added WPML domain mapping compat.
+- Added bearer token support for Cloudflare extension.
+- Added async cache purging (experimental feature)
 
 = 2.2.1 (April 26, 2022) =
 - File Optimizer CDN integration fix.
