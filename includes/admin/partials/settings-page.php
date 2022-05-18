@@ -2340,6 +2340,39 @@ $settings = \PoweredCache\Utils\get_settings();
 							</div>
 						</div>
 					</div>
+
+					<div class="sui-box-settings-row">
+						<div class="sui-box-settings-col-1">
+							<span class="sui-settings-label"><?php esc_html_e( 'Async Cache Cleaning', 'powered-cache' ); ?>
+								<span class="sui-tag sui-tag-pro"><?php esc_html_e( 'Experimental', 'powered-cache' ); ?></span>
+							</span>
+
+							<span class="sui-description"></span>
+						</div>
+
+						<div class="sui-box-settings-col-2">
+							<div class="sui-form-field">
+								<label for="async_cache_cleaning" class="sui-toggle">
+									<input
+											type="checkbox"
+											id="async_cache_cleaning"
+											name="async_cache_cleaning"
+											aria-labelledby="async_cache_cleaning_label"
+											aria-describedby="enable_async_cache_cleaning_description"
+											value="1"
+										<?php checked( 1, $settings['async_cache_cleaning'] ); ?>
+									>
+									<span class="sui-toggle-slider" aria-hidden="true"></span>
+									<span id="enable_async_cache_cleaning_label" class="sui-toggle-label"><?php esc_html_e( 'Enable async cache clean-up.', 'powered-cache' ); ?></span>
+									<span id="enable_async_cache_cleaning_description" class="sui-description"><?php esc_html_e( 'On large sites, it might take a longer time to perform cache purging actions. This option allows performing clean-up tasks in async background processes.', 'powered-cache' ); ?>
+										<i>(<?php esc_html_e( 'This is an experimental feature, use it wisely. It might conflict with preloading functionality since both features work in the background.', 'powered-cache' ); ?>)</i>
+									</span>
+								</label>
+							</div>
+						</div>
+					</div>
+
+
 					<?php if ( can_control_all_settings() ) : ?>
 						<div class="sui-box-settings-row">
 							<div class="sui-box-settings-col-1">

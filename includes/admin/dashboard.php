@@ -8,6 +8,7 @@
 namespace PoweredCache\Admin\Dashboard;
 
 use PoweredCache\Async\CachePreloader;
+use PoweredCache\Async\CachePurger;
 use PoweredCache\Async\DatabaseOptimizer;
 use PoweredCache\Config;
 use const PoweredCache\Constants\ICON_BASE64;
@@ -202,6 +203,10 @@ function process_form_submit() {
 			cancel_preloading();
 		}
 
+		if ( $old_options['async_cache_cleaning'] && ! $options['async_cache_cleaning'] ) {
+			cancel_async_cache_cleaning();
+		}
+
 		// cleanup existing cache on toggling cache option
 		if ( $old_options['enable_page_cache'] && ! $options['enable_page_cache'] ) {
 			clean_site_cache_dir();
@@ -379,6 +384,7 @@ function sanitize_options( $options ) {
 	$sanitized_options['enable_varnish']                 = ! empty( $options['enable_varnish'] );
 	$sanitized_options['varnish_ip']                     = sanitize_text_field( $options['varnish_ip'] );
 	$sanitized_options['cache_footprint']                = ! empty( $options['cache_footprint'] );
+	$sanitized_options['async_cache_cleaning']           = ! empty( $options['async_cache_cleaning'] );
 	$sanitized_options['enable_google_tracking']         = ! empty( $options['enable_google_tracking'] );
 	$sanitized_options['enable_fb_tracking']             = ! empty( $options['enable_fb_tracking'] );
 
@@ -550,7 +556,18 @@ function purge_all_cache() {
 		exit;
 	}
 
-	powered_cache_flush();// cleans object cache + page cache dir
+	$cache_purger = CachePurger::factory();
+	$settings     = \PoweredCache\Utils\get_settings();
+
+	if ( $settings['async_cache_cleaning'] ) {
+		if ( function_exists( 'wp_cache_flush' ) ) {
+			wp_cache_flush();
+		}
+		$cache_purger->push_to_queue( [ 'call' => 'powered_cache_flush' ] );
+		$cache_purger->save()->dispatch();
+	} else {
+		powered_cache_flush();// cleans object cache + page cache dir
+	}
 
 	/**
 	 * Fires after purging all cache
@@ -632,6 +649,17 @@ function db_optimize( $options ) {
 function cancel_preloading() {
 	\PoweredCache\Utils\log( 'Cancel preload process' );
 	$cache_preloader = CachePreloader::factory();
+	$cache_preloader->cancel_process();
+}
+
+/**
+ * Cancel async cache purging processes
+ *
+ * @since 2.3
+ */
+function cancel_async_cache_cleaning() {
+	\PoweredCache\Utils\log( 'Cancel CachePurger process' );
+	$cache_preloader = CachePurger::factory();
 	$cache_preloader->cancel_process();
 }
 

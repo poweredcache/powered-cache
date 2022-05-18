@@ -8,6 +8,7 @@
 namespace PoweredCache\Core;
 
 use PoweredCache\Async\CachePreloader;
+use PoweredCache\Async\CachePurger;
 use PoweredCache\Async\DatabaseOptimizer;
 use PoweredCache\Config;
 use const PoweredCache\Constants\DB_CLEANUP_COUNT_CACHE_KEY;
@@ -305,4 +306,5 @@ function script_loader_tag( $tag, $handle ) {
  */
 function register_async_process() {
 	DatabaseOptimizer::factory();
+	CachePurger::factory();
 }

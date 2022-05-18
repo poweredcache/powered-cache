@@ -7,6 +7,7 @@
 
 namespace PoweredCache;
 
+use PoweredCache\Async\CachePurger;
 use const PoweredCache\Constants\POST_META_DISABLE_CACHE_KEY;
 use function PoweredCache\Utils\clean_page_cache_dir;
 use function PoweredCache\Utils\clean_site_cache_dir;
@@ -23,6 +24,21 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @package PoweredCache
  */
 class AdvancedCache {
+
+	/**
+	 * Holds plugin settings
+	 *
+	 * @var array $settings
+	 */
+	private $settings;
+
+
+	/**
+	 * Instance of CachePreloader
+	 *
+	 * @var CachePurger
+	 */
+	private $cache_purger;
 
 	/**
 	 * Return an instance of the current class
@@ -48,11 +64,13 @@ class AdvancedCache {
 	 * @since 1.0
 	 */
 	public function setup() {
-		$settings = \PoweredCache\Utils\get_settings();
+		$this->settings = \PoweredCache\Utils\get_settings();
 
-		if ( ! $settings['enable_page_cache'] ) {
+		if ( ! $this->settings['enable_page_cache'] ) {
 			return;
 		}
+
+		$this->cache_purger = CachePurger::factory();
 
 		add_action( 'admin_bar_menu', array( $this, 'admin_bar_menu' ) );
 		add_action( 'admin_post_powered_cache_purge_page_cache', array( $this, 'purge_page_cache' ) );
@@ -111,7 +129,12 @@ class AdvancedCache {
 		}
 
 		if ( current_user_can( 'manage_network' ) ) {
-			clean_page_cache_dir();
+			if ( $this->settings['async_cache_cleaning'] ) {
+				$this->cache_purger->push_to_queue( [ 'call' => 'clean_page_cache_dir' ] );
+				$this->cache_purger->save()->dispatch();
+			} else {
+				clean_page_cache_dir();
+			}
 			$redirect_url = add_query_arg( 'pc_action', 'flush_page_cache_network', wp_get_referer() );
 		} else {
 			$redirect_url = add_query_arg( 'pc_action', 'flush_page_cache_network_err_permission', wp_get_referer() );
@@ -133,7 +156,13 @@ class AdvancedCache {
 		}
 
 		if ( current_user_can( 'manage_options' ) ) {
-			clean_site_cache_dir();
+			if ( $this->settings['async_cache_cleaning'] ) {
+				$this->cache_purger->push_to_queue( [ 'call' => 'clean_site_cache_dir' ] );
+				$this->cache_purger->save()->dispatch();
+			} else {
+				clean_site_cache_dir();
+			}
+
 			$redirect_url = add_query_arg( 'pc_action', 'flush_page_cache', wp_get_referer() );
 		} else {
 			$redirect_url = add_query_arg( 'pc_action', 'flush_page_cache_err_permission', wp_get_referer() );
@@ -172,8 +201,18 @@ class AdvancedCache {
 			 */
 			$urls = apply_filters( 'powered_cache_advanced_cache_purge_urls', $urls, $post_id );
 
-			foreach ( $urls as $url ) {
-				delete_page_cache( $url );
+			if ( $this->settings['async_cache_cleaning'] ) {
+				$this->cache_purger->push_to_queue(
+					[
+						'call' => 'delete_page_cache',
+						'urls' => $urls,
+					]
+				);
+				$this->cache_purger->save()->dispatch();
+			} else {
+				foreach ( $urls as $url ) {
+					delete_page_cache( $url );
+				}
 			}
 		}
 
@@ -222,7 +261,12 @@ class AdvancedCache {
 	 * @since 2.0
 	 */
 	public function purge_on_switch_theme() {
-		clean_site_cache_dir();
+		if ( $this->settings['async_cache_cleaning'] ) {
+			$this->cache_purger->push_to_queue( [ 'call' => 'clean_site_cache_dir' ] );
+			$this->cache_purger->save()->dispatch();
+		} else {
+			clean_site_cache_dir();
+		}
 	}
 
 	/**

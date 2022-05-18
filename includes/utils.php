@@ -133,6 +133,7 @@ function get_settings( $force_network_wide = false ) {
 		'varnish_ip'                     => '',
 		// misc
 		'cache_footprint'                => true,
+		'async_cache_cleaning'           => false,
 		// new options needs to migrate from extensions
 		'enable_google_tracking'         => false,
 		'enable_fb_tracking'             => false,
