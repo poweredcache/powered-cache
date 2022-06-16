@@ -198,6 +198,18 @@ class Preloader {
 			\PoweredCache\Utils\log( sprintf( 'Public tax terms added to preload queue. ' ) );
 		}
 
+		/**
+		 * Filters preload urls before sending to queue
+		 *
+		 * @hook   populate_preload_queue_urls
+		 *
+		 * @param  {array} $preload_urls The list of preload urls
+		 *
+		 * @return {array} New value.
+		 * @since  2.4
+		 */
+		$preload_urls = apply_filters( 'populate_preload_queue_urls', $preload_urls );
+
 		foreach ( $preload_urls as $url ) {
 			$this->cache_preloader->push_to_queue( $url );
 		}
