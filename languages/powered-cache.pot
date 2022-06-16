@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Powered Cache 2.3\n"
+"Project-Id-Version: Powered Cache 2.4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/powered-cache\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-05-18T07:30:28+00:00\n"
+"POT-Creation-Date: 2022-06-16T09:33:11+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.6.0\n"
 "X-Domain: powered-cache\n"
@@ -41,7 +41,7 @@ msgid "Powered Cache Settings"
 msgstr ""
 
 #: includes/admin/dashboard.php:106
-#: includes/admin/dashboard.php:815
+#: includes/admin/dashboard.php:819
 msgid "Settings"
 msgstr ""
 
@@ -94,88 +94,92 @@ msgid "Settings saved."
 msgstr ""
 
 #: includes/admin/dashboard.php:479
-#: includes/admin/dashboard.php:480
-#: includes/admin/dashboard.php:481
-#: includes/admin/dashboard.php:482
+msgid "Page cache for %s language has been deleted!"
+msgstr ""
+
 #: includes/admin/dashboard.php:483
 #: includes/admin/dashboard.php:484
 #: includes/admin/dashboard.php:485
+#: includes/admin/dashboard.php:486
+#: includes/admin/dashboard.php:487
+#: includes/admin/dashboard.php:488
+#: includes/admin/dashboard.php:489
 msgid "You don't have permission to perform this action!"
 msgstr ""
 
-#: includes/admin/dashboard.php:486
+#: includes/admin/dashboard.php:490
 msgid "Your license key does not seem valid. A valid license is required for the Critical CSS!"
 msgstr ""
 
-#: includes/admin/dashboard.php:487
+#: includes/admin/dashboard.php:491
 msgid "Could not flush Cloudflare cache. Please make sure you entered the correct credentials and zone id!"
 msgstr ""
 
-#: includes/admin/dashboard.php:529
+#: includes/admin/dashboard.php:533
 msgid "Purge All Cache"
 msgstr ""
 
-#: includes/admin/dashboard.php:684
+#: includes/admin/dashboard.php:688
 msgid "wp-config.php is writable."
 msgstr ""
 
-#: includes/admin/dashboard.php:686
+#: includes/admin/dashboard.php:690
 msgid "wp-config.php is not writable. Please make sure the file writable or you can manually define %s constant."
 msgstr ""
 
-#: includes/admin/dashboard.php:699
+#: includes/admin/dashboard.php:703
 msgid "Cache directory %s is not exist!"
 msgstr ""
 
-#: includes/admin/dashboard.php:701
+#: includes/admin/dashboard.php:705
 msgid "Cache directory %s is not writeable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:704
+#: includes/admin/dashboard.php:708
 msgid "Cache directory %s exist and writable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:718
+#: includes/admin/dashboard.php:722
 msgid ".htaccess file %s is not exist!"
 msgstr ""
 
-#: includes/admin/dashboard.php:720
+#: includes/admin/dashboard.php:724
 msgid ".htaccess file %s is not writeable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:723
+#: includes/admin/dashboard.php:727
 msgid ".htaccess file %s exist and writable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:738
+#: includes/admin/dashboard.php:742
 msgid "Required file for the page caching %s is not exist!"
 msgstr ""
 
-#: includes/admin/dashboard.php:740
+#: includes/admin/dashboard.php:744
 msgid "Required file for the page caching %s is not writeable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:743
+#: includes/admin/dashboard.php:747
 msgid "Required file for the page caching %s exist and writable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:758
+#: includes/admin/dashboard.php:762
 msgid "Required file for the object caching %s is not exist!"
 msgstr ""
 
-#: includes/admin/dashboard.php:760
+#: includes/admin/dashboard.php:764
 msgid "Required file for the object caching %s is not writeable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:763
+#: includes/admin/dashboard.php:767
 msgid "Required file for the object caching %s exist and writable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:776
+#: includes/admin/dashboard.php:780
 msgid "Invalid request"
 msgstr ""
 
-#: includes/admin/dashboard.php:818
+#: includes/admin/dashboard.php:822
 msgid "Get Premium"
 msgstr ""
 
@@ -1320,7 +1324,7 @@ msgid "Preload Cache"
 msgstr ""
 
 #. translators: %1$s plugin name,  %2$s conflicted feature name (Eg lazyload)
-#: includes/compat/loader.php:58
+#: includes/compat/loader.php:59
 msgid "It seems %1$s is activated on your site. Powered Cache works perfectly fine with %1$s but you cannot use %2$s functionalities that conflic with %1$s plugin unless you deactivate it."
 msgstr ""
 
@@ -1338,6 +1342,11 @@ msgstr ""
 
 #: includes/compat/plugins/autoptimize.php:52
 msgid "Configure Autoptimize"
+msgstr ""
+
+#: includes/compat/plugins/wpml.php:114
+#: includes/compat/plugins/wpml.php:167
+msgid "All languages"
 msgstr ""
 
 #: includes/utils.php:353
