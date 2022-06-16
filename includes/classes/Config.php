@@ -309,7 +309,7 @@ class Config {
 			}
 		}
 
-		if ( ! file_put_contents( $config_path, implode( PHP_EOL, $config_file ) ) ) {
+		if ( ! @file_put_contents( $config_path, implode( PHP_EOL, $config_file ) ) ) {  // phpcs:ignore
 			return false;
 		}
 
