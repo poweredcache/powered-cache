@@ -475,6 +475,10 @@ function maybe_display_message() {
 		'save_settings'              => esc_html__( 'Settings saved.', 'powered-cache' ),
 	];
 
+	if ( isset( $_GET['language'] ) ) {
+		$success_messages['flush_lang_cache'] = sprintf( esc_html__( 'Page cache for %s language has been deleted!', 'powered-cache' ), esc_attr( urldecode_deep( $_GET['language'] ) ) );
+	}
+
 	$err_messages = [
 		'generic_permission_err'                  => esc_html__( 'You don\'t have permission to perform this action!', 'powered-cache' ),
 		'flush_page_cache_network_err_permission' => esc_html__( 'You don\'t have permission to perform this action!', 'powered-cache' ),

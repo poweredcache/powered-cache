@@ -60,6 +60,12 @@ class CachePurger extends Powered_Cache_WP_Background_Process {
 			case 'clean_site_cache_dir':
 				clean_site_cache_dir();
 				break;
+			case 'clean_site_cache_for_language':
+				if ( function_exists( '\PoweredCache\Compat\WPML\clean_site_cache_for_language' ) ) {
+					\PoweredCache\Compat\WPML\clean_site_cache_for_language( $item['lang_code'] );
+				}
+
+				break;
 			case 'delete_page_cache':
 				$urls = $item['urls'];
 				if ( ! empty( $urls ) ) {
