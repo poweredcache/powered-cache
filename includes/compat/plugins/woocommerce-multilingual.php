@@ -4,6 +4,7 @@
  *
  * @package PoweredCache\Compat
  * @link    https://wordpress.org/plugins/woocommerce-multilingual/
+ * @since   2.4
  */
 
 namespace PoweredCache\Compat\WoocommerceMultilingual;
@@ -37,7 +38,7 @@ function use_cookie_strategy() {
  * @param array $cookies The list of vary cookies
  *
  * @return array Altered cookie list.
- * @since 2.3.1
+ * @since 2.4
  */
 function add_vary_cookie( $cookies ) {
 	$cookies[] = 'wcml_client_currency';
@@ -50,7 +51,7 @@ function add_vary_cookie( $cookies ) {
 /**
  * Setup vary cookie on activation
  *
- * @since 2.3.1
+ * @since 2.4
  */
 function activate() {
 	add_filter( 'powered_cache_mod_rewrite', '__return_false' );
@@ -63,7 +64,7 @@ function activate() {
 /**
  * Remove vary cookie on deactivation
  *
- * @since 2.3.1
+ * @since 2.4
  */
 function deactivate() {
 	remove_filter( 'powered_cache_mod_rewrite', '__return_false', 25 );
