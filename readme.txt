@@ -3,7 +3,7 @@ Contributors:  poweredcache, skopco, m_uysl
 Tags: cache, caching, web vitals, performance, fastest, page speed, optimization, cdn, object cache, minify, powered cache
 Requires at least:  5.1
 Tested up to:  6.0
-Stable tag:  2.4
+Stable tag:  2.4.1
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -168,6 +168,9 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 2.4.1 (June 25, 2022) =
+- Fix "Try Premium Today" button
 
 = 2.4 (June 16, 2022) =
 - Improvements on WPML compatibility: Purge/preload cache for a specific locale.
