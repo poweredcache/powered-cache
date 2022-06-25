@@ -2192,7 +2192,7 @@ $settings = \PoweredCache\Utils\get_settings();
 									<div class="sui-box-settings-row sui-upsell-row">
 										<div class="sui-upsell-notice" style="padding-left: 0;">
 											<p><?php esc_html_e( 'With our premium version of Powered Cache you can use Varnish extension and unlock some other speedbooster features.', 'powered-cache' ); ?><br>
-												<button class="sui-button sui-button-purple" style="margin-top: 10px;"><?php esc_html_e( 'Try Premium today', 'powered-cache' ); ?></button>
+												<a href="https://poweredcache.com/" rel="noopener" target="_blank" class="sui-button sui-button-purple" style="margin-top: 10px;color:#fff;"><?php esc_html_e( 'Try Premium today', 'powered-cache' ); ?></a>
 											</p>
 										</div>
 									</div>
@@ -2241,7 +2241,7 @@ $settings = \PoweredCache\Utils\get_settings();
 									<div class="sui-box-settings-row sui-upsell-row">
 										<div class="sui-upsell-notice" style="padding-left: 0;">
 											<p><?php esc_html_e( 'With our premium version of Powered Cache you can use this extension and unlock some other speedbooster features.', 'powered-cache' ); ?><br>
-												<button class="sui-button sui-button-purple" style="margin-top: 10px;"><?php esc_html_e( 'Try Premium today', 'powered-cache' ); ?></button>
+												<a href="https://poweredcache.com/" rel="noopener" target="_blank" class="sui-button sui-button-purple" style="margin-top: 10px;color:#fff;"><?php esc_html_e( 'Try Premium today', 'powered-cache' ); ?></a>
 											</p>
 										</div>
 									</div>
@@ -2294,7 +2294,7 @@ $settings = \PoweredCache\Utils\get_settings();
 									<div class="sui-box-settings-row sui-upsell-row">
 										<div class="sui-upsell-notice" style="padding-left: 0;">
 											<p><?php esc_html_e( 'With our premium version of Powered Cache you can use this extension and unlock some other speedbooster features.', 'powered-cache' ); ?><br>
-												<button class="sui-button sui-button-purple" style="margin-top: 10px;"><?php esc_html_e( 'Try Premium today', 'powered-cache' ); ?></button>
+												<a href="https://poweredcache.com/" rel="noopener" target="_blank"  class="sui-button sui-button-purple" style="margin-top: 10px;color:#fff;"><?php esc_html_e( 'Try Premium today', 'powered-cache' ); ?></a>
 											</p>
 										</div>
 									</div>
