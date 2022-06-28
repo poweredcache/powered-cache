@@ -158,7 +158,7 @@ if ( ! $args || false === strpos( $args, '?' ) ) {
 }
 
 $args = substr( $args, strpos( $args, '?' ) + 1 );
-
+$args = str_replace( [ '&minify=1', '&minify=0' ], '', $args ); // remove minify parameter
 
 // /foo/bar.css,/foo1/bar/baz.css?m=293847g
 // or

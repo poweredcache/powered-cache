@@ -96,10 +96,8 @@ class Helper {
 	 * @return string
 	 */
 	public static function get_optimized_url( $path, $minify ) {
-		$path = wp_normalize_path( $path );
-
 		$optimizer_url = POWERED_CACHE_URL . 'includes/file-optimizer.php??';
-		$optimized_url = $optimizer_url . $path . '?minify=' . absint( $minify );
+		$optimized_url = $optimizer_url . $path . '&minify=' . absint( $minify );
 
 		$optimized_url = esc_url_raw( apply_filters( 'powered_cache_fo_optimized_url', $optimized_url, $path, $minify ) );
 
