@@ -3,7 +3,7 @@ Contributors:  poweredcache, skopco, m_uysl
 Tags: cache, caching, web vitals, performance, fastest, page speed, optimization, cdn, object cache, minify, powered cache
 Requires at least:  5.1
 Tested up to:  6.0
-Stable tag:  2.4.2
+Stable tag:  2.4.3
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -168,6 +168,9 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 2.4.3 (July 5, 2022) =
+- Compatibility fix for older versions of WPML.
 
 = 2.4.2 (June 29, 2022) =
 - File optimizer bug fix.
