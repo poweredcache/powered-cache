@@ -87,6 +87,10 @@ if ( class_exists( '\SitePress' ) ) {
 				return;
 			}
 
+			if ( ! method_exists( $sitepress, 'get_active_languages' ) ) {
+				return;
+			}
+
 			$active_languages = $sitepress->get_active_languages();
 
 			if ( ! $active_languages ) {
@@ -139,6 +143,10 @@ if ( class_exists( '\SitePress' ) ) {
 
 		if ( ! $sitepress ) {
 			$sitepress = new \SitePress();
+		}
+
+		if ( ! method_exists( $sitepress, 'get_active_languages' ) ) {
+			return;
 		}
 
 		$active_languages = $sitepress->get_active_languages();
@@ -230,6 +238,10 @@ if ( class_exists( '\SitePress' ) ) {
 			return;
 		}
 
+		if ( ! method_exists( $GLOBALS['sitepress'], 'language_url' ) ) {
+			return;
+		}
+
 		$base_dir        = get_page_cache_dir();
 		$language_url    = $GLOBALS['sitepress']->language_url( $lang );
 		$site_url_parsed = wp_parse_url( $language_url );
@@ -268,6 +280,10 @@ if ( class_exists( '\SitePress' ) ) {
 			}
 
 			return $lang_urls;
+		}
+
+		if ( ! method_exists( $sitepress, 'get_active_languages' ) ) {
+			return $urls;
 		}
 
 		// preload all languages
