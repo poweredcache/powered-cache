@@ -277,7 +277,6 @@ function sanitize_options( $options ) {
 	$sanitized_options['rejected_uri']                  = sanitize_textarea_field( $options['rejected_uri'] );
 	$sanitized_options['accepted_query_strings']        = sanitize_textarea_field( $options['accepted_query_strings'] );
 	$sanitized_options['purge_additional_pages']        = sanitize_textarea_field( $options['purge_additional_pages'] );
-	$sanitized_options['purge_additional_pages']        = sanitize_textarea_field( $options['purge_additional_pages'] );
 	$sanitized_options['minify_html']                   = ! empty( $options['minify_html'] );
 	$sanitized_options['combine_google_fonts']          = ! empty( $options['combine_google_fonts'] );
 	$sanitized_options['swap_google_fonts_display']     = ! empty( $options['swap_google_fonts_display'] );
@@ -289,7 +288,6 @@ function sanitize_options( $options ) {
 	$sanitized_options['excluded_css_files']            = sanitize_textarea_field( $options['excluded_css_files'] );
 	$sanitized_options['minify_js']                     = ! empty( $options['minify_js'] );
 	$sanitized_options['combine_js']                    = ! empty( $options['combine_js'] );
-	$sanitized_options['excluded_js_files']             = sanitize_textarea_field( $options['excluded_js_files'] );
 	$sanitized_options['excluded_js_files']             = sanitize_textarea_field( $options['excluded_js_files'] );
 	$sanitized_options['js_execution_method']           = sanitize_text_field( $options['js_execution_method'] );
 	$sanitized_options['js_execution_optimized_only']   = ! empty( $options['js_execution_optimized_only'] );
