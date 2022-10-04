@@ -34,9 +34,10 @@ if ( is_multisite() ) {
 
 \PoweredCache\Config::factory()->define_wp_cache( false );
 
+$object_cache_file = untrailingslashit( WP_CONTENT_DIR ) . '/object-cache.php';
+
 // delete object cache file
-if ( file_exists( untrailingslashit( WP_CONTENT_DIR ) . '/object-cache.php' )
-	 && false !== strpos( file_get_contents( $file ), 'POWERED_OBJECT_CACHE' ) ) {
+if ( file_exists( $object_cache_file ) && false !== strpos( file_get_contents( $object_cache_file ), 'POWERED_OBJECT_CACHE' ) ) {
 	\PoweredCache\Utils\log( sprintf( 'Removing: %s', 'object-cache.php' ) );
 
 	unlink( untrailingslashit( WP_CONTENT_DIR ) . '/object-cache.php' );
