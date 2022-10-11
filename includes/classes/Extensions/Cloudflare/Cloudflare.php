@@ -102,7 +102,7 @@ class Cloudflare {
 	 * Delete CF cache when deleting all cache
 	 */
 	public function delete_cloudflare_cache_on_flush() {
-		$this->cf_api->purge( $this->settings['zone'] );
+		$this->cf_api->purge( $this->settings['cloudflare_zone'] );
 	}
 
 	/**
@@ -125,7 +125,7 @@ class Cloudflare {
 			exit;
 		}
 
-		if ( $this->cf_api->purge( $this->settings['zone'] ) ) {
+		if ( $this->cf_api->purge( $this->settings['cloudflare_zone'] ) ) {
 			$redirect_url = add_query_arg( 'pc_action', 'flush_cf_cache', wp_get_referer() );
 			wp_safe_redirect( esc_url_raw( $redirect_url ) );
 			exit;
