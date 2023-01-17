@@ -796,6 +796,16 @@ function delete_page_cache( $url ) {
 				unlink( $dir . $file );
 			}
 
+			/**
+			 * Given page can include endpoints such as /feed/..
+			 * Delete subdirectories.
+			 *
+			 * @since 2.5
+			 */
+			if ( is_dir( $dir . $file ) ) {
+				remove_dir( $dir . $file );
+			}
+
 			if ( file_exists( $dir ) && is_dir_empty( $dir ) ) {
 				remove_dir( $dir );
 			}
