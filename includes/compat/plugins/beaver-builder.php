@@ -13,6 +13,6 @@ namespace PoweredCache\Compat\BeaverBuilder;
  *
  * @since 2.5
  */
-if ( isset( $_GET['fl_builder'] ) ) {
+if ( isset( $_GET['fl_builder'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	add_filter( 'powered_cache_fo_disable', '__return_true' );
 }
