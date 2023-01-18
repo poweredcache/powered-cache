@@ -114,6 +114,17 @@ class AdvancedCache {
 					'parent' => 'powered-cache',
 				)
 			);
+
+			if ( is_singular() ) {
+				$wp_admin_bar->add_menu(
+					array(
+						'id'     => 'advanced-cache-current-page-purge',
+						'title'  => esc_html__( 'Purge Current Page', 'powered-cache' ),
+						'href'   => wp_nonce_url( admin_url( sprintf( 'admin-post.php?action=powered_cache_purge_page_cache&type=current-page&page=%d', get_the_ID() ) ), 'powered_cache_purge_page_cache' ),
+						'parent' => 'powered-cache',
+					)
+				);
+			}
 		}
 	}
 
@@ -156,7 +167,10 @@ class AdvancedCache {
 		}
 
 		if ( current_user_can( 'manage_options' ) ) {
-			if ( $this->settings['async_cache_cleaning'] ) {
+			if ( isset( $_GET['type'] ) && 'current-page' === $_GET['type'] && ! empty( $_GET['page'] ) ) {
+				$page_url = get_permalink( absint( $_GET['page'] ) );
+				delete_page_cache( $page_url );
+			} elseif ( $this->settings['async_cache_cleaning'] ) {
 				$this->cache_purger->push_to_queue( [ 'call' => 'clean_site_cache_dir' ] );
 				$this->cache_purger->save()->dispatch();
 			} else {
