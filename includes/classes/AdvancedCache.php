@@ -115,7 +115,7 @@ class AdvancedCache {
 				)
 			);
 
-			if ( is_singular() ) {
+			if ( is_singular() && ! is_preview() && is_post_publicly_viewable( get_the_ID() ) ) {
 				$wp_admin_bar->add_menu(
 					array(
 						'id'     => 'advanced-cache-current-page-purge',
