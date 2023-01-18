@@ -35,6 +35,7 @@ function load_compat_files() {
 	require_once POWERED_CACHE_COMPAT_DIR . 'plugins/woocommerce-multilingual.php';
 	require_once POWERED_CACHE_COMPAT_DIR . 'plugins/beaver-builder.php';
 	require_once POWERED_CACHE_COMPAT_DIR . 'plugins/divi.php';
+	require_once POWERED_CACHE_COMPAT_DIR . 'plugins/elementor.php';
 
 	if ( is_multisite() && defined( 'SUNRISE' ) && SUNRISE ) {
 		require POWERED_CACHE_COMPAT_DIR . 'domain-mapping.php';
