@@ -131,7 +131,7 @@ function process_form_submit() {
 		return;
 	}
 
-	$nonce = filter_input( INPUT_POST, 'powered_cache_settings_nonce', FILTER_SANITIZE_STRING );
+	$nonce = filter_input( INPUT_POST, 'powered_cache_settings_nonce', FILTER_SANITIZE_SPECIAL_CHARS );
 	if ( wp_verify_nonce( $nonce, 'powered_cache_update_settings' ) ) {
 		$action      = $_POST['powered_cache_form_action'] ? $_POST['powered_cache_form_action'] : 'save_settings';
 		$old_options = \PoweredCache\Utils\get_settings();
