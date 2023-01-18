@@ -80,6 +80,7 @@ class Htaccess {
 		$rules .= $this->cors_rules();
 		$rules .= $this->gzip_rules();
 		$rules .= $this->etag_rules();
+		$rules .= $this->cache_control_rules();
 		$rules .= $this->rewrite_rules();
 
 		/**
@@ -530,6 +531,38 @@ class Htaccess {
 		 */
 		return function_exists( 'gzencode' ) && apply_filters( 'powered_cache_htaccess_enable_gzip_compression', $this->settings['gzip_compression'] );
 	}
+
+
+	/**
+	 * Cache-Control rules
+	 *
+	 * @return string
+	 */
+	public function cache_control_rules() {
+		$rules = '<FilesMatch "\.(html|htm|html\.gz|rtf|rtx|txt|xsd|xsl|xml)$">' . PHP_EOL;
+		$rules .= '  <IfModule mod_headers.c>' . PHP_EOL;
+		$rules .= '    Header set X-Powered-By "Powered Cache"' . PHP_EOL;
+		$rules .= '    Header unset Pragma' . PHP_EOL;
+		$rules .= '    Header append Cache-Control "public"' . PHP_EOL;
+		$rules .= '  </IfModule>' . PHP_EOL;
+		$rules .= '</FilesMatch>' . PHP_EOL;
+
+		/**
+		 * Filters cache control rules
+		 *
+		 * @hook   powered_cache_htaccess_cache_control_rules
+		 *
+		 * @param  {string} $rules cache control
+		 *
+		 * @return {string} New value.
+		 *
+		 * @since  2.5
+		 */
+		$rules = apply_filters( 'powered_cache_htaccess_cache_control_rules', $rules );
+
+		return $rules;
+	}
+
 }
 
 
