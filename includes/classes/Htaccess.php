@@ -78,7 +78,7 @@ class Htaccess {
 
 		$rules .= $this->browser_cache_rules();
 		$rules .= $this->cors_rules();
-		$rules .= $this->deflate_rules();
+		$rules .= $this->gzip_rules();
 		$rules .= $this->etag_rules();
 		$rules .= $this->rewrite_rules();
 
@@ -215,10 +215,35 @@ class Htaccess {
 	 *
 	 * @return string
 	 */
-	public function deflate_rules() {
+	public function gzip_rules() {
 		$rules = '';
 
-		// gzip
+		$rules .= '<IfModule filter_module>' . PHP_EOL;
+		$rules .= '  <IfModule version.c>' . PHP_EOL;
+		$rules .= '    <IfVersion >= 2.4>' . PHP_EOL;
+		$rules .= '      FilterDeclare   COMPRESS' . PHP_EOL;
+		$rules .= '      FilterProvider  COMPRESS  DEFLATE "%{CONTENT_TYPE} = \'application/atom+xml\'"' . PHP_EOL;
+		$rules .= '      FilterProvider  COMPRESS  DEFLATE "%{CONTENT_TYPE} = \'application/javascript\'"' . PHP_EOL;
+		$rules .= '      FilterProvider  COMPRESS  DEFLATE "%{CONTENT_TYPE} = \'application/json\'"' . PHP_EOL;
+		$rules .= '      FilterProvider  COMPRESS  DEFLATE "%{CONTENT_TYPE} = \'application/ld+json\'"' . PHP_EOL;
+		$rules .= '      FilterProvider  COMPRESS  DEFLATE "%{CONTENT_TYPE} = \'application/manifest+json\'"' . PHP_EOL;
+		$rules .= '      FilterProvider  COMPRESS  DEFLATE "%{CONTENT_TYPE} = \'application/rss+xml\'"' . PHP_EOL;
+		$rules .= '      FilterProvider  COMPRESS  DEFLATE "%{CONTENT_TYPE} = \'application/vnd.ms-fontobject\'"' . PHP_EOL;
+		$rules .= '      FilterProvider  COMPRESS  DEFLATE "%{CONTENT_TYPE} = \'application/xhtml+xml\'"' . PHP_EOL;
+		$rules .= '      FilterProvider  COMPRESS  DEFLATE "%{CONTENT_TYPE} = \'application/xml\'"' . PHP_EOL;
+		$rules .= '      FilterProvider  COMPRESS  DEFLATE "%{CONTENT_TYPE} = \'font/opentype\'"' . PHP_EOL;
+		$rules .= '      FilterProvider  COMPRESS  DEFLATE "%{CONTENT_TYPE} = \'image/svg+xml\'"' . PHP_EOL;
+		$rules .= '      FilterProvider  COMPRESS  DEFLATE "%{CONTENT_TYPE} = \'image/x-icon\'"' . PHP_EOL;
+		$rules .= '      FilterProvider  COMPRESS  DEFLATE "%{CONTENT_TYPE} = \'text/html\'"' . PHP_EOL;
+		$rules .= '      FilterProvider  COMPRESS  DEFLATE "%{CONTENT_TYPE} = \'text/plain\'"' . PHP_EOL;
+		$rules .= '      FilterProvider  COMPRESS  DEFLATE "%{CONTENT_TYPE} = \'text/x-component\'"' . PHP_EOL;
+		$rules .= '      FilterProvider  COMPRESS  DEFLATE "%{CONTENT_TYPE} = \'text/xml\'"' . PHP_EOL;
+		$rules .= '      FilterChain     COMPRESS' . PHP_EOL;
+		$rules .= '      FilterProtocol  COMPRESS  DEFLATE change=yes;byteranges=no' . PHP_EOL;
+		$rules .= '    </IfVersion>' . PHP_EOL;
+		$rules .= '  </IfModule>' . PHP_EOL;
+		$rules .= '</IfModule>' . PHP_EOL;
+
 		$rules .= '<IfModule mod_deflate.c>' . PHP_EOL;
 		$rules .= '  SetOutputFilter DEFLATE' . PHP_EOL;
 		$rules .= '  <IfModule mod_setenvif.c>' . PHP_EOL;
