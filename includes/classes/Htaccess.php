@@ -539,7 +539,7 @@ class Htaccess {
 	 * @return string
 	 */
 	public function cache_control_rules() {
-		$rules = '<FilesMatch "\.(html|htm|html\.gz|rtf|rtx|txt|xsd|xsl|xml)$">' . PHP_EOL;
+		$rules  = '<FilesMatch "\.(html|htm|html\.gz|rtf|rtx|txt|xsd|xsl|xml)$">' . PHP_EOL;
 		$rules .= '  <IfModule mod_headers.c>' . PHP_EOL;
 		$rules .= '    Header set X-Powered-By "Powered Cache"' . PHP_EOL;
 		$rules .= '    Header unset Pragma' . PHP_EOL;
