@@ -295,7 +295,7 @@ class LazyLoad {
 				$placeholder_url_used = $placeholder_url;
 
 				// replace the src and add the data-src attribute
-				$replace_html = preg_replace( '/<img(.*?)src=/is', '<img$1src="' . esc_attr( $placeholder_url_used ) . '" data-lazy-type="image" data-lazy-src=', $img_html );
+				$replace_html = preg_replace( '/<img(.*?)src=/is', '<img$1src="' . esc_url( $placeholder_url_used ) . '" data-lazy-type="image" data-lazy-src=', $img_html );
 
 				// also replace the srcset (responsive images)
 				$replace_html = str_replace( 'srcset', 'data-lazy-srcset', $replace_html );
@@ -354,7 +354,7 @@ class LazyLoad {
 				continue;
 			}
 
-			$replace_html = '<img src="' . esc_attr( $placeholder_url ) . '"  class="lazy lazy-hidden" data-lazy-type="iframe" data-lazy-src="' . esc_attr( $iframe_html ) . '" alt="">';
+			$replace_html = '<img src="' . esc_url( $placeholder_url ) . '"  class="lazy lazy-hidden" data-lazy-type="iframe" data-lazy-src="' . esc_url( $iframe_html ) . '" alt="">';
 
 			$replace_html .= '<noscript>' . $iframe_html . '</noscript>';
 
