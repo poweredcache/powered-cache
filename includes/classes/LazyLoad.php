@@ -11,6 +11,8 @@ namespace PoweredCache;
 
 use const PoweredCache\Constants\POST_META_DISABLE_LAZYLOAD_KEY;
 
+// phpcs:disable WordPressVIPMinimum.Security.ProperEscapingFunction.hrefSrcEscUrl
+
 /**
  * Class LazyLoad
  */
