@@ -8,6 +8,10 @@
 
 namespace PoweredCache\Compat\Divi;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 /**
  * Dont use file optimizer when the page on builder mode.
  *
