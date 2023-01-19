@@ -20,8 +20,8 @@
     }
   },
   "require-dev": {
-    "phpunit/phpunit": "^8.2",
-    "10up/wp_mock": "dev-master",
+    "phpunit/phpunit": "^9.5",
+    "10up/wp_mock": "dev-trunk",
     "10up/phpcs-composer": "dev-master",
     "coenjacobs/mozart": "^0.7.1",
     "matthiasmullie/minify": "^1.3",

@@ -1,9 +1,9 @@
 === Powered Cache – Caching and Optimization for WordPress – Easily Improve PageSpeed & Web Vitals Score ===
 Contributors:  poweredcache, skopco, m_uysl
 Tags: cache, caching, web vitals, performance, fastest, page speed, optimization, cdn, object cache, minify, powered cache
-Requires at least:  5.1
+Requires at least:  5.7
 Tested up to:  6.1
-Stable tag:  2.4.4
+Stable tag:  2.5
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -168,6 +168,17 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 2.5 (January 19, 2023) =
+- Added: Beaver Builder Compatibility
+- Added: Elementor Compatibility
+- Added: Divi Compatibility
+- Added: Purge Current Page admin bar item for singular page.
+- Refactor: `.htaccess` rule generation and Apache 2.4 improvements.
+- Fixes: PHP 8.1+ deprecation fixes.
+- Bump required WordPress version to 5.7.
+- Small tweaks & package updates.
+
 
 = 2.4.4 (October 11, 2022) =
 - Fix: Cloudflare cache purge
