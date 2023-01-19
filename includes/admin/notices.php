@@ -71,7 +71,7 @@ function maybe_display_plugin_compatability_notices() {
 				<?php
 				foreach ( $plugins as $plugin ) {
 					$plugin_data = get_plugin_data( WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . $plugin );
-					echo '<li>' . esc_attr( $plugin_data['Name'] ) . '</span> <a href="' . esc_url_raw( wp_nonce_url( admin_url( 'admin-post.php?action=deactivate_plugin&plugin=' . rawurlencode( $plugin ) ), 'deactivate_plugin' ) ) . '" class="button-secondary">' . esc_html__( 'Deactivate', 'powered-cache' ) . '</a></li>'; // phpcs:ignore WordPressVIPMinimum.Security.ProperEscapingFunction.notAttrEscAttr
+					echo '<li>' . esc_attr( $plugin_data['Name'] ) . '</span> <a href="' . esc_url_raw( wp_nonce_url( admin_url( 'admin-post.php?action=deactivate_plugin&plugin=' . rawurlencode( $plugin ) ), 'deactivate_plugin' ) ) . '" class="button-secondary">' . esc_html__( 'Deactivate', 'powered-cache' ) . '</a></li>';
 				}
 				?>
 			</ul>

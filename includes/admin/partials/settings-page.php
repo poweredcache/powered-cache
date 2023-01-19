@@ -25,8 +25,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 // phpcs:disable WordPress.WhiteSpace.PrecisionAlignment.Found
 // phpcs:disable Generic.WhiteSpace.DisallowSpaceIndent.SpacesUsed
 // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
-// phpcs:disable WordPressVIPMinimum.Security.ProperEscapingFunction.htmlAttrNotByEscHTML
-// phpcs:disable WordPressVIPMinimum.Security.ProperEscapingFunction.notAttrEscAttr
 
 $settings = \PoweredCache\Utils\get_settings();
 
