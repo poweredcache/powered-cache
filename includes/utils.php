@@ -792,23 +792,13 @@ function delete_page_cache( $url ) {
 			 * Don't need to lookup for index-https, index-https-mobile etc..
 			 * Just clean that directory's files only.
 			 */
-			if ( ! is_dir( $dir . $file ) && ! in_array( $file, array( '.', '..' ), true ) ) {
+			if ( ! is_dir( $dir . $file ) && file_exists( $dir . $file ) && ! in_array( $file, array( '.', '..' ), true ) ) {
 				unlink( $dir . $file );
 			}
+		}
 
-			/**
-			 * Given page can include endpoints such as /feed/..
-			 * Delete subdirectories.
-			 *
-			 * @since 2.5
-			 */
-			if ( is_dir( $dir . $file ) ) {
-				remove_dir( $dir . $file );
-			}
-
-			if ( file_exists( $dir ) && is_dir_empty( $dir ) ) {
-				remove_dir( $dir );
-			}
+		if ( file_exists( $dir ) && is_dir_empty( $dir ) ) {
+			remove_dir( $dir );
 		}
 
 		return true;
