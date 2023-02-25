@@ -56,9 +56,8 @@ const { __ } = wp.i18n;
 										icon =
 											'<span class="sui-icon-check" aria-hidden="true"></span>';
 									} else {
-										icon = (
-											<span className="sui-icon-close" aria-hidden="true" />
-										);
+										icon =
+											'<span class="sui-icon-close" aria-hidden="true"></span>';
 									}
 
 									diagnosticItems.append(`<li>${icon} ${item.description}</li>`);
