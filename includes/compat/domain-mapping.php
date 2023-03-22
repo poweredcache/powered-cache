@@ -124,7 +124,7 @@ function maybe_purge_on_comment_status_change( $post_id, $post_url ) {
 function get_mapped_domains() {
 	$mapped_domains = [];
 
-	if ( class_exists( '\Mercator\Mapping' ) ) {
+	if ( method_exists( '\Mercator\Mapping', 'get_by_site' ) ) {
 		$mappings = \Mercator\Mapping::get_by_site( get_current_blog_id() );
 		if ( ! is_wp_error( $mappings ) && $mappings ) {
 			foreach ( $mappings as $mapping ) {
@@ -180,7 +180,7 @@ function maybe_create_config_files( $config_file, $config_file_string, $network_
  * @param \WP_Site $site_object Site object.
  */
 function purge_on_site_delete( $site_object ) {
-	if ( class_exists( '\Mercator\Mapping' ) ) {
+	if ( method_exists( '\Mercator\Mapping', 'get_by_site' ) ) {
 		$mappings = \Mercator\Mapping::get_by_site( $site_object->id );
 		if ( ! is_wp_error( $mappings ) && $mappings ) {
 			foreach ( $mappings as $mapping ) {
