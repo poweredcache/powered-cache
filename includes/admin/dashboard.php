@@ -322,6 +322,7 @@ function sanitize_options( $options ) {
 	$cdn_hostname = [];
 	if ( isset( $options['cdn_hostname'] ) ) {
 		foreach ( (array) $options['cdn_hostname'] as $hostname ) {
+			$hostname = trim( $hostname );
 			if ( filter_var( $hostname, FILTER_VALIDATE_URL ) ) {
 				$cdn_hostname[] = wp_parse_url( $hostname, PHP_URL_HOST );
 			} else {
