@@ -203,7 +203,7 @@ class FileOptimizer {
 	 * @see https://stackoverflow.com/a/29363569
 	 */
 	public function run_html_minify( $buffer ) {
-		$replace = array(
+		$replace = [
 			// remove tabs before and after HTML tags
 			'/\>[^\S ]+/s'               => '>',
 			'/[^\S ]+\</s'               => '<',
@@ -225,10 +225,9 @@ class FileOptimizer {
 			'/\)[\r\n\t ]?{[\r\n\t ]+/s' => '){',
 			'/,[\r\n\t ]?{[\r\n\t ]+/s'  => ',{',
 			// remove new-line after JS's line end (only most obvious and safe cases)
-			'/\),[\r\n\t ]+/s'           => '),',
-			// remove quotes from HTML attributes that does not contain spaces; keep quotes around URLs!
-			'~([\r\n\t ])?([a-zA-Z0-9]+)="([a-zA-Z0-9_/\\-]+)"([\r\n\t ])?~s' => '$1$2=$3$4', // $1 and $4 insert first white-space character found before/after attribute
-		);
+			'/\),[\r\n\t ]+/s'           => '),'
+		];
+
 		$buffer  = preg_replace( array_keys( $replace ), array_values( $replace ), $buffer );
 
 		return $buffer;
