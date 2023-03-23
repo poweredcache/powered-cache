@@ -2,8 +2,8 @@
 Contributors:  poweredcache, skopco, m_uysl
 Tags: cache, caching, web vitals, performance, fastest, page speed, optimization, cdn, object cache, minify, powered cache
 Requires at least:  5.7
-Tested up to:  6.1
-Stable tag:  2.5.2
+Tested up to:  6.2
+Stable tag:  2.5.3
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -168,6 +168,15 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 2.5.3 (March 23, 2023) =
+- Added: Purge site cache on multisite when the site updated. (eg: archived etc...)
+- Improvements: HTML minification.
+- Improvements: Set file optimizer default cache header.
+- Fix: Close icon on diagnostic modal
+- Fix: Blank space on CDN hostname(s)
+- Fix: WP Ultimo compatibility. (checking Mercator more strictly)
+- Tested with WP 6.2
 
 = 2.5.2 (January 20, 2023) =
 - Fix: revert subdirectory deletion with `delete_page_cache()`
