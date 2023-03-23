@@ -2,21 +2,21 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Powered Cache 2.5.2\n"
+"Project-Id-Version: Powered Cache 2.5.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/powered-cache\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-01-20T09:12:05+00:00\n"
+"POT-Creation-Date: 2023-03-23T10:36:33+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.6.0\n"
+"X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: powered-cache\n"
 
 #. Plugin Name of the plugin
 #: includes/admin/dashboard.php:93
-#: includes/admin/dashboard.php:434
+#: includes/admin/dashboard.php:435
 #: includes/admin/partials/settings-page.php:40
 #: includes/classes/MetaBox.php:98
 msgid "Powered Cache"
@@ -41,145 +41,145 @@ msgid "Powered Cache Settings"
 msgstr ""
 
 #: includes/admin/dashboard.php:106
-#: includes/admin/dashboard.php:817
+#: includes/admin/dashboard.php:818
 msgid "Settings"
 msgstr ""
 
-#: includes/admin/dashboard.php:462
+#: includes/admin/dashboard.php:463
 msgid "Page cache deleted for all websites!"
 msgstr ""
 
-#: includes/admin/dashboard.php:463
+#: includes/admin/dashboard.php:464
 msgid "Page cache deleted successfully!"
 msgstr ""
 
-#: includes/admin/dashboard.php:464
+#: includes/admin/dashboard.php:465
 msgid "Object cache deleted successfully!"
 msgstr ""
 
-#: includes/admin/dashboard.php:465
+#: includes/admin/dashboard.php:466
 msgid "All cached items flushed successfully!"
 msgstr ""
 
-#: includes/admin/dashboard.php:466
+#: includes/admin/dashboard.php:467
 msgid "The cache preloading has been initialized!"
 msgstr ""
 
-#: includes/admin/dashboard.php:467
+#: includes/admin/dashboard.php:468
 msgid "The Critical CSS generation process has been initialized!"
 msgstr ""
 
-#: includes/admin/dashboard.php:468
+#: includes/admin/dashboard.php:469
 msgid "The Critical CSS generation process has been initialized for all sites! This might take a while, depending on the network size."
 msgstr ""
 
-#: includes/admin/dashboard.php:469
+#: includes/admin/dashboard.php:470
 msgid "Cloudflare cache flushed, it can take up to 30 seconds to delete all cache from Cloudflare!"
 msgstr ""
 
-#: includes/admin/dashboard.php:470
+#: includes/admin/dashboard.php:471
 msgid "Settings have been reset!"
 msgstr ""
 
-#: includes/admin/dashboard.php:471
+#: includes/admin/dashboard.php:472
 msgid "Settings have been imported!"
 msgstr ""
 
-#: includes/admin/dashboard.php:472
+#: includes/admin/dashboard.php:473
 msgid "Settings saved and database being optimized..."
 msgstr ""
 
-#: includes/admin/dashboard.php:473
+#: includes/admin/dashboard.php:474
 msgid "Settings saved."
 msgstr ""
 
-#: includes/admin/dashboard.php:477
+#: includes/admin/dashboard.php:478
 msgid "Page cache for %s language has been deleted!"
 msgstr ""
 
-#: includes/admin/dashboard.php:481
 #: includes/admin/dashboard.php:482
 #: includes/admin/dashboard.php:483
 #: includes/admin/dashboard.php:484
 #: includes/admin/dashboard.php:485
 #: includes/admin/dashboard.php:486
 #: includes/admin/dashboard.php:487
+#: includes/admin/dashboard.php:488
 msgid "You don't have permission to perform this action!"
 msgstr ""
 
-#: includes/admin/dashboard.php:488
+#: includes/admin/dashboard.php:489
 msgid "Your license key does not seem valid. A valid license is required for the Critical CSS!"
 msgstr ""
 
-#: includes/admin/dashboard.php:489
+#: includes/admin/dashboard.php:490
 msgid "Could not flush Cloudflare cache. Please make sure you entered the correct credentials and zone id!"
 msgstr ""
 
-#: includes/admin/dashboard.php:531
+#: includes/admin/dashboard.php:532
 msgid "Purge All Cache"
 msgstr ""
 
-#: includes/admin/dashboard.php:686
+#: includes/admin/dashboard.php:687
 msgid "wp-config.php is writable."
 msgstr ""
 
-#: includes/admin/dashboard.php:688
+#: includes/admin/dashboard.php:689
 msgid "wp-config.php is not writable. Please make sure the file writable or you can manually define %s constant."
 msgstr ""
 
-#: includes/admin/dashboard.php:701
+#: includes/admin/dashboard.php:702
 msgid "Cache directory %s is not exist!"
 msgstr ""
 
-#: includes/admin/dashboard.php:703
+#: includes/admin/dashboard.php:704
 msgid "Cache directory %s is not writeable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:706
+#: includes/admin/dashboard.php:707
 msgid "Cache directory %s exist and writable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:720
+#: includes/admin/dashboard.php:721
 msgid ".htaccess file %s is not exist!"
 msgstr ""
 
-#: includes/admin/dashboard.php:722
+#: includes/admin/dashboard.php:723
 msgid ".htaccess file %s is not writeable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:725
+#: includes/admin/dashboard.php:726
 msgid ".htaccess file %s exist and writable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:740
+#: includes/admin/dashboard.php:741
 msgid "Required file for the page caching %s is not exist!"
 msgstr ""
 
-#: includes/admin/dashboard.php:742
+#: includes/admin/dashboard.php:743
 msgid "Required file for the page caching %s is not writeable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:745
+#: includes/admin/dashboard.php:746
 msgid "Required file for the page caching %s exist and writable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:760
+#: includes/admin/dashboard.php:761
 msgid "Required file for the object caching %s is not exist!"
 msgstr ""
 
-#: includes/admin/dashboard.php:762
+#: includes/admin/dashboard.php:763
 msgid "Required file for the object caching %s is not writeable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:765
+#: includes/admin/dashboard.php:766
 msgid "Required file for the object caching %s exist and writable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:778
+#: includes/admin/dashboard.php:779
 msgid "Invalid request"
 msgstr ""
 
-#: includes/admin/dashboard.php:820
+#: includes/admin/dashboard.php:821
 msgid "Get Premium"
 msgstr ""
 
@@ -1263,15 +1263,15 @@ msgstr ""
 msgid "Twitter"
 msgstr ""
 
-#: includes/classes/AdvancedCache.php:101
+#: includes/classes/AdvancedCache.php:102
 msgid "Purge Page Cache [Network Wide - All Sites]"
 msgstr ""
 
-#: includes/classes/AdvancedCache.php:112
+#: includes/classes/AdvancedCache.php:113
 msgid "Purge Page Cache"
 msgstr ""
 
-#: includes/classes/AdvancedCache.php:122
+#: includes/classes/AdvancedCache.php:123
 msgid "Purge Current Page"
 msgstr ""
 
