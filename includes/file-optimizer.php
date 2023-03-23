@@ -70,6 +70,10 @@ define( 'CONCAT_FILES_ROOT', substr( $current_dir, 0, strpos( $current_dir, '/wp
 define( 'POWERED_CACHE_FO_CACHE_DIR', CONCAT_FILES_ROOT . '/wp-content/cache/min/' );
 define( 'POWERED_CACHE_FO_DEBUG', false );
 
+if ( ! defined( 'POWERED_CACHE_FO_DISABLE_CACHE_HEADERS' ) ) {
+	define( 'POWERED_CACHE_FO_DISABLE_CACHE_HEADERS', false );
+}
+
 if ( ! file_exists( POWERED_CACHE_FO_CACHE_DIR ) ) {
 	mkdir( POWERED_CACHE_FO_CACHE_DIR, 0775, true );
 }
@@ -230,6 +234,7 @@ if ( file_exists( $cache_file_name ) ) {
 	if ( $buf ) {
 		$stat = stat( $cache_file_name );
 
+		set_cache_headers();
 		header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s', $stat['mtime'] ) . ' GMT' );
 		header( 'Content-Length: ' . ( strlen( $pre_output ) + strlen( $buf ) ) );
 		header( 'Content-Type: ' . concat_get_mtype( $latest_file ) );
@@ -352,6 +357,7 @@ if ( $do_minify && false === stripos( $uri, '.min' ) ) {
 	}
 }
 
+set_cache_headers();
 header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s', $last_modified ) . ' GMT' );
 header( 'Content-Length: ' . ( strlen( $pre_output ) + strlen( $output ) ) );
 header( "Content-Type: $mime_type" );
@@ -410,4 +416,23 @@ function maybe_add_debug_log( $message ) {
 	if ( defined( 'POWERED_CACHE_FO_DEBUG' ) && POWERED_CACHE_FO_DEBUG ) {
 		error_log( $message );
 	}
+}
+
+
+/**
+ * Add cache headers
+ *
+ * @return void
+ * @since 2.5.3
+ */
+function set_cache_headers() {
+	if ( defined( 'POWERED_CACHE_FO_DISABLE_CACHE_HEADERS' ) && POWERED_CACHE_FO_DISABLE_CACHE_HEADERS ) {
+		return;
+	}
+
+	$ttl_in_seconds = 31536000; // 365 days
+	$ttl            = gmdate( "D, d M Y H:i:s", time() + $ttl_in_seconds ) . " GMT";
+
+	header( "Expires: $ttl" );
+	header( "Cache-Control: max-age=$ttl_in_seconds" );
 }
