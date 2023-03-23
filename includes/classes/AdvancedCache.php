@@ -84,6 +84,7 @@ class AdvancedCache {
 		add_filter( 'powered_cache_post_related_urls', array( $this, 'powered_cache_post_related_urls' ) );
 		add_filter( 'powered_cache_page_cache_enable', array( $this, 'maybe_caching_disabled' ) );
 		add_filter( 'powered_cache_mod_rewrite', array( $this, 'maybe_disable_mod_rewrite' ), 99 );
+		add_action( 'wp_update_site', array( $this, 'purge_on_site_update' ), 10, 2 );
 	}
 
 	/**
@@ -280,6 +281,26 @@ class AdvancedCache {
 		} else {
 			clean_site_cache_dir();
 		}
+	}
+
+	/**
+	 * Purge site cache when site updated (eg: archived, deleted etc...)
+	 *
+	 * @param \WP_Site $new_site New site object.
+	 * @param \WP_Site $old_site Old site object.
+	 *
+	 * @return void
+	 * @since 2.5.3
+	 */
+	public function purge_on_site_update( $new_site, $old_site ) {
+		switch_to_blog( $old_site->id );
+		if ( $this->settings['async_cache_cleaning'] ) {
+			$this->cache_purger->push_to_queue( [ 'call' => 'clean_site_cache_dir' ] );
+			$this->cache_purger->save()->dispatch();
+		} else {
+			clean_site_cache_dir();
+		}
+		restore_current_blog();
 	}
 
 	/**
