@@ -3,7 +3,7 @@ Contributors:  poweredcache, skopco, m_uysl
 Tags: cache, caching, web vitals, performance, fastest, page speed, optimization, cdn, object cache, minify, powered cache
 Requires at least:  5.7
 Tested up to:  6.2
-Stable tag:  2.5.3
+Stable tag:  2.5.4
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -168,6 +168,9 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 2.5.4 (March 23, 2023) =
+- Hotfix: HTML minification quotes issue.
 
 = 2.5.3 (March 23, 2023) =
 - Added: Purge site cache on multisite when the site updated. (eg: archived etc...)
