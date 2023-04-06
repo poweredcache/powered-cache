@@ -3,7 +3,7 @@
  * Memcached Redux drop-in, Mika's fork
  *
  * @link https://github.com/skopco/memcached-redux
- * Upstream: 0.1.7
+ * Upstream: 0.1.8
  */
 
 if ( ! defined( 'WP_CACHE_KEY_SALT' ) ) {
@@ -16,6 +16,12 @@ if ( class_exists( 'Memcached' ) ):
 		global $wp_object_cache;
 
 		return $wp_object_cache->add( $key, $data, $group, $expire );
+	}
+
+	function wp_cache_add_multiple( array $data, $group = '', $expire = 0 ) {
+		global $wp_object_cache;
+
+		return $wp_object_cache->add_multiple( $data, $group, $expire );
 	}
 
 	function wp_cache_incr( $key, $n = 1, $group = '' ) {
@@ -42,6 +48,12 @@ if ( class_exists( 'Memcached' ) ):
 		return $wp_object_cache->delete( $key, $group );
 	}
 
+	function wp_cache_delete_multiple( array $keys, $group = '' ) {
+		global $wp_object_cache;
+
+		return $wp_object_cache->delete_multiple( $keys, $group );
+	}
+
 	function wp_cache_flush() {
 		global $wp_object_cache;
 
@@ -52,6 +64,12 @@ if ( class_exists( 'Memcached' ) ):
 		global $wp_object_cache;
 
 		return $wp_object_cache->get( $key, $group, $force, $found );
+	}
+
+	function wp_cache_get_multiple( $keys, $group = '' ) {
+		global $wp_object_cache;
+
+		return $wp_object_cache->get_multiple( $keys, $group );
 	}
 
 	/**
@@ -66,6 +84,12 @@ if ( class_exists( 'Memcached' ) ):
 		global $wp_object_cache;
 
 		return $wp_object_cache->get_multi( $key_and_groups, $bucket );
+	}
+
+	function wp_cache_set_multiple( array $data, $group = '', $expire = 0 ) {
+		global $wp_object_cache;
+
+		return $wp_object_cache->set_multiple( $data, $group, $expire );
 	}
 
 	/**
@@ -164,6 +188,17 @@ if ( class_exists( 'Memcached' ) ):
 			$this->global_groups = array_unique( $this->global_groups );
 		}
 
+		public function add_multiple( array $data, $group = '', $expire = 0 ) {
+			$values = array();
+
+			foreach ( $data as $key => $value ) {
+				$values[ $key ] = $this->add( $key, $value, $group, $expire );
+			}
+
+			return $values;
+		}
+
+
 		function add_non_persistent_groups( $groups ) {
 			if ( ! is_array( $groups ) ) {
 				$groups = (array) $groups;
@@ -213,6 +248,16 @@ if ( class_exists( 'Memcached' ) ):
 			}
 
 			return $result;
+		}
+
+		public function delete_multiple( array $keys, $group = '' ) {
+			$values = array();
+
+			foreach ( $keys as $key ) {
+				$values[ $key ] = $this->delete( $key, $group );
+			}
+
+			return $values;
 		}
 
 		function flush() {
@@ -267,6 +312,48 @@ if ( class_exists( 'Memcached' ) ):
 			}
 
 			return $value;
+		}
+
+		public function get_multiple( $keys, $group = 'default' ) {
+			$return = array();
+			$gets   = array();
+			foreach ( $keys as $i => $values ) {
+				$mc     =& $this->get_mc( $group );
+				$values = (array) $values;
+				if ( empty( $values[1] ) ) {
+					$values[1] = 'default';
+				}
+
+				list( $id, $group ) = (array) $values;
+				$key = $this->key( $id, $group );
+
+				if ( isset( $this->cache[ $key ] ) ) {
+
+					if ( is_object( $this->cache[ $key ] ) ) {
+						$return[ $key ] = clone $this->cache[ $key ];
+					} else {
+						$return[ $key ] = $this->cache[ $key ];
+					}
+
+				} else if ( in_array( $group, $this->no_mc_groups ) ) {
+					$return[ $key ] = false;
+
+				} else {
+					$gets[ $key ] = $key;
+				}
+			}
+
+			if ( ! empty( $gets ) ) {
+				$results = $mc->getMulti( $gets, $null, Memcached::GET_PRESERVE_ORDER );
+				$joined  = array_combine( array_keys( $gets ), array_values( $results ) );
+				$return  = array_merge( $return, $joined );
+			}
+
+			++ $this->stats['get_multi'];
+			$this->group_ops[ $group ][] = "get_multi $id";
+			$this->cache                 = array_merge( $this->cache, $return );
+
+			return array_values( $return );
 		}
 
 		function get_multi( $keys, $group = 'default' ) {
@@ -363,6 +450,41 @@ if ( class_exists( 'Memcached' ) ):
 			$result = $mc->set( $key, $data, $expire );
 
 			return $result;
+		}
+
+		function set_multiple( $items, $group = 'default', $expire = 0 ) {
+			$sets   = array();
+			$mc     =& $this->get_mc( $group );
+			$expire = ( $expire == 0 ) ? $this->default_expiration : $expire;
+
+			foreach ( $items as $i => $item ) {
+				if ( empty( $item[2] ) ) {
+					$item[2] = 'default';
+				}
+
+				list( $id, $data, $group ) = $item;
+
+				$key = $this->key( $id, $group );
+				if ( isset( $this->cache[ $key ] ) && ( 'checkthedatabaseplease' === $this->cache[ $key ] ) ) {
+					continue;
+				}
+
+				if ( is_object( $data ) ) {
+					$data = clone $data;
+				}
+
+				$this->cache[ $key ] = $data;
+
+				if ( in_array( $group, $this->no_mc_groups ) ) {
+					continue;
+				}
+
+				$sets[ $key ] = $data;
+			}
+
+			if ( ! empty( $sets ) ) {
+				$mc->setMulti( $sets, $expire );
+			}
 		}
 
 		function set_multi( $items, $expire = 0, $group = 'default' ) {
