@@ -5,7 +5,7 @@
  * Description:       The most powerful caching and performance suite for WordPress. Easily Improve PageSpeed & Web Vitals Score.
  * Version:           2.5.4
  * Requires at least: 5.7
- * Requires PHP:      5.6
+ * Requires PHP:      7.2
  * Author:            PoweredCache
  * Author URI:        https://poweredcache.com
  * License:           GPL v2 or later
