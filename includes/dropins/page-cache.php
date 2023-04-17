@@ -146,8 +146,12 @@ if ( ! empty( $_GET ) ) {
 
 	$query_params = array_diff_key( $_GET, array_flip( $powered_cache_accepted_query_strings ) );
 
+	if ( ! isset( $powered_cache_cache_query_strings ) ) {
+		$powered_cache_cache_query_strings = [];
+	}
+
 	// don't cache when there is not allowed query parameter exists
-	if ( ! empty( $query_params ) ) {
+	if ( ! empty( $query_params ) && ! array_intersect_key( $_GET, array_flip( $powered_cache_cache_query_strings ) ) ) {
 		powered_cache_add_cache_miss_header( "Disallowed query parameter exists" );
 
 		return;
@@ -487,7 +491,7 @@ function powered_cache_get_user_cookie() {
  * @since 1.0
  */
 function powered_cache_index_file( $content_type = 'text/html' ) {
-	global $powered_cache_mobile_browsers, $powered_cache_mobile_prefixes, $powered_cache_vary_cookies;
+	global $powered_cache_mobile_browsers, $powered_cache_mobile_prefixes, $powered_cache_vary_cookies, $powered_cache_cache_query_strings;
 
 	$file_name = 'index';
 
@@ -558,6 +562,13 @@ function powered_cache_index_file( $content_type = 'text/html' ) {
 	 */
 	if ( false === strpos( $content_type, 'text/html' ) ) {
 		$file_name .= '-' . substr( sha1( $content_type ), 0, 6 );
+	}
+
+	/**
+	 * Seems one of the allowed query string has passed
+	 */
+	if ( ! empty( $_SERVER['QUERY_STRING'] ) ) {
+		$file_name .= '_' . sha1( $_SERVER['QUERY_STRING'] );
 	}
 
 	$file_name .= '.html';

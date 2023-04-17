@@ -514,6 +514,7 @@ class Config {
 		$config_file_string .= '$powered_cache_vary_cookies = ' . var_export( AdvancedCache::get_vary_cookies(), true ) . ';' . PHP_EOL;
 		$config_file_string .= '$powered_cache_rejected_uri = ' . var_export( AdvancedCache::get_rejected_uri(), true ) . ';' . PHP_EOL;
 		$config_file_string .= '$powered_cache_accepted_query_strings = ' . var_export( AdvancedCache::get_accepted_query_strings(), true ) . ';' . PHP_EOL;
+		$config_file_string .= '$powered_cache_cache_query_strings = ' . var_export( AdvancedCache::get_cache_query_string(), true ) . ';' . PHP_EOL;
 
 		if ( permalink_structure_has_trailingslash() ) {
 			$config_file_string .= '$powered_cache_slash_check = true;' . PHP_EOL;

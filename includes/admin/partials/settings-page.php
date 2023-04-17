@@ -455,6 +455,33 @@ $settings = \PoweredCache\Utils\get_settings();
 						</div>
 					</div>
 
+					<!-- Cache query strings -->
+					<div class="sui-box-settings-row">
+						<div class="sui-box-settings-col-1">
+							<span class="sui-settings-label"><?php esc_html_e( 'Cache query strings', 'powered-cache' ); ?></span>
+						</div>
+						<div class="sui-box-settings-col-2">
+							<div class="sui-row">
+								<div class="sui-col-md-8">
+									<div class="sui-form-field">
+										<label for="cache_query_strings" class="sui-label"><i><?php esc_html_e( 'Enter query strings for cache (one per line)', 'powered-cache' ); ?></i></label>
+										<textarea
+												id="cache_query_strings"
+												name="cache_query_strings"
+												class="sui-form-control"
+												aria-describedby="cache_query_strings_description"
+												rows="5"
+										><?php echo esc_textarea( $settings['cache_query_strings'] ); ?></textarea>
+										<span id="cache_query_strings_description" class="sui-description">
+											<?php esc_html_e( 'Powered Cache will create seperate caching file for the value of these query strings.', 'powered-cache' ); ?>
+											(<a href="<?php echo esc_url( get_doc_url( '/advanced-options/', 'cache-query-strings' ) ); ?>" target="_blank">?</a>)
+										</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
 					<!-- Accepted query strings -->
 					<div class="sui-box-settings-row">
 						<div class="sui-box-settings-col-1">
