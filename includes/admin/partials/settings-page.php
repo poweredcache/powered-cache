@@ -806,6 +806,77 @@ $settings = \PoweredCache\Utils\get_settings();
 					</div>
 
 
+					<!-- Unused CSS -->
+					<div class="<?php echo esc_attr( apply_filters( 'powered_cache_admin_page_fo_ucss_classes', 'sui-box-settings-row ' ) ); ?> <?php echo( ! is_premium() ? 'sui-disabled' : '' ); ?>">
+						<div class="sui-box-settings-col-1">
+							<span class="sui-settings-label"><?php esc_html_e( 'Unused CSS', 'powered-cache' ); ?>
+								<?php if ( ! is_premium() ) : ?>
+									<span class="sui-tag sui-tag-pro"><?php esc_html_e( 'Premium', 'powered-cache' ); ?></span>
+								<?php endif; ?>
+							</span>
+							<span class="sui-description"><?php esc_html_e( 'Remove Unused CSS', 'powered-cache' ); ?></span>
+						</div>
+
+						<div class="sui-box-settings-col-2">
+							<div class="sui-form-field">
+								<label for="remove_unused_css" class="sui-toggle">
+									<input
+										type="checkbox"
+										id="remove_unused_css"
+										name="remove_unused_css"
+										aria-labelledby="remove_unused_css_label"
+										aria-controls="remove_unused_css_safelist"
+										value="1"
+										<?php checked( 1, $settings['remove_unused_css'] ); ?>
+									>
+									<span class="sui-toggle-slider" aria-hidden="true"></span>
+									<span id="remove_unused_css_label" class="sui-toggle-label"><?php esc_html_e( 'Remove Unused CSS' ); ?></span>
+									<span id="remove_unused_css_description" class="sui-description"><?php esc_html_e( 'It reduces page size by removing all CSS and stylesheets that are not used while keeping only the used CSS.', 'powered-cache' ); ?></span>
+								</label>
+							</div>
+
+							<div style=" <?php echo( ! $settings['remove_unused_css'] ? 'display:none' : '' ); ?>" tabindex="0" id="remove_unused_css_safelist">
+								<div class="sui-row">
+									<div class="sui-col-md-8">
+										<div class="sui-form-field">
+											<label for="ucss_safelist" class="sui-label"><i><?php esc_html_e( 'Safelist', 'powered-cache' ); ?></i></label>
+											<textarea
+												id="ucss_safelist"
+												name="ucss_safelist"
+												class="sui-form-control"
+												aria-labelledby="label-unique-id"
+												aria-describedby="ucss_safelist_description"
+												rows="5"
+											><?php echo  esc_textarea( $settings['ucss_safelist'] ); // phpcs:ignore ?></textarea>
+											<span id="ucss_safelist_description" class="sui-description">
+												<?php esc_html_e( 'Specify CSS selectors that should not be removed. (one per line)', 'powered-cache' ); ?>
+											</span>
+										</div>
+									</div>
+								</div>
+								<div class="sui-row">
+									<div class="sui-col-md-8">
+										<div class="sui-form-field">
+											<label for="ucss_excluded_files" class="sui-label"><i><?php esc_html_e( 'Excluded files', 'powered-cache' ); ?></i></label>
+											<textarea
+												id="ucss_excluded_files"
+												name="ucss_excluded_files"
+												class="sui-form-control"
+												aria-labelledby="label-unique-id"
+												aria-describedby="ucss_excluded_files_description"
+												rows="5"
+											><?php echo  esc_textarea( $settings['ucss_excluded_files'] ); // phpcs:ignore ?></textarea>
+											<span id="ucss_excluded_files_description" class="sui-description">
+												<?php esc_html_e( 'Specify CSS files that should be ignored during the UCSS generation process.  (one per line)', 'powered-cache' ); ?>
+											</span>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+
 
 					<!-- JS Files -->
 					<div class="<?php echo esc_attr( apply_filters( 'powered_cache_admin_page_fo_js_classes', 'sui-box-settings-row ' ) ); ?>">

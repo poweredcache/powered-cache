@@ -287,6 +287,9 @@ function sanitize_options( $options ) {
 	$sanitized_options['critical_css_additional_files'] = sanitize_textarea_field( $options['critical_css_additional_files'] );
 	$sanitized_options['critical_css_excluded_files']   = sanitize_textarea_field( $options['critical_css_excluded_files'] );
 	$sanitized_options['excluded_css_files']            = sanitize_textarea_field( $options['excluded_css_files'] );
+	$sanitized_options['remove_unused_css']             = ! empty( $options['remove_unused_css'] );
+	$sanitized_options['ucss_safelist']                 = sanitize_textarea_field( $options['ucss_safelist'] );
+	$sanitized_options['ucss_excluded_files']           = sanitize_textarea_field( $options['ucss_excluded_files'] );
 	$sanitized_options['minify_js']                     = ! empty( $options['minify_js'] );
 	$sanitized_options['combine_js']                    = ! empty( $options['combine_js'] );
 	$sanitized_options['excluded_js_files']             = sanitize_textarea_field( $options['excluded_js_files'] );
@@ -487,7 +490,9 @@ function maybe_display_message() {
 		'flush_all_cache_err_permission'          => esc_html__( 'You don\'t have permission to perform this action!', 'powered-cache' ),
 		'start_preload_err_permission'            => esc_html__( 'You don\'t have permission to perform this action!', 'powered-cache' ),
 		'start_critical_err_permission'           => esc_html__( 'You don\'t have permission to perform this action!', 'powered-cache' ),
+		'start_ucss_err_permission'               => esc_html__( 'You don\'t have permission to perform this action!', 'powered-cache' ),
 		'start_critical_err_license'              => esc_html__( 'Your license key does not seem valid. A valid license is required for the Critical CSS!', 'powered-cache' ),
+		'start_ucss_err_license'                  => esc_html__( 'Your license key does not seem valid. A valid license is required for removing unused CSS!', 'powered-cache' ),
 		'flush_cf_cache_failed'                   => esc_html__( 'Could not flush Cloudflare cache. Please make sure you entered the correct credentials and zone id!', 'powered-cache' ),
 	];
 

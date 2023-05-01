@@ -7,7 +7,7 @@ const { registerPlugin } = wp.plugins;
 /**
  * PoweredCacheMetaBox
  *
- * @return PluginDocumentSettingPanel
+ * @returns PluginDocumentSettingPanel
  */
 const PoweredCacheMetaBox = () => {
 	const meta = useSelect((select) => select('core/editor').getEditedPostAttribute('meta'));
@@ -22,7 +22,9 @@ const PoweredCacheMetaBox = () => {
 		!('powered_cache_disable_css_optimization' in meta) &&
 		!('powered_cache_disable_js_optimization' in meta) &&
 		!('powered_cache_disable_critical_css' in meta) &&
-		!('powered_cache_specific_critical_css' in meta)
+		!('powered_cache_specific_critical_css' in meta) &&
+		!('powered_cache_disable_ucss' in meta) &&
+		!('powered_cache_specific_ucss' in meta)
 	) {
 		return null; // nothing to control
 	}
@@ -33,6 +35,8 @@ const PoweredCacheMetaBox = () => {
 	const disableJSOptimization = meta.powered_cache_disable_js_optimization || false;
 	const disableCritical = meta.powered_cache_disable_critical_css || false;
 	const specificCritical = meta.powered_cache_specific_critical_css || false;
+	const disableUCSS = meta.powered_cache_disable_ucss || false;
+	const specificUCSS = meta.powered_cache_specific_ucss || false;
 
 	return (
 		<PluginDocumentSettingPanel
@@ -112,6 +116,34 @@ const PoweredCacheMetaBox = () => {
 						dispatch('core/editor').editPost({
 							meta: {
 								powered_cache_specific_critical_css: !specificCritical,
+							},
+						});
+					}}
+				/>
+			)}
+
+			{'powered_cache_disable_ucss' in meta && !specificUCSS && (
+				<CheckboxControl
+					label={__('Disable UCSS for this post', 'powered-cache')}
+					checked={disableUCSS}
+					onChange={() => {
+						dispatch('core/editor').editPost({
+							meta: {
+								powered_cache_disable_ucss: !disableUCSS,
+							},
+						});
+					}}
+				/>
+			)}
+
+			{'powered_cache_specific_ucss' in meta && !disableUCSS && (
+				<CheckboxControl
+					label={__('Generate specific UCSS', 'powered-cache')}
+					checked={specificUCSS}
+					onChange={() => {
+						dispatch('core/editor').editPost({
+							meta: {
+								powered_cache_specific_ucss: !specificUCSS,
 							},
 						});
 					}}

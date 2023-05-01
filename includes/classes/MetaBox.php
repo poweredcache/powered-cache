@@ -9,10 +9,12 @@ namespace PoweredCache;
 
 use const PoweredCache\Constants\POST_META_DISABLE_CSS_OPTIMIZATION;
 use const PoweredCache\Constants\POST_META_DISABLE_JS_OPTIMIZATION;
+use const PoweredCache\Constants\POST_META_DISABLE_UCSS_KEY;
 use const PoweredCache\Constants\POST_META_SPECIFIC_CRITICAL_CSS_KEY;
 use const PoweredCache\Constants\POST_META_DISABLE_CACHE_KEY;
 use const PoweredCache\Constants\POST_META_DISABLE_CRITICAL_CSS_KEY;
 use const PoweredCache\Constants\POST_META_DISABLE_LAZYLOAD_KEY;
+use const PoweredCache\Constants\POST_META_SPECIFIC_UCSS_KEY;
 
 /**
  * Class MetaBox
@@ -171,6 +173,22 @@ class MetaBox {
 				</fieldset>
 			<?php endif; ?>
 
+			<?php if ( $settings['remove_unused_css'] ) : ?>
+				<?php $disable_ucss = (bool) get_post_meta( $post->ID, POST_META_DISABLE_UCSS_KEY, true ); ?>
+				<?php $generate_post_specific_ucss = (bool) get_post_meta( $post->ID, POST_META_SPECIFIC_UCSS_KEY, true ); ?>
+				<fieldset>
+					<legend class="screen-reader-text"><?php esc_html_e( 'Disable UCSS on this post', 'powered-cache' ); ?></legend>
+					<input <?php disabled( $generate_post_specific_ucss, true ); ?> <?php checked( $disable_ucss, true ); ?> type="checkbox" id="<?php echo esc_attr( POST_META_DISABLE_UCSS_KEY ); ?>" name="<?php echo esc_attr( POST_META_DISABLE_UCSS_KEY ); ?>" value="1">
+					<label for="<?php echo esc_attr( POST_META_DISABLE_UCSS_KEY ); ?>"><?php esc_html_e( 'Disable UCSS on this post', 'powered-cache' ); ?></label>
+				</fieldset>
+
+				<fieldset>
+					<legend class="screen-reader-text"><?php esc_html_e( 'Generate specific UCSS', 'powered-cache' ); ?></legend>
+					<input <?php disabled( $disable_ucss, true ); ?> <?php checked( $generate_post_specific_ucss, true ); ?> type="checkbox" id="<?php echo esc_attr( POST_META_SPECIFIC_UCSS_KEY ); ?>" name="<?php echo esc_attr( POST_META_SPECIFIC_UCSS_KEY ); ?>" value="1">
+					<label for="<?php echo esc_attr( POST_META_SPECIFIC_UCSS_KEY ); ?>"><?php esc_html_e( 'Generate specific UCSS', 'powered-cache' ); ?></label>
+				</fieldset>
+			<?php endif; ?>
+
 		</div>
 		<?php
 	}
@@ -231,6 +249,36 @@ class MetaBox {
 				register_post_meta(
 					$post_type,
 					POST_META_SPECIFIC_CRITICAL_CSS_KEY,
+					[
+						'show_in_rest'  => true,
+						'single'        => true,
+						'default'       => false,
+						'type'          => 'boolean',
+						'auth_callback' => function () {
+							return current_user_can( 'edit_others_posts' );
+						},
+					]
+				);
+			}
+
+			if ( $settings['remove_unused_css'] ) {
+				register_post_meta(
+					$post_type,
+					POST_META_DISABLE_UCSS_KEY,
+					[
+						'show_in_rest'  => true,
+						'single'        => true,
+						'default'       => false,
+						'type'          => 'boolean',
+						'auth_callback' => function () {
+							return current_user_can( 'edit_others_posts' );
+						},
+					]
+				);
+
+				register_post_meta(
+					$post_type,
+					POST_META_SPECIFIC_UCSS_KEY,
 					[
 						'show_in_rest'  => true,
 						'single'        => true,
@@ -340,6 +388,8 @@ class MetaBox {
 			POST_META_DISABLE_LAZYLOAD_KEY,
 			POST_META_DISABLE_CRITICAL_CSS_KEY,
 			POST_META_SPECIFIC_CRITICAL_CSS_KEY,
+			POST_META_DISABLE_UCSS_KEY,
+			POST_META_SPECIFIC_UCSS_KEY,
 			POST_META_DISABLE_CSS_OPTIMIZATION,
 			POST_META_DISABLE_JS_OPTIMIZATION,
 		];
