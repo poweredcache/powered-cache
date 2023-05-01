@@ -474,7 +474,7 @@ class AdvancedCache {
 	 * Get the allowed cache query parameters
 	 *
 	 * @return mixed|null
-	 * @since x.x
+	 * @since 3.0
 	 */
 	public static function get_cache_query_string() {
 		$settings            = \PoweredCache\Utils\get_settings();
@@ -482,6 +482,14 @@ class AdvancedCache {
 
 		if ( ! empty( $settings['cache_query_strings'] ) ) {
 			$cache_query_strings = preg_split( '#(\r\n|\r|\n)#', $settings['cache_query_strings'], - 1, PREG_SPLIT_NO_EMPTY );
+		}
+
+		$query_strings = [
+			'lang',
+		];
+
+		if ( ! empty( $cache_query_strings ) ) {
+			$cache_query_strings = array_merge( $query_strings, $cache_query_strings );
 		}
 
 		/**
@@ -492,7 +500,7 @@ class AdvancedCache {
 		 * @param  {array} $query_strings The list of query strings that will be cached based on their value
 		 *
 		 * @return {array} New value
-		 * @since  x.x
+		 * @since  3.0
 		 */
 		return apply_filters( 'powered_cache_cache_query_strings', $cache_query_strings );
 	}
