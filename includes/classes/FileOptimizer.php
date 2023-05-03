@@ -116,6 +116,7 @@ class FileOptimizer {
 		add_filter( 'script_loader_tag', [ $this, 'js_minify' ], 10, 3 );
 		add_filter( 'style_loader_tag', [ $this, 'css_minify' ], 10, 4 );
 		add_filter( 'powered_cache_fo_script_loader_tag', [ $this, 'change_js_execute_method' ] );
+		add_action( 'after_setup_theme', [ $this, 'maybe_delay_scripts' ], 9 );
 		add_action( 'after_setup_theme', [ $this, 'html_minify' ] );
 		add_action( 'template_redirect', [ $this, 'maybe_suppress_optimizations' ] );
 
@@ -225,6 +226,11 @@ class FileOptimizer {
 		}
 
 		if ( 'blocking' === $js_execution ) {
+			return $tag;
+		}
+
+		// @since 3.0 - rewrite dom for delayed option
+		if ( 'delayed' === $js_execution ) {
 			return $tag;
 		}
 
@@ -555,5 +561,94 @@ class FileOptimizer {
 			}
 		}
 	}
+
+	/**
+	 * Load scripts in delayed fashion
+	 *
+	 * @since 3.0
+	 * @return void
+	 */
+	public function maybe_delay_scripts() {
+		if ( 'delayed' !== $this->settings['js_execution_method'] ) {
+			return;
+		}
+
+		ob_start( [ $this, 'delay_scripts' ] );
+	}
+
+	/**
+	 * DelayedJS execution
+	 * Similar logic with image lazy-loading but this time for scripts.
+	 *
+	 * @param string $html HTML Buffer
+	 *
+	 * @return string
+	 * @since 3.0
+	 */
+	public function delay_scripts( $html ) {
+		$pattern = '/<script([^>]*)>(.*?)<\/script>/si';
+
+		preg_match_all( $pattern, $html, $matches, PREG_SET_ORDER );
+
+		foreach ( $matches as $match ) {
+			$script     = $match[0];
+			$attributes = $match[1];
+			$content    = $match[2];
+
+			// when it's enabled for optimized scripts only
+			if ( $this->settings['js_execution_optimized_only'] && false === strpos( $script, 'file-optimizer.php' ) ) {
+				continue;
+			}
+
+			/**
+			 * Whether skip or not skip js for delay
+			 *
+			 * @hook   powered_cache_delayed_js_skip
+			 *
+			 * @param  {bool} $false Not skipping by default
+			 *
+			 * @return {bool} New value.
+			 * @since  3.0
+			 */
+			if ( apply_filters( 'powered_cache_delayed_js_skip', false, $script, $attributes, $content ) ) {
+				continue;
+			}
+
+			if ( strpos( $script, 'type=' ) === false || strpos( $script, "type='text/javascript'" ) !== false ) {
+				$new_script = $script;
+
+				// Check if script has a src attribute
+				if ( strpos( $attributes, 'src=' ) !== false ) {
+					$new_script = preg_replace( "/src=[\"\']([^\"\']*)[\"\']/", 'data-src="$1"', $new_script );
+					$new_script = preg_replace( '/<script([^>]*)>/', '<script data-type="lazy"$1>', $new_script );
+				} else {
+					$new_content = 'data:text/javascript;base64,' . base64_encode( $content ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+					$new_script  = preg_replace( '/<script([^>]*)>/', "<script data-src=\"$new_content\" data-type=\"lazy\"$1>", $new_script ); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+					$new_script  = preg_replace( '/<script([^>]*)>(.*?)<\/script>/si', '<script data-type="lazy"$1></script>', $new_script );
+				}
+
+				$html = str_replace( $script, $new_script, $html );
+			}
+		}
+
+		/**
+		 * Filter delay time for JS execution fallback
+		 *
+		 * @hook   powered_cache_delayed_js_timeout
+		 *
+		 * @param  {int} $delay_in_ms Delay time in microsecond
+		 *
+		 * @return {int} New value.
+		 * @since  3.0
+		 */
+		$delay_timeout = apply_filters( 'powered_cache_delayed_js_timeout', 5000 );
+
+		$html .= '<script id="powered-cache-delayed-js">';
+		$html .= 'const scriptLoader={loadDelay:' . absint( $delay_timeout ) . ',loadTimer:null,userInteractionEvents:["mouseover","click","keydown","wheel","touchmove","touchstart"],init(){for(const e of this.userInteractionEvents)window.addEventListener(e,this.triggerLoader,{passive:!0});this.loadTimer=setTimeout(this.loadScripts,this.loadDelay)},triggerLoader(){scriptLoader.loadScripts(),clearTimeout(scriptLoader.loadTimer);for(const e of scriptLoader.userInteractionEvents)window.removeEventListener(e,scriptLoader.triggerLoader,{passive:!0})},loadScripts(){document.querySelectorAll("script[data-type=\'lazy\']").forEach((e=>{e.setAttribute("src",e.getAttribute("data-src"))})),console.log("Script(s) loaded with delay")}};scriptLoader.init();';
+		$html .= '</script>';
+
+		return $html;
+	}
+
 
 }
