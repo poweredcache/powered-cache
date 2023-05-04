@@ -508,14 +508,28 @@ class AdvancedCache {
 	/**
 	 * These query strings will be ignored during the caching
 	 *
-	 * @return mixed|void
+	 * @return array
+	 * @since     3.0 deprecated
+	 * @depecated Use `self::get_ignored_query_strings` instead
 	 */
 	public static function get_accepted_query_strings() {
-		$settings               = \PoweredCache\Utils\get_settings();
-		$accepted_query_strings = [];
+		_deprecated_function( '\PoweredCache\AdvancedCache::get_accepted_query_strings', '3.0', '\PoweredCache\AdvancedCache::get_ignored_query_strings' );
 
-		if ( ! empty( $settings['accepted_query_strings'] ) ) {
-			$accepted_query_strings = preg_split( '#(\r\n|\r|\n)#', $settings['accepted_query_strings'], - 1, PREG_SPLIT_NO_EMPTY );
+		return self::get_ignored_query_strings();
+	}
+
+	/**
+	 * These query strings will be ignored during the caching
+	 *
+	 * @return mixed|void
+	 * @since 3.0
+	 */
+	public static function get_ignored_query_strings() {
+		$settings              = \PoweredCache\Utils\get_settings();
+		$ignored_query_strings = [];
+
+		if ( ! empty( $settings['ignored_query_strings'] ) ) {
+			$ignored_query_strings = preg_split( '#(\r\n|\r|\n)#', $settings['ignored_query_strings'], - 1, PREG_SPLIT_NO_EMPTY );
 		}
 
 		$query_strings = [
@@ -541,24 +555,38 @@ class AdvancedCache {
 			'usqp',
 			'cn-reloaded',
 			'ao_noptimize',
-			'lang',
 		];
 
-		if ( ! empty( $accepted_query_strings ) ) {
-			$query_strings = array_merge( $query_strings, $accepted_query_strings );
+		if ( ! empty( $ignored_query_strings ) ) {
+			$query_strings = array_merge( $query_strings, $ignored_query_strings );
 		}
 
 		/**
-		 * Filter accepted query strings.
+		 * Filters ignored query strings.
 		 *
-		 * @hook   powered_cache_accepted_query_strings
+		 * @hook        powered_cache_accepted_query_strings
+		 *
+		 * @param       {array} $query_strings The list of query strings will be ignored during the caching
+		 *
+		 * @return      {array} New value
+		 * @since       2.0
+		 * @depreacated since 3.0
+		 */
+		$query_strings = apply_filters( 'powered_cache_accepted_query_strings', $query_strings );
+
+		/**
+		 * Filters ignored query strings.
+		 *
+		 * @hook   powered_cache_ignored_query_strings
 		 *
 		 * @param  {array} $query_strings The list of query strings will be ignored during the caching
 		 *
 		 * @return {array} New value
-		 * @since  2.0
+		 * @since  3.0
 		 */
-		return apply_filters( 'powered_cache_accepted_query_strings', $query_strings );
+		$query_strings = apply_filters( 'powered_cache_ignored_query_strings', $query_strings );
+
+		return $query_strings;
 	}
 
 

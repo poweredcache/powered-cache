@@ -482,27 +482,27 @@ $settings = \PoweredCache\Utils\get_settings();
 						</div>
 					</div>
 
-					<!-- Accepted query strings -->
+					<!-- Ignored query strings -->
 					<div class="sui-box-settings-row">
 						<div class="sui-box-settings-col-1">
-							<span class="sui-settings-label"><?php esc_html_e( 'Accepted query strings', 'powered-cache' ); ?></span>
+							<span class="sui-settings-label"><?php esc_html_e( 'Ignored query strings', 'powered-cache' ); ?></span>
 						</div>
 						<div class="sui-box-settings-col-2">
 							<div class="sui-row">
 								<div class="sui-col-md-8">
 									<div class="sui-form-field">
-										<label for="accepted_query_strings" class="sui-label"><i><?php esc_html_e( 'Enter allowed query parameter (one per line)', 'powered-cache' ); ?></i></label>
+										<label for="ignored_query_strings" class="sui-label"><i><?php esc_html_e( 'Enter allowed query parameter (one per line)', 'powered-cache' ); ?></i></label>
 										<textarea
 												placeholder="utm_"
-												id="accepted_query_strings"
-												name="accepted_query_strings"
+												id="ignored_query_strings"
+												name="ignored_query_strings"
 												class="sui-form-control"
-												aria-describedby="accepted_query_strings_description"
+												aria-describedby="ignored_query_strings_description"
 												rows="5"
-										><?php echo esc_textarea( $settings['accepted_query_strings'] ); ?></textarea>
-										<span id="accepted_query_strings_description" class="sui-description">
+										><?php echo esc_textarea( $settings['ignored_query_strings'] ); ?></textarea>
+										<span id="ignored_query_strings_description" class="sui-description">
 											<?php esc_html_e( 'Powered Cache will ignore these query string and serve the standard cache file. Tracking parameters such as utm_* ignored by default.', 'powered-cache' ); ?>
-											(<a href="<?php echo esc_url( get_doc_url( '/advanced-options/', 'accepted-query-strings' ) ); ?>" target="_blank">?</a>)
+											(<a href="<?php echo esc_url( get_doc_url( '/advanced-options/', 'ignored-query-strings' ) ); ?>" target="_blank">?</a>)
 										</span>
 									</div>
 								</div>

@@ -150,7 +150,7 @@ You can disable caching from the meta box in the post editing page or enter page
 Yes, you can find export/import options in the "Misc" sections of the settings page.
 
 = Does it cache API requests? =
-Yes, it caches GET requests on API. If you have query parameters on the request, you will need to allow query parameter in the"Accepted query strings" under the "Advanced Options" section.
+Yes, it caches GET requests on API. If you have query parameters on the request, you will need to allow query parameter in the"Cache query strings" under the "Advanced Options" section.
 
 = Is it compatible with PHP 8+ =
 Yes, it’s compatible with PHP 8+

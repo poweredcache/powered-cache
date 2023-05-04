@@ -59,7 +59,7 @@ function get_settings( $force_network_wide = false ) {
 		'rejected_cookies'               => '',
 		'vary_cookies'                   => '',
 		'rejected_uri'                   => '',
-		'accepted_query_strings'         => '',
+		'ignored_query_strings'          => '',
 		'cache_query_strings'            => '',
 		'purge_additional_pages'         => '',
 		// file optimization

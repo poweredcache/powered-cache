@@ -140,11 +140,11 @@ if ( ! empty( $powered_cache_rejected_uri ) ) {
 
 
 if ( ! empty( $_GET ) ) {
-	if ( ! isset( $powered_cache_accepted_query_strings ) ) {
-		$powered_cache_accepted_query_strings = [];
+	if ( ! isset( $powered_cache_ignored_query_strings ) ) {
+		$powered_cache_ignored_query_strings = [];
 	}
 
-	$query_params = array_diff_key( $_GET, array_flip( $powered_cache_accepted_query_strings ) );
+	$query_params = array_diff_key( $_GET, array_flip( $powered_cache_ignored_query_strings ) );
 
 	if ( ! isset( $powered_cache_cache_query_strings ) ) {
 		$powered_cache_cache_query_strings = [];

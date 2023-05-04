@@ -276,7 +276,7 @@ function sanitize_options( $options ) {
 	$sanitized_options['vary_cookies']                  = sanitize_textarea_field( $options['vary_cookies'] );
 	$sanitized_options['rejected_uri']                  = sanitize_textarea_field( $options['rejected_uri'] );
 	$sanitized_options['cache_query_strings']           = sanitize_textarea_field( $options['cache_query_strings'] );
-	$sanitized_options['accepted_query_strings']        = sanitize_textarea_field( $options['accepted_query_strings'] );
+	$sanitized_options['ignored_query_strings']         = sanitize_textarea_field( $options['ignored_query_strings'] );
 	$sanitized_options['purge_additional_pages']        = sanitize_textarea_field( $options['purge_additional_pages'] );
 	$sanitized_options['minify_html']                   = ! empty( $options['minify_html'] );
 	$sanitized_options['combine_google_fonts']          = ! empty( $options['combine_google_fonts'] );
