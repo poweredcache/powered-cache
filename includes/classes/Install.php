@@ -95,6 +95,8 @@ class Install {
 	 */
 	public function maybe_upgrade_network_wide() {
 		if ( version_compare( get_site_option( DB_VERSION_OPTION_NAME ), POWERED_CACHE_DB_VERSION, '<' ) ) {
+			$this->upgrade_30( true );
+			\PoweredCache\Utils\log( sprintf( '[Networkwide] Upgrade DB version: %d', POWERED_CACHE_DB_VERSION ) );
 			update_site_option( DB_VERSION_OPTION_NAME, POWERED_CACHE_DB_VERSION );
 		}
 	}
@@ -105,12 +107,41 @@ class Install {
 	public function maybe_upgrade() {
 		if ( version_compare( get_option( DB_VERSION_OPTION_NAME ), POWERED_CACHE_DB_VERSION, '<' ) ) {
 			$this->maybe_migrate_from_1x();
+			$this->upgrade_30();
 
 			\PoweredCache\Utils\log( sprintf( 'Upgrade DB version: %d', POWERED_CACHE_DB_VERSION ) );
 			update_option( DB_VERSION_OPTION_NAME, POWERED_CACHE_DB_VERSION );
 		}
 	}
 
+	/**
+	 * Changing "accepted query string" as "ignored query string" with version 3.x
+	 *
+	 * @param bool $network_wide whether plugin activated network-wide or not
+	 *
+	 * @return void
+	 * @since 3.0
+	 */
+	public function upgrade_30( $network_wide = false ) {
+		$current_version = $network_wide ? get_site_option( DB_VERSION_OPTION_NAME ) : get_option( DB_VERSION_OPTION_NAME );
+		if ( ! version_compare( $current_version, '3.0', '<' ) ) {
+			return;
+		}
+
+		$settings = \PoweredCache\Utils\get_settings( $network_wide );
+
+		$settings['ignored_query_strings'] = $settings['accepted_query_strings'];
+		unset( $settings['accepted_query_strings'] );
+
+		if ( $network_wide ) {
+			update_site_option( SETTING_OPTION, $settings );
+		} else {
+			update_option( SETTING_OPTION, $settings );
+		}
+
+		Config::factory()->save_configuration( $settings, $network_wide );
+		\PoweredCache\Utils\log( 'Upgraded to version 3.0' );
+	}
 
 	/**
 	 * Check if a lock exists of the upgrade routine
