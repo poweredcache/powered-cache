@@ -471,6 +471,8 @@ function maybe_display_message() {
 		'start_preload'              => esc_html__( 'The cache preloading has been initialized!', 'powered-cache' ),
 		'generate_critical'          => esc_html__( 'The Critical CSS generation process has been initialized!', 'powered-cache' ),
 		'generate_critical_network'  => esc_html__( 'The Critical CSS generation process has been initialized for all sites! This might take a while, depending on the network size.', 'powered-cache' ),
+		'generate_ucss'              => esc_html__( 'The UCSS generation process has been initialized!', 'powered-cache' ),
+		'generate_ucss_network'      => esc_html__( 'The UCSS generation process has been initialized for all sites! This might take a while, depending on the network size.', 'powered-cache' ),
 		'flush_cf_cache'             => esc_html__( 'Cloudflare cache flushed, it can take up to 30 seconds to delete all cache from Cloudflare!', 'powered-cache' ),
 		'reset_settings'             => esc_html__( 'Settings have been reset!', 'powered-cache' ),
 		'import_settings'            => esc_html__( 'Settings have been imported!', 'powered-cache' ),
