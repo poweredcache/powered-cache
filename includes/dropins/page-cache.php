@@ -47,6 +47,12 @@ if ( ! $GLOBALS['powered_cache_options']['enable_page_cache'] ) {
 	return;
 }
 
+if ( isset( $_GET['nopoweredcache'] ) && $_GET['nopoweredcache'] ) {
+	powered_cache_add_cache_miss_header( "Passing nopoweredcache with the query" );
+
+	return;
+}
+
 // Don't cache page with these user agents
 if ( isset( $powered_cache_rejected_user_agents ) && ! empty( $powered_cache_rejected_user_agents ) ) {
 	$rejected_user_agents = implode( '|', $powered_cache_rejected_user_agents );

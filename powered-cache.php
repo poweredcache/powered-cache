@@ -96,6 +96,11 @@ if ( ! defined( 'POWERED_CACHE_IS_NETWORK' ) ) {
 	define( 'POWERED_CACHE_IS_NETWORK', $network_activated );
 }
 
+if ( Utils\bypass_request() ) {
+	return;
+}
+
+
 // Bootstrap.
 Core\setup();
 Admin\Dashboard\setup();

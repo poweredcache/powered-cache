@@ -1331,3 +1331,17 @@ function is_local_site() {
 
 	return $is_local;
 }
+
+/**
+ * Check whether request for bypass or process normally
+ *
+ * @return bool
+ * @since 3.0
+ */
+function bypass_request() {
+	if ( isset( $_GET['nopoweredcache'] ) && $_GET['nopoweredcache'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		return true;
+	}
+
+	return false;
+}
