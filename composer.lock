@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a269802e9cb3e87e4c2fefb28c9b8d9c",
+    "content-hash": "d00bd87c21f73dcfd68e83b3fff8e464",
     "packages": [],
     "packages-dev": [
         {
@@ -13,12 +13,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/10up/phpcs-composer.git",
-                "reference": "e05d9007b332c76066ef309febea960c6dece271"
+                "reference": "2d03ba19ad5259275aa4f2287340e3d7d270196b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/10up/phpcs-composer/zipball/e05d9007b332c76066ef309febea960c6dece271",
-                "reference": "e05d9007b332c76066ef309febea960c6dece271",
+                "url": "https://api.github.com/repos/10up/phpcs-composer/zipball/2d03ba19ad5259275aa4f2287340e3d7d270196b",
+                "reference": "2d03ba19ad5259275aa4f2287340e3d7d270196b",
                 "shasum": ""
             },
             "require": {
@@ -44,7 +44,7 @@
                 "issues": "https://github.com/10up/phpcs-composer/issues",
                 "source": "https://github.com/10up/phpcs-composer/tree/master"
             },
-            "time": "2023-02-24T01:59:32+00:00"
+            "time": "2023-04-27T01:31:26+00:00"
         },
         {
             "name": "10up/wp_mock",
@@ -52,12 +52,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/10up/wp_mock.git",
-                "reference": "a77fe77e589cc082e38e623cf66e38a5214dd839"
+                "reference": "0a346215f285231ab392685d766616dbcb88293c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/10up/wp_mock/zipball/a77fe77e589cc082e38e623cf66e38a5214dd839",
-                "reference": "a77fe77e589cc082e38e623cf66e38a5214dd839",
+                "url": "https://api.github.com/repos/10up/wp_mock/zipball/0a346215f285231ab392685d766616dbcb88293c",
+                "reference": "0a346215f285231ab392685d766616dbcb88293c",
                 "shasum": ""
             },
             "require": {
@@ -99,7 +99,7 @@
                 "issues": "https://github.com/10up/wp_mock/issues",
                 "source": "https://github.com/10up/wp_mock/tree/trunk"
             },
-            "time": "2023-04-06T10:52:28+00:00"
+            "time": "2023-04-25T02:11:50+00:00"
         },
         {
             "name": "antecedent/patchwork",
@@ -336,20 +336,27 @@
         },
         {
             "name": "deliciousbrains/wp-background-processing",
-            "version": "1.0.2",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/deliciousbrains/wp-background-processing.git",
-                "reference": "2cbee1abd1b49e1133cd8f611df4d4fc5a8b9800"
+                "reference": "d5ef95cecba7f792ddca3e3bd70ebfb90dc4996d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/deliciousbrains/wp-background-processing/zipball/2cbee1abd1b49e1133cd8f611df4d4fc5a8b9800",
-                "reference": "2cbee1abd1b49e1133cd8f611df4d4fc5a8b9800",
+                "url": "https://api.github.com/repos/deliciousbrains/wp-background-processing/zipball/d5ef95cecba7f792ddca3e3bd70ebfb90dc4996d",
+                "reference": "d5ef95cecba7f792ddca3e3bd70ebfb90dc4996d",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.2"
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "phpcompatibility/phpcompatibility-wp": "*",
+                "phpunit/phpunit": "^8.0",
+                "spryker/code-sniffer": "^0.17.18",
+                "wp-coding-standards/wpcs": "^2.3",
+                "yoast/phpunit-polyfills": "^1.0"
             },
             "suggest": {
                 "coenjacobs/mozart": "Easily wrap this library with your own prefix, to prevent collisions when multiple plugins use this library"
@@ -373,9 +380,9 @@
             "description": "WP Background Processing can be used to fire off non-blocking asynchronous requests or as a background processing tool, allowing you to queue tasks.",
             "support": {
                 "issues": "https://github.com/deliciousbrains/wp-background-processing/issues",
-                "source": "https://github.com/deliciousbrains/wp-background-processing/tree/master"
+                "source": "https://github.com/deliciousbrains/wp-background-processing/tree/1.1.0"
             },
-            "time": "2020-07-31T07:00:11+00:00"
+            "time": "2023-04-18T12:32:25+00:00"
         },
         {
             "name": "doctrine/instantiator",
@@ -2798,16 +2805,16 @@
         },
         {
             "name": "symfony/console",
-            "version": "v5.4.22",
+            "version": "v5.4.23",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "3cd51fd2e6c461ca678f84d419461281bd87a0a8"
+                "reference": "90f21e27d0d88ce38720556dd164d4a1e4c3934c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/3cd51fd2e6c461ca678f84d419461281bd87a0a8",
-                "reference": "3cd51fd2e6c461ca678f84d419461281bd87a0a8",
+                "url": "https://api.github.com/repos/symfony/console/zipball/90f21e27d0d88ce38720556dd164d4a1e4c3934c",
+                "reference": "90f21e27d0d88ce38720556dd164d4a1e4c3934c",
                 "shasum": ""
             },
             "require": {
@@ -2877,7 +2884,7 @@
                 "terminal"
             ],
             "support": {
-                "source": "https://github.com/symfony/console/tree/v5.4.22"
+                "source": "https://github.com/symfony/console/tree/v5.4.23"
             },
             "funding": [
                 {
@@ -2893,7 +2900,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-03-25T09:27:28+00:00"
+            "time": "2023-04-24T18:47:29+00:00"
         },
         {
             "name": "symfony/css-selector",
