@@ -103,7 +103,7 @@ class CachePurger extends Powered_Cache_WP_Background_Process {
 			if ( $cancelled >= $max_attempt ) {
 				break;
 			}
-			parent::cancel_process();
+			parent::cancel();
 			$cancelled ++;
 		}
 	}
@@ -114,7 +114,7 @@ class CachePurger extends Powered_Cache_WP_Background_Process {
 	 * @return bool
 	 */
 	public function is_process_running() { // phpcs:ignore Generic.CodeAnalysis.UselessOverridingMethod.Found
-		return parent::is_process_running();
+		return parent::is_processing();
 	}
 
 	/**
