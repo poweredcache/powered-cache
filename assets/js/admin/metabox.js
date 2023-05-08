@@ -43,6 +43,7 @@ const PoweredCacheMetaBox = () => {
 			icon="superhero"
 			title={__('Powered Cache', 'powered-cache')}
 			className="powered-cache-panel"
+			name="cache-panel"
 		>
 			{'powered_cache_disable_cache' in meta && (
 				<CheckboxControl
