@@ -14,6 +14,19 @@ defined( 'ABSPATH' ) or exit;
 
 
 /**
+ * Determines whether the object cache implementation supports a particular feature.
+ *
+ * @param string $feature Name of the feature to check for. Possible values include:
+ *                        'add_multiple', 'set_multiple', 'get_multiple', 'delete_multiple',
+ *                        'flush_runtime', 'flush_group'.
+ *
+ * @return bool True if the feature is supported, false otherwise.
+ */
+function wp_cache_supports( $feature ) {
+	return false;
+}
+
+/**
  * Adds data to the cache, if the cache key does not already exist.
  *
  * @param int|string $key    The cache key to use for retrieval later
