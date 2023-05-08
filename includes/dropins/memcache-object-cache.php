@@ -1,7 +1,7 @@
 <?php
 /**
- * Upstream: https://github.com/Automattic/wp-memcached/blob/master/object-cache.php
- * Upstream version: 4.0.0
+ * Upstream: https://github.com/poweredcache/wp-memcached
+ * Upstream version: 682a9683dbe3239724ab67e8f50628d1e281099f
  */
 defined( 'ABSPATH' ) || exit;
 
@@ -61,6 +61,12 @@ if ( class_exists( 'Memcache' ) ):
 		global $wp_object_cache;
 
 		return $wp_object_cache->flush();
+	}
+
+	function wp_cache_flush_runtime() {
+		global $wp_object_cache;
+
+		return $wp_object_cache->flush_runtime();
 	}
 
 	function wp_cache_get( $key, $group = '', $force = false, &$found = null ) {
@@ -139,6 +145,27 @@ if ( class_exists( 'Memcache' ) ):
 		global $wp_object_cache;
 
 		$wp_object_cache->add_non_persistent_groups( $groups );
+	}
+
+
+	/**
+	 * Determines whether the object cache implementation supports a particular feature.
+	 *
+	 * @param string $feature Name of the feature to check for. Possible values include:
+	 *                        'add_multiple', 'set_multiple', 'get_multiple', 'delete_multiple',
+	 *                        'flush_runtime', 'flush_group'.
+	 *
+	 * @return bool True if the feature is supported, false otherwise.
+	 */
+	function wp_cache_supports( $feature ) {
+		switch ( $feature ) {
+			case 'get_multiple':
+			case 'flush_runtime':
+				return true;
+
+			default:
+				return false;
+		}
 	}
 
 	class WP_Object_Cache {
@@ -415,6 +442,13 @@ if ( class_exists( 'Memcache' ) ):
 			}
 
 			return $this->flush_number[ $this->blog_prefix ];
+		}
+
+		function flush_runtime() {
+			$this->cache     = array();
+			$this->group_ops = array();
+
+			return true;
 		}
 
 		function flush() {
