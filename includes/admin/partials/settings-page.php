@@ -628,6 +628,21 @@ $settings = \PoweredCache\Utils\get_settings();
 									</label>
 								</div>
 							</div>
+							<div class="sui-form-field">
+								<label for="use_bunny_fonts" class="sui-toggle">
+									<input type="checkbox"
+									       value="1"
+									       name="use_bunny_fonts"
+									       id="use_bunny_fonts"
+										<?php checked( 1, $settings['use_bunny_fonts'] ); ?>
+									>
+									<span class="sui-toggle-slider" aria-hidden="true"></span>
+									<span id="use_bunny_fonts_label" class="sui-toggle-label"><?php esc_html_e( 'Use Bunny Fonts', 'powered-cache' ); ?></span>
+									<span id="use_bunny_fonts_description" class="sui-description">
+										<?php esc_html_e( 'Use Bunny Fonts as drop-in replacement for Google Fonts', 'powered-cache' ); ?>
+									</span>
+								</label>
+							</div>
 
 
 						</div>

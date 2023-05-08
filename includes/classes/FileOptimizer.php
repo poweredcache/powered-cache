@@ -116,8 +116,7 @@ class FileOptimizer {
 		add_filter( 'script_loader_tag', [ $this, 'js_minify' ], 10, 3 );
 		add_filter( 'style_loader_tag', [ $this, 'css_minify' ], 10, 4 );
 		add_filter( 'powered_cache_fo_script_loader_tag', [ $this, 'change_js_execute_method' ] );
-		add_action( 'after_setup_theme', [ $this, 'maybe_delay_scripts' ], 9 );
-		add_action( 'after_setup_theme', [ $this, 'html_minify' ] );
+		add_action( 'template_redirect', [ $this, 'process_buffer' ], 999 );
 		add_action( 'template_redirect', [ $this, 'maybe_suppress_optimizations' ] );
 
 		if ( ! $this->settings['combine_js'] ) {
@@ -137,6 +136,42 @@ class FileOptimizer {
 		}
 	}
 
+	/**
+	 * Process output buffer
+	 *
+	 * @return void
+	 */
+	public function process_buffer() {
+		ob_start( [ $this, 'maybe_delay_scripts' ] );
+		ob_start( [ $this, 'maybe_replace_google_fonts_with_bunny_fonts' ] );
+		ob_start( [ $this, 'maybe_minify_html' ] );
+	}
+
+	/**
+	 * Replace Google Fonts with Bunny drop-in replacement's
+	 *
+	 * @param string $html Output buffer
+	 *
+	 * @return array|mixed|string|string[]
+	 * @since 3.0
+	 */
+	public function maybe_replace_google_fonts_with_bunny_fonts( $html ) {
+		if ( ! $this->settings['use_bunny_fonts'] ) {
+			return $html;
+		}
+
+		$html = str_replace(
+			[
+				'https://fonts.googleapis.com',
+				'http://fonts.googleapis.com',
+				'//fonts.googleapis.com',
+			],
+			'https://fonts.bunny.net',
+			$html
+		);
+
+		return $html;
+	}
 
 	/**
 	 * Maybe suppress optimizations based on the post meta options
@@ -172,11 +207,15 @@ class FileOptimizer {
 	}
 
 	/**
-	 * Minify HTML output
+	 * Minify given HTML output
+	 *
+	 * @param string $buffer HTML
+	 *
+	 * @return string|string[]|null
 	 */
-	public function html_minify() {
+	public function maybe_minify_html( $buffer ) {
 		if ( ! $this->settings['minify_html'] ) {
-			return;
+			return $buffer;
 		}
 
 		/**
@@ -190,21 +229,9 @@ class FileOptimizer {
 		 * @since  2.0
 		 */
 		if ( apply_filters( 'powered_cache_fo_disable_html_minify', false ) ) {
-			return;
+			return $buffer;
 		}
 
-		ob_start( [ $this, 'run_html_minify' ] );
-	}
-
-	/**
-	 * Minify given HTML output
-	 *
-	 * @param string $buffer HTML
-	 *
-	 * @return string|string[]|null
-	 * @see https://stackoverflow.com/a/29363569
-	 */
-	public function run_html_minify( $buffer ) {
 		$html_min = new HtmlMin();
 		$buffer   = $html_min->minify( $buffer );
 
@@ -458,7 +485,7 @@ class FileOptimizer {
 
 				$style_src = $wp_styles->registered[ $handle ]->src;
 
-				if ( false !== strpos( $style_src, 'fonts.googleapis.com/css' ) ) {
+				if ( false !== strpos( $style_src, 'fonts.googleapis.com/css' ) || false !== strpos( $style_src, 'fonts.bunny.net/css' ) ) {
 					$url = wp_parse_url( $style_src );
 
 					if ( is_string( $url['query'] ) ) {
@@ -538,7 +565,7 @@ class FileOptimizer {
 					 *
 					 * @param  {string} $font_display font display attribute.
 					 *
-					 * @return {boolean} New value.
+					 * @return {string} New value.
 					 * @since  2.0
 					 */
 					$font_display = apply_filters( 'powered_cache_fo_google_font_display', $font_display );
@@ -547,7 +574,19 @@ class FileOptimizer {
 						$font_args['display'] = $font_display;
 					}
 
-					$src = esc_url_raw( add_query_arg( $font_args, $google_fonts_domain ) );
+					/**
+					 * Filters google font's domain
+					 *
+					 * @hook   powered_cache_fo_google_fonts_domain
+					 *
+					 * @param  {string} $font_display font display attribute.
+					 *
+					 * @return {string} New value.
+					 * @since  3.0
+					 */
+					$fonts_domain = apply_filters( 'powered_cache_fo_google_fonts_domain', $google_fonts_domain );
+
+					$src = esc_url_raw( add_query_arg( $font_args, $fonts_domain ) );
 
 					// Enqueue google fonts into one URL request
 					wp_enqueue_style( // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
@@ -563,20 +602,6 @@ class FileOptimizer {
 	}
 
 	/**
-	 * Load scripts in delayed fashion
-	 *
-	 * @since 3.0
-	 * @return void
-	 */
-	public function maybe_delay_scripts() {
-		if ( 'delayed' !== $this->settings['js_execution_method'] ) {
-			return;
-		}
-
-		ob_start( [ $this, 'delay_scripts' ] );
-	}
-
-	/**
 	 * DelayedJS execution
 	 * Similar logic with image lazy-loading but this time for scripts.
 	 *
@@ -585,7 +610,11 @@ class FileOptimizer {
 	 * @return string
 	 * @since 3.0
 	 */
-	public function delay_scripts( $html ) {
+	public function maybe_delay_scripts( $html ) {
+		if ( 'delayed' !== $this->settings['js_execution_method'] ) {
+			return $html;
+		}
+
 		$pattern = '/<script([^>]*)>(.*?)<\/script>/si';
 
 		preg_match_all( $pattern, $html, $matches, PREG_SET_ORDER );
