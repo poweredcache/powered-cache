@@ -21,6 +21,10 @@ if ( ! defined( 'WP_REDIS_DEFAULT_EXPIRE_SECONDS' ) ) {
 	define( 'WP_REDIS_DEFAULT_EXPIRE_SECONDS', 0 );
 }
 
+if ( ! defined( 'WP_REDIS_IGNORE_GLOBAL_GROUPS' ) ) {
+	define( 'WP_REDIS_IGNORE_GLOBAL_GROUPS', false );
+}
+
 /**
  * Adds data to the cache, if the cache key doesn't already exist.
  *
@@ -286,6 +290,31 @@ function wp_cache_reset() {
 }
 
 /**
+ * Determines whether the object cache implementation supports a particular feature.
+ *
+ * @since 6.1.0
+ *
+ * @param string $feature Name of the feature to check for. Possible values include:
+ *                        'add_multiple', 'set_multiple', 'get_multiple', 'delete_multiple',
+ *                        'flush_runtime', 'flush_group'.
+ * @return bool True if the feature is supported, false otherwise.
+ */
+function wp_cache_supports( $feature ) {
+	switch ( $feature ) {
+		case 'get_multiple':
+			return true;
+
+		case 'add_multiple':
+		case 'set_multiple':
+		case 'delete_multiple':
+		case 'flush_runtime':
+		case 'flush_group':
+		default:
+			return false;
+	}
+}
+
+/**
  * WordPress Object Cache
  *
  * The WordPress Object Cache is used to save on trips to the database. The
@@ -429,6 +458,11 @@ class WP_Object_Cache {
 	 */
 	public function add_global_groups( $groups ) {
 		$groups = (array) $groups;
+
+		// Allow force ignoring of global groups.
+		if ( is_array( WP_REDIS_IGNORE_GLOBAL_GROUPS ) ) {
+			$groups = array_diff( $groups, WP_REDIS_IGNORE_GLOBAL_GROUPS );
+		}
 
 		$groups              = array_fill_keys( $groups, true );
 		$this->global_groups = array_merge( $this->global_groups, $groups );
@@ -1198,7 +1232,11 @@ class WP_Object_Cache {
 	 * @return Redis Redis client.
 	 */
 	public function prepare_client_connection( $client_parameters ) {
-		$redis = new Redis;
+		if ( defined( 'WP_REDIS_USE_RELAY' ) && WP_REDIS_USE_RELAY ) {
+			$redis = new Relay\Relay;
+		} else {
+			$redis = new Redis;
+		}
 
 		$redis->connect(
 			$client_parameters['host'],
