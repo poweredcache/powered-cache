@@ -629,17 +629,19 @@ class FileOptimizer {
 				continue;
 			}
 
+			$is_delayed = is_user_logged_in();
+
 			/**
 			 * Whether skip or not skip js for delay
 			 *
 			 * @hook   powered_cache_delayed_js_skip
 			 *
-			 * @param  {bool} $false Not skipping by default
+			 * @param  {bool} Depends on logged-in status by default.
 			 *
 			 * @return {bool} New value.
 			 * @since  3.0
 			 */
-			if ( apply_filters( 'powered_cache_delayed_js_skip', false, $script, $attributes, $content ) ) {
+			if ( apply_filters( 'powered_cache_delayed_js_skip', $is_delayed, $script, $attributes, $content ) ) {
 				continue;
 			}
 
