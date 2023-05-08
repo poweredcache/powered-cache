@@ -626,6 +626,7 @@ $settings = \PoweredCache\Utils\get_settings();
 											<?php esc_html_e( 'Ensure text remains visible during webfont load.', 'powered-cache' ); ?>
 										</span>
 									</label>
+									<br>
 								</div>
 							</div>
 							<div class="sui-form-field">
