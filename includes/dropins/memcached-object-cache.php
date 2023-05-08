@@ -2,8 +2,8 @@
 /**
  * Memcached Redux drop-in, Mika's fork
  *
- * @link https://github.com/skopco/memcached-redux
- * Upstream: 0.1.8
+ * @link https://github.com/poweredcache/memcached-redux
+ * Upstream: 0.1.9
  */
 
 if ( ! defined( 'WP_CACHE_KEY_SALT' ) ) {
@@ -11,6 +11,30 @@ if ( ! defined( 'WP_CACHE_KEY_SALT' ) ) {
 }
 
 if ( class_exists( 'Memcached' ) ):
+
+	/**
+	 * Determines whether the object cache implementation supports a particular feature.
+	 *
+	 * @param string $feature Name of the feature to check for. Possible values include:
+	 *                        'add_multiple', 'set_multiple', 'get_multiple', 'delete_multiple',
+	 *                        'flush_runtime', 'flush_group'.
+	 *
+	 * @return bool True if the feature is supported, false otherwise.
+	 * @since 0.1.9
+	 *
+	 */
+	function wp_cache_supports( $feature ) {
+		switch ( $feature ) {
+			case 'add_multiple':
+			case 'set_multiple':
+			case 'get_multiple':
+			case 'delete_multiple':
+				return true;
+
+			default:
+				return false;
+		}
+	}
 
 	function wp_cache_add( $key, $data, $group = '', $expire = 0 ) {
 		global $wp_object_cache;
