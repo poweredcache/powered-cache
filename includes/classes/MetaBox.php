@@ -95,6 +95,31 @@ class MetaBox {
 			$back_compat                = false;
 		}
 
+		$settings = \PoweredCache\Utils\get_settings();
+
+		$required_meta_settings = [
+			'enable_page_cache',
+			'enable_lazy_load',
+			'minify_css',
+			'combine_css',
+			'minify_js',
+			'combine_js',
+			'critical_css',
+			'remove_unused_css',
+		];
+
+		$show_meta_box = false;
+		foreach ( $required_meta_settings as $setting_item ) {
+			if ( $settings[ $setting_item ] ) {
+				$show_meta_box = true;
+				break;
+			}
+		}
+
+		if ( ! $show_meta_box ) {
+			return;
+		}
+
 		add_meta_box(
 			'powered_cache_post_meta',
 			esc_html__( 'Powered Cache', 'powered-cache' ),
@@ -118,9 +143,6 @@ class MetaBox {
 		$settings          = \PoweredCache\Utils\get_settings();
 		$is_cache_disabled = (bool) get_post_meta( $post->ID, POST_META_DISABLE_CACHE_KEY, true );
 
-		if ( ! $settings['enable_page_cache'] && ! $settings['enable_lazy_load'] ) {
-			return; // nothing to control post specific
-		}
 		?>
 		<div id="powered-cache-meta-box">
 			<?php wp_nonce_field( 'powered_cache_post_meta', 'powered_cache_post_meta_nonce' ); ?>
