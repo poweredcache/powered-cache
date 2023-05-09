@@ -560,6 +560,22 @@ function powered_cache_index_file( $content_type = 'text/html' ) {
 
 	}
 
+	// change filename for provided cache query string
+	if ( ! empty( $_SERVER['QUERY_STRING'] ) ) {
+		parse_str( $_SERVER['QUERY_STRING'], $query_string );
+		$qs_variable = '';
+		foreach ( $powered_cache_cache_query_strings as $query_parameter ) {
+			if ( isset( $query_string[ $query_parameter ] ) ) {
+				$qs_variable .= is_array( $query_string[ $query_parameter ] ) ? implode( '|', $query_string[ $query_parameter ] ) : $query_string[ $query_parameter ];
+			}
+		}
+
+		if ( ! empty( $qs_variable ) ) {
+			$qs_variable = 'query_' . $qs_variable;
+			$file_name   .= '_' . sha1( $qs_variable );
+		}
+	}
+
 
 	/**
 	 * Content-Type is not always text/html (like feed, wp-json etc..)
@@ -570,12 +586,6 @@ function powered_cache_index_file( $content_type = 'text/html' ) {
 		$file_name .= '-' . substr( sha1( $content_type ), 0, 6 );
 	}
 
-	/**
-	 * Seems one of the allowed query string has passed
-	 */
-	if ( ! empty( $_SERVER['QUERY_STRING'] ) ) {
-		$file_name .= '_' . sha1( $_SERVER['QUERY_STRING'] );
-	}
 
 	$file_name .= '.html';
 
