@@ -51,6 +51,7 @@ class LazyLoad {
 			add_action( 'wp', [ $this, 'init' ], 9999 ); // run this as late as possible
 			add_action( 'powered_cache_lazy_load_compat', [ $this, 'compat' ] );
 			add_action( 'powered_cache_lazy_load_run_filter', [ $this, 'maybe_disable_through_meta' ] );
+			add_filter( 'powered_cache_delayed_js_skip', [ $this, 'maybe_delayed_js_skip' ], 10, 2 );
 		}
 
 		/**
@@ -489,6 +490,22 @@ class LazyLoad {
 		}
 
 		return $status;
+	}
+
+	/**
+	 * Skip lazyload for delayed script
+	 *
+	 * @param boolean $is_delay_skipped Whether skip or not skip delayed JS
+	 * @param string  $script           script
+	 *
+	 * @return boolean
+	 */
+	public function maybe_delayed_js_skip( $is_delay_skipped, $script ) {
+		if ( false !== stripos( $script, POWERED_CACHE_URL . 'dist/js/lazyload.js' ) ) {
+			return true;
+		}
+
+		return $is_delay_skipped;
 	}
 
 }
