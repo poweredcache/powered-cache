@@ -717,6 +717,7 @@ $settings = \PoweredCache\Utils\get_settings();
 						<div class="<?php echo esc_attr( apply_filters( 'powered_cache_admin_page_fo_critical_css_classes', 'sui-box-settings-row ' ) ); ?> <?php echo( ! is_premium() ? 'sui-disabled' : '' ); ?>">
 							<div class="sui-box-settings-col-1">
 								<span class="sui-settings-label"><?php esc_html_e( 'Critical CSS', 'powered-cache' ); ?>
+									(<a href="<?php echo esc_url( get_doc_url( '/critical-css/' ) ); ?>" target="_blank">?</a>)
 									<?php if ( ! is_premium() ) : ?>
 										<span class="sui-tag sui-tag-pro"><?php esc_html_e( 'Premium', 'powered-cache' ); ?></span>
 									<?php endif; ?>
@@ -826,6 +827,7 @@ $settings = \PoweredCache\Utils\get_settings();
 					<div class="<?php echo esc_attr( apply_filters( 'powered_cache_admin_page_fo_ucss_classes', 'sui-box-settings-row ' ) ); ?> <?php echo( ! is_premium() ? 'sui-disabled' : '' ); ?>">
 						<div class="sui-box-settings-col-1">
 							<span class="sui-settings-label"><?php esc_html_e( 'Unused CSS', 'powered-cache' ); ?>
+								(<a href="<?php echo esc_url( get_doc_url( '/remove-unused-css/' ) ); ?>" target="_blank">?</a>)
 								<?php if ( ! is_premium() ) : ?>
 									<span class="sui-tag sui-tag-pro"><?php esc_html_e( 'Premium', 'powered-cache' ); ?></span>
 								<?php endif; ?>
