@@ -142,6 +142,26 @@ class FileOptimizer {
 	 * @return void
 	 */
 	public function process_buffer() {
+		if ( strpos( $_SERVER['REQUEST_URI'], 'robots.txt' ) !== false || strpos( $_SERVER['REQUEST_URI'], '.htaccess' ) !== false ) {
+			return;
+		}
+
+		if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || 'GET' !== $_SERVER['REQUEST_METHOD'] ) {
+			return;
+		}
+
+		$file_extension = $_SERVER['REQUEST_URI'];
+		$file_extension = preg_replace( '#^(.*?)\?.*$#', '$1', $file_extension );
+		$file_extension = trim( preg_replace( '#^.*\.(.*)$#', '$1', $file_extension ) );
+
+		if ( ! preg_match( '#index\.php$#i', $_SERVER['REQUEST_URI'] ) && in_array( $file_extension, array( 'php', 'xml', 'xsl' ), true ) ) {
+			return;
+		}
+
+		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+			return;
+		}
+
 		ob_start( [ $this, 'maybe_delay_scripts' ] );
 		ob_start( [ $this, 'maybe_replace_google_fonts_with_bunny_fonts' ] );
 		ob_start( [ $this, 'maybe_minify_html' ] );
@@ -629,7 +649,7 @@ class FileOptimizer {
 				continue;
 			}
 
-			$is_delayed = is_user_logged_in();
+			$is_delay_skipped = function_exists( 'is_user_logged_in' ) && is_user_logged_in();
 
 			/**
 			 * Whether skip or not skip js for delay
@@ -641,7 +661,7 @@ class FileOptimizer {
 			 * @return {bool} New value.
 			 * @since  3.0
 			 */
-			if ( apply_filters( 'powered_cache_delayed_js_skip', $is_delayed, $script, $attributes, $content ) ) {
+			if ( apply_filters( 'powered_cache_delayed_js_skip', $is_delay_skipped, $script, $attributes, $content ) ) {
 				continue;
 			}
 
