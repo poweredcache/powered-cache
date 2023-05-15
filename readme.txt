@@ -1,13 +1,13 @@
 === Powered Cache – Caching and Optimization for WordPress – Easily Improve PageSpeed & Web Vitals Score ===
-Contributors:  poweredcache, skopco, m_uysl
+Contributors:  poweredcache, wphandle, m_uysl
 Tags: cache, caching, web vitals, performance, fastest, page speed, optimization, cdn, object cache, minify, powered cache
 Requires at least:  5.7
 Tested up to:  6.2
-Stable tag:  2.5.4
+Stable tag:  3.0
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
-Requires PHP: 5.6
+Requires PHP: 7.2
 
 The most powerful caching and performance suite for WordPress. Easily Improve PageSpeed & Web Vitals Score.
 
@@ -73,6 +73,7 @@ __Facebook Tracking__: Powered Cache will host Facebook scripts on your server t
 Here is a list of the amazing features included in Powered Cache Premium:
 
 - Critical CSS & Load CSS Asynchronously.
+- Remove Unused CSS. Intelligently scans your pages to identify and remove any CSS rules that aren't being used.
 - Image Optimizer. On the fly Image Compression and WebP conversion.
 - Sitemap Preloading.
 - Scheduled Database cleanups.
@@ -168,6 +169,20 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 3.0 (May 15, 2023) =
+- Added: Bunny Fonts as replacement of Google Fonts
+- Added: global `nopoweredcache` parameter to skip optimizations
+- Added: Cache query strings to generate seperate cache based on query and value
+- Added: WooCommerce compat for geolocation with page cache support.
+- Added: Delayed JS execution.
+- Added: Remove Unused CSS feature.
+- Added: New HTML minification library.
+- Updated: Background processing library.
+- Bump required PHP version to 7.2
+- Object cache drop-in updates: supporting *multiple and wp_cache_supports
+- Refactored: Accepted query strings renamed as ignored query strings.
+- Various small improvements and fixes.
 
 = 2.5.4 (March 23, 2023) =
 - Hotfix: HTML minification quotes issue.
