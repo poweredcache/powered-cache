@@ -458,7 +458,7 @@ $settings = \PoweredCache\Utils\get_settings();
 					<!-- Cache query strings -->
 					<div class="sui-box-settings-row">
 						<div class="sui-box-settings-col-1">
-							<span class="sui-settings-label"><?php esc_html_e( 'Cache query strings', 'powered-cache' ); ?></span>
+							<span class="sui-settings-label"><?php esc_html_e( 'Cache Query Strings', 'powered-cache' ); ?></span>
 						</div>
 						<div class="sui-box-settings-col-2">
 							<div class="sui-row">
@@ -485,7 +485,7 @@ $settings = \PoweredCache\Utils\get_settings();
 					<!-- Ignored query strings -->
 					<div class="sui-box-settings-row">
 						<div class="sui-box-settings-col-1">
-							<span class="sui-settings-label"><?php esc_html_e( 'Ignored query strings', 'powered-cache' ); ?></span>
+							<span class="sui-settings-label"><?php esc_html_e( 'Ignored Query Strings', 'powered-cache' ); ?></span>
 						</div>
 						<div class="sui-box-settings-col-2">
 							<div class="sui-row">
