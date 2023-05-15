@@ -358,7 +358,7 @@ function js_execution_methods() {
 		'blocking' => esc_html__( 'Blocking – (default)', 'powered-cache' ),
 		'async'    => esc_html__( 'Non-blocking using async', 'powered-cache' ),
 		'defer'    => esc_html__( 'Non-blocking using defer', 'powered-cache' ),
-		'delayed'  => esc_html__( 'Non-blocking using user interaction', 'powered-cache' ),
+		'delayed'  => esc_html__( 'Delayed for user interaction', 'powered-cache' ),
 	];
 
 	/**

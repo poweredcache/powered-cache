@@ -963,7 +963,10 @@ $settings = \PoweredCache\Utils\get_settings();
 
 					<div class="<?php echo esc_attr( apply_filters( 'powered_cache_admin_page_fo_js_classes', 'sui-box-settings-row ' ) ); ?>">
 						<div class="sui-box-settings-col-1">
-							<span class="sui-settings-label" id="js_execution_method_label"><?php esc_html_e( 'JavaScript execution method', 'powered-cache' ); ?></span>
+							<span class="sui-settings-label" id="js_execution_method_label">
+								<?php esc_html_e( 'JavaScript Execution', 'powered-cache' ); ?>
+								(<a href="<?php echo esc_url( get_doc_url( '/js-execution/' ) ); ?>" target="_blank">?</a>)
+							</span>
 							<span class="sui-description"></span>
 						</div>
 						<div class="sui-box-settings-col-2">
