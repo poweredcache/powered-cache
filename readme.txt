@@ -3,7 +3,7 @@ Contributors:  poweredcache, wphandle, m_uysl
 Tags: cache, caching, web vitals, performance, fastest, page speed, optimization, cdn, object cache, minify, powered cache
 Requires at least:  5.7
 Tested up to:  6.2
-Stable tag:  3.0
+Stable tag:  3.0.1
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -169,6 +169,11 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 3.0.1 (May 16, 2023) =
+- Fix: Malformed robots.txt due to FileOptimizer
+- Fix: Don't execute lazyload script as delayed.
+- Adding clarity to the JS execution field.
 
 = 3.0 (May 15, 2023) =
 - Added: Bunny Fonts as replacement of Google Fonts
