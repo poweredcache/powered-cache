@@ -13,12 +13,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/10up/phpcs-composer.git",
-                "reference": "9c085cf0554a0b5311623548663aa9e4d8f52587"
+                "reference": "2d03ba19ad5259275aa4f2287340e3d7d270196b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/10up/phpcs-composer/zipball/9c085cf0554a0b5311623548663aa9e4d8f52587",
-                "reference": "9c085cf0554a0b5311623548663aa9e4d8f52587",
+                "url": "https://api.github.com/repos/10up/phpcs-composer/zipball/2d03ba19ad5259275aa4f2287340e3d7d270196b",
+                "reference": "2d03ba19ad5259275aa4f2287340e3d7d270196b",
                 "shasum": ""
             },
             "require": {
