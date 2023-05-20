@@ -28,6 +28,9 @@ use PoweredCache\Dependencies\Symfony\Component\CssSelector\Parser\ParserInterfa
  */
 class HashParser implements ParserInterface
 {
+    /**
+     * {@inheritdoc}
+     */
     public function parse(string $source): array
     {
         // Matches an optional namespace, optional element, and required id

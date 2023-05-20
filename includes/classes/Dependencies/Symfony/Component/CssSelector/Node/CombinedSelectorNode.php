@@ -23,9 +23,9 @@ namespace PoweredCache\Dependencies\Symfony\Component\CssSelector\Node;
  */
 class CombinedSelectorNode extends AbstractNode
 {
-    private NodeInterface $selector;
-    private string $combinator;
-    private NodeInterface $subSelector;
+    private $selector;
+    private $combinator;
+    private $subSelector;
 
     public function __construct(NodeInterface $selector, string $combinator, NodeInterface $subSelector)
     {
@@ -49,6 +49,9 @@ class CombinedSelectorNode extends AbstractNode
         return $this->subSelector;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getSpecificity(): Specificity
     {
         return $this->selector->getSpecificity()->plus($this->subSelector->getSpecificity());

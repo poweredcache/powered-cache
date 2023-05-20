@@ -27,6 +27,9 @@ use PoweredCache\Dependencies\Symfony\Component\CssSelector\Parser\ParserInterfa
  */
 class ElementParser implements ParserInterface
 {
+    /**
+     * {@inheritdoc}
+     */
     public function parse(string $source): array
     {
         // Matches an optional namespace, required element or `*`

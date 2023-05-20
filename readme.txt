@@ -7,7 +7,7 @@ Stable tag:  3.0.1
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
-Requires PHP: 7.2
+Requires PHP: 7.2.5
 
 The most powerful caching and performance suite for WordPress. Easily Improve PageSpeed & Web Vitals Score.
 

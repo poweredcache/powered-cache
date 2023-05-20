@@ -25,9 +25,9 @@ use PoweredCache\Dependencies\Symfony\Component\CssSelector\Parser\Token;
  */
 class FunctionNode extends AbstractNode
 {
-    private NodeInterface $selector;
-    private string $name;
-    private array $arguments;
+    private $selector;
+    private $name;
+    private $arguments;
 
     /**
      * @param Token[] $arguments
@@ -57,6 +57,9 @@ class FunctionNode extends AbstractNode
         return $this->arguments;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getSpecificity(): Specificity
     {
         return $this->selector->getSpecificity()->plus(new Specificity(0, 1, 0));
