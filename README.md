@@ -1,13 +1,13 @@
-Powered Cache 
+Powered Cache
 =============
 
 ![Support Level](https://img.shields.io/badge/support-active-green.svg) [![Release Version](https://img.shields.io/wordpress/plugin/v/powered-cache?label=Release%20Version)](https://github.com/poweredcache/powered-cache/releases) ![WordPress tested up to version](https://img.shields.io/wordpress/plugin/tested/powered-cache?label=WordPress) ![Required PHP Version](https://img.shields.io/wordpress/plugin/required-php/powered-cache?label=PHP)
 
 The most powerful caching and performance suite for WordPress. Easily Improve PageSpeed & Web Vitals Score.
 
-__Plugin Website__: [poweredcache.com](https://poweredcache.com)  
-__Docs__: [poweredcache.com](https://poweredcache.com)  
-__Developer Docs__: [https://poweredcache.github.io/docs/](https://poweredcache.github.io/docs/)  
+__Plugin Website__: [poweredcache.com](https://poweredcache.com)
+__Docs__: [poweredcache.com](https://poweredcache.com)
+__Developer Docs__: [https://poweredcache.github.io/docs/](https://poweredcache.github.io/docs/)
 
 ### Features
 
@@ -40,7 +40,7 @@ __Developer Docs__: [https://poweredcache.github.io/docs/](https://poweredcache.
 - __Prefetched DNS__: Resolve domain names before resources get requested. Reduce DNS lookup time.
 
 - __Gzip Support__: Compress caching files with gzip.
- 
+
 - __Built-in Extensions__: Cloudflare, Heartbeat
 
 - __Multisite Support__: You can activate network-wide or site basis. It's compatible with domain mapping.
@@ -55,18 +55,18 @@ __Developer Docs__: [https://poweredcache.github.io/docs/](https://poweredcache.
 
 Built-in extensions (aka add-ons) shipped with Powered Cache to provide more functionality.
 
-- __Cloudflare__: Cloudflare compatibility and functionalities ***Free***  
+- __Cloudflare__: Cloudflare compatibility and functionalities ***Free***
 
-- __Heartbeat__: Manage the frequency of the WordPress Heartbeat API. ***Free***  
+- __Heartbeat__: Manage the frequency of the WordPress Heartbeat API. ***Free***
 
-- __Varnish__: Varnish cache purging ***Premium only***  
+- __Varnish__: Varnish cache purging ***Premium only***
 
-- __Google Tracking__: Powered Cache will host Google scripts on your server to help satisfy the PageSpeed recommendation. ***Premium only***  
+- __Google Tracking__: Powered Cache will host Google scripts on your server to help satisfy the PageSpeed recommendation. ***Premium only***
 
-- __Facebook Tracking__: Powered Cache will host Google scripts on your server to help satisfy the PageSpeed recommendation. ***Premium only***  
+- __Facebook Tracking__: Powered Cache will host Google scripts on your server to help satisfy the PageSpeed recommendation. ***Premium only***
 
 
-### Premium Features   
+### Premium Features
 
 Here is a list of the amazing features included in Powered Cache Premium:
 
@@ -83,18 +83,18 @@ By upgrading to Powered Cache Premium you also get access to one-on-one help fro
 
 **[Learn more about Powered Cache Premium](https://poweredcache.com/)**
 
-## Contributing & Bug Report  
+## Contributing & Bug Report
 Bug reports and pull requests are welcome on [Github](https://github.com/poweredcache/powered-cache). Some of our features are premium only, please consider before sending PR.
 
-## Documentation  
-__Documentation site__: [https://docs.poweredcache.com/](https://docs.poweredcache.com/)    
-__Developer Docs :__ [https://poweredcache.github.io/docs/](https://poweredcache.github.io/docs/)  (***Hook referance***)   
+## Documentation
+__Documentation site__: [https://docs.poweredcache.com/](https://docs.poweredcache.com/)
+__Developer Docs :__ [https://poweredcache.github.io/docs/](https://poweredcache.github.io/docs/)  (***Hook referance***)
 
 
-## Setup  
+## Setup
 1. Upload the `powered-cache` folder to the `/wp-content/plugins/` directory
 2. Activate the Powered Cache plugin through the 'Plugins' menu in WordPress
-3. That's all. 
+3. That's all.
 
 ## Credits
 
@@ -114,4 +114,5 @@ We have used code or ideas from the following projects:
 * [Shared UI](https://github.com/wpmudev/shared-ui) for admin UI.
 * [Mozart](https://github.com/coenjacobs/mozart) for wrapping dependencies.
 * [CDN Enabler](https://github.com/keycdn/cdn-enabler) for some CDN functionalities.
+* [HtmlMin](https://github.com/voku/HtmlMin) for HTML minification.
 
