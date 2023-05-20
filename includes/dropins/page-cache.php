@@ -444,6 +444,8 @@ function powered_cache_serve_cache() {
 		}
 
 		header( 'X-Powered-Cache: PHP' );
+		header( 'X-Cache-Enabled: true' );
+		header( sprintf( "age: %d",  time() - filemtime( $file_path ) ) );
 
 		if ( function_exists( 'gzencode' ) && $GLOBALS['powered_cache_options']['gzip_compression'] ) {
 			header( 'Content-Encoding: gzip' );
