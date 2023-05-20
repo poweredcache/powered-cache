@@ -566,8 +566,10 @@ function powered_cache_index_file( $content_type = 'text/html' ) {
 	if ( ! empty( $_SERVER['QUERY_STRING'] ) ) {
 		parse_str( $_SERVER['QUERY_STRING'], $query_string );
 		$qs_variable = '';
+		sort( $powered_cache_cache_query_strings );
 		foreach ( $powered_cache_cache_query_strings as $query_parameter ) {
 			if ( isset( $query_string[ $query_parameter ] ) ) {
+				$qs_variable .= '_' . $query_parameter;
 				$qs_variable .= is_array( $query_string[ $query_parameter ] ) ? implode( '|', $query_string[ $query_parameter ] ) : $query_string[ $query_parameter ];
 			}
 		}
