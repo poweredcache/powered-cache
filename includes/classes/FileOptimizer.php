@@ -116,7 +116,7 @@ class FileOptimizer {
 		add_filter( 'script_loader_tag', [ $this, 'js_minify' ], 10, 3 );
 		add_filter( 'style_loader_tag', [ $this, 'css_minify' ], 10, 4 );
 		add_filter( 'powered_cache_fo_script_loader_tag', [ $this, 'change_js_execute_method' ] );
-		add_action( 'template_redirect', [ $this, 'process_buffer' ], 999 );
+		add_action( 'after_setup_theme', [ $this, 'process_buffer' ], 999 );
 		add_action( 'template_redirect', [ $this, 'maybe_suppress_optimizations' ] );
 
 		if ( ! $this->settings['combine_js'] ) {
@@ -253,7 +253,8 @@ class FileOptimizer {
 		}
 
 		$html_min = new HtmlMin();
-		$buffer   = $html_min->minify( $buffer );
+		$html_min->overwriteSpecialScriptTags( [ 'x-tmpl-mustache', 'text/template' ] );
+		$buffer = $html_min->minify( $buffer );
 
 		return $buffer;
 	}
