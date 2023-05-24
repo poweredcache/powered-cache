@@ -640,6 +640,12 @@ class FileOptimizer {
 
 		preg_match_all( $pattern, $html, $matches, PREG_SET_ORDER );
 
+		if ( empty( $matches ) ) {
+			return $html;
+		}
+
+		$delayed_script_count = 0;
+
 		foreach ( $matches as $match ) {
 			$script     = $match[0];
 			$attributes = $match[1];
@@ -680,7 +686,12 @@ class FileOptimizer {
 				}
 
 				$html = str_replace( $script, $new_script, $html );
+				$delayed_script_count ++;
 			}
+		}
+
+		if ( 0 === $delayed_script_count ) {
+			return $html;
 		}
 
 		/**
