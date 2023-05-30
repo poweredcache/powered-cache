@@ -238,6 +238,10 @@ class FileOptimizer {
 			return $buffer;
 		}
 
+		if ( false === stripos( $buffer, '<html' ) && false === stripos( $buffer, '<!DOCTYPE html' ) ) {
+			return $buffer;
+		}
+
 		/**
 		 * Filters whether disable or not disable HTML minification.
 		 *
