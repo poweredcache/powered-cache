@@ -3,7 +3,7 @@ Contributors:  poweredcache, wphandle, m_uysl
 Tags: cache, caching, web vitals, performance, fastest, page speed, optimization, cdn, object cache, minify, powered cache
 Requires at least:  5.7
 Tested up to:  6.2
-Stable tag:  3.0.4
+Stable tag:  3.0.5
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -169,6 +169,11 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 3.0.5 (May 30, 2023) =
+- Fix: PhastPress cache purge callback
+- Fix: Memcached drop-in `set_multiple` warning
+- ensure html tag exists before running HTML minifier
 
 = 3.0.4 (May 25, 2023) =
 - DelayedJS bugfix
