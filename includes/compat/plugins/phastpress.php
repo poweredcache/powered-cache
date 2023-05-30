@@ -18,7 +18,7 @@ if ( ! defined( 'PHASTPRESS_VERSION' ) ) {
 }
 
 
-add_action( 'powered_cache_flushed', __NAMESPACE__, '\\flush_phast_cache' );
+add_action( 'powered_cache_flushed', __NAMESPACE__ . '\\flush_phast_cache' );
 add_action( 'powered_cache_purge_all_cache', __NAMESPACE__ . '\\flush_phast_cache' );
 add_action( 'powered_cache_clean_site_cache_dir', __NAMESPACE__ . '\\flush_phast_cache' );
 
