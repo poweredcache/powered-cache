@@ -3,7 +3,7 @@
  * Memcached Redux drop-in, Mika's fork
  *
  * @link https://github.com/poweredcache/memcached-redux
- * Upstream: 0.2
+ * Upstream: 0.2.1
  */
 
 if ( ! defined( 'WP_CACHE_KEY_SALT' ) ) {
@@ -459,39 +459,14 @@ if ( class_exists( 'Memcached' ) ):
 			return $result;
 		}
 
-		function set_multiple( $items, $group = 'default', $expire = 0 ) {
-			$sets   = array();
-			$mc     =& $this->get_mc( $group );
-			$expire = ( $expire == 0 ) ? $this->default_expiration : $expire;
+		public function set_multiple( array $data, $group = '', $expire = 0 ) {
+			$values = array();
 
-			foreach ( $items as $i => $item ) {
-				if ( empty( $item[2] ) ) {
-					$item[2] = 'default';
-				}
-
-				list( $id, $data, $group ) = $item;
-
-				$key = $this->key( $id, $group );
-				if ( isset( $this->cache[ $key ] ) && ( 'checkthedatabaseplease' === $this->cache[ $key ] ) ) {
-					continue;
-				}
-
-				if ( is_object( $data ) ) {
-					$data = clone $data;
-				}
-
-				$this->cache[ $key ] = $data;
-
-				if ( in_array( $group, $this->no_mc_groups ) ) {
-					continue;
-				}
-
-				$sets[ $key ] = $data;
+			foreach ( $data as $key => $value ) {
+				$values[ $key ] = $this->set( $key, $value, $group, $expire );
 			}
 
-			if ( ! empty( $sets ) ) {
-				$mc->setMulti( $sets, $expire );
-			}
+			return $values;
 		}
 
 		function set_multi( $items, $expire = 0, $group = 'default' ) {
