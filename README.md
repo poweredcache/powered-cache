@@ -5,8 +5,8 @@ Powered Cache
 
 The most powerful caching and performance suite for WordPress. Easily Improve PageSpeed & Web Vitals Score.
 
-__Plugin Website__: [poweredcache.com](https://poweredcache.com)
-__Docs__: [poweredcache.com](https://poweredcache.com)
+__Plugin Website__: [poweredcache.com](https://poweredcache.com)  
+__Docs__: [poweredcache.com](https://poweredcache.com)  
 __Developer Docs__: [https://poweredcache.github.io/docs/](https://poweredcache.github.io/docs/)
 
 ### Features
