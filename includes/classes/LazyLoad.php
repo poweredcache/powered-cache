@@ -501,7 +501,7 @@ class LazyLoad {
 	 * @return boolean
 	 */
 	public function maybe_delayed_js_skip( $is_delay_skipped, $script ) {
-		if ( false !== stripos( $script, POWERED_CACHE_URL . 'dist/js/lazyload.js' ) ) {
+		if ( false !== stripos( $script, POWERED_CACHE_URL . 'dist/js/lazyload.js' ) || false !== stripos( $script, 'PCLL_' ) ) {
 			return true;
 		}
 
