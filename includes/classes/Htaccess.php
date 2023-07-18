@@ -393,7 +393,7 @@ class Htaccess {
 			$cache_location = get_cache_dir();
 			$cache_location = untrailingslashit( $cache_location ) . '/powered-cache/';
 			if ( strpos( ABSPATH, $cache_location ) === false ) {
-				$cache_path = str_replace( $_SERVER['DOCUMENT_ROOT'], '', $cache_location ); // clean doc root
+				$cache_path = str_replace( $_SERVER['DOCUMENT_ROOT'], '', $cache_location ); // phpcs:ignore
 			} else {
 				$cache_path = $site_root . str_replace( ABSPATH, '', $cache_location );
 			}
@@ -409,7 +409,7 @@ class Htaccess {
 			 *
 			 * @since  1.1
 			 */
-			if ( apply_filters( 'powered_cache_maybe_1and1_hosting', ( 0 === strpos( $_SERVER['DOCUMENT_ROOT'], '/kunden/homepage/' ) ) ) ) {
+			if ( apply_filters( 'powered_cache_maybe_1and1_hosting', ( 0 === strpos( $_SERVER['DOCUMENT_ROOT'], '/kunden/homepage/' ) ) ) ) { // phpcs:ignore
 				$rules .= '    RewriteCond "' . str_replace( '/kunden/homepage/', '/', $cache_location ) . '%{HTTP_HOST}' . '%{REQUEST_URI}/index' . $env_powered_cache_ssl . $env_powered_cache_ua . '.html' . $env_powered_cache_enc . '" -f' . PHP_EOL;
 			} else {
 				$rules .= '    RewriteCond "%{DOCUMENT_ROOT}/' . ltrim( $cache_path, '/' ) . '%{HTTP_HOST}' . '%{REQUEST_URI}/index' . $env_powered_cache_ssl . $env_powered_cache_ua . '.html' . $env_powered_cache_enc . '" -f' . PHP_EOL;

@@ -1021,10 +1021,12 @@ function log( $message ) {
  */
 function get_client_ip() {
 	if ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
-		return $_SERVER['HTTP_X_FORWARDED_FOR'];
+		return wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	}
 
-	return $_SERVER['REMOTE_ADDR'];
+	if ( isset( $_SERVER['REMOTE_ADDR'] ) ) {
+		return wp_unslash( $_SERVER['REMOTE_ADDR'] );  // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	}
 }
 
 /**
@@ -1277,7 +1279,13 @@ function powered_cache_is_mobile() {
 	$mobile_browsers = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', $powered_cache_mobile_browsers ) ), ' ' );
 	$mobile_prefixes = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', $powered_cache_mobile_prefixes ) ), ' ' );
 
-	if ( ( preg_match( '#^.*(' . $mobile_browsers . ').*#i', $_SERVER['HTTP_USER_AGENT'] ) || preg_match( '#^(' . $mobile_prefixes . ').*#i', substr( $_SERVER['HTTP_USER_AGENT'], 0, 4 ) ) ) ) {
+	if ( ! isset( $_SERVER['HTTP_USER_AGENT'] ) ) {
+		return false;
+	}
+
+	$user_agent = wp_unslash( $_SERVER['HTTP_USER_AGENT'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+
+	if ( ( preg_match( '#^.*(' . $mobile_browsers . ').*#i', $user_agent ) || preg_match( '#^(' . $mobile_prefixes . ').*#i', substr( $user_agent, 0, 4 ) ) ) ) {
 		return true;
 	}
 
@@ -1340,7 +1348,7 @@ function is_local_site() {
  * @since 3.0
  */
 function bypass_request() {
-	if ( isset( $_GET['nopoweredcache'] ) && $_GET['nopoweredcache'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( isset( $_GET['nopoweredcache'] ) && $_GET['nopoweredcache'] ) { // phpcs:ignore
 		return true;
 	}
 

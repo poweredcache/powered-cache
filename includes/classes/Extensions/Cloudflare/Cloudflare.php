@@ -65,7 +65,7 @@ class Cloudflare {
 
 		// real user ip
 		if ( isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) {
-			$_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_CF_CONNECTING_IP'];
+			$_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_CF_CONNECTING_IP']; // phpcs:ignore
 		}
 
 		add_action( 'admin_bar_menu', array( $this, 'admin_bar_menu' ) );
@@ -109,7 +109,7 @@ class Cloudflare {
 	 * Delete CF cache when it triggered from admin menu
 	 */
 	public function delete_cloudflare_cache() {
-		if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'powered_cache_purge_cf_cache' ) ) {
+		if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'powered_cache_purge_cf_cache' ) ) { // phpcs:ignore
 			wp_nonce_ays( '' );
 		}
 

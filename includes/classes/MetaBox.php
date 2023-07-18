@@ -380,7 +380,7 @@ class MetaBox {
 		}
 
 		// nonce check
-		if ( ! wp_verify_nonce( wp_unslash( $_POST['powered_cache_post_meta_nonce'] ), 'powered_cache_post_meta' ) ) {
+		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['powered_cache_post_meta_nonce'] ) ), 'powered_cache_post_meta' ) ) {
 			return;
 		}
 

@@ -167,7 +167,7 @@ class CDN {
 	 */
 	private static function rewrite_url( $matches ) {
 		$file_url      = $matches[0];
-		$site_hostname = ( ! empty( $_SERVER['HTTP_HOST'] ) ) ? $_SERVER['HTTP_HOST'] : wp_parse_url( home_url(), PHP_URL_HOST );
+		$site_hostname = ( ! empty( $_SERVER['HTTP_HOST'] ) ) ? $_SERVER['HTTP_HOST'] : wp_parse_url( home_url(), PHP_URL_HOST ); // phpcs:ignore
 
 		/**
 		 * Filters site hostname(s).

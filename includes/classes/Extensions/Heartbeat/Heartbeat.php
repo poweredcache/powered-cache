@@ -116,7 +116,9 @@ class Heartbeat {
 			'/wp-admin/post.php',
 		];
 
-		if ( is_admin() && in_array( $_SERVER['REQUEST_URI'], $editor_pages, true ) ) {
+		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+
+		if ( is_admin() && in_array( $request_uri, $editor_pages, true ) ) {
 			$this->current_location = 'editor';
 		} elseif ( is_admin() ) {
 			$this->current_location = 'dashboard';

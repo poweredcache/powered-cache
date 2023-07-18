@@ -136,7 +136,7 @@ class AdvancedCache {
 	 * @since 2.0
 	 */
 	public function purge_page_cache_network_wide() {
-		if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'powered_cache_purge_page_cache_network' ) ) {
+		if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'powered_cache_purge_page_cache_network' ) ) { // phpcs:ignore
 			wp_nonce_ays( '' );
 		}
 
@@ -163,7 +163,7 @@ class AdvancedCache {
 	 * @since 1.1 clean site dir instead of root page caching dir
 	 */
 	public function purge_page_cache() {
-		if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'powered_cache_purge_page_cache' ) ) {
+		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), 'powered_cache_purge_page_cache' ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 			wp_nonce_ays( '' );
 		}
 

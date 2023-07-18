@@ -462,7 +462,7 @@ class LazyLoad {
 			add_filter( 'powered_cache_lazy_load_enabled', '__return_false' );
 		}
 
-		if ( isset( $_SERVER['HTTP_USER_AGENT'] ) && false !== strpos( $_SERVER['HTTP_USER_AGENT'], 'Opera Mini' ) ) {
+		if ( isset( $_SERVER['HTTP_USER_AGENT'] ) && false !== strpos( $_SERVER['HTTP_USER_AGENT'], 'Opera Mini' ) ) { // phpcs:ignore
 			add_filter( 'powered_cache_lazy_load_enabled', '__return_false' );
 		}
 

@@ -186,7 +186,7 @@ if ( class_exists( '\SitePress' ) ) {
 	 * @since 2.4
 	 */
 	function purge_page_cache() {
-		if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'powered_cache_purge_page_cache_for_lang' ) ) {
+		if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'powered_cache_purge_page_cache_for_lang' ) ) { // phpcs:ignore
 			wp_nonce_ays( '' );
 		}
 

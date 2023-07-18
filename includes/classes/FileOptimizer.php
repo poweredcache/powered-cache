@@ -142,7 +142,12 @@ class FileOptimizer {
 	 * @return void
 	 */
 	public function process_buffer() {
-		if ( strpos( $_SERVER['REQUEST_URI'], 'robots.txt' ) !== false || strpos( $_SERVER['REQUEST_URI'], '.htaccess' ) !== false ) {
+		if ( ! isset( $_SERVER['REQUEST_URI'] ) ) {
+			return;
+		}
+		$request_uri = sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+
+		if ( strpos( $request_uri, 'robots.txt' ) !== false || strpos( $request_uri, '.htaccess' ) !== false ) {
 			return;
 		}
 
@@ -150,11 +155,10 @@ class FileOptimizer {
 			return;
 		}
 
-		$file_extension = $_SERVER['REQUEST_URI'];
-		$file_extension = preg_replace( '#^(.*?)\?.*$#', '$1', $file_extension );
+		$file_extension = preg_replace( '#^(.*?)\?.*$#', '$1', $request_uri );
 		$file_extension = trim( preg_replace( '#^.*\.(.*)$#', '$1', $file_extension ) );
 
-		if ( ! preg_match( '#index\.php$#i', $_SERVER['REQUEST_URI'] ) && in_array( $file_extension, array( 'php', 'xml', 'xsl' ), true ) ) {
+		if ( ! preg_match( '#index\.php$#i', $request_uri ) && in_array( $file_extension, array( 'php', 'xml', 'xsl' ), true ) ) {
 			return;
 		}
 

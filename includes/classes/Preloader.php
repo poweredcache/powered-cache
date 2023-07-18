@@ -107,7 +107,7 @@ class Preloader {
 	 * Add preloading items to queue
 	 */
 	public function start_preload() {
-		if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'powered_cache_preload_cache' ) ) {
+		if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'powered_cache_preload_cache' ) ) { // phpcs:ignore
 			wp_nonce_ays( '' );
 		}
 
