@@ -35,13 +35,13 @@
 
 			// auto-focus current section
 			if (window.location.hash && $(`a[href="${window.location.hash}"]`).length) {
-				$(`a[href^="${window.location.hash}"]`).click();
+				$(`a[href^="${window.location.hash}"]`).trigger('click');
 			}
 
 			// auto-focus last selection
 			const lastnav = localStorage.getItem('poweredcache_current_nav');
 			if (lastnav && $(`a[href="${lastnav}"]`).length) {
-				$(`a[href^="${lastnav}"]`).click();
+				$(`a[href^="${lastnav}"]`).trigger('click');
 			}
 		}
 

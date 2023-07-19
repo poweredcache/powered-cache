@@ -7,7 +7,7 @@ import './modules/modal';
 (function ($) {
 	let zone_index = 0;
 
-	$('.add_cdn_hostname').click(function (e) {
+	$(document).on('click', '.add_cdn_hostname', function (e) {
 		e.preventDefault();
 		let ref_el = $('.cdn-zone:first').clone();
 
