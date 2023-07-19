@@ -1024,11 +1024,7 @@ $settings = \PoweredCache\Utils\get_settings();
 
 						<div class="sui-box-settings-col-1">
 							<span class="sui-settings-label"><?php esc_html_e( 'Image Optimization', 'powered-cache' ); ?>
-								<?php if ( ! is_premium() ) : ?>
-									<span class="sui-tag sui-tag-pro"><?php esc_html_e( 'Premium', 'powered-cache' ); ?></span>
-								<?php else : ?>
-									<span class="sui-tag sui-tag-pro"><?php esc_html_e( 'Beta', 'powered-cache' ); ?></span>
-								<?php endif; ?>
+								<span class="sui-tag sui-tag-pro"><?php esc_html_e( 'Premium', 'powered-cache' ); ?></span>
 							</span>
 							<span class="sui-description"></span>
 						</div>
