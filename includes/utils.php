@@ -93,6 +93,7 @@ function get_settings( $force_network_wide = false ) {
 		'lazy_load_widgets'              => true,
 		'lazy_load_post_thumbnail'       => true,
 		'lazy_load_avatars'              => true,
+		'lazy_load_skip_first_nth_img'   => 3,
 		'disable_wp_lazy_load'           => false,
 		'disable_wp_embeds'              => false,
 		'disable_emoji_scripts'          => false,
@@ -189,7 +190,6 @@ function get_cache_dir() {
  *
  * @return array $object_caches
  * @since 1.2 apcu added
- *
  * @since 1.0
  */
 function get_object_cache_dropins() {
@@ -494,7 +494,6 @@ function settings_errors( $setting = '', $sanitize = false, $hide_on_update = fa
 
 /**
  * remove directories recursively
- *
  * Adopted from W3TC Utility
  *
  * @param string $path    The target path
@@ -875,7 +874,6 @@ function cdn_addresses() {
 	 * @param  {array} $cdn_addresses CDN Adresses.
 	 *
 	 * @return {array} New value.
-	 *
 	 * @since  1.0
 	 */
 	return apply_filters( 'powered_cache_cdn_addresses', $cdn_addresses );
@@ -937,7 +935,6 @@ function powered_cache_flush() {
 	 * Fires after cache flush.
 	 *
 	 * @hook   powered_cache_flushed
-	 *
 	 * @since  1.0
 	 */
 	do_action( 'powered_cache_flushed' );
@@ -969,7 +966,6 @@ function log( $message ) {
 	 * @param  {string} $log_message The log message.
 	 *
 	 * @return {string} New value.
-	 *
 	 * @since  2.0
 	 */
 	$log_message = apply_filters( 'powered_cache_log_message', $log_message );
@@ -982,7 +978,6 @@ function log( $message ) {
 	 * @param  {null|int} null default message type
 	 *
 	 * @return {null|int} New value.
-	 *
 	 * @since  2.0
 	 */
 	$message_type = apply_filters( 'powered_cache_log_message_type', null );
@@ -1001,7 +996,6 @@ function log( $message ) {
 	 * @param  {null|string} $destination The destination of the log.
 	 *
 	 * @return {null|string} New value.
-	 *
 	 * @since  2.0
 	 */
 	$log_destination = apply_filters( 'powered_cache_log_destination', $destination );
@@ -1120,7 +1114,6 @@ function get_response_headers() {
 	 * @param  {array} $known_headers The list of known HTTP headers.
 	 *
 	 * @return {array} New value.
-	 *
 	 * @since  1.2
 	 */
 	$known_headers = apply_filters( 'powered_cache_known_headers', $known_headers );

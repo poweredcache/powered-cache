@@ -4,18 +4,20 @@
 
 'use strict';
 
-var PCLL_options = PCLL_options || {};
+window.PCLL_options = window.PCLL_options || {};
 
 var PCLL = ( function() {
 	var PCLL = {
 
 		_lastCheckTs: 0,
 		_checkDebounceTimeoutRunning: false,
+		_earlyLoadedCount: 0,
 
-		init: function() {
-			PCLL.threshold = PCLL.getOptionIntValue( 'threshold', 200 );
-			PCLL.recheckDelay = PCLL.getOptionIntValue( 'recheck_delay', 250 );
-			PCLL.debounce = PCLL.getOptionIntValue( 'debounce', 50 );
+		init: function () {
+			PCLL.threshold = PCLL.getOptionIntValue('threshold', 200);
+			PCLL.recheckDelay = PCLL.getOptionIntValue('recheck_delay', 250);
+			PCLL.debounce = PCLL.getOptionIntValue('debounce', 50);
+			PCLL.immediateLoadCount = PCLL.getOptionIntValue('immediate_load_count', 3)
 			PCLL.checkRecurring();
 			return PCLL;
 		},
@@ -47,6 +49,12 @@ var PCLL = ( function() {
 				// do not lazy-load images that are hidden with display:none or have a width/height of 0
 				if ( ! elemRect.width || ! elemRect.height ) {
 					return;
+				}
+
+				// directly load the first nth images
+				if (PCLL._earlyLoadedCount <= PCLL.immediateLoadCount) {
+					PCLL._earlyLoadedCount++;
+					PCLL.showImmediately( el );
 				}
 
 				if ( 0 < winH - elemRect.top + PCLL.threshold ) {
@@ -93,6 +101,35 @@ var PCLL = ( function() {
 			}
 		},
 
+		showImmediately: function( el ) {
+			// This function is similar to the "show" function but without lazy loading
+			var type, s, div, iframe;
+			el.className = el.className.replace( /(?:^|\s)lazy-hidden(?!\S)/g, '' );
+			el.addEventListener( 'load', function() {
+				el.className += ' lazy-load-direct';
+				PCLL.customEvent( el, 'lazyloaded' );
+			}, false );
+
+			type = el.getAttribute( 'data-lazy-type' );
+
+			if ( 'image' == type ) {
+				if ( null != el.getAttribute( 'data-lazy-srcset' ) ) {
+					el.setAttribute( 'srcset', el.getAttribute( 'data-lazy-srcset' ) );
+				}
+				if ( null != el.getAttribute( 'data-lazy-sizes' ) ) {
+					el.setAttribute( 'sizes', el.getAttribute( 'data-lazy-sizes' ) );
+				}
+				el.setAttribute( 'src', el.getAttribute( 'data-lazy-src' ) );
+			} else if ( 'iframe' == type ) {
+				s = el.getAttribute( 'data-lazy-src' );
+				div = document.createElement( 'div' );
+
+				div.innerHTML = s;
+				iframe = div.firstChild;
+				el.parentNode.replaceChild( iframe, el );
+			}
+		},
+
 		customEvent: function( el, eventName ) {
 			var event;
 
@@ -115,9 +152,9 @@ var PCLL = ( function() {
 
 		getOptionIntValue: function( name, defaultValue ) {
 			// eslint-disable-next-line camelcase
-			if ( 'undefined' !== typeof ( PCLL_options[name]) ) {
+			if ( 'undefined' !== typeof ( window.PCLL_options[name]) ) {
 				// eslint-disable-next-line camelcase
-				return parseInt( PCLL_options[name]);
+				return parseInt( window.PCLL_options[name]);
 			}
 			return defaultValue;
 		}

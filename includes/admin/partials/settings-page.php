@@ -1082,103 +1082,123 @@ $settings = \PoweredCache\Utils\get_settings();
 									</label>
 								</div>
 
-								<div style=" <?php echo( ! $settings['enable_lazy_load'] ? 'display:none' : '' ); ?>" tabindex="0" id="lazy-load-details" class="sui-toggle-content sui-border-frame">
+								<div style="<?php echo( ! $settings['enable_lazy_load'] ? 'display:none' : '' ); ?>" tabindex="0" id="lazy-load-details">
+									<div class="sui-border-frame">
+										<div class="sui-form-field">
+											<div class="sui-row">
+												<label for="lazy_load_post_content" class="sui-checkbox">
 
-									<div class="sui-form-field">
-										<div class="sui-row">
-											<label for="lazy_load_post_content" class="sui-checkbox">
-
-												<input
+													<input
 														type="checkbox"
 														id="lazy_load_post_content"
 														name="lazy_load_post_content"
 														value="1"
-													<?php checked( 1, $settings['lazy_load_post_content'] ); ?>
-												>
+														<?php checked( 1, $settings['lazy_load_post_content'] ); ?>
+													>
 
-												<span aria-hidden="true"></span>
-												<span id="lazy_load_post_content_label"><?php esc_html_e( 'Enable for post content.', 'powered-cache' ); ?></span>
-											</label>
-										</div>
+													<span aria-hidden="true"></span>
+													<span id="lazy_load_post_content_label"><?php esc_html_e( 'Enable for post content.', 'powered-cache' ); ?></span>
+												</label>
+											</div>
 
-										<div class="sui-row">
-											<label for="lazy_load_images" class="sui-checkbox">
+											<div class="sui-row">
+												<label for="lazy_load_images" class="sui-checkbox">
 
-												<input
+													<input
 														type="checkbox"
 														id="lazy_load_images"
 														name="lazy_load_images"
 														value="1"
-													<?php checked( 1, $settings['lazy_load_images'] ); ?>
-												>
+														<?php checked( 1, $settings['lazy_load_images'] ); ?>
+													>
 
-												<span aria-hidden="true"></span>
-												<span id="lazy_load_images_label"><?php esc_html_e( 'Enable for images.', 'powered-cache' ); ?></span>
-											</label>
-										</div>
+													<span aria-hidden="true"></span>
+													<span id="lazy_load_images_label"><?php esc_html_e( 'Enable for images.', 'powered-cache' ); ?></span>
+												</label>
+											</div>
 
-										<div class="sui-row">
-											<label for="lazy_load_iframes" class="sui-checkbox">
+											<div class="sui-row">
+												<label for="lazy_load_iframes" class="sui-checkbox">
 
-												<input
+													<input
 														type="checkbox"
 														id="lazy_load_iframes"
 														name="lazy_load_iframes"
 														value="1"
-													<?php checked( 1, $settings['lazy_load_iframes'] ); ?>
-												>
+														<?php checked( 1, $settings['lazy_load_iframes'] ); ?>
+													>
 
-												<span aria-hidden="true"></span>
-												<span id="lazy_load_iframes_label"><?php esc_html_e( 'Enable for iframes.', 'powered-cache' ); ?></span>
-											</label>
-										</div>
-										<div class="sui-row">
-											<label for="lazy_load_widgets" class="sui-checkbox">
+													<span aria-hidden="true"></span>
+													<span id="lazy_load_iframes_label"><?php esc_html_e( 'Enable for iframes.', 'powered-cache' ); ?></span>
+												</label>
+											</div>
+											<div class="sui-row">
+												<label for="lazy_load_widgets" class="sui-checkbox">
 
-												<input
+													<input
 														type="checkbox"
 														id="lazy_load_widgets"
 														name="lazy_load_widgets"
 														value="1"
-													<?php checked( 1, $settings['lazy_load_widgets'] ); ?>
-												>
+														<?php checked( 1, $settings['lazy_load_widgets'] ); ?>
+													>
 
-												<span aria-hidden="true"></span>
-												<span id="lazy_load_widgets_label"><?php esc_html_e( 'Enable for widgets.', 'powered-cache' ); ?></span>
-											</label>
-										</div>
-										<div class="sui-row">
-											<label for="lazy_load_post_thumbnail" class="sui-checkbox">
+													<span aria-hidden="true"></span>
+													<span id="lazy_load_widgets_label"><?php esc_html_e( 'Enable for widgets.', 'powered-cache' ); ?></span>
+												</label>
+											</div>
+											<div class="sui-row">
+												<label for="lazy_load_post_thumbnail" class="sui-checkbox">
 
-												<input
+													<input
 														type="checkbox"
 														id="lazy_load_post_thumbnail"
 														name="lazy_load_post_thumbnail"
 														value="1"
-													<?php checked( 1, $settings['lazy_load_post_thumbnail'] ); ?>
-												>
+														<?php checked( 1, $settings['lazy_load_post_thumbnail'] ); ?>
+													>
 
-												<span aria-hidden="true"></span>
-												<span id="lazy_load_post_thumbnail_label"><?php esc_html_e( 'Enable for post thumbnails.', 'powered-cache' ); ?></span>
-											</label>
-										</div>
-										<div class="sui-row">
-											<label for="lazy_load_avatars" class="sui-checkbox">
+													<span aria-hidden="true"></span>
+													<span id="lazy_load_post_thumbnail_label"><?php esc_html_e( 'Enable for post thumbnails.', 'powered-cache' ); ?></span>
+												</label>
+											</div>
+											<div class="sui-row">
+												<label for="lazy_load_avatars" class="sui-checkbox">
 
-												<input
+													<input
 														type="checkbox"
 														id="lazy_load_avatars"
 														name="lazy_load_avatars"
 														value="1"
-													<?php checked( 1, $settings['lazy_load_avatars'] ); ?>
-												>
+														<?php checked( 1, $settings['lazy_load_avatars'] ); ?>
+													>
 
-												<span aria-hidden="true"></span>
-												<span id="lazy_load_avatars_label"><?php esc_html_e( 'Enable for avatars.', 'powered-cache' ); ?></span>
-											</label>
+													<span aria-hidden="true"></span>
+													<span id="lazy_load_avatars_label"><?php esc_html_e( 'Enable for avatars.', 'powered-cache' ); ?></span>
+												</label>
+											</div>
 										</div>
 									</div>
+									<div class="sui-border-frame">
 
+										<div class="sui-form-field">
+											<label for="lazy_load_skip_first_nth_img" id="lazy_load_skip_first_nth_img-label">
+												<?php esc_html_e( 'Lazy Load from nth image', 'powered-cache' ); ?>
+											</label>
+											<input
+												name="lazy_load_skip_first_nth_img"
+												value="<?php echo absint( $settings['lazy_load_skip_first_nth_img'] ); ?>"
+												id="lazy_load_skip_first_nth_img"
+												class="sui-form-control sui-field-has-suffix"
+												type="number"
+												min="0"
+												max="30"
+											/>
+											<div class="sui-description">
+												<?php esc_html_e( 'Do not lazy load the first X images. This value can be modified to prevent the lazy loading of above-the-fold images, which otherwise could negatively affect the Largest Contentful Paint (LCP).', 'powered-cache' ); ?>
+											</div>
+										</div>
+									</div>
 								</div>
 
 								<div class="sui-row">

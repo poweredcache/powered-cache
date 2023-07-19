@@ -125,8 +125,27 @@ class LazyLoad {
 		 */
 		$threshold = apply_filters( 'powered_cache_lazy_load_threshold', 200 );
 
-		if ( 200 !== (int) $threshold ) {
-			wp_localize_script( 'PCLL', 'PCLL_options', array( 'threshold' => $threshold ) );
+		/**
+		 * Filters the count of images that skipped from lazyload.
+		 *
+		 * @hook   powered_cache_lazy_load_skip_first_nth_img
+		 *
+		 * @param  {int} $immediate_load_count Default image count
+		 *
+		 * @return {int} New value
+		 * @since  3.1
+		 */
+		$immediate_load_count = apply_filters( 'powered_cache_lazy_load_skip_first_nth_img', $this->settings['lazy_load_skip_first_nth_img'] );
+
+		if ( 200 !== (int) $threshold || 3 !== (int) $immediate_load_count ) {
+			wp_localize_script(
+				'PCLL',
+				'PCLL_options',
+				[
+					'threshold'            => $threshold,
+					'immediate_load_count' => $immediate_load_count,
+				]
+			);
 		}
 	}
 
