@@ -2,8 +2,8 @@
 Contributors:  poweredcache, wphandle, m_uysl
 Tags: cache, caching, web vitals, performance, fastest, page speed, optimization, cdn, object cache, minify, powered cache
 Requires at least:  5.7
-Tested up to:  6.2
-Stable tag:  3.0.5
+Tested up to:  6.3
+Stable tag:  3.1
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -169,6 +169,15 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 3.1 (July 20, 2023) =
+- Moved the image optimizer from beta to the stable release. [Learn More] (https://poweredcache.com/features/image-optimizer/)
+- New Feature: Introduced the ability to bypass the first nth images with lazy load.
+- General enhancements made to the Lazy Load feature.
+- Resolved: Deprecated jQuery functions.
+- Updated: Minify package.
+- Updated: Background processing package.
+- Tested with WP 6.3.
 
 = 3.0.5 (May 30, 2023) =
 - Fix: PhastPress cache purge callback
