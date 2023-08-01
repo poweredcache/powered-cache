@@ -1043,7 +1043,7 @@ $settings = \PoweredCache\Utils\get_settings();
 									>
 									<span class="sui-toggle-slider" aria-hidden="true"></span>
 									<span id="enable_image_optimization_label" class="sui-toggle-label"><?php esc_html_e( 'Enable Image Optimization Service', 'powered-cache' ); ?></span>
-									<span id="enable_image_optimization_description" class="sui-description"><?php esc_html_e( 'Powered Cache image optimization service instantly optimizes images from our global network of servers. The images will be served in WebP format when browsers support the WebP.', 'powered-cache' ); ?>
+									<span id="enable_image_optimization_description" class="sui-description"><?php esc_html_e( "Our image optimization service instantly optimizes images from our global network of servers. Images will be served in the AVIF format when supported by the user's browser. If AVIF is not supported, the WebP format will be used as a fallback, ensuring efficient loading and high-quality visuals.", 'powered-cache' ); ?>
 										(<a href="<?php echo esc_url( get_doc_url( '/image-optimization/' ) ); ?>" target="_blank">?</a>)
 									</span>
 								</label>
