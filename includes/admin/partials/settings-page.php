@@ -360,7 +360,7 @@ $settings = \PoweredCache\Utils\get_settings();
 										><?php echo esc_textarea( $settings['rejected_user_agents'] ); ?></textarea>
 										<span id="rejected_user_agents_description" class="sui-description">
 											<?php esc_html_e( 'Never send cached results for these user agents.', 'powered-cache' ); ?>
-											(<a href="<?php echo esc_url( get_doc_url( '/advanced-options/', 'rejected-user-agents' ) ); ?>" target="_blank">?</a>)
+											<a href="<?php echo esc_url( get_doc_url( '/advanced-options/', 'rejected-user-agents' ) ); ?>" target="_blank">(?)</a>
 										</span>
 									</div>
 								</div>
@@ -389,7 +389,7 @@ $settings = \PoweredCache\Utils\get_settings();
 												rows="5"
 										><?php echo esc_textarea( $settings['rejected_cookies'] ); ?></textarea>
 										<span id="rejected_cookies_description" class="sui-description"><?php esc_html_e( 'Never cache pages that use the specified cookies.', 'powered-cache' ); ?>
-											(<a href="<?php echo esc_url( get_doc_url( '/advanced-options/', 'rejected-cookies' ) ); ?>" target="_blank">?</a>)
+											<a href="<?php echo esc_url( get_doc_url( '/advanced-options/', 'rejected-cookies' ) ); ?>" target="_blank">(?)</a>
 										</span>
 									</div>
 								</div>
@@ -418,7 +418,7 @@ $settings = \PoweredCache\Utils\get_settings();
 												rows="5"
 										><?php echo esc_textarea( $settings['vary_cookies'] ); ?></textarea>
 										<span id="vary_cookies_description" class="sui-description"><?php esc_html_e( 'Separate cache will be generated based on the cookie match.', 'powered-cache' ); ?>
-											(<a href="<?php echo esc_url( get_doc_url( '/advanced-options/', 'vary-cookies' ) ); ?>" target="_blank">?</a>)
+											<a href="<?php echo esc_url( get_doc_url( '/advanced-options/', 'vary-cookies' ) ); ?>" target="_blank">(?)</a>
 										</span>
 									</div>
 								</div>
@@ -447,7 +447,7 @@ $settings = \PoweredCache\Utils\get_settings();
 												rows="5"
 										><?php echo esc_textarea( $settings['rejected_uri'] ); ?></textarea>
 										<span id="rejected_uri_description" class="sui-description"><?php esc_html_e( 'Ignore the specified pages / directories. Supports regex.', 'powered-cache' ); ?>
-											(<a href="<?php echo esc_url( get_doc_url( '/advanced-options/', 'ignored-pages' ) ); ?>" target="_blank">?</a>)
+											<a href="<?php echo esc_url( get_doc_url( '/advanced-options/', 'ignored-pages' ) ); ?>" target="_blank">(?)</a>
 										</span>
 									</div>
 								</div>
@@ -474,7 +474,7 @@ $settings = \PoweredCache\Utils\get_settings();
 										><?php echo esc_textarea( $settings['cache_query_strings'] ); ?></textarea>
 										<span id="cache_query_strings_description" class="sui-description">
 											<?php esc_html_e( 'Powered Cache will create seperate caching file for the value of these query strings.', 'powered-cache' ); ?>
-											(<a href="<?php echo esc_url( get_doc_url( '/advanced-options/', 'cache-query-strings' ) ); ?>" target="_blank">?</a>)
+											<a href="<?php echo esc_url( get_doc_url( '/advanced-options/', 'cache-query-strings' ) ); ?>" target="_blank">(?)</a>
 										</span>
 									</div>
 								</div>
@@ -502,7 +502,7 @@ $settings = \PoweredCache\Utils\get_settings();
 										><?php echo esc_textarea( $settings['ignored_query_strings'] ); ?></textarea>
 										<span id="ignored_query_strings_description" class="sui-description">
 											<?php esc_html_e( 'Powered Cache will ignore these query string and serve the standard cache file. Tracking parameters such as utm_* ignored by default.', 'powered-cache' ); ?>
-											(<a href="<?php echo esc_url( get_doc_url( '/advanced-options/', 'ignored-query-strings' ) ); ?>" target="_blank">?</a>)
+											<a href="<?php echo esc_url( get_doc_url( '/advanced-options/', 'ignored-query-strings' ) ); ?>" target="_blank">(?)</a>
 										</span>
 									</div>
 								</div>
@@ -531,7 +531,7 @@ $settings = \PoweredCache\Utils\get_settings();
 										><?php echo esc_textarea( $settings['purge_additional_pages'] ); ?></textarea>
 										<span id="purge_additional_pages_description" class="sui-description">
 											<?php esc_html_e( 'Powered Cache is smart enough to purge only necessary pages during the post changes, however sometimes particular pages need to purge. (eg. the pages that use custom shortcode)', 'powered-cache' ); ?>
-											(<a href="<?php echo esc_url( get_doc_url( '/advanced-options/', 'purge-additional-pages' ) ); ?>" target="_blank">?</a>)
+											<a href="<?php echo esc_url( get_doc_url( '/advanced-options/', 'purge-additional-pages' ) ); ?>" target="_blank">(?)</a>
 										</span>
 									</div>
 								</div>
@@ -606,7 +606,7 @@ $settings = \PoweredCache\Utils\get_settings();
 									<span id="combine_google_fonts_label" class="sui-toggle-label"><?php esc_html_e( 'Combine Google Fonts', 'powered-cache' ); ?></span>
 									<span id="combine-google-fonts-description" class="sui-description">
 										<?php esc_html_e( 'Combines all Google Fonts URLs into a single URL and optimizes loading of that URL.', 'powered-cache' ); ?>
-										(<a href="<?php echo esc_url( get_doc_url( '/combine-google-fonts/' ) ); ?>" target="_blank">?</a>)
+										<a href="<?php echo esc_url( get_doc_url( '/combine-google-fonts/' ) ); ?>" target="_blank">(?)</a>
 									</span>
 								</label>
 							</div>
@@ -653,7 +653,7 @@ $settings = \PoweredCache\Utils\get_settings();
 					<div class="<?php echo esc_attr( apply_filters( 'powered_cache_admin_page_fo_css_classes', 'sui-box-settings-row ' ) ); ?>">
 						<div class="sui-box-settings-col-1">
 							<span class="sui-settings-label"><?php esc_html_e( 'CSS Optimization', 'powered-cache' ); ?>
-								(<a href="<?php echo esc_url( get_doc_url( '/css-optimization/' ) ); ?>" target="_blank">?</a>)
+								<a href="<?php echo esc_url( get_doc_url( '/css-optimization/' ) ); ?>" target="_blank">(?)</a>
 							</span>
 						</div>
 
@@ -717,7 +717,7 @@ $settings = \PoweredCache\Utils\get_settings();
 						<div class="<?php echo esc_attr( apply_filters( 'powered_cache_admin_page_fo_critical_css_classes', 'sui-box-settings-row ' ) ); ?> <?php echo( ! is_premium() ? 'sui-disabled' : '' ); ?>">
 							<div class="sui-box-settings-col-1">
 								<span class="sui-settings-label"><?php esc_html_e( 'Critical CSS', 'powered-cache' ); ?>
-									(<a href="<?php echo esc_url( get_doc_url( '/critical-css/' ) ); ?>" target="_blank">?</a>)
+									<a href="<?php echo esc_url( get_doc_url( '/critical-css/' ) ); ?>" target="_blank">(?)</a>
 									<?php if ( ! is_premium() ) : ?>
 										<span class="sui-tag sui-tag-pro"><?php esc_html_e( 'Premium', 'powered-cache' ); ?></span>
 									<?php endif; ?>
@@ -827,7 +827,7 @@ $settings = \PoweredCache\Utils\get_settings();
 					<div class="<?php echo esc_attr( apply_filters( 'powered_cache_admin_page_fo_ucss_classes', 'sui-box-settings-row ' ) ); ?> <?php echo( ! is_premium() ? 'sui-disabled' : '' ); ?>">
 						<div class="sui-box-settings-col-1">
 							<span class="sui-settings-label"><?php esc_html_e( 'Unused CSS', 'powered-cache' ); ?>
-								(<a href="<?php echo esc_url( get_doc_url( '/remove-unused-css/' ) ); ?>" target="_blank">?</a>)
+								<a href="<?php echo esc_url( get_doc_url( '/remove-unused-css/' ) ); ?>" target="_blank">(?)</a>
 								<?php if ( ! is_premium() ) : ?>
 									<span class="sui-tag sui-tag-pro"><?php esc_html_e( 'Premium', 'powered-cache' ); ?></span>
 								<?php endif; ?>
@@ -900,7 +900,7 @@ $settings = \PoweredCache\Utils\get_settings();
 					<div class="<?php echo esc_attr( apply_filters( 'powered_cache_admin_page_fo_js_classes', 'sui-box-settings-row ' ) ); ?>">
 						<div class="sui-box-settings-col-1">
 							<span class="sui-settings-label"><?php esc_html_e( 'JavaScript Optimization', 'powered-cache' ); ?>
-								(<a href="<?php echo esc_url( get_doc_url( '/js-optimization/' ) ); ?>" target="_blank">?</a>)
+								<a href="<?php echo esc_url( get_doc_url( '/js-optimization/' ) ); ?>" target="_blank">(?)</a>
 							</span>
 						</div>
 
@@ -965,7 +965,7 @@ $settings = \PoweredCache\Utils\get_settings();
 						<div class="sui-box-settings-col-1">
 							<span class="sui-settings-label" id="js_execution_method_label">
 								<?php esc_html_e( 'JavaScript Execution', 'powered-cache' ); ?>
-								(<a href="<?php echo esc_url( get_doc_url( '/js-execution/' ) ); ?>" target="_blank">?</a>)
+								<a href="<?php echo esc_url( get_doc_url( '/js-execution/' ) ); ?>" target="_blank">(?)</a>
 							</span>
 							<span class="sui-description"></span>
 						</div>
@@ -1044,7 +1044,7 @@ $settings = \PoweredCache\Utils\get_settings();
 									<span class="sui-toggle-slider" aria-hidden="true"></span>
 									<span id="enable_image_optimization_label" class="sui-toggle-label"><?php esc_html_e( 'Enable Image Optimization Service', 'powered-cache' ); ?></span>
 									<span id="enable_image_optimization_description" class="sui-description"><?php esc_html_e( "Our image optimization service instantly optimizes images from our global network of servers. Images will be served in the AVIF format when supported by the user's browser. If AVIF is not supported, the WebP format will be used as a fallback, ensuring efficient loading and high-quality visuals.", 'powered-cache' ); ?>
-										(<a href="<?php echo esc_url( get_doc_url( '/image-optimization/' ) ); ?>" target="_blank">?</a>)
+										<a href="<?php echo esc_url( get_doc_url( '/image-optimization/' ) ); ?>" target="_blank">(?)</a>
 									</span>
 								</label>
 							</div>
@@ -1059,7 +1059,7 @@ $settings = \PoweredCache\Utils\get_settings();
 							<span class="sui-settings-label"><?php esc_html_e( 'Lazy Load', 'powered-cache' ); ?></span>
 							<span class="sui-description">
 								<?php esc_html_e( 'Loads images and iframes only when visible to the user.', 'powered-cache' ); ?>
-								(<a href="<?php echo esc_url( get_doc_url( '/enable-lazy-load/' ) ); ?>" target="_blank">?</a>)
+								<a href="<?php echo esc_url( get_doc_url( '/enable-lazy-load/' ) ); ?>" target="_blank">(?)</a>
 							</span>
 						</div>
 
@@ -1242,7 +1242,7 @@ $settings = \PoweredCache\Utils\get_settings();
 									<span class="sui-toggle-slider" aria-hidden="true"></span>
 									<span id="disable_wp_embeds_label" class="sui-toggle-label"><?php esc_html_e( 'Disable WordPress Embeds', 'powered-cache' ); ?></span>
 									<span id="disable_wp_embeds_description" class="sui-description"><?php esc_html_e( 'Disables embedding posts from WordPress-based websites (including your own) which converts URLs into heavy iframes.', 'powered-cache' ); ?>
-										(<a href="<?php echo esc_url( get_doc_url( '/disable-wordpress-embeds/' ) ); ?>" target="_blank">?</a>)
+										<a href="<?php echo esc_url( get_doc_url( '/disable-wordpress-embeds/' ) ); ?>" target="_blank">(?)</a>
 									</span>
 								</label>
 							</div>
@@ -1272,7 +1272,7 @@ $settings = \PoweredCache\Utils\get_settings();
 									<span id="disable_emoji_scripts_label" class="sui-toggle-label"><?php esc_html_e( 'Remove Emoji Scripts', 'powered-cache' ); ?></span>
 									<span id="disable_emoji_scripts_description" class="sui-description">
 										<?php esc_html_e( 'Removes the unnecessary emoji scripts from your website front-end. Doesn\'t remove emojis, don\'t worry.', 'powered-cache' ); ?>
-										(<a href="<?php echo esc_url( get_doc_url( '/remove-emoji-scripts/' ) ); ?>" target="_blank">?</a>)
+										<a href="<?php echo esc_url( get_doc_url( '/remove-emoji-scripts/' ) ); ?>" target="_blank">(?)</a>
 									</span>
 								</label>
 							</div>
@@ -1319,7 +1319,8 @@ $settings = \PoweredCache\Utils\get_settings();
 									<span class="sui-toggle-slider" aria-hidden="true"></span>
 									<span id="enable_cdn_label" class="sui-toggle-label"><?php esc_html_e( 'Enable CDN Integration', 'powered-cache' ); ?></span>
 									<span id="enable_cdn_description" class="sui-description"><?php esc_html_e( 'Please make sure that your CDN is properly setup before enabling this feature ', 'powered-cache' ); ?>
-										<a href="<?php echo esc_url( get_doc_url( '/cdn-integration/' ) ); ?>" target="_blank">(?)</a></span>
+										<a href="<?php echo esc_url( get_doc_url( '/cdn-integration/' ) ); ?>" target="_blank">(?)</a>
+									</span>
 								</label>
 							</div>
 						</div>
@@ -1435,7 +1436,7 @@ $settings = \PoweredCache\Utils\get_settings();
 							<span class="sui-settings-label"><?php esc_html_e( 'Cache Preload', 'powered-cache' ); ?></span>
 							<span class="sui-description">
 								<?php esc_html_e( 'Preloading will visit pages based on the settings and generate cache, just like any other visitor to the site.', 'powered-cache' ); ?>
-								(<a href="<?php echo esc_url( get_doc_url( '/enable-preloading/' ) ); ?>" target="_blank">?</a>)
+								<a href="<?php echo esc_url( get_doc_url( '/enable-preloading/' ) ); ?>" target="_blank">(?)</a>
 							</span>
 						</div>
 
@@ -1568,7 +1569,7 @@ $settings = \PoweredCache\Utils\get_settings();
 											><?php echo esc_textarea( $settings['preload_sitemap'] ); ?></textarea>
 											<span id="preload_sitemap_description" class="sui-description">
 												<?php esc_html_e( 'Preload the urls in listed sitemaps.', 'powered-cache' ); ?>
-												(<a href="<?php echo esc_url( get_doc_url( '/sitemap-preloading/' ) ); ?>" target="_blank">?</a>)
+												<a href="<?php echo esc_url( get_doc_url( '/sitemap-preloading/' ) ); ?>" target="_blank">(?)</a>
 											</span>
 										</div>
 
@@ -1600,7 +1601,7 @@ $settings = \PoweredCache\Utils\get_settings();
 										><?php echo esc_textarea( $settings['prefetch_dns'] ); ?></textarea>
 										<span id="prefetch_dns_description" class="sui-description">
 											<?php esc_html_e( 'DNS-prefetch would reduce DNS lookup time.', 'powered-cache' ); ?>
-											(<a href="<?php echo esc_url( get_doc_url( '/prefetch-dns/' ) ); ?>" target="_blank">?</a>)
+											<a href="<?php echo esc_url( get_doc_url( '/prefetch-dns/' ) ); ?>" target="_blank">(?)</a>
 										</span>
 									</div>
 								</div>
@@ -1629,7 +1630,7 @@ $settings = \PoweredCache\Utils\get_settings();
 										><?php echo esc_textarea( $settings['preconnect_resource'] ); ?></textarea>
 										<span id="preconnect_resource_description" class="sui-description">
 											<?php esc_html_e( 'The preconnect hint is best used for only the most critical connections.', 'powered-cache' ); ?>
-											(<a href="<?php echo esc_url( get_doc_url( '/preconnect-resources/' ) ); ?>" target="_blank">?</a>)
+											<a href="<?php echo esc_url( get_doc_url( '/preconnect-resources/' ) ); ?>" target="_blank">(?)</a>
 										</span>
 									</div>
 								</div>
