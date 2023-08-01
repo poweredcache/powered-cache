@@ -3,7 +3,7 @@ Contributors:  poweredcache, wphandle, m_uysl
 Tags: cache, caching, web vitals, performance, fastest, page speed, optimization, cdn, object cache, minify, powered cache
 Requires at least:  5.7
 Tested up to:  6.3
-Stable tag:  3.1
+Stable tag:  3.1.1
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -74,7 +74,7 @@ Here is a list of the amazing features included in Powered Cache Premium:
 
 - Critical CSS & Load CSS Asynchronously.
 - Remove Unused CSS. Intelligently scans your pages to identify and remove any CSS rules that aren't being used.
-- Image Optimizer. On the fly Image Compression and WebP conversion.
+- Image Optimizer. On the fly Image Compression with AVIF/WebP conversion.
 - Sitemap Preloading.
 - Scheduled Database cleanups.
 - Varnish extension.
@@ -169,6 +169,9 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 3.1.1 (August 1, 2023) =
+- Added some clarifications about AVIF support
 
 = 3.1 (July 20, 2023) =
 - Moved the image optimizer from beta to the stable release. [Learn More] (https://poweredcache.com/features/image-optimizer/)
