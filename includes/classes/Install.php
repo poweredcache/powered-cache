@@ -130,6 +130,10 @@ class Install {
 
 		$settings = \PoweredCache\Utils\get_settings( $network_wide );
 
+		if ( empty( $settings['accepted_query_strings'] ) ) {
+			return;
+		}
+
 		$settings['ignored_query_strings'] = $settings['accepted_query_strings'];
 		unset( $settings['accepted_query_strings'] );
 
