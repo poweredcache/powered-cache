@@ -689,7 +689,7 @@ class FileOptimizer {
 					$new_script = preg_replace( '/<script([^>]*)>/', '<script data-type="lazy"$1>', $new_script );
 				} else {
 					$new_content = 'data:text/javascript;base64,' . base64_encode( $content ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
-					$new_script  = preg_replace( '/<script([^>]*)>/', "<script data-src=\"$new_content\" data-type=\"lazy\"$1>", $new_script ); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+					$new_script  = preg_replace( '/<script([^>]*)>/', "<script data-src=\"$new_content\" $1>", $new_script ); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 					$new_script  = preg_replace( '/<script([^>]*)>(.*?)<\/script>/si', '<script data-type="lazy"$1></script>', $new_script );
 				}
 
@@ -712,10 +712,10 @@ class FileOptimizer {
 		 * @return {int} New value.
 		 * @since  3.0
 		 */
-		$delay_timeout = apply_filters( 'powered_cache_delayed_js_timeout', 5000 );
+		$delay_timeout = apply_filters( 'powered_cache_delayed_js_timeout', 0 );
 
 		$html .= '<script id="powered-cache-delayed-js">';
-		$html .= 'const scriptLoader={loadDelay:' . absint( $delay_timeout ) . ',loadTimer:null,userInteractionEvents:["mouseover","click","keydown","wheel","touchmove","touchstart"],init(){for(const e of this.userInteractionEvents)window.addEventListener(e,this.triggerLoader,{passive:!0});this.loadTimer=setTimeout(this.loadScripts,this.loadDelay)},triggerLoader(){scriptLoader.loadScripts(),clearTimeout(scriptLoader.loadTimer);for(const e of scriptLoader.userInteractionEvents)window.removeEventListener(e,scriptLoader.triggerLoader,{passive:!0})},loadScripts(){document.querySelectorAll("script[data-type=\'lazy\']").forEach((e=>{e.setAttribute("src",e.getAttribute("data-src"))})),console.log("Script(s) loaded with delay")}};scriptLoader.init();';
+		$html .= 'class PCScriptLoader{constructor(e){this.loadDelay=e,this.loadTimer=null,this.scriptsLoaded=false,this.triggerEvents=["mouseover","click","keydown","wheel","touchmove","touchstart","touchend"],this.userEventHandler=this.triggerLoader.bind(this),this.init()}init(){const e=this;for(const t of this.triggerEvents)window.addEventListener(t,this.userEventHandler,{passive:!0});this.loadDelay>0&&(this.loadTimer=setTimeout(()=>{e.loadScripts()},this.loadDelay))}triggerLoader(){if(this.scriptsLoaded)return;this.loadScripts(),clearTimeout(this.loadTimer);for(const e of this.triggerEvents)window.removeEventListener(e,this.userEventHandler,{passive:!0})}loadScripts(){this.scriptsLoaded=true;document.querySelectorAll("script[data-type=\'lazy\']").forEach(e=>{e.setAttribute("src",e.getAttribute("data-src")),e.removeAttribute("data-src"),e.setAttribute("data-lazy-loaded","true")}),console.log("Script(s) loaded with delay or interaction")}}const pcScriptLoader=new PCScriptLoader(' . absint( $delay_timeout ) . ');';
 		$html .= '</script>';
 
 		return $html;
