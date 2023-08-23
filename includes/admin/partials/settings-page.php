@@ -407,7 +407,7 @@ $settings = \PoweredCache\Utils\get_settings();
 							<div class="sui-row">
 								<div class="sui-col-md-8">
 									<div class="sui-form-field">
-										<label for="vary_cookies" class="sui-label"><i><?php esc_html_e( 'Enter vary cookies (one per line)', 'powered-cache' ); ?></i></label>
+										<label for="vary_cookies" id="vary_cookies_label" class="sui-label"><i><?php esc_html_e( 'Enter vary cookies (one per line)', 'powered-cache' ); ?></i></label>
 										<textarea
 												placeholder="(Eg: cookie_notice_accepted)"
 												id="vary_cookies"
@@ -700,7 +700,6 @@ $settings = \PoweredCache\Utils\get_settings();
 												id="excluded_css_files"
 												name="excluded_css_files"
 												class="sui-form-control"
-												aria-labelledby="label-unique-id"
 												aria-describedby="excluded_css_files_description"
 												rows="5"
 										><?php echo esc_textarea( $settings['excluded_css_files'] ); ?></textarea>
@@ -748,12 +747,11 @@ $settings = \PoweredCache\Utils\get_settings();
 								<div class="sui-row">
 									<div class="sui-col-md-8">
 										<div class="sui-form-field">
-											<label for="additional_critical_css_files" class="sui-label"><i><?php esc_html_e( 'Additonal files to critical (one per line)', 'powered-cache' ); ?></i></label>
+											<label for="critical_css_additional_files" class="sui-label"><i><?php esc_html_e( 'Additonal files to critical (one per line)', 'powered-cache' ); ?></i></label>
 											<textarea
 													id="critical_css_additional_files"
 													name="critical_css_additional_files"
 													class="sui-form-control"
-													aria-labelledby="label-unique-id"
 													aria-describedby="critical_css_additional_files_description"
 													rows="5"
 											><?php echo  esc_textarea( $settings['critical_css_additional_files'] ); // phpcs:ignore ?></textarea>
@@ -771,7 +769,6 @@ $settings = \PoweredCache\Utils\get_settings();
 													id="critical_css_excluded_files"
 													name="critical_css_excluded_files"
 													class="sui-form-control"
-													aria-labelledby="label-unique-id"
 													aria-describedby="critical_css_excluded_files_description"
 													rows="5"
 											><?php echo esc_textarea( $settings['critical_css_excluded_files'] ); // phpcs:ignore ?></textarea>
@@ -789,7 +786,6 @@ $settings = \PoweredCache\Utils\get_settings();
 													id="critical_css_appended_content"
 													name="critical_css_appended_content"
 													class="sui-form-control"
-													aria-labelledby="label-unique-id"
 													aria-describedby="critical_css_appended_content_description"
 													rows="5"
 											><?php echo wp_unslash( sanitize_css( $settings['critical_css_appended_content'] ) ); // phpcs:ignore ?></textarea>
@@ -807,7 +803,6 @@ $settings = \PoweredCache\Utils\get_settings();
 													id="critical_css_fallback"
 													name="critical_css_fallback"
 													class="sui-form-control"
-													aria-labelledby="label-unique-id"
 													aria-describedby="critical_css_fallback_description"
 													rows="5"
 											><?php echo wp_unslash( sanitize_css( $settings['critical_css_fallback'] ) ); // phpcs:ignore ?></textarea>
@@ -862,7 +857,6 @@ $settings = \PoweredCache\Utils\get_settings();
 												id="ucss_safelist"
 												name="ucss_safelist"
 												class="sui-form-control"
-												aria-labelledby="label-unique-id"
 												aria-describedby="ucss_safelist_description"
 												rows="5"
 											><?php echo  esc_textarea( $settings['ucss_safelist'] ); // phpcs:ignore ?></textarea>
@@ -880,7 +874,6 @@ $settings = \PoweredCache\Utils\get_settings();
 												id="ucss_excluded_files"
 												name="ucss_excluded_files"
 												class="sui-form-control"
-												aria-labelledby="label-unique-id"
 												aria-describedby="ucss_excluded_files_description"
 												rows="5"
 											><?php echo  esc_textarea( $settings['ucss_excluded_files'] ); // phpcs:ignore ?></textarea>
@@ -947,7 +940,6 @@ $settings = \PoweredCache\Utils\get_settings();
 												id="excluded_js_files"
 												name="excluded_js_files"
 												class="sui-form-control"
-												aria-labelledby="label-unique-id"
 												aria-describedby="excluded_js_files_description"
 												rows="5"
 										><?php echo esc_textarea( $settings['excluded_js_files'] ); ?></textarea>
@@ -1378,11 +1370,11 @@ $settings = \PoweredCache\Utils\get_settings();
 
 								<?php foreach ( $settings['cdn_hostname'] as $key => $cdn ) : ?>
 									<div id="cdn-zone-<?php echo absint( $key ); ?>" class="cdn-zone sui-form-field">
-										<input id="cdn_hostname" value="<?php echo esc_attr( $cdn ); ?>" name="cdn_hostname[]" style="width: 300px" placeholder="cdn.example.org" class="cdn_hostname sui-form-control sui-input-md sui-field-has-suffix" aria-labelledby="label-unique-id">
+										<input id="cdn_hostname_<?php echo absint( $key ); ?>" value="<?php echo esc_attr( $cdn ); ?>" name="cdn_hostname[]" style="width: 300px" placeholder="cdn.example.org" class="cdn_hostname sui-form-control sui-input-md sui-field-has-suffix">
 										<span><?php esc_html_e( 'for', 'powered-cache' ); ?></span>
 										<span class="sui-field-suffix" style="width: 120px">
 											<div class="sui-form-field sui-input-md">
-												<select id="cdn_zone" name="cdn_zone[]" class="sui-form-control cdn_zone">
+												<select id="cdn_zone_<?php echo absint( $key ); ?>" name="cdn_zone[]" class="sui-form-control cdn_zone">
 													<?php foreach ( cdn_zones() as $zone => $zone_name ) : ?>
 														<option <?php selected( $settings['cdn_zone'][ $key ], $zone ); ?> value="<?php echo esc_attr( $zone ); ?>"><?php echo esc_attr( $zone_name ); ?></option>
 													<?php endforeach; ?>
@@ -1934,7 +1926,7 @@ $settings = \PoweredCache\Utils\get_settings();
 
 							<div class="sui-box-settings-col-2">
 								<div class="sui-form-field">
-									<label for="enable_scheduled_db_cleanup" class="sui-toggle">
+									<label for="enable_scheduled_db_cleanup" id="enable_scheduled_db_cleanup_label" class="sui-toggle">
 										<input
 												type="checkbox"
 												id="enable_scheduled_db_cleanup"
@@ -2155,7 +2147,7 @@ $settings = \PoweredCache\Utils\get_settings();
 										</label>
 									</div>
 									<div id="heartbeat-dashboard-interval-control" style="<?php echo( ! ( 'modify' === $settings['heartbeat_dashboard_status'] ) ? 'display:none' : '' ); ?>">
-										<label for="heartbeat-dashboard" id="heartbeat-dashboard-label" class="sui-label"><?php esc_html_e( 'Heartbeat Interval for Dashboard', 'powered-cache' ); ?></label>
+										<label for="heartbeat_dashboard_interval" id="heartbeat-dashboard-label" class="sui-label"><?php esc_html_e( 'Heartbeat Interval for Dashboard', 'powered-cache' ); ?></label>
 										<div class="sui-form-field">
 											<input
 													name="heartbeat_dashboard_interval"
@@ -2220,7 +2212,7 @@ $settings = \PoweredCache\Utils\get_settings();
 										</label>
 									</div>
 									<div id="heartbeat-editor-interval-control" style="<?php echo( ! ( 'modify' === $settings['heartbeat_editor_status'] ) ? 'display:none' : '' ); ?>">
-										<label for="heartbeat-editor" id="heartbeat-editor-label" class="sui-label"><?php esc_html_e( 'Heartbeat Interval for Post Editor', 'powered-cache' ); ?></label>
+										<label for="heartbeat_editor_interval" id="heartbeat-editor-label" class="sui-label"><?php esc_html_e( 'Heartbeat Interval for Post Editor', 'powered-cache' ); ?></label>
 										<div class="sui-form-field">
 											<input
 													name="heartbeat_editor_interval"
@@ -2283,7 +2275,7 @@ $settings = \PoweredCache\Utils\get_settings();
 									</div>
 
 									<div id="heartbeat-frontend-interval-control" style="<?php echo( ! ( 'modify' === $settings['heartbeat_frontend_status'] ) ? 'display:none' : '' ); ?>">
-										<label for="heartbeat-frontend" id="heartbeat-frontend-label" class="sui-label"><?php esc_html_e( 'Heartbeat Interval for Dashboard', 'powered-cache' ); ?></label>
+										<label for="heartbeat_frontend_interval" id="heartbeat-frontend-label" class="sui-label"><?php esc_html_e( 'Heartbeat Interval for Dashboard', 'powered-cache' ); ?></label>
 										<div class="sui-form-field">
 											<input
 													name="heartbeat_frontend_interval"
@@ -2382,7 +2374,7 @@ $settings = \PoweredCache\Utils\get_settings();
 								<?php endif; ?>
 								<div class="sui-actions-right">
 									<div class="sui-form-field">
-										<label for="enable_google_tracking" class="sui-toggle">
+										<label for="enable_google_tracking" id="enable_google_tracking_label" class="sui-toggle">
 											<input
 												<?php echo( ! is_premium() ? 'disabled="disabled"' : '' ); ?>
 													type="checkbox"
@@ -2492,7 +2484,7 @@ $settings = \PoweredCache\Utils\get_settings();
 
 						<div class="sui-box-settings-col-2">
 							<div class="sui-form-field">
-								<label for="cache_footprint" class="sui-toggle">
+								<label for="cache_footprint" id="cache_footprint_label" class="sui-toggle">
 									<input
 											type="checkbox"
 											id="cache_footprint"
@@ -2521,7 +2513,7 @@ $settings = \PoweredCache\Utils\get_settings();
 
 						<div class="sui-box-settings-col-2">
 							<div class="sui-form-field">
-								<label for="async_cache_cleaning" class="sui-toggle">
+								<label for="async_cache_cleaning" id="async_cache_cleaning_label" class="sui-toggle">
 									<input
 											type="checkbox"
 											id="async_cache_cleaning"
