@@ -85,6 +85,7 @@ function get_settings( $force_network_wide = false ) {
 		'js_execution_optimized_only'    => true,
 		// media optimization
 		'enable_image_optimization'      => false,
+		'add_missing_image_dimensions'   => false,
 		// lazyload
 		'enable_lazy_load'               => false,
 		'lazy_load_post_content'         => true,

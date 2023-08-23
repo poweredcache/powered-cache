@@ -306,6 +306,7 @@ function sanitize_options( $options ) {
 	$sanitized_options['lazy_load_avatars']             = ! empty( $options['lazy_load_avatars'] );
 	$sanitized_options['lazy_load_skip_first_nth_img']  = absint( $options['lazy_load_skip_first_nth_img'] );
 	$sanitized_options['disable_wp_lazy_load']          = ! empty( $options['disable_wp_lazy_load'] );
+	$sanitized_options['add_missing_image_dimensions']  = ! empty( $options['add_missing_image_dimensions'] );
 	$sanitized_options['disable_wp_embeds']             = ! empty( $options['disable_wp_embeds'] );
 	$sanitized_options['disable_emoji_scripts']         = ! empty( $options['disable_emoji_scripts'] );
 	$sanitized_options['enable_cdn']                    = ! empty( $options['enable_cdn'] );

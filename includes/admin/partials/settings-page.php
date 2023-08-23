@@ -1220,6 +1220,37 @@ $settings = \PoweredCache\Utils\get_settings();
 
 					</div>
 
+					<div class="sui-box-settings-row <?php echo( ! is_premium() ? 'sui-disabled' : '' ); ?>">
+						<div class="sui-box-settings-col-1">
+							<span class="sui-settings-label"><?php esc_html_e( 'Image Dimensions', 'powered-cache' ); ?>
+								<span class="sui-tag sui-tag-pro"><?php esc_html_e( 'Premium', 'powered-cache' ); ?></span>
+							</span>
+							<span class="sui-description"></span>
+						</div>
+
+						<div class="sui-box-settings-col-2">
+							<div class="sui-form-field">
+								<label for="add_missing_image_dimensions" class="sui-toggle">
+									<input
+										type="checkbox"
+										id="add_missing_image_dimensions"
+										name="add_missing_image_dimensions"
+										aria-labelledby="add_missing_image_dimensions_label"
+										aria-describedby="add_missing_image_dimensions_description"
+										value="1"
+										<?php checked( 1, $settings['add_missing_image_dimensions'] ); ?>
+										<?php echo( ! is_premium() ? 'disabled="disabled"' : '' ); ?>
+									>
+									<span class="sui-toggle-slider" aria-hidden="true"></span>
+									<span id="add_missing_image_dimensions_label" class="sui-toggle-label"><?php esc_html_e( 'Add missing image dimensions.', 'powered-cache' ); ?></span>
+									<span id="add_missing_image_dimensions_description" class="sui-description"><?php esc_html_e( 'Adds missing width and height attributes into images, potentially preventing layout shifts and enhancing the experience for your visitors.', 'powered-cache' ); ?>
+										<a href="<?php echo esc_url( get_doc_url( '/image-dimensions/' ) ); ?>" target="_blank">(?)</a>
+									</span>
+								</label>
+							</div>
+						</div>
+					</div>
+
 					<div class="sui-box-settings-row">
 
 						<div class="sui-box-settings-col-1">
