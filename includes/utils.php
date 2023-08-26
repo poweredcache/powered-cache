@@ -81,8 +81,12 @@ function get_settings( $force_network_wide = false ) {
 		'minify_js'                      => false,
 		'combine_js'                     => false,
 		'excluded_js_files'              => '',
-		'js_execution_method'            => 'blocking',
-		'js_execution_optimized_only'    => true,
+		'js_execution_method'            => 'blocking', // deprecated @since 3.2
+		'js_defer'                       => false,
+		'js_defer_exclusions'            => '',
+		'js_delay'                       => false,
+		'js_delay_exclusions'            => '',
+		'js_execution_optimized_only'    => true,   // deprecated @since 3.2
 		// media optimization
 		'enable_image_optimization'      => false,
 		'add_missing_image_dimensions'   => false,
@@ -351,6 +355,8 @@ function can_configure_object_cache() {
 
 /**
  * Supported js execution methods
+ *
+ * @depreacated since 3.2
  *
  * @return mixed|void
  */

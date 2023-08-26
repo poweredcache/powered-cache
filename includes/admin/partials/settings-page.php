@@ -15,7 +15,6 @@ use function PoweredCache\Utils\get_available_object_caches;
 use function PoweredCache\Utils\get_doc_url;
 use function PoweredCache\Utils\get_timeout_with_interval;
 use function PoweredCache\Utils\is_premium;
-use function PoweredCache\Utils\js_execution_methods;
 use function PoweredCache\Utils\sanitize_css;
 use function PoweredCache\Utils\scheduled_cleanup_frequency_options;
 
@@ -906,6 +905,7 @@ $settings = \PoweredCache\Utils\get_settings();
 											id="minify_js"
 											name="minify_js"
 											aria-labelledby="minify_js_label"
+											aria-controls="excluded_js_files_field"
 											value="1"
 										<?php checked( 1, $settings['minify_js'] ); ?>
 									>
@@ -918,79 +918,146 @@ $settings = \PoweredCache\Utils\get_settings();
 							<div class="sui-form-field">
 								<label for="combine_js" class="sui-toggle">
 									<input
-											type="checkbox"
-											id="combine_js"
-											name="combine_js"
-											aria-labelledby="combine_js_label"
-											value="1"
+										type="checkbox"
+										id="combine_js"
+										name="combine_js"
+										aria-labelledby="combine_js_label"
+										value="1"
 										<?php checked( 1, $settings['combine_js'] ); ?>
+										<?php disabled( false, ( $settings['minify_js'] && ! $settings['js_delay'] ) ); ?>
 									>
 									<span class="sui-toggle-slider" aria-hidden="true"></span>
 									<span id="combine_js_label" class="sui-toggle-label"><?php esc_html_e( 'Combine JavaScript Files', 'powered-cache' ); ?></span>
-									<span id="combine_js_description" class="sui-description"><?php esc_html_e( 'Combines JS files into fewer files to reduce HTTP requests.', 'powered-cache' ); ?></span>
+									<span id="combine_js_description" class="sui-description"><?php esc_html_e( 'Combines JS files into fewer files to reduce HTTP requests. If your site is using HTTP/2, it is not recommended to proceed with this option.', 'powered-cache' ); ?></span>
+									<div role="alert" class="sui-notice sui-notice-blue sui-active" aria-live="assertive" style="display: block;">
+										<div class="sui-notice-content">
+											<div class="sui-notice-message">
+												<span class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></span>
+												<p>
+													<?php esc_html_e( 'For compatibility reasons, this option will only work when delayed JavaScript execution is not activated and it requires minification to be enabled.', 'powered-cache' ); ?>
+												</p>
+											</div>
+										</div>
+									</div>
 								</label>
 							</div>
 
-							<div class="sui-row">
-								<div class="sui-col-md-8">
-									<div class="sui-form-field">
-										<label for="excluded_js_files" class="sui-label"><i><?php esc_html_e( 'JavaScript files to exclude (one per line)', 'powered-cache' ); ?></i></label>
+							<div style=" <?php echo( ! $settings['minify_js'] ? 'display:none' : '' ); ?>" class="sui-form-field" tabindex="0" id="excluded_js_files_field">
+								<div class="sui-row">
+									<div class="sui-col-md-8">
+										<label for="excluded_js_files" class="sui-label"><i><?php esc_html_e( 'Exclusions', 'powered-cache' ); ?></i></label>
 										<textarea
-												placeholder="e.g /wp-content/themes/example/js/custom.js"
-												id="excluded_js_files"
-												name="excluded_js_files"
-												class="sui-form-control"
-												aria-describedby="excluded_js_files_description"
-												rows="5"
+											placeholder="e.g /wp-content/themes/example/js/custom.js"
+											id="excluded_js_files"
+											name="excluded_js_files"
+											class="sui-form-control"
+											aria-describedby="excluded_js_files_description"
+											rows="5"
 										><?php echo esc_textarea( $settings['excluded_js_files'] ); ?></textarea>
 										<span id="excluded_js_files_description" class="sui-description">
-											<?php esc_html_e( 'Listed files will not get minified or combined', 'powered-cache' ); ?>
+											<?php esc_html_e( 'JavaScript files to exclude. Listed files will not get minified or combined (one per line).', 'powered-cache' ); ?>
+											<?php echo wp_kses_post( __( 'You can use <i>(.*)</i> for matching all files for a path.', 'powered-cache' ) ); ?>
+											<a href="<?php echo esc_url( get_doc_url( '/js-optimization/' ) ); ?>" target="_blank">(?)</a>
 										</span>
 									</div>
+								</div>
+							</div>
+
+							<div class="sui-form-field">
+								<label for="js_defer" class="sui-toggle">
+									<input
+										type="checkbox"
+										id="js_defer"
+										name="js_defer"
+										aria-labelledby="js_defer_label"
+										aria-controls="js_defer_exclusions_field"
+										value="1"
+										<?php checked( 1, $settings['js_defer'] ); ?>
+									>
+									<span class="sui-toggle-slider" aria-hidden="true"></span>
+									<span id="js_defer_label" class="sui-toggle-label"><?php esc_html_e( 'Load JavaScript deferred', 'powered-cache' ); ?></span>
+									<span id="js_defer_description" class="sui-description"><?php esc_html_e( 'Avoid render-blocking scripts by deferring them.', 'powered-cache' ); ?></span>
+								</label>
+							</div>
+
+							<div style=" <?php echo( ! $settings['js_defer'] ? 'display:none' : '' ); ?>" class="sui-form-field" tabindex="0" id="js_defer_exclusions_field">
+								<div class="sui-row">
+									<div class="sui-col-md-8">
+											<label for="js_defer_exclusions" class="sui-label"><i><?php esc_html_e( 'Exclusions', 'powered-cache' ); ?></i></label>
+											<textarea
+												placeholder="e.g /wp-content/plugins/example/js/(.*)"
+												id="js_defer_exclusions"
+												name="js_defer_exclusions"
+												class="sui-form-control"
+												aria-describedby="js_defer_exclusions_description"
+												rows="5"
+											><?php echo esc_textarea( $settings['js_defer_exclusions'] ); // phpcs:ignore ?></textarea>
+											<span id="js_defer_exclusions_description" class="sui-description">
+												<?php esc_html_e( 'Listed files will not get deferred (one per line).', 'powered-cache' ); ?>
+												<?php echo wp_kses_post( __( 'You can use <i>(.*)</i> for matching all files for a path.', 'powered-cache' ) ); ?>
+											</span>
+									</div>
+
+								</div>
+							</div>
+
+
+							<div class="sui-form-field">
+								<label for="js_delay" class="sui-toggle">
+									<input
+										type="checkbox"
+										id="js_delay"
+										name="js_delay"
+										aria-labelledby="js_delay_label"
+										aria-controls="js_delay_exclusions_field"
+										value="1"
+										<?php
+                                        checked( 1, $settings['js_delay'] );
+										?>
+									>
+									<span class="sui-toggle-slider" aria-hidden="true"></span>
+									<span id="js_delay_label" class="sui-toggle-label"><?php esc_html_e( 'Delay JavaScript execution', 'powered-cache' ); ?></span>
+									<span id="js_delay_description" class="sui-description"><?php esc_html_e( 'Execute scripts following user interactions such as mouse movements, keyboard inputs, or scrolling. This technique enhances the page\'s loading time and boosts overall performance.', 'powered-cache' ); ?></span>
+								</label>
+							</div>
+
+							<div class="sui-form-field" style=" <?php echo( ! $settings['js_delay'] ? 'display:none' : '' ); ?>" tabindex="0" id="js_delay_exclusions_field">
+								<div class="sui-row">
+									<div class="sui-col-md-8">
+											<label for="js_delay_exclusions" class="sui-label"><i><?php esc_html_e( 'Exclusions', 'powered-cache' ); ?></i></label>
+											<textarea
+												placeholder="e.g /wp-content/themes/example/js/(.*)"
+												id="js_delay_exclusions"
+												name="js_delay_exclusions"
+												class="sui-form-control"
+												aria-describedby="js_delay_exclusions_description"
+												rows="5"
+											><?php echo esc_textarea( $settings['js_delay_exclusions'] ); // phpcs:ignore ?></textarea>
+											<span id="js_delay_exclusions_description" class="sui-description">
+												<?php esc_html_e( 'Listed files will not get delayed (one per line).', 'powered-cache' ); ?>
+												<?php echo wp_kses_post( __( 'You can use <i>(.*)</i> for matching all files for a path.', 'powered-cache' ) ); ?>
+											</span>
+									</div>
+								</div>
+								<div class="sui-row">
+									<div class="sui-col-md-8">
+										<span for="js-delay-default-exclusions" class="sui-label"><i><?php esc_html_e( 'If you have problems after enabling delay JavaScript execution, you can copy-paste following exceptions and see if the problem resolved.', 'powered-cache' ); ?></i></span>
+										<pre class="sui-code-snippet" id="js-delay-default-exclusions">
+/wp-content(.*)
+/wp-includes(.*)
+js-(before|after|extra)</pre>
+									</div>
+									<span id="js_delay_exclusions_description" class="sui-description">
+										<?php esc_html_e( 'These rules will skip delays for JavaScript files loaded through WordPress core, themes, and plugins.', 'powered-cache' ); ?>
+										<a href="<?php echo esc_url( get_doc_url( '/js-execution/' ) ); ?>" target="_blank">(?)</a>
+									</span>
 								</div>
 							</div>
 
 						</div>
 					</div>
 
-					<div class="<?php echo esc_attr( apply_filters( 'powered_cache_admin_page_fo_js_classes', 'sui-box-settings-row ' ) ); ?>">
-						<div class="sui-box-settings-col-1">
-							<span class="sui-settings-label" id="js_execution_method_label">
-								<?php esc_html_e( 'JavaScript Execution', 'powered-cache' ); ?>
-								<a href="<?php echo esc_url( get_doc_url( '/js-execution/' ) ); ?>" target="_blank">(?)</a>
-							</span>
-							<span class="sui-description"></span>
-						</div>
-						<div class="sui-box-settings-col-2">
-							<div class="sui-form-field">
-								<select id="js_execution_method" name="js_execution_method" aria-labelledby="js_execution_method_label" aria-describedby="js_execution_method_description">
-									<?php foreach ( js_execution_methods() as $method => $name ) : ?>
-										<option <?php selected( $settings['js_execution_method'], esc_attr( $method ) ); ?> value="<?php echo esc_attr( $method ); ?>"><?php echo esc_attr( $name ); ?></option>
-									<?php endforeach; ?>
-								</select>
 
-								<span id="js_execution_method_description" class="sui-description"><?php esc_html_e( 'It determines how browsers execute the JS scripts.', 'powered-cache' ); ?></span>
-							</div>
-
-							<div class="sui-form-field">
-								<label for="js_execution_optimized_only" class="sui-toggle">
-									<input
-											type="checkbox"
-											id="js_execution_optimized_only"
-											name="js_execution_optimized_only"
-											aria-labelledby="js_execution_optimized_only_label"
-											value="1"
-										<?php checked( 1, $settings['js_execution_optimized_only'] ); ?>
-									>
-									<span class="sui-toggle-slider" aria-hidden="true"></span>
-									<span id="js_execution_optimized_only_label" class="sui-toggle-label"><?php esc_html_e( 'Use execution method for the optimized scripts only', 'powered-cache' ); ?></span>
-									<span id="js_execution_optimized_only_description" class="sui-description"><?php esc_html_e( 'When this option is turned off all JS scripts will be executed in the same way.', 'powered-cache' ); ?></span>
-								</label>
-							</div>
-
-						</div>
-
-					</div>
 				</div>
 
 				<div class="sui-box-footer">

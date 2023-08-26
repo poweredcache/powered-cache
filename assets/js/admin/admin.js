@@ -101,4 +101,32 @@ import './modules/modal';
 	$('#powered-cache-import-remove-file').on('click', function () {
 		$('#powered-cache-import-file-input').val('').trigger('change');
 	});
+
+	$('#js_execution_method').on('change', function (e) {
+		if ('blocking' !== $(this).val()) {
+			$('#js_execution_exclusions_field').show();
+		} else {
+			$('#js_execution_exclusions_field').hide();
+		}
+	});
+
+	$('#js_delay').on('change', function () {
+		if ($(this).is(':checked')) {
+			$('#combine_js').prop("checked", false).prop("disabled", true);
+		}else{
+			if( $('#minify_js').is(':checked') ){
+				$('#combine_js').prop("disabled", false);
+			}
+		}
+	});
+
+	$('#minify_js').on('change', function () {
+		if ($(this).is(':checked') && !$('#js_delay').is(':checked')) {
+			$('#combine_js').prop("disabled", false);
+		}else{
+			$('#combine_js').prop("disabled", true);
+		}
+	});
+
+
 })(jQuery);

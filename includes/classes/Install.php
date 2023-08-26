@@ -96,7 +96,8 @@ class Install {
 	public function maybe_upgrade_network_wide() {
 		if ( version_compare( get_site_option( DB_VERSION_OPTION_NAME ), POWERED_CACHE_DB_VERSION, '<' ) ) {
 			$this->upgrade_30( true );
-			\PoweredCache\Utils\log( sprintf( '[Networkwide] Upgrade DB version: %d', POWERED_CACHE_DB_VERSION ) );
+			$this->upgrade_32( true );
+			\PoweredCache\Utils\log( sprintf( '[Networkwide] Upgrade DB version: %s', POWERED_CACHE_DB_VERSION ) );
 			update_site_option( DB_VERSION_OPTION_NAME, POWERED_CACHE_DB_VERSION );
 		}
 	}
@@ -108,8 +109,9 @@ class Install {
 		if ( version_compare( get_option( DB_VERSION_OPTION_NAME ), POWERED_CACHE_DB_VERSION, '<' ) ) {
 			$this->maybe_migrate_from_1x();
 			$this->upgrade_30();
+			$this->upgrade_32();
 
-			\PoweredCache\Utils\log( sprintf( 'Upgrade DB version: %d', POWERED_CACHE_DB_VERSION ) );
+			\PoweredCache\Utils\log( sprintf( 'Upgrade DB version: %s', POWERED_CACHE_DB_VERSION ) );
 			update_option( DB_VERSION_OPTION_NAME, POWERED_CACHE_DB_VERSION );
 		}
 	}
@@ -146,6 +148,47 @@ class Install {
 		Config::factory()->save_configuration( $settings, $network_wide );
 		\PoweredCache\Utils\log( 'Upgraded to version 3.0' );
 	}
+
+	/**
+	 * Changing js execution method
+	 *
+	 * @param bool $network_wide whether plugin activated network-wide or not
+	 *
+	 * @return void
+	 * @since 3.2
+	 */
+	public function upgrade_32( $network_wide = false ) {
+		$current_version = $network_wide ? get_site_option( DB_VERSION_OPTION_NAME ) : get_option( DB_VERSION_OPTION_NAME );
+		if ( ! version_compare( $current_version, '3.2', '<' ) ) {
+			return;
+		}
+
+		$settings = \PoweredCache\Utils\get_settings( $network_wide );
+
+		if ( ! empty( $settings['js_execution_method'] ) ) {
+			if ( in_array( $settings['js_execution_method'], [ 'async', 'defer' ], true ) ) {
+				$settings['js_defer'] = true;
+			}
+
+			if ( 'delayed' === $settings['js_execution_method'] ) {
+				$settings['js_delay']   = true;
+				$settings['combine_js'] = false;
+			}
+
+			unset( $settings['js_execution_method'] );
+			unset( $settings['js_execution_optimized_only'] );
+		}
+
+		if ( $network_wide ) {
+			update_site_option( SETTING_OPTION, $settings );
+		} else {
+			update_option( SETTING_OPTION, $settings );
+		}
+
+		Config::factory()->save_configuration( $settings, $network_wide );
+		\PoweredCache\Utils\log( 'Upgraded to version 3.2' );
+	}
+
 
 	/**
 	 * Check if a lock exists of the upgrade routine

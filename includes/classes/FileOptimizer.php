@@ -116,7 +116,8 @@ class FileOptimizer {
 		add_filter( 'script_loader_tag', [ $this, 'js_minify' ], 10, 3 );
 		add_filter( 'style_loader_tag', [ $this, 'css_minify' ], 10, 4 );
 		add_filter( 'powered_cache_fo_script_loader_tag', [ $this, 'change_js_execute_method' ] );
-		add_action( 'after_setup_theme', [ $this, 'process_buffer' ], 999 );
+		add_filter( 'script_loader_tag', [ $this, 'change_js_execute_method' ], 99 );
+		add_action( 'after_setup_theme', [ $this, 'maybe_start_buffer' ], 999 );
 		add_action( 'template_redirect', [ $this, 'maybe_suppress_optimizations' ] );
 
 		if ( ! $this->settings['combine_js'] ) {
@@ -125,10 +126,6 @@ class FileOptimizer {
 
 		if ( ! $this->settings['combine_css'] ) {
 			add_filter( 'powered_cache_fo_css_do_concat', '__return_false' );
-		}
-
-		if ( ! $this->settings['js_execution_optimized_only'] ) {
-			add_filter( 'script_loader_tag', [ $this, 'change_js_execute_method' ], 99 );
 		}
 
 		if ( $this->settings['combine_google_fonts'] ) {
@@ -141,7 +138,7 @@ class FileOptimizer {
 	 *
 	 * @return void
 	 */
-	public function process_buffer() {
+	public function maybe_start_buffer() {
 		if ( ! isset( $_SERVER['REQUEST_URI'] ) ) {
 			return;
 		}
@@ -166,9 +163,23 @@ class FileOptimizer {
 			return;
 		}
 
-		ob_start( [ $this, 'maybe_delay_scripts' ] );
-		ob_start( [ $this, 'maybe_replace_google_fonts_with_bunny_fonts' ] );
-		ob_start( [ $this, 'maybe_minify_html' ] );
+		ob_start( [ $this, 'process_buffer' ] );
+	}
+
+	/**
+	 * Process output buffer
+	 *
+	 * @param string $html Output buffer
+	 *
+	 * @return string|string[]|null
+	 */
+	public function process_buffer( $html ) {
+		$html = $this->maybe_defer_inline_scripts( $html );
+		$html = $this->maybe_delay_scripts( $html );
+		$html = $this->maybe_replace_google_fonts_with_bunny_fonts( $html );
+		$html = $this->maybe_minify_html( $html );
+
+		return $html;
 	}
 
 	/**
@@ -276,31 +287,23 @@ class FileOptimizer {
 	 * @return mixed
 	 */
 	public function change_js_execute_method( $tag ) {
-		$js_execution = $this->settings['js_execution_method'];
-		if ( ! $js_execution ) {
+		$is_defer = $this->settings['js_defer'];
+
+		if ( ! $is_defer ) {
 			return $tag;
 		}
 
-		if ( 'blocking' === $js_execution ) {
+		if ( preg_match( '/<script\s+[^>]*\b(?:async|defer)\b[^>]*>/i', $tag ) ) {
 			return $tag;
 		}
 
-		// @since 3.0 - rewrite dom for delayed option
-		if ( 'delayed' === $js_execution ) {
+		if ( Helper::is_defer_excluded( $tag ) ) {
 			return $tag;
 		}
 
-		if ( 'async' === $js_execution ) {
-			$js_attr = 'async="async"';
-		} elseif ( 'defer' === $js_execution ) {
-			$js_attr = 'defer="defer"';
-		}
-
-		if ( false === stripos( $tag, $js_attr ) ) {
-			$search  = '<script ';
-			$replace = sprintf( '<script %s ', $js_attr );
-			$tag     = str_replace( $search, $replace, $tag );
-		}
+		$search  = '<script ';
+		$replace = '<script defer="defer" ';
+		$tag     = str_replace( $search, $replace, $tag );
 
 		return $tag;
 	}
@@ -640,7 +643,7 @@ class FileOptimizer {
 	 * @since 3.0
 	 */
 	public function maybe_delay_scripts( $html ) {
-		if ( 'delayed' !== $this->settings['js_execution_method'] ) {
+		if ( ! $this->settings['js_delay'] ) {
 			return $html;
 		}
 
@@ -659,11 +662,6 @@ class FileOptimizer {
 			$attributes = $match[1];
 			$content    = $match[2];
 
-			// when it's enabled for optimized scripts only
-			if ( $this->settings['js_execution_optimized_only'] && false === strpos( $script, 'file-optimizer.php' ) ) {
-				continue;
-			}
-
 			$is_delay_skipped = function_exists( 'is_user_logged_in' ) && is_user_logged_in();
 
 			/**
@@ -677,6 +675,10 @@ class FileOptimizer {
 			 * @since  3.0
 			 */
 			if ( apply_filters( 'powered_cache_delayed_js_skip', $is_delay_skipped, $script, $attributes, $content ) ) {
+				continue;
+			}
+
+			if ( Helper::is_delay_excluded( $script ) ) {
 				continue;
 			}
 
@@ -715,10 +717,74 @@ class FileOptimizer {
 		$delay_timeout = apply_filters( 'powered_cache_delayed_js_timeout', 0 );
 
 		$html .= '<script id="powered-cache-delayed-js">';
-		$html .= 'class PCScriptLoader{constructor(e){this.loadDelay=e,this.loadTimer=null,this.scriptsLoaded=false,this.triggerEvents=["mouseover","click","keydown","wheel","touchmove","touchstart","touchend"],this.userEventHandler=this.triggerLoader.bind(this),this.init()}init(){const e=this;for(const t of this.triggerEvents)window.addEventListener(t,this.userEventHandler,{passive:!0});this.loadDelay>0&&(this.loadTimer=setTimeout(()=>{e.loadScripts()},this.loadDelay))}triggerLoader(){if(this.scriptsLoaded)return;this.loadScripts(),clearTimeout(this.loadTimer);for(const e of this.triggerEvents)window.removeEventListener(e,this.userEventHandler,{passive:!0})}loadScripts(){this.scriptsLoaded=true;document.querySelectorAll("script[data-type=\'lazy\']").forEach(e=>{e.setAttribute("src",e.getAttribute("data-src")),e.removeAttribute("data-src"),e.setAttribute("data-lazy-loaded","true")}),console.log("Script(s) loaded with delay or interaction")}}const pcScriptLoader=new PCScriptLoader(' . absint( $delay_timeout ) . ');';
+		$html .= 'class PCScriptLoader{constructor(e){this.loadDelay=e,this.loadTimer=null,this.scriptsLoaded=!1,this.triggerEvents=["mouseover","click","keydown","wheel","touchmove","touchstart","touchend"],this.userEventHandler=this.triggerLoader.bind(this),this.init()}init(){const e=this;for(const t of this.triggerEvents)window.addEventListener(t,this.userEventHandler,{passive:!0});this.loadDelay>0&&(this.loadTimer=setTimeout(()=>{e.loadScripts()},this.loadDelay))}triggerLoader(){if(this.scriptsLoaded)return;this.loadScripts(),clearTimeout(this.loadTimer);for(const e of this.triggerEvents)window.removeEventListener(e,this.userEventHandler,{passive:!0})}loadScripts(){this.scriptsLoaded=!0,this.loadScriptsWithType("data-type=\'lazy\'"),this.loadScriptsWithType("defer",!0),console.log("Script(s) loaded with delay or interaction")}loadScriptsWithType(e,t=!1){const r=document.querySelectorAll(`script[${e}]`),i=s=>{s.setAttribute("src",s.getAttribute("data-src")),s.removeAttribute("data-src"),s.setAttribute("data-lazy-loaded","true")};t?setTimeout(()=>{r.forEach(i)},0):r.forEach(i)}}const pcScriptLoader=new PCScriptLoader(' . absint( $delay_timeout ) . ');';
 		$html .= '</script>';
 
 		return $html;
+	}
+
+	/**
+	 * Defer jQuery depended inline scripts
+	 *
+	 * @param string $html Output buffer
+	 *
+	 * @return array|mixed|string|string[]|null
+	 * @since 3.2
+	 */
+	public function maybe_defer_inline_scripts( $html ) {
+		if ( ! $this->settings['js_defer'] ) {
+			return $html;
+		}
+
+		$html = preg_replace_callback(
+			'/(<script[^>]*>)(.*?)<\/script>/s',
+			function ( $matches ) {
+				$script_open_tag = $matches[1];
+				$script_content  = $matches[2];
+
+				if ( ! $this->should_defer_script( $script_content, $script_open_tag ) ) {
+					return $matches[0]; // Return the script unchanged
+				}
+
+				return $script_open_tag . 'window.addEventListener("DOMContentLoaded", function() {(function($) {' . $script_content . '})(jQuery);});</script>';
+			},
+			$html
+		);
+
+		return $html;
+	}
+
+	/**
+	 * Determine whether defer or not defer inline script
+	 *
+	 * @param string $script_content Script content
+	 * @param string $script_attributes Script attributes
+	 *
+	 * @return bool
+	 * @since 3.2
+	 */
+	private function should_defer_script( $script_content, $script_attributes ) {
+		// Ignore scripts with a 'src' attribute (external scripts)
+		if ( false !== strpos( $script_attributes, 'src=' ) ) {
+			return false;
+		}
+
+		// ignore ld+json
+		if ( false !== strpos( $script_attributes, 'type="application/ld+json"' ) ) {
+			return false;
+		}
+
+		// Check if the script contains 'DOMContentLoaded' or 'document.write'
+		if ( false !== strpos( $script_content, 'DOMContentLoaded' ) || false !== strpos( $script_content, 'document.write' ) ) {
+			return false;
+		}
+
+		// Check if the script does NOT contain jQuery-related functions
+		if ( false === strpos( $script_content, 'jQuery(' ) && false === strpos( $script_content, '$.(' ) && false === strpos( $script_content, '$(' ) ) {
+			return false;
+		}
+
+		return true;
 	}
 
 
