@@ -69,7 +69,7 @@ const { __ } = wp.i18n;
 						// Assign old title.
 						boxTitle.text(oldTitle);
 						// Enable "skip" button.
-						boxSkip.removeAttr('disabled');
+						boxSkip.prop("disabled", false);
 					});
 			});
 		}
@@ -84,4 +84,9 @@ const { __ } = wp.i18n;
 	$('body').ready(function () {
 		PoweredCache.pageModals('modals');
 	});
+
+	$(document).on('click', '.sui-modal-overlay', function () {
+		$('.sui-has-modal').removeClass('sui-has-modal');
+	});
+
 })(jQuery);
