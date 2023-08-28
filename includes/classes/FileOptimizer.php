@@ -385,11 +385,14 @@ class FileOptimizer {
 		 * @hook   powered_cache_fo_disable_js_minify
 		 *
 		 * @param  {boolean} true to disable JS minify
+		 * @param  {string} $tag    script tag <script...
+		 * @param  {string} $handle JS handle
+		 * @param  {string} $src    Resource URL
 		 *
 		 * @return {boolean} New value.
 		 * @since  2.0
 		 */
-		if ( apply_filters( 'powered_cache_fo_disable_js_minify', false ) ) {
+		if ( apply_filters( 'powered_cache_fo_disable_js_minify', false, $tag, $handle, $src ) ) {
 			return $tag;
 		}
 
