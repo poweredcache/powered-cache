@@ -37,6 +37,7 @@
       "editor": "./assets/js/admin/editor.js",
       "classic-editor": "./assets/js/admin/classic-editor.js",
       "lazyload": "./assets/js/frontend/lazyload.js",
+      "script-loader": "./assets/js/frontend/script-loader.js",
       "admin-style": "./assets/css/admin/admin-style.css"
     },
     "wpDependencyExternals": false
