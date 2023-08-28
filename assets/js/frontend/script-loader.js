@@ -70,5 +70,5 @@ class PCScriptLoader {
 	}
 }
 
-const timeout = window.pcScriptLoaderTimeout || 0;
+const timeout = window.PCScriptLoaderTimeout || 0;
 window.PCScriptLoader = new PCScriptLoader(timeout);
