@@ -717,10 +717,16 @@ class FileOptimizer {
 		 * @return {int} New value.
 		 * @since  3.0
 		 */
-		$delay_timeout = apply_filters( 'powered_cache_delayed_js_timeout', 0 );
+		$delay_timeout  = apply_filters( 'powered_cache_delayed_js_timeout', 0 );
+		$script_content = file_get_contents( POWERED_CACHE_PATH . 'dist/js/script-loader.js' ); // phpcs:ignore
+
+		if ( ! $script_content ) {
+			return $html;
+		}
 
 		$html .= '<script id="powered-cache-delayed-js">';
-		$html .= 'class PCScriptLoader{constructor(e){this.loadDelay=e,this.loadTimer=null,this.scriptsLoaded=!1,this.triggerEvents=["mouseover","click","keydown","wheel","touchmove","touchstart","touchend"],this.userEventHandler=this.triggerLoader.bind(this),this.init()}init(){const e=this;for(const t of this.triggerEvents)window.addEventListener(t,this.userEventHandler,{passive:!0});this.loadDelay>0&&(this.loadTimer=setTimeout(()=>{e.loadScripts()},this.loadDelay))}triggerLoader(){if(this.scriptsLoaded)return;this.loadScripts(),clearTimeout(this.loadTimer);for(const e of this.triggerEvents)window.removeEventListener(e,this.userEventHandler,{passive:!0})}loadScripts(){this.scriptsLoaded=!0,this.loadScriptsWithType("data-type=\'lazy\'"),this.loadScriptsWithType("defer",!0),console.log("Script(s) loaded with delay or interaction")}loadScriptsWithType(e,t=!1){const r=document.querySelectorAll(`script[${e}]`),i=s=>{s.setAttribute("src",s.getAttribute("data-src")),s.removeAttribute("data-src"),s.setAttribute("data-lazy-loaded","true")};t?setTimeout(()=>{r.forEach(i)},0):r.forEach(i)}}const pcScriptLoader=new PCScriptLoader(' . absint( $delay_timeout ) . ');';
+		$html .= 'window.PCScriptLoaderTimeout=' . absint( $delay_timeout ) . ';';
+		$html .= $script_content;
 		$html .= '</script>';
 
 		return $html;
