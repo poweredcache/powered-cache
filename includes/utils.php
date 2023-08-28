@@ -116,6 +116,7 @@ function get_settings( $force_network_wide = false ) {
 		'preload_sitemap'                => '',
 		'prefetch_dns'                   => '',
 		'preconnect_resource'            => '',
+		'prefetch_links'                 => true,
 		// db options
 		'db_cleanup_post_revisions'      => false,
 		'db_cleanup_auto_drafts'         => false,

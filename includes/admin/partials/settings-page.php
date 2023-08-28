@@ -1083,7 +1083,9 @@ js-(before|after|extra)</pre>
 
 						<div class="sui-box-settings-col-1">
 							<span class="sui-settings-label"><?php esc_html_e( 'Image Optimization', 'powered-cache' ); ?>
-								<span class="sui-tag sui-tag-pro"><?php esc_html_e( 'Premium', 'powered-cache' ); ?></span>
+								<?php if ( ! is_premium() ) : ?>
+									<span class="sui-tag sui-tag-pro"><?php esc_html_e( 'Premium', 'powered-cache' ); ?></span>
+								<?php endif; ?>
 							</span>
 							<span class="sui-description"></span>
 						</div>
@@ -1728,6 +1730,38 @@ js-(before|after|extra)</pre>
 						</div>
 
 
+					</div>
+
+					<div class="sui-box-settings-row <?php echo( ! is_premium() ? 'sui-disabled' : '' ); ?>">
+						<div class="sui-box-settings-col-1">
+							<span class="sui-settings-label"><?php esc_html_e( 'Prefetch links', 'powered-cache' ); ?>
+								<?php if ( ! is_premium() ) : ?>
+									<span class="sui-tag sui-tag-pro"><?php esc_html_e( 'Premium', 'powered-cache' ); ?></span>
+								<?php endif; ?>
+							</span>
+							<span class="sui-description"></span>
+						</div>
+
+						<div class="sui-box-settings-col-2">
+							<div class="sui-form-field">
+								<label for="prefetch_links" class="sui-toggle">
+									<input
+										type="checkbox"
+										id="prefetch_links"
+										name="prefetch_links"
+										aria-labelledby="prefetch_links_label"
+										aria-describedby="prefetch_links_description"
+										value="1"
+										<?php checked( 1, $settings['prefetch_links'] ); ?>
+									>
+									<span class="sui-toggle-slider" aria-hidden="true"></span>
+									<span id="prefetch_links_label" class="sui-toggle-label"><?php esc_html_e( 'Enable link prefetching', 'powered-cache' ); ?></span>
+									<span id="prefetch_links_description" class="sui-description"><?php esc_html_e( 'Faster subsequent page-loads by prefetching or prerendering in-viewport links during idle time.', 'powered-cache' ); ?>
+										<a href="<?php echo esc_url( get_doc_url( '/prefetch-links/' ) ); ?>" target="_blank">(?)</a>
+									</span>
+								</label>
+							</div>
+						</div>
 					</div>
 
 

@@ -366,6 +366,7 @@ function sanitize_options( $options ) {
 	$sanitized_options['preload_sitemap']                = sanitize_textarea_field( $options['preload_sitemap'] );
 	$sanitized_options['prefetch_dns']                   = sanitize_textarea_field( $options['prefetch_dns'] );
 	$sanitized_options['preconnect_resource']            = sanitize_textarea_field( $options['preconnect_resource'] );
+	$sanitized_options['prefetch_links']                 = ! empty( $options['prefetch_links'] );
 	$sanitized_options['db_cleanup_post_revisions']      = ! empty( $options['db_cleanup_post_revisions'] );
 	$sanitized_options['db_cleanup_auto_drafts']         = ! empty( $options['db_cleanup_auto_drafts'] );
 	$sanitized_options['db_cleanup_trashed_posts']       = ! empty( $options['db_cleanup_trashed_posts'] );
