@@ -272,6 +272,8 @@ class FileOptimizer {
 		}
 
 		$html_min = new HtmlMin();
+		$html_min->doOptimizeViaHtmlDomParser( false );
+		$html_min->doRemoveOmittedQuotes( false );
 		$html_min->overwriteSpecialScriptTags( [ 'x-tmpl-mustache', 'text/template' ] );
 		$buffer = $html_min->minify( $buffer );
 
