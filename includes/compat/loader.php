@@ -38,6 +38,7 @@ function load_compat_files() {
 	require_once POWERED_CACHE_COMPAT_DIR . 'plugins/elementor.php';
 	require_once POWERED_CACHE_COMPAT_DIR . 'plugins/woocommerce.php';
 	require_once POWERED_CACHE_COMPAT_DIR . 'plugins/phastpress.php';
+	require_once POWERED_CACHE_COMPAT_DIR . 'themes/bricks.php';
 
 	if ( is_multisite() && defined( 'SUNRISE' ) && SUNRISE ) {
 		require POWERED_CACHE_COMPAT_DIR . 'domain-mapping.php';
