@@ -51,7 +51,8 @@ class LazyLoad {
 			add_action( 'wp', [ $this, 'init' ], 9999 ); // run this as late as possible
 			add_action( 'powered_cache_lazy_load_compat', [ $this, 'compat' ] );
 			add_action( 'powered_cache_lazy_load_run_filter', [ $this, 'maybe_disable_through_meta' ] );
-			add_filter( 'powered_cache_delayed_js_skip', [ $this, 'maybe_delayed_js_skip' ], 10, 2 );
+			add_filter( 'powered_cache_delayed_js_skip', [ $this, 'delayed_js_skip' ], 10, 2 );
+			add_filter( 'powered_cache_fo_excluded_js_files', [ $this, 'add_file_optimizer_exclusion' ] );
 		}
 
 		/**
@@ -519,12 +520,25 @@ class LazyLoad {
 	 *
 	 * @return boolean
 	 */
-	public function maybe_delayed_js_skip( $is_delay_skipped, $script ) {
+	public function delayed_js_skip( $is_delay_skipped, $script ) {
 		if ( false !== stripos( $script, 'powered-cache/dist/js/lazyload.js' ) || false !== stripos( $script, 'PCLL_' ) ) {
 			return true;
 		}
 
 		return $is_delay_skipped;
+	}
+
+	/**
+	 * Exclude link preloader from file optimizer
+	 *
+	 * @param array $excluded_files the list of excluded files for optimization
+	 *
+	 * @return mixed
+	 */
+	public function add_file_optimizer_exclusion( $excluded_files ) {
+		$excluded_files[] = POWERED_CACHE_URL . 'dist/js/lazyload.js';
+
+		return $excluded_files;
 	}
 
 }
