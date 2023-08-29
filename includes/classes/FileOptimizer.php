@@ -96,6 +96,15 @@ class FileOptimizer {
 		}
 
 		/**
+		 * Don't optimize in customizer preview
+		 */
+		if ( ! empty( $_GET['customize_changeset_uuid'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			\PoweredCache\Utils\log( 'Do not run file optimizer in customizer preview' );
+
+			return;
+		}
+
+		/**
 		 * Filters FileOptimizer integration
 		 *
 		 * @hook   powered_cache_fo_disable
