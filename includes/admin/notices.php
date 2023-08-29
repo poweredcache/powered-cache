@@ -11,6 +11,7 @@ use function PoweredCache\Utils\can_configure_htaccess;
 use function PoweredCache\Utils\can_configure_object_cache;
 use function PoweredCache\Utils\can_control_all_settings;
 use function PoweredCache\Utils\get_object_cache_dropins;
+use function PoweredCache\Utils\is_premium;
 
 /**
  * Default setup routine
@@ -37,6 +38,8 @@ function setup() {
  * @since 1.0
  */
 function maybe_display_plugin_compatability_notices() {
+	$settings = \PoweredCache\Utils\get_settings();
+
 	$plugins = array(
 		'hummingbird-performance'           => 'hummingbird-performance/wp-hummingbird.php',
 		'wp-rocket'                         => 'wp-rocket/wp-rocket.php',
@@ -53,7 +56,17 @@ function maybe_display_plugin_compatability_notices() {
 		'speed-booster-pack'                => 'speed-booster-pack/speed-booster-pack.php',
 		'wp-performance-score-booster'      => 'wp-performance-score-booster/wp-performance-score-booster.php',
 		'check-and-enable-gzip-compression' => 'check-and-enable-gzip-compression/richards-toolbox.php',
+		'swift-performance-lite'            => 'swift-performance-lite/performance.php',
+		'swift-performance'                 => 'swift-performance/performance.php',
+		'litespeed-cache'                   => 'litespeed-cache/litespeed-cache.php',
+		'wp-optimize'                       => 'wp-optimize/wp-optimize.php',
 	);
+
+	if ( $settings['prefetch_links'] && is_premium() ) {
+		$plugins['quicklink']    = 'quicklink/quicklink.php';
+		$plugins['flying-pages'] = 'flying-pages/flying-pages.php';
+		$plugins['instant-page'] = 'instant-page/instantpage.php';
+	}
 
 	$callback = POWERED_CACHE_IS_NETWORK ? 'is_plugin_active_for_network' : 'is_plugin_active';
 
@@ -66,7 +79,7 @@ function maybe_display_plugin_compatability_notices() {
 
 	<?php if ( current_user_can( 'activate_plugins' ) ) : ?>
 		<div class="error">
-			<p><?php esc_html_e( 'The following plugins are not compatible with  Powered Cache and may cause unintended results:', 'powered-cache' ); ?></p>
+			<p><?php esc_html_e( 'The following plugins are not compatible with Powered Cache and may cause unintended results:', 'powered-cache' ); ?></p>
 			<ul class="incompatible-plugin-list">
 				<?php
 				foreach ( $plugins as $plugin ) {
