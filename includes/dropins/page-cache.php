@@ -184,18 +184,32 @@ function powered_cache_page_buffer( $buffer, $flags ) {
 		return $buffer;
 	}
 
-	// Don't cache search, 404, or password protected
-	if ( is_404() || is_search() || ! empty( $post->post_password ) ) {
-		powered_cache_add_cache_miss_header( "404, search results or password protected posts are not cached" );
-
-		return $buffer;
-	}
-
 	// maybe we shouldn't cache template file has this constant
 	// dont check DONOTCACHEPAGE strictly some plugins define string instead bool flag
 	if ( defined( 'DONOTCACHEPAGE' ) && DONOTCACHEPAGE ) {
 		\PoweredCache\Utils\log( sprintf( 'DONOTCACHEPAGE DEFINED on %s', $_SERVER['REQUEST_URI'] ) );
 		powered_cache_add_cache_miss_header( "DONOTCACHEPAGE defined" );
+
+		return $buffer;
+	}
+
+	// Don't cache password protected posts
+	if ( ! empty( $post->post_password ) ) {
+		powered_cache_add_cache_miss_header( "Ppassword protected posts are not cached" );
+
+		return $buffer;
+	}
+
+	// Don't cache 404 results
+	if ( function_exists( 'is_404' ) && is_404() ) {
+		powered_cache_add_cache_miss_header( "404 pages are not cached" );
+
+		return $buffer;
+	}
+
+	// Don't cache search results
+	if ( function_exists( 'is_search' ) && is_search() ) {
+		powered_cache_add_cache_miss_header( "Search result page is not cached" );
 
 		return $buffer;
 	}
