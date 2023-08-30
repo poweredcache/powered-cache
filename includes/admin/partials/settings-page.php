@@ -1284,7 +1284,9 @@ js-(before|after|extra)</pre>
 					<div class="sui-box-settings-row <?php echo( ! is_premium() ? 'sui-disabled' : '' ); ?>">
 						<div class="sui-box-settings-col-1">
 							<span class="sui-settings-label"><?php esc_html_e( 'Image Dimensions', 'powered-cache' ); ?>
-								<span class="sui-tag sui-tag-pro"><?php esc_html_e( 'Premium', 'powered-cache' ); ?></span>
+								<?php if ( ! is_premium() ) : ?>
+									<span class="sui-tag sui-tag-pro"><?php esc_html_e( 'Premium', 'powered-cache' ); ?></span>
+								<?php endif; ?>
 							</span>
 							<span class="sui-description"></span>
 						</div>
