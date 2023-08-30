@@ -13,6 +13,7 @@ use function PoweredCache\Utils\clean_page_cache_dir;
 use function PoweredCache\Utils\clean_site_cache_dir;
 use function PoweredCache\Utils\delete_page_cache;
 use function PoweredCache\Utils\get_post_related_urls;
+use const PoweredCache\Constants\PURGE_CACHE_PLUGIN_NOTICE_TRANSIENT;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -152,6 +153,8 @@ class AdvancedCache {
 			$redirect_url = add_query_arg( 'pc_action', 'flush_page_cache_network_err_permission', wp_get_referer() );
 		}
 
+		delete_site_transient( PURGE_CACHE_PLUGIN_NOTICE_TRANSIENT );
+
 		wp_safe_redirect( esc_url_raw( $redirect_url ) );
 		exit;
 	}
@@ -181,6 +184,8 @@ class AdvancedCache {
 		} else {
 			$redirect_url = add_query_arg( 'pc_action', 'flush_page_cache_err_permission', wp_get_referer() );
 		}
+
+		delete_transient( PURGE_CACHE_PLUGIN_NOTICE_TRANSIENT );
 
 		wp_safe_redirect( esc_url_raw( $redirect_url ) );
 		exit;

@@ -23,3 +23,4 @@ const POST_META_DISABLE_CSS_OPTIMIZATION  = 'powered_cache_disable_css_optimizat
 const POST_META_DISABLE_JS_OPTIMIZATION   = 'powered_cache_disable_js_optimization';
 const DB_VERSION_OPTION_NAME              = 'powered_cache_db_version';
 const DB_CLEANUP_COUNT_CACHE_KEY          = 'powered_cache_db_cleanup_counts';
+const PURGE_CACHE_PLUGIN_NOTICE_TRANSIENT = 'powered_cache_purge_cache_plugin_notice';

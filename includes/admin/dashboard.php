@@ -14,6 +14,7 @@ use PoweredCache\Config;
 use const PoweredCache\Constants\ICON_BASE64;
 use const PoweredCache\Constants\MENU_SLUG;
 use const PoweredCache\Constants\PURGE_CACHE_CRON_NAME;
+use const PoweredCache\Constants\PURGE_CACHE_PLUGIN_NOTICE_TRANSIENT;
 use const PoweredCache\Constants\SETTING_OPTION;
 use function PoweredCache\Utils\can_configure_htaccess;
 use function PoweredCache\Utils\can_configure_object_cache;
@@ -593,6 +594,12 @@ function purge_all_cache() {
 	 * @since 1.1
 	 */
 	do_action( 'powered_cache_purge_all_cache' );
+
+	if ( POWERED_CACHE_IS_NETWORK ) {
+		delete_site_transient( PURGE_CACHE_PLUGIN_NOTICE_TRANSIENT );
+	} else {
+		delete_transient( PURGE_CACHE_PLUGIN_NOTICE_TRANSIENT );
+	}
 
 	$redirect_url = add_query_arg( 'pc_action', 'flush_all_cache', wp_get_referer() );
 
