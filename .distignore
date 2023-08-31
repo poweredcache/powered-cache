@@ -8,6 +8,7 @@
 .DS_Store
 .browserslistrc
 .eslintrc.json
+.eslintrc.js
 .eslintignore
 .npmrc
 .nvmrc
