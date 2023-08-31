@@ -8,6 +8,8 @@
 namespace PoweredCache;
 
 use const PoweredCache\Constants\POST_META_DISABLE_CSS_OPTIMIZATION;
+use const PoweredCache\Constants\POST_META_DISABLE_JS_DEFER;
+use const PoweredCache\Constants\POST_META_DISABLE_JS_DELAY;
 use const PoweredCache\Constants\POST_META_DISABLE_JS_OPTIMIZATION;
 use const PoweredCache\Constants\POST_META_DISABLE_UCSS_KEY;
 use const PoweredCache\Constants\POST_META_SPECIFIC_CRITICAL_CSS_KEY;
@@ -177,6 +179,22 @@ class MetaBox {
 					<label for="<?php echo esc_attr( POST_META_DISABLE_JS_OPTIMIZATION ); ?>"><?php esc_html_e( 'Disable JS optimization (minify/concat) for this post', 'powered-cache' ); ?></label>
 				</fieldset>
 			<?php endif; ?>
+			<?php if ( $settings['js_defer'] ) : ?>
+				<?php $is_js_defer_disabled = (bool) get_post_meta( $post->ID, POST_META_DISABLE_JS_DEFER, true ); ?>
+				<fieldset>
+					<legend class="screen-reader-text"><?php esc_html_e( 'Disable JS defer for this post', 'powered-cache' ); ?></legend>
+					<input <?php checked( $is_js_defer_disabled, true ); ?> type="checkbox" id="<?php echo esc_attr( POST_META_DISABLE_JS_DEFER ); ?>" name="<?php echo esc_attr( POST_META_DISABLE_JS_DEFER ); ?>" value="1">
+					<label for="<?php echo esc_attr( POST_META_DISABLE_JS_DEFER ); ?>"><?php esc_html_e( 'Disable JS Defer', 'powered-cache' ); ?></label>
+				</fieldset>
+			<?php endif; ?>
+			<?php if ( $settings['js_delay'] ) : ?>
+				<?php $is_js_delay_disabled = (bool) get_post_meta( $post->ID, POST_META_DISABLE_JS_DELAY, true ); ?>
+				<fieldset>
+					<legend class="screen-reader-text"><?php esc_html_e( 'Disable JS delay for this post', 'powered-cache' ); ?></legend>
+					<input <?php checked( $is_js_delay_disabled, true ); ?> type="checkbox" id="<?php echo esc_attr( POST_META_DISABLE_JS_DELAY ); ?>" name="<?php echo esc_attr( POST_META_DISABLE_JS_DELAY ); ?>" value="1">
+					<label for="<?php echo esc_attr( POST_META_DISABLE_JS_DELAY ); ?>"><?php esc_html_e( 'Disable JS Delay', 'powered-cache' ); ?></label>
+				</fieldset>
+			<?php endif; ?>
 
 
 			<?php if ( $settings['critical_css'] ) : ?>
@@ -344,6 +362,38 @@ class MetaBox {
 					]
 				);
 			}
+
+			if ( $settings['js_defer'] ) {
+				register_post_meta(
+					$post_type,
+					POST_META_DISABLE_JS_DEFER,
+					[
+						'show_in_rest'  => true,
+						'single'        => true,
+						'default'       => false,
+						'type'          => 'boolean',
+						'auth_callback' => function () {
+							return current_user_can( 'edit_others_posts' );
+						},
+					]
+				);
+			}
+
+			if ( $settings['js_defer'] ) {
+				register_post_meta(
+					$post_type,
+					POST_META_DISABLE_JS_DELAY,
+					[
+						'show_in_rest'  => true,
+						'single'        => true,
+						'default'       => false,
+						'type'          => 'boolean',
+						'auth_callback' => function () {
+							return current_user_can( 'edit_others_posts' );
+						},
+					]
+				);
+			}
 		}
 
 	}
@@ -414,6 +464,8 @@ class MetaBox {
 			POST_META_SPECIFIC_UCSS_KEY,
 			POST_META_DISABLE_CSS_OPTIMIZATION,
 			POST_META_DISABLE_JS_OPTIMIZATION,
+			POST_META_DISABLE_JS_DEFER,
+			POST_META_DISABLE_JS_DELAY,
 		];
 	}
 

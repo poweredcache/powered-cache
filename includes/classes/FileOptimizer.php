@@ -9,6 +9,8 @@ namespace PoweredCache;
 
 use PoweredCache\Dependencies\voku\helper\HtmlMin;
 use const PoweredCache\Constants\POST_META_DISABLE_CSS_OPTIMIZATION;
+use const PoweredCache\Constants\POST_META_DISABLE_JS_DEFER;
+use const PoweredCache\Constants\POST_META_DISABLE_JS_DELAY;
 use const PoweredCache\Constants\POST_META_DISABLE_JS_OPTIMIZATION;
 use PoweredCache\Optimizer\CSS;
 use PoweredCache\Optimizer\Helper;
@@ -226,6 +228,8 @@ class FileOptimizer {
 		if ( is_singular() ) {
 			$disable_css_optimization = (bool) get_post_meta( get_the_ID(), POST_META_DISABLE_CSS_OPTIMIZATION, true );
 			$disable_js_optimization  = (bool) get_post_meta( get_the_ID(), POST_META_DISABLE_JS_OPTIMIZATION, true );
+			$disable_js_defer         = (bool) get_post_meta( get_the_ID(), POST_META_DISABLE_JS_DEFER, true );
+			$disable_js_delay         = (bool) get_post_meta( get_the_ID(), POST_META_DISABLE_JS_DELAY, true );
 
 			if ( $disable_css_optimization ) {
 				add_filter( 'powered_cache_fo_css_do_concat', '__return_false' );
@@ -235,6 +239,15 @@ class FileOptimizer {
 			if ( $disable_js_optimization ) {
 				add_filter( 'powered_cache_fo_js_do_concat', '__return_false' );
 				add_filter( 'powered_cache_fo_disable_js_minify', '__return_true' );
+			}
+
+			if ( $disable_js_defer ) {
+				add_filter( 'powered_cache_disable_js_defer', '__return_true' );
+				add_filter( 'powered_cache_disable_js_defer_inline', '__return_true' );
+			}
+
+			if ( $disable_js_delay ) {
+				add_filter( 'powered_cache_delayed_js_skip', '__return_true' );
 			}
 		}
 	}
@@ -309,6 +322,20 @@ class FileOptimizer {
 		}
 
 		if ( Helper::is_defer_excluded( $tag ) ) {
+			return $tag;
+		}
+
+		/**
+		 * Filters whether disable or not disable Defer
+		 *
+		 * @hook   powered_cache_disable_js_defer
+		 *
+		 * @param  {boolean} true to disable defer
+		 *
+		 * @return {boolean} New value.
+		 * @since  3.2
+		 */
+		if ( apply_filters( 'powered_cache_disable_js_defer', false, $tag ) ) {
 			return $tag;
 		}
 
@@ -763,6 +790,20 @@ class FileOptimizer {
 				$script_content  = $matches[2];
 
 				if ( ! $this->should_defer_script( $script_content, $script_open_tag ) ) {
+					return $matches[0]; // Return the script unchanged
+				}
+
+				/**
+				 * Filters whether disable or not disable inline defer
+				 *
+				 * @hook   powered_cache_disable_js_defer_inline
+				 *
+				 * @param  {boolean} true to disable defer
+				 *
+				 * @return {boolean} New value.
+				 * @since  3.2
+				 */
+				if ( apply_filters( 'powered_cache_disable_js_defer_inline', false, $script_content, $script_open_tag ) ) {
 					return $matches[0]; // Return the script unchanged
 				}
 
