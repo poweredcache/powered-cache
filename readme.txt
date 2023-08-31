@@ -3,7 +3,7 @@ Contributors:  poweredcache, wphandle, m_uysl
 Tags: cache, caching, web vitals, performance, fastest, page speed, optimization, cdn, object cache, minify, powered cache
 Requires at least:  5.7
 Tested up to:  6.3
-Stable tag:  3.1.1
+Stable tag:  3.2
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -27,7 +27,7 @@ __Object Caching__: Speed up dynamic pageviews. It supports Redis, Memcached, Me
 
 __Page Cache Rule Management__: Need advanced caching configurations? Got it covered under advanced options. [Details](https://docs.poweredcache.com/advanced-options/)
 
-__File Optimization__: Easily minify and combine CSS, JS files.
+__File Optimization__: Easily minify and combine CSS, JS files. Eliminate render-blocking resource problems easily.
 
 __Database Optimization__: Keep redundant data away from your database.
 
@@ -70,19 +70,20 @@ __Google Tracking__: Powered Cache will host Google scripts on your server to he
 __Facebook Tracking__: Powered Cache will host Facebook scripts on your server to help satisfy the PageSpeed recommendation. ***Premium only***
 
 = Premium Features =
-Here is a list of the amazing features included in Powered Cache Premium:
+Explore the powerful capabilities offered by Powered Cache Premium:
 
-- Critical CSS & Load CSS Asynchronously.
-- Remove Unused CSS. Intelligently scans your pages to identify and remove any CSS rules that aren't being used.
-- Image Optimizer. On the fly Image Compression with AVIF/WebP conversion.
-- Sitemap Preloading.
-- Scheduled Database cleanups.
-- Varnish extension.
-- Google tracking extension.
-- Facebook tracking extension.
-- WP-CLI commands are ready to save your time.
-- Top-notch premium support.
-- No Ads on the plugin page.
+__Critical CSS & Load CSS Asynchronously:__ Accelerate your page load times by prioritizing essential styles.
+__Remove Unused CSS:__ Smartly scans your website to identify and eliminate unused CSS rules, optimizing performance.
+__Automatic Image Dimension Assignment:__ Adds missing dimensions to images to improve layout stability and speed.
+__Link Prefetching:__ Pre-fetches links to provide a smoother user experience.
+__Image Optimizer:__ On the fly image compression, including AVIF/WebP format conversion, to enhance load speed.
+__Sitemap Preloading:__ Automatically visits URLs listed in your sitemap to pre-generate cache, ensuring faster load times for your visitors.
+__Scheduled Database Cleanups:__ Automates database optimization tasks to maintain peak performance.
+__Varnish Extension:__ Enhance your site's caching capabilities with Varnish support.
+__Google & Facebook Tracking Extensions:__ Host external tracking scripts locally, with automatic updates when the external resource changes.
+__WP-CLI Support:__ Command-line options available to streamline your workflow.
+__Top-Notch Premium Support:__ Get high-quality support for any issues you might encounter.
+__Ad-Free Plugin Interface:__ Enjoy an uncluttered, ad-free plugin admin page.
 
 By upgrading to Powered Cache Premium you also get access to one-on-one help from our knowledgeable support team and our extensive documentation site.
 
@@ -169,6 +170,20 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 3.2 (August 31, 2023) =
+- [Refactored] Improved JS optimization and execution options for better performance.
+- [Updated] Enhanced Delay JS feature and removed the default timeout.
+- [Added] Introduced post-level controls for delay and defer JS options.
+- [Added] New feature to automatically add missing image dimensions.
+- [Added] Added a link prefetching option to improve user experience.
+- [Added] Compatibility with Bricks Builder introduced.
+- [Added] New global admin notice to prompt cache purging upon plugin activation or deactivation.
+- [Fix] File optimizer no longer runs in Customizer preview; now compatible with Colibri Page Builder.
+- [Fix] Ensure conditional tags on the page for page cache drop-in.
+- [Fix] Disabled DOM parser optimization for HTML minification.
+- [Fix] Resolved a glitch in the Diagnostic modal.
+- [Fix] Fixed DOM violations on the Settings page.
 
 = 3.1.1 (August 1, 2023) =
 - Added some clarifications about AVIF support
