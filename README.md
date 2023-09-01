@@ -5,8 +5,8 @@ Powered Cache
 
 The most powerful caching and performance suite for WordPress. Easily Improve PageSpeed & Web Vitals Score.
 
-__Plugin Website__: [poweredcache.com](https://poweredcache.com)  
-__Docs__: [poweredcache.com](https://poweredcache.com)  
+__Plugin Website__: [poweredcache.com](https://poweredcache.com)
+__Docs__: [poweredcache.com](https://poweredcache.com)
 __Developer Docs__: [https://poweredcache.github.io/docs/](https://poweredcache.github.io/docs/)
 
 ### Features
@@ -70,14 +70,19 @@ Built-in extensions (aka add-ons) shipped with Powered Cache to provide more fun
 
 Here is a list of the amazing features included in Powered Cache Premium:
 
-- Sitemap Preloading
-- Scheduled Database cleanups.
-- Varnish extension.
-- Google tracking extension.
-- Facebook tracking extension.
-- WP-CLI commands ready to save your time.
-- Top-notch premium support.
-- No Ads on plugin page.
+- __Critical CSS & Load CSS Asynchronously:__ Accelerate your page load times by prioritizing essential styles.
+- __Remove Unused CSS:__ Smartly scans your website to identify and eliminate unused CSS rules, optimizing performance.
+- __Automatic Image Dimension Assignment:__ Adds missing dimensions to images to improve layout stability and speed.
+- __Link Prefetching:__ Pre-fetches links to provide a smoother user experience.
+- __Image Optimizer:__ On the fly image compression, including AVIF/WebP format conversion, to enhance load speed.
+- __Sitemap Preloading:__ Automatically visits URLs listed in your sitemap to pre-generate cache, ensuring faster load times for your visitors.
+- __Scheduled Database Cleanups:__ Automates database optimization tasks to maintain peak performance.
+- __Varnish Extension:__ Enhance your site's caching capabilities with Varnish support.
+- __Google & Facebook Tracking Extensions:__ Host external tracking scripts locally, with automatic updates when the external resource changes.
+- __WP-CLI Support:__ Command-line options available to streamline your workflow.
+- __Top-Notch Premium Support:__ Get high-quality support for any issues you might encounter.
+- __Ad-Free Plugin Interface:__ Enjoy an uncluttered, ad-free plugin admin page.
+
 
 By upgrading to Powered Cache Premium you also get access to one-on-one help from our knowledgeable support team and our extensive documentation site.
 
