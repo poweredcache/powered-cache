@@ -1277,8 +1277,8 @@ function powered_cache_is_mobile() {
 
 	global $powered_cache_mobile_browsers, $powered_cache_mobile_prefixes;
 
-	$mobile_browsers = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', $powered_cache_mobile_browsers ) ), ' ' );
-	$mobile_prefixes = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', $powered_cache_mobile_prefixes ) ), ' ' );
+	$mobile_browsers = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', (string) $powered_cache_mobile_browsers ) ), ' ' );
+	$mobile_prefixes = addcslashes( implode( '|', preg_split( '/[\s*,\s*]*,+[\s*,\s*]*/', (string) $powered_cache_mobile_prefixes ) ), ' ' );
 
 	if ( ! isset( $_SERVER['HTTP_USER_AGENT'] ) ) {
 		return false;
