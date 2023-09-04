@@ -207,7 +207,7 @@ class JS extends WP_Scripts {
 						$js_array['paths']
 					);
 					$mtime    = max( array_map( 'filemtime', $paths ) );
-					$path_str = implode( ',', $js_array['paths'] ) . "?m=${mtime}j";
+					$path_str = implode( ',', $js_array['paths'] ) . "?m={$mtime}j";
 
 					if ( $this->allow_gzip_compression ) {
 						$path_64 = base64_encode( gzcompress( $path_str ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
