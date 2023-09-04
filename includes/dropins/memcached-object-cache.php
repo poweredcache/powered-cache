@@ -177,11 +177,36 @@ if ( class_exists( 'Memcached' ) ):
 
 		var $cache = array();
 		var $mc = array();
-		var $stats = array();
-		var $group_ops = array();
+		var $default_mcs   = array();
+		var $stats         = array(
+			'get'          => 0,
+			'get_local'    => 0,
+			'get_multi'    => 0,
+			'set'          => 0,
+			'set_local'    => 0,
+			'add'          => 0,
+			'delete'       => 0,
+			'delete_local' => 0,
+			'slow-ops'     => 0,
+		);
+		var $group_ops     = array();
+		var $cache_hits    = 0;
+		var $cache_misses  = 0;
+		var $global_prefix = '';
+		var $blog_prefix   = '';
+		var $key_salt      = '';
+
+		var $flush_group         = 'WP_Object_Cache';
+		var $global_flush_group  = 'WP_Object_Cache_global';
+		var $flush_key           = "flush_number_v4";
+		var $old_flush_key       = "flush_number";
+		var $flush_number        = array();
+		var $global_flush_number = null;
 
 		var $cache_enabled = true;
 		var $default_expiration = 0;
+
+		var $time_start = 0;
 
 		function add( $id, $data, $group = 'default', $expire = 0 ) {
 			$key = $this->key( $id, $group );

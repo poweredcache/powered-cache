@@ -326,98 +326,97 @@ function wp_cache_supports( $feature ) {
  * in the wp-content folder which is looked at in wp-settings. If that file
  * exists, then this file will not be included.
  */
+#[AllowDynamicProperties]
 class WP_Object_Cache {
 
 	/**
 	 * Holds the cached objects
 	 *
 	 * @var array
-	 * @access private
 	 */
-	var $cache = array();
+	public $cache = [];
 
 	/**
 	 * The amount of times the cache data was already stored in the cache.
 	 *
-	 * @access private
 	 * @var int
 	 */
-	var $cache_hits = 0;
+	public $cache_hits = 0;
 
 	/**
 	 * Amount of times the cache did not have the request in cache
 	 *
 	 * @var int
-	 * @access public
 	 */
-	var $cache_misses = 0;
+	public $cache_misses = 0;
 
 	/**
 	 * The amount of times a request was made to Redis
 	 *
-	 * @access private
 	 * @var int
 	 */
-	var $redis_calls = array();
+	public $redis_calls = [];
 
 	/**
 	 * List of global groups
 	 *
 	 * @var array
-	 * @access protected
 	 */
-	var $global_groups = array();
+	public $global_groups = [];
 
 	/**
 	 * List of non-persistent groups
 	 *
 	 * @var array
-	 * @access protected
 	 */
-	var $non_persistent_groups = array();
+	public $non_persistent_groups = [];
 
 	/**
 	 * List of groups which use Redis hashes.
 	 *
 	 * @var array
-	 * @access protected
 	 */
-	var $redis_hash_groups = array();
+	public $redis_hash_groups = [];
 
 	/**
 	 * The blog prefix to prepend to keys in non-global groups.
 	 *
 	 * @var int
-	 * @access private
 	 */
-	var $blog_prefix;
+	public $blog_prefix;
 
 	/**
 	 * Whether or not Redis is connected
 	 *
 	 * @var bool
-	 * @access private
 	 */
-	var $is_redis_connected = false;
+	public $is_redis_connected = false;
 
 	/**
 	 * Whether or not the object cache thinks Redis needs a flush
 	 *
 	 * @var bool
-	 * @access private
 	 */
-	var $do_redis_failback_flush = false;
+	public $do_redis_failback_flush = false;
 
 	/**
 	 * The last triggered error
+	 *
+	 * @var string
 	 */
-	var $last_triggered_error = '';
+	public $last_triggered_error = '';
+
+	/**
+	 * The missing redis message.
+	 *
+	 * @var string
+	 */
+	public $missing_redis_message = '';
 
 	/**
 	 * Whether or not to use true cache groups, instead of flattening.
 	 *
 	 * @var bool
-	 * @access private
 	 */
 	const USE_GROUPS = WP_REDIS_USE_CACHE_GROUPS;
 
@@ -936,9 +935,7 @@ class WP_Object_Cache {
 			$out[] = '<li><strong>Group:</strong> ' . esc_html( $group ) . ' - ( ' . number_format( strlen( serialize( $cache ) ) / 1024, 2 ) . 'k )</li>';
 		}
 		$out[] = '</ul>';
-		// @codingStandardsIgnoreStart
-		echo implode( PHP_EOL, $out );
-		// @codingStandardsIgnoreEnd
+		echo implode( PHP_EOL, $out ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped,WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
 	}
 
 	/**
@@ -1187,42 +1184,49 @@ class WP_Object_Cache {
 	 *               with defaults applied.
 	 */
 	public function build_client_parameters( $redis_server ) {
+		// Default Redis port.
+		$port = 6379;
+		// Default Redis database number.
+		$database = 0;
+
 		if ( empty( $redis_server ) ) {
 			// Attempt to automatically load Pantheon's Redis config from the env.
 			if ( isset( $_SERVER['CACHE_HOST'] ) ) {
-				$redis_server = array(
-					'host'     => $_SERVER['CACHE_HOST'],
-					'port'     => $_SERVER['CACHE_PORT'],
-					'auth'     => $_SERVER['CACHE_PASSWORD'],
-					'database' => isset( $_SERVER['CACHE_DB'] ) ? $_SERVER['CACHE_DB'] : 0,
-				);
+				$redis_server = [
+					// Don't use WP methods to sanitize the host due to plugin loading issues with other caching methods.
+					// @phpcs:ignore WordPressVIPMinimum.Functions.StripTags.StripTagsOneParameter,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+					'host' => strip_tags( $_SERVER['CACHE_HOST'] ),
+					'port' => ! empty( $_SERVER['CACHE_PORT'] ) ? intval( $_SERVER['CACHE_PORT'] ) : $port,
+					// Don't attempt to sanitize passwords as this can break authentication.
+					// @phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+					'auth' => ! empty( $_SERVER['CACHE_PASSWORD'] ) ? $_SERVER['CACHE_PASSWORD'] : null,
+					'database' => ! empty( $_SERVER['CACHE_DB'] ) ? intval( $_SERVER['CACHE_DB'] ) : $database,
+				];
 			} else {
-				$redis_server = array(
-					'host'     => '127.0.0.1',
-					'port'     => 6379,
-					'database' => 0,
-				);
+				$redis_server = [
+					'host' => '127.0.0.1',
+					'port' => $port,
+					'database' => $database,
+				];
 			}
 		}
 
-		if ( file_exists( $redis_server['host'] ) && 'socket' === filetype( $redis_server['host'] ) ) { //unix socket connection
-			//port must be null or socket won't connect
+		if ( file_exists( $redis_server['host'] ) && 'socket' === filetype( $redis_server['host'] ) ) { // unix socket connection.
+			// port must be null or socket won't connect.
+			unset( $redis_server['port'] );
 			$port = null;
-		} else { //tcp connection
-			$port = ! empty( $redis_server['port'] ) ? $redis_server['port'] : 6379;
 		}
 
-		$defaults = array(
-			'host'           => $redis_server['host'],
-			'port'           => $port,
-			'timeout'        => 1000, // I multiplied this by 1000 so we'd have a common measure of ms instead of s and ms, need to make sure this gets divided by 1000
+		$defaults = [
+			'host' => $redis_server['host'],
+			'port' => $port,
+			'timeout' => 1000, // I multiplied this by 1000 so we'd have a common measure of ms instead of s and ms, need to make sure this gets divided by 1000.
 			'retry_interval' => 100,
-		);
-		// 1s timeout, 100ms delay between reconnections
+		];
+		// 1s timeout, 100ms delay between reconnections.
 
-		// merging the defaults with the original $redis_server enables any
-		// custom parameters to get sent downstream to the redis client.
-		return array_replace_recursive( $redis_server, $defaults );
+		// merging the defaults with the original $redis_server enables any custom parameters to get sent downstream to the redis client.
+		return array_replace_recursive( $defaults, $redis_server );
 	}
 
 	/**
