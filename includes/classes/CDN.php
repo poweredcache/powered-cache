@@ -91,7 +91,7 @@ class CDN {
 	 * @since 2.2
 	 */
 	public function start_buffer() {
-		ob_start( 'self::end_buffering' );
+		ob_start( [ '\PoweredCache\CDN', 'end_buffering' ] );
 	}
 
 	/**
@@ -152,7 +152,7 @@ class CDN {
 
 		$included_file_extensions_regex = quotemeta( implode( '|', self::get_file_extensions() ) );
 		$urls_regex                     = '#(?:(?:[\"\'\s=>,;]|url\()\K|^)[^\"\'\s(=>,;]+(' . $included_file_extensions_regex . ')(\?[^\/?\\\"\'\s)>,]+)?(?:(?=\/?[?\\\"\'\s)>,&])|$)#i';
-		$rewritten_contents             = preg_replace_callback( $urls_regex, 'self::rewrite_url', $contents );
+		$rewritten_contents             = preg_replace_callback( $urls_regex, [ '\PoweredCache\CDN', 'rewrite_url' ], $contents );
 
 		return $rewritten_contents;
 	}
