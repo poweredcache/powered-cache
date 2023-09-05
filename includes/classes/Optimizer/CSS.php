@@ -133,11 +133,12 @@ class CSS extends WP_Styles {
 			 *
 			 * @param  {boolean} $do_concat Contact status.
 			 * @param  {string} $handle Handle of registered CSS item.
+			 * @param  {string} $css_url CSS Url. @since 3.2.1
 			 *
 			 * @return {boolean} New value.
 			 * @since  2.0
 			 */
-			$do_concat = apply_filters( 'powered_cache_fo_css_do_concat', $do_concat, $handle );
+			$do_concat = apply_filters( 'powered_cache_fo_css_do_concat', $do_concat, $handle, $css_url );
 
 			if ( true === $do_concat ) {
 				$media = $obj->args;
