@@ -3,7 +3,7 @@ Contributors:  poweredcache, wphandle, m_uysl
 Tags: cache, caching, web vitals, performance, fastest, page speed, optimization, cdn, object cache, minify, powered cache
 Requires at least:  5.7
 Tested up to:  6.3
-Stable tag:  3.2
+Stable tag:  3.2.1
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -170,6 +170,11 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 3.2.1 (September 05, 2023) =
+- [Fix] Dynamic property deprecations for PHP 8.2
+- [Fix] Deprecated variable format for PHP 8.2
+- [Added] Pass $css_url with `powered_cache_fo_css_do_concat` filter.
 
 = 3.2 (August 31, 2023) =
 - [Refactored] Improved JS optimization and execution options for better performance.
