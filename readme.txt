@@ -101,13 +101,13 @@ __Developer Docs__: [https://poweredcache.github.io/docs/](https://poweredcache.
 
 == Installation ==
 
-=== From within WordPress ===
+= From within WordPress =
 1. Visit 'Plugins > Add New'
 2. Search for 'Powered Cache'
 3. Activate Powered Cache from your Plugins page.
 4. That's all.
 
-=== Manually ===
+= Manually =
 1. Upload the `powered-cache` folder to the `/wp-content/plugins/` directory
 2. Activate the Powered Cache plugin through the 'Plugins' menu in WordPress
 3. That's all.
