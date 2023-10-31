@@ -1078,6 +1078,38 @@ js-(before|after|extra)</pre>
 					</div>
 
 
+					<?php if ( can_control_all_settings() ) : ?>
+						<div class="sui-box-settings-row">
+							<div class="sui-box-settings-col-1">
+								<span class="sui-settings-label"><?php esc_html_e( 'Rewrite File Optimizer', 'powered-cache' ); ?></span>
+								<span class="sui-description"></span>
+							</div>
+
+							<div class="sui-box-settings-col-2">
+								<div class="sui-form-field">
+									<label for="rewrite_file_optimizer" id="rewrite_file_optimizer_label" class="sui-toggle">
+										<input
+											type="checkbox"
+											id="rewrite_file_optimizer"
+											name="rewrite_file_optimizer"
+											aria-labelledby="rewrite_file_optimizer_label"
+											aria-describedby="enable_rewrite_file_optimizer_description"
+											value="1"
+											<?php checked( 1, $settings['rewrite_file_optimizer'] ); ?>
+										>
+										<span class="sui-toggle-slider" aria-hidden="true"></span>
+										<span id="enable_rewrite_file_optimizer_label" class="sui-toggle-label"><?php esc_html_e( 'Enable rewrite for file optimizer.', 'powered-cache' ); ?></span>
+										<span id="enable_rewrite_file_optimizer_description" class="sui-description">
+											<?php echo wp_kses_post( __( 'This feature uses <code>/_static/??</code> instead <code>file-optimizer.php??</code> for file optimization requests. If automatic .htaccess configuration is enabled, the necessary settings will be applied automatically. If not, you will need to manually add the appropriate rewrite rules.</a>', 'powered-cache' ) ); ?>
+											<a href="<?php echo esc_url( get_doc_url( 'rewrite-file-optimizer' ) ); ?>" target="_blank"><?php esc_html_e( '(?)', 'powered-cache' ); ?></a>
+										</span>
+									</label>
+								</div>
+							</div>
+						</div>
+					<?php endif; ?>
+
+
 				</div>
 
 				<div class="sui-box-footer">
@@ -2624,37 +2656,6 @@ js-(before|after|extra)</pre>
 							</div>
 						</div>
 					</div>
-
-					<?php if ( can_control_all_settings() ) : ?>
-						<div class="sui-box-settings-row">
-							<div class="sui-box-settings-col-1">
-								<span class="sui-settings-label"><?php esc_html_e( 'Rewrite File Optimizer', 'powered-cache' ); ?></span>
-								<span class="sui-description"></span>
-							</div>
-
-							<div class="sui-box-settings-col-2">
-								<div class="sui-form-field">
-									<label for="rewrite_file_optimizer" id="rewrite_file_optimizer_label" class="sui-toggle">
-										<input
-											type="checkbox"
-											id="rewrite_file_optimizer"
-											name="rewrite_file_optimizer"
-											aria-labelledby="rewrite_file_optimizer_label"
-											aria-describedby="enable_rewrite_file_optimizer_description"
-											value="1"
-											<?php checked( 1, $settings['rewrite_file_optimizer'] ); ?>
-										>
-										<span class="sui-toggle-slider" aria-hidden="true"></span>
-										<span id="enable_rewrite_file_optimizer_label" class="sui-toggle-label"><?php esc_html_e( 'Enable rewrite for file optimizer.', 'powered-cache' ); ?></span>
-										<span id="enable_rewrite_file_optimizer_description" class="sui-description">
-											<?php echo wp_kses_post( __( 'This feature replaces the need for <code>file-optimizer.php</code> by mapping the root <code>/_static/</code> directory directly to the file optimizer. If automatic .htaccess configuration is enabled, the necessary settings will be applied automatically. If not, you will need to manually add the appropriate rewrite rules.</a>', 'powered-cache' ) ); ?>
-											<a href="<?php echo esc_url( get_doc_url( 'rewrite-file-optimizer' ) ); ?>" target="_blank"><?php esc_html_e( '(?)', 'powered-cache' ); ?></a>
-										</span>
-									</label>
-								</div>
-							</div>
-						</div>
-					<?php endif; ?>
 
 					<div class="sui-box-settings-row">
 						<div class="sui-box-settings-col-1">
