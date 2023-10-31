@@ -97,6 +97,8 @@ class Install {
 		if ( version_compare( get_site_option( DB_VERSION_OPTION_NAME ), POWERED_CACHE_DB_VERSION, '<' ) ) {
 			$this->upgrade_30( true );
 			$this->upgrade_32( true );
+			$this->upgrade_33( true );
+
 			\PoweredCache\Utils\log( sprintf( '[Networkwide] Upgrade DB version: %s', POWERED_CACHE_DB_VERSION ) );
 			update_site_option( DB_VERSION_OPTION_NAME, POWERED_CACHE_DB_VERSION );
 		}
@@ -110,6 +112,7 @@ class Install {
 			$this->maybe_migrate_from_1x();
 			$this->upgrade_30();
 			$this->upgrade_32();
+			$this->upgrade_33();
 
 			\PoweredCache\Utils\log( sprintf( 'Upgrade DB version: %s', POWERED_CACHE_DB_VERSION ) );
 			update_option( DB_VERSION_OPTION_NAME, POWERED_CACHE_DB_VERSION );
@@ -189,6 +192,44 @@ class Install {
 		\PoweredCache\Utils\log( 'Upgraded to version 3.2' );
 	}
 
+	/**
+	 * Upgrade routine for version 3.3
+	 *
+	 * @param bool $network_wide whether plugin activated network-wide or not
+	 *
+	 * @return void
+	 */
+	public function upgrade_33( $network_wide = false ) {
+		$current_version = $network_wide ? get_site_option( DB_VERSION_OPTION_NAME ) : get_option( DB_VERSION_OPTION_NAME );
+		if ( ! version_compare( $current_version, '3.3', '<' ) ) {
+			return;
+		}
+
+		$settings = \PoweredCache\Utils\get_settings( $network_wide );
+
+		// disable rewrite file optimizer if auto configure htaccess is disabled
+		if ( ! $settings['auto_configure_htaccess'] && $settings['rewrite_file_optimizer'] ) {
+			$settings['rewrite_file_optimizer'] = false;
+		}
+
+		if ( $network_wide ) {
+			update_site_option( SETTING_OPTION, $settings );
+		} else {
+			update_option( SETTING_OPTION, $settings );
+		}
+
+		Config::factory()->save_configuration( $settings, $network_wide );
+
+		if ( $settings['auto_configure_htaccess'] && $settings['rewrite_file_optimizer'] ) {
+			if ( $network_wide ) {
+				\PoweredCache\Utils\clean_page_cache_dir();
+			} else {
+				\PoweredCache\Utils\clean_site_cache_dir();
+			}
+		}
+
+		\PoweredCache\Utils\log( 'Upgraded to version 3.3' );
+	}
 
 	/**
 	 * Check if a lock exists of the upgrade routine

@@ -96,7 +96,12 @@ class Helper {
 	 * @return string
 	 */
 	public static function get_optimized_url( $path, $minify ) {
+		$settings      = \PoweredCache\Utils\get_settings();
 		$optimizer_url = POWERED_CACHE_URL . 'includes/file-optimizer.php??';
+		if ( $settings['rewrite_file_optimizer'] ) {
+			$optimizer_url = site_url() . '/_static/??';
+		}
+
 		$optimized_url = $optimizer_url . $path . '&minify=' . absint( $minify );
 
 		$optimized_url = esc_url_raw( apply_filters( 'powered_cache_fo_optimized_url', $optimized_url, $path, $minify ) );

@@ -81,6 +81,7 @@ class Htaccess {
 		$rules .= $this->gzip_rules();
 		$rules .= $this->etag_rules();
 		$rules .= $this->cache_control_rules();
+		$rules .= $this->file_optimizer_rewrite_rules();
 		$rules .= $this->rewrite_rules();
 
 		/**
@@ -559,6 +560,33 @@ class Htaccess {
 		 * @since  2.5
 		 */
 		$rules = apply_filters( 'powered_cache_htaccess_cache_control_rules', $rules );
+
+		return $rules;
+	}
+
+
+	/**
+	 * Rewrite rules for file optimizer
+	 *
+	 * @return string|void
+	 * @since  3.3
+	 *         https://example.com/wp-content/plugins/powered-cache/includes/file-optimizer.php??
+	 *         to
+	 *         https://example.com/_static/??
+	 * @see    https://docs.poweredcache.com/rewrite-file-optimizer/
+	 */
+	public function file_optimizer_rewrite_rules() {
+		if ( ! $this->settings['rewrite_file_optimizer'] ) {
+			return;
+		}
+
+		$rules  = '';
+		$rules .= '<IfModule mod_rewrite.c>' . PHP_EOL;
+		$rules .= '    # Enable rewrite engine' . PHP_EOL;
+		$rules .= '    RewriteEngine On' . PHP_EOL;
+		$rules .= '    # Redirect all requests starting with /_static/' . PHP_EOL;
+		$rules .= '    RewriteRule ^_static/.* wp-content/plugins/powered-cache/includes/file-optimizer.php [L]' . PHP_EOL;
+		$rules .= '</IfModule>' . PHP_EOL;
 
 		return $rules;
 	}

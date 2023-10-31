@@ -212,6 +212,11 @@ function process_form_submit() {
 			clean_site_cache_dir();
 		}
 
+		// cleanup existing cache due to optimized URL changes
+		if ( $old_options['rewrite_file_optimizer'] && ! $options['rewrite_file_optimizer'] ) {
+			clean_site_cache_dir();
+		}
+
 		if ( $old_options['cache_timeout'] !== $options['cache_timeout'] ) {
 			$timestamp = wp_next_scheduled( PURGE_CACHE_CRON_NAME );
 

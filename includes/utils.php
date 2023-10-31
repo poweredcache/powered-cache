@@ -43,6 +43,8 @@ function is_network_wide( $plugin_file ) {
  * @since  2.0
  */
 function get_settings( $force_network_wide = false ) {
+	global $is_apache;
+
 	$settings = [
 		// basic options
 		'enable_page_cache'              => true,
@@ -54,7 +56,7 @@ function get_settings( $force_network_wide = false ) {
 		'gzip_compression'               => false,
 		'cache_timeout'                  => 1440,
 		// advanced options
-		'auto_configure_htaccess'        => true,
+		'auto_configure_htaccess'        => $is_apache,
 		'rejected_user_agents'           => '',
 		'rejected_cookies'               => '',
 		'vary_cookies'                   => '',
@@ -88,6 +90,7 @@ function get_settings( $force_network_wide = false ) {
 		'js_delay'                       => false,
 		'js_delay_exclusions'            => '',
 		'js_execution_optimized_only'    => true,   // deprecated @since 3.2
+		'rewrite_file_optimizer'         => $is_apache,
 		// media optimization
 		'enable_image_optimization'      => false,
 		'add_missing_image_dimensions'   => false,
