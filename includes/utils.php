@@ -64,6 +64,7 @@ function get_settings( $force_network_wide = false ) {
 		'purge_additional_pages'         => '',
 		// file optimization
 		'minify_html'                    => false,
+		'minify_html_dom_optimization'   => false,
 		'combine_google_fonts'           => false,
 		'swap_google_fonts_display'      => true,
 		'use_bunny_fonts'                => false,

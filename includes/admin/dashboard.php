@@ -279,6 +279,7 @@ function sanitize_options( $options ) {
 	$sanitized_options['ignored_query_strings']         = sanitize_textarea_field( $options['ignored_query_strings'] );
 	$sanitized_options['purge_additional_pages']        = sanitize_textarea_field( $options['purge_additional_pages'] );
 	$sanitized_options['minify_html']                   = ! empty( $options['minify_html'] );
+	$sanitized_options['minify_html_dom_optimization']  = ! empty( $options['minify_html_dom_optimization'] );
 	$sanitized_options['combine_google_fonts']          = ! empty( $options['combine_google_fonts'] );
 	$sanitized_options['swap_google_fonts_display']     = ! empty( $options['swap_google_fonts_display'] );
 	$sanitized_options['use_bunny_fonts']               = ! empty( $options['use_bunny_fonts'] );

@@ -581,6 +581,7 @@ $settings = \PoweredCache\Utils\get_settings();
 											id="minify_html"
 											name="minify_html"
 											aria-labelledby="minify_html_label"
+											aria-controls="minify_html_dom_optimization_control"
 											value="1"
 										<?php checked( 1, $settings['minify_html'] ); ?>
 									>
@@ -588,6 +589,25 @@ $settings = \PoweredCache\Utils\get_settings();
 									<span id="minify_html_label" class="sui-toggle-label"><?php esc_html_e( 'Minify HTML', 'powered-cache' ); ?></span>
 									<span id="minify_html_label_description" class="sui-description"><?php esc_html_e( 'Removes all whitespace characters from the HTML output, minimizing the HTML size.', 'powered-cache' ); ?></span>
 								</label>
+							</div>
+
+							<div style=" <?php echo( ! $settings['minify_html'] ? 'display:none' : '' ); ?>" tabindex="0" id="minify_html_dom_optimization_control">
+								<div class="sui-form-field">
+									<label for="minify_html_dom_optimization" class="sui-toggle">
+										<input type="checkbox"
+											   value="1"
+											   name="minify_html_dom_optimization"
+											   id="minify_html_dom_optimization"
+											<?php checked( 1, $settings['minify_html_dom_optimization'] ); ?>
+										>
+										<span class="sui-toggle-slider" aria-hidden="true"></span>
+										<span id="minify_html_dom_optimization_label" class="sui-toggle-label"><?php esc_html_e( 'Optimize HTML via Dom Parser', 'powered-cache' ); ?></span>
+										<span id="minify_html_dom_optimization_description" class="sui-description">
+											<?php esc_html_e( 'Improves HTML minification efficiency.', 'powered-cache' ); ?>
+										</span>
+									</label>
+									<br>
+								</div>
 							</div>
 
 							<div class="sui-form-field">
