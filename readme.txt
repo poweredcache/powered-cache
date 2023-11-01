@@ -3,7 +3,7 @@ Contributors:  poweredcache, wphandle, skopco, m_uysl
 Tags: cache, caching, web vitals, performance, fastest, page speed, optimization, cdn, object cache, minify, powered cache
 Requires at least:  5.7
 Tested up to:  6.4
-Stable tag:  3.3
+Stable tag:  3.3.1
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -13,7 +13,9 @@ The most powerful caching and performance suite for WordPress. Easily Improve Pa
 
 == Description ==
 
-Powered Cache is your comprehensive solution for enhancing WordPress site performance, ensuring a swift and seamless user experience. The Free version provides essential tools to boost your site's speed while the [Premium version](https://poweredcache.com) unlocks a suite of advanced optimization features.
+Powered Cache is your comprehensive solution for enhancing WordPress site performance, ensuring a swift and seamless user experience.
+
+The Free version provides essential tools to boost your site's speed while the [Premium version](https://poweredcache.com) unlocks a suite of advanced optimization features.
 
 = Features ⚡️ =
 
@@ -168,6 +170,9 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 3.3.1 (November 01, 2023) =
+- [Fix] Save file optimizer rewrite setting.
 
 = 3.3 (November 01, 2023) =
 - [Fix] Fix partially supported deprecated callable for PHP 8.2
