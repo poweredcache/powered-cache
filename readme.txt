@@ -1,9 +1,9 @@
 === Powered Cache – Caching and Optimization for WordPress – Easily Improve PageSpeed & Web Vitals Score ===
-Contributors:  poweredcache, wphandle, m_uysl
+Contributors:  poweredcache, wphandle, skopco, m_uysl
 Tags: cache, caching, web vitals, performance, fastest, page speed, optimization, cdn, object cache, minify, powered cache
 Requires at least:  5.7
-Tested up to:  6.3
-Stable tag:  3.2.1
+Tested up to:  6.4
+Stable tag:  3.3
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -13,15 +13,13 @@ The most powerful caching and performance suite for WordPress. Easily Improve Pa
 
 == Description ==
 
-Powered Cache is a comprehensive caching and optimization plugin for WordPress. It's easy to use and dramatically boosts site performance in a few clicks.
-
-Powered Cache Free contains everything that you need to optimize your website performance, and the [Powered Cache Premium](https://poweredcache.com) plugin and its extensions unlock even more tools and functionality.
+Powered Cache is your comprehensive solution for enhancing WordPress site performance, ensuring a swift and seamless user experience. The Free version provides essential tools to boost your site's speed while the [Premium version](https://poweredcache.com) unlocks a suite of advanced optimization features.
 
 = Features ⚡️ =
 
-__Simple and easily configurable__: You can import and export settings with a single click.
+__Simple and easily configurable__: Import and export settings effortlessly.
 
-__Page Caching__: Lightning-fast pages. (Trusted by enterprise-grade websites)
+__Page Caching__: Accelerate page loads, trusted by top-tier websites.
 
 __Object Caching__: Speed up dynamic pageviews. It supports Redis, Memcached, Memcache, and APCu.
 
@@ -170,6 +168,14 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 3.3 (November 01, 2023) =
+- [Fix] Fix partially supported deprecated callable for PHP 8.2
+- [Added] Add WPS Hide Login compat.
+- [Added] Rewrite support for File Optimizer.
+- [Added] DOM Optimization option for HTML Minification.
+- Dependency updates.
+- Tested with WP 6.4
 
 = 3.2.1 (September 05, 2023) =
 - [Fix] Dynamic property deprecations for PHP 8.2
