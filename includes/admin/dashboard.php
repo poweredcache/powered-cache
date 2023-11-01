@@ -276,6 +276,7 @@ function sanitize_options( $options ) {
 	$sanitized_options['gzip_compression']              = ! empty( $options['gzip_compression'] );
 	$sanitized_options['cache_timeout']                 = absint( $options['cache_timeout'] );
 	$sanitized_options['auto_configure_htaccess']       = ! empty( $options['auto_configure_htaccess'] );
+	$sanitized_options['rewrite_file_optimizer']        = ! empty( $options['rewrite_file_optimizer'] );
 	$sanitized_options['rejected_user_agents']          = sanitize_textarea_field( $options['rejected_user_agents'] );
 	$sanitized_options['rejected_cookies']              = sanitize_textarea_field( $options['rejected_cookies'] );
 	$sanitized_options['vary_cookies']                  = sanitize_textarea_field( $options['vary_cookies'] );
