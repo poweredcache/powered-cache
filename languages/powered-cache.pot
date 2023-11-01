@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Powered Cache 3.3\n"
+"Project-Id-Version: Powered Cache 3.3.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/powered-cache\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-11-01T11:25:59+00:00\n"
+"POT-Creation-Date: 2023-11-01T12:00:17+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: powered-cache\n"
@@ -17,7 +17,7 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: includes/admin/dashboard.php:93
-#: includes/admin/dashboard.php:451
+#: includes/admin/dashboard.php:452
 #: includes/admin/partials/settings-page.php:39
 #: includes/classes/MetaBox.php:127
 msgid "Powered Cache"
@@ -38,71 +38,70 @@ msgid "Powered Cache Settings"
 msgstr ""
 
 #: includes/admin/dashboard.php:106
-#: includes/admin/dashboard.php:849
+#: includes/admin/dashboard.php:850
 msgid "Settings"
 msgstr ""
 
-#: includes/admin/dashboard.php:479
+#: includes/admin/dashboard.php:480
 msgid "Page cache deleted for all websites!"
 msgstr ""
 
-#: includes/admin/dashboard.php:480
+#: includes/admin/dashboard.php:481
 msgid "Page cache deleted successfully!"
 msgstr ""
 
-#: includes/admin/dashboard.php:481
+#: includes/admin/dashboard.php:482
 msgid "Object cache deleted successfully!"
 msgstr ""
 
-#: includes/admin/dashboard.php:482
+#: includes/admin/dashboard.php:483
 msgid "All cached items flushed successfully!"
 msgstr ""
 
-#: includes/admin/dashboard.php:483
+#: includes/admin/dashboard.php:484
 msgid "The cache preloading has been initialized!"
 msgstr ""
 
-#: includes/admin/dashboard.php:484
+#: includes/admin/dashboard.php:485
 msgid "The Critical CSS generation process has been initialized!"
 msgstr ""
 
-#: includes/admin/dashboard.php:485
+#: includes/admin/dashboard.php:486
 msgid "The Critical CSS generation process has been initialized for all sites! This might take a while, depending on the network size."
 msgstr ""
 
-#: includes/admin/dashboard.php:486
+#: includes/admin/dashboard.php:487
 msgid "The UCSS generation process has been initialized!"
 msgstr ""
 
-#: includes/admin/dashboard.php:487
+#: includes/admin/dashboard.php:488
 msgid "The UCSS generation process has been initialized for all sites! This might take a while, depending on the network size."
 msgstr ""
 
-#: includes/admin/dashboard.php:488
+#: includes/admin/dashboard.php:489
 msgid "Cloudflare cache flushed, it can take up to 30 seconds to delete all cache from Cloudflare!"
 msgstr ""
 
-#: includes/admin/dashboard.php:489
+#: includes/admin/dashboard.php:490
 msgid "Settings have been reset!"
 msgstr ""
 
-#: includes/admin/dashboard.php:490
+#: includes/admin/dashboard.php:491
 msgid "Settings have been imported!"
 msgstr ""
 
-#: includes/admin/dashboard.php:491
+#: includes/admin/dashboard.php:492
 msgid "Settings saved and database being optimized..."
 msgstr ""
 
-#: includes/admin/dashboard.php:492
+#: includes/admin/dashboard.php:493
 msgid "Settings saved."
 msgstr ""
 
-#: includes/admin/dashboard.php:496
+#: includes/admin/dashboard.php:497
 msgid "Page cache for %s language has been deleted!"
 msgstr ""
 
-#: includes/admin/dashboard.php:500
 #: includes/admin/dashboard.php:501
 #: includes/admin/dashboard.php:502
 #: includes/admin/dashboard.php:503
@@ -110,86 +109,87 @@ msgstr ""
 #: includes/admin/dashboard.php:505
 #: includes/admin/dashboard.php:506
 #: includes/admin/dashboard.php:507
+#: includes/admin/dashboard.php:508
 msgid "You don't have permission to perform this action!"
 msgstr ""
 
-#: includes/admin/dashboard.php:508
+#: includes/admin/dashboard.php:509
 msgid "Your license key does not seem valid. A valid license is required for the Critical CSS!"
 msgstr ""
 
-#: includes/admin/dashboard.php:509
+#: includes/admin/dashboard.php:510
 msgid "Your license key does not seem valid. A valid license is required for removing unused CSS!"
 msgstr ""
 
-#: includes/admin/dashboard.php:510
+#: includes/admin/dashboard.php:511
 msgid "Could not flush Cloudflare cache. Please make sure you entered the correct credentials and zone id!"
 msgstr ""
 
-#: includes/admin/dashboard.php:552
+#: includes/admin/dashboard.php:553
 msgid "Purge All Cache"
 msgstr ""
 
-#: includes/admin/dashboard.php:715
+#: includes/admin/dashboard.php:716
 msgid "wp-config.php is writable."
 msgstr ""
 
-#: includes/admin/dashboard.php:717
+#: includes/admin/dashboard.php:718
 msgid "wp-config.php is not writable. Please make sure the file writable or you can manually define %s constant."
 msgstr ""
 
-#: includes/admin/dashboard.php:730
+#: includes/admin/dashboard.php:731
 msgid "Cache directory %s is not exist!"
 msgstr ""
 
-#: includes/admin/dashboard.php:732
+#: includes/admin/dashboard.php:733
 msgid "Cache directory %s is not writeable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:735
+#: includes/admin/dashboard.php:736
 msgid "Cache directory %s exist and writable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:749
+#: includes/admin/dashboard.php:750
 msgid ".htaccess file %s is not exist!"
 msgstr ""
 
-#: includes/admin/dashboard.php:751
+#: includes/admin/dashboard.php:752
 msgid ".htaccess file %s is not writeable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:754
+#: includes/admin/dashboard.php:755
 msgid ".htaccess file %s exist and writable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:769
+#: includes/admin/dashboard.php:770
 msgid "Required file for the page caching %s is not exist!"
 msgstr ""
 
-#: includes/admin/dashboard.php:771
+#: includes/admin/dashboard.php:772
 msgid "Required file for the page caching %s is not writeable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:774
+#: includes/admin/dashboard.php:775
 msgid "Required file for the page caching %s exist and writable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:789
+#: includes/admin/dashboard.php:790
 msgid "Required file for the object caching %s is not exist!"
 msgstr ""
 
-#: includes/admin/dashboard.php:791
+#: includes/admin/dashboard.php:792
 msgid "Required file for the object caching %s is not writeable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:794
+#: includes/admin/dashboard.php:795
 msgid "Required file for the object caching %s exist and writable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:807
+#: includes/admin/dashboard.php:808
 msgid "Invalid request"
 msgstr ""
 
-#: includes/admin/dashboard.php:852
+#: includes/admin/dashboard.php:853
 msgid "Get Premium"
 msgstr ""
 
