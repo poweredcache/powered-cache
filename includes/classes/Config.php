@@ -591,6 +591,15 @@ class Config {
 			$contents .= '}' . PHP_EOL . PHP_EOL;
 		}
 
+		// file optimizer rewrite rule
+		if ( $settings['rewrite_file_optimizer'] ) {
+			$contents .= 'location /_static/ {' . PHP_EOL;
+			$contents .= '  fastcgi_pass unix:/var/run/fastcgi.sock;' . PHP_EOL;
+			$contents .= '  include /etc/nginx/fastcgi_params;' . PHP_EOL;
+			$contents .= '  fastcgi_param SCRIPT_FILENAME $document_root/wp-content/plugins/powered-cache/includes/file-optimizer.php;' . PHP_EOL;
+			$contents .= '}' . PHP_EOL . PHP_EOL;
+		}
+
 		// https
 		$contents .= '# HTTPS' . PHP_EOL;
 		$contents .= 'if ($https = "on") {' . PHP_EOL;
