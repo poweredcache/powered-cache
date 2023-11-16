@@ -195,7 +195,7 @@ function powered_cache_page_buffer( $buffer, $flags ) {
 
 	// Don't cache password protected posts
 	if ( ! empty( $post->post_password ) ) {
-		powered_cache_add_cache_miss_header( "Ppassword protected posts are not cached" );
+		powered_cache_add_cache_miss_header( "Password protected posts are not cached" );
 
 		return $buffer;
 	}
