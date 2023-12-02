@@ -79,7 +79,8 @@ if ( empty( $GLOBALS['powered_cache_options']['cache_mobile'] ) ) {
 
 
 if ( ! empty( $_COOKIE ) ) {
-	$wp_cookies = array( 'wordpressuser_', 'wordpresspass_', 'wordpress_sec_', 'wordpress_logged_in_' );
+	$wp_cookies      = [ 'wordpressuser_', 'wordpresspass_', 'wordpress_sec_', 'wordpress_logged_in_' ];
+	$comment_cookies = [ 'comment_author_', 'comment_author_email_', 'comment_author_url_' ];
 
 	//Don't cache if logged in
 	if ( ! isset( $GLOBALS['powered_cache_options']['loggedin_user_cache'] ) || false === $GLOBALS['powered_cache_options']['loggedin_user_cache'] ) {
@@ -89,6 +90,15 @@ if ( ! empty( $_COOKIE ) ) {
 				if ( strpos( $key, $cookie ) !== false ) {
 					// Logged in!
 					powered_cache_add_cache_miss_header( "User logged-in" );
+
+					return;
+				}
+			}
+
+			foreach ( $comment_cookies as $cookie ) {
+				if ( strpos( $key, $cookie ) !== false ) {
+					// Commented on the site!
+					powered_cache_add_cache_miss_header( "User left a comment" );
 
 					return;
 				}
@@ -110,7 +120,7 @@ if ( ! empty( $_COOKIE ) ) {
 
 	// don't cache specific cookie
 	if ( isset( $powered_cache_rejected_cookies ) && ! empty( $powered_cache_rejected_cookies ) ) {
-		$rejected_cookies = array_diff( $powered_cache_rejected_cookies, $wp_cookies ); // use diff in case caching for logged-in user
+		$rejected_cookies = array_diff( $powered_cache_rejected_cookies, $wp_cookies, $comment_cookies ); // use diff in case caching for logged-in user
 		$rejected_cookies = implode( '|', $rejected_cookies );
 		if ( preg_match( '#(' . $rejected_cookies . ')#', var_export( $_COOKIE, true ) ) ) {
 			powered_cache_add_cache_miss_header( "Rejected cookie" );

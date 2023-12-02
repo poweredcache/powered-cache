@@ -371,7 +371,17 @@ class AdvancedCache {
 			$cookies = preg_split( '#(\r\n|\r|\n)#', $settings['rejected_cookies'], - 1, PREG_SPLIT_NO_EMPTY );
 		}
 
-		$wp_cookies = [ 'wp-postpass', 'wordpressuser_', 'wordpresspass_', 'wordpress_sec_', 'wordpress_logged_in_', 'powered_cache_commented_posts' ];
+		$wp_cookies = [
+			'wp-postpass',
+			'wordpressuser_',
+			'wordpresspass_',
+			'wordpress_sec_',
+			'wordpress_logged_in_',
+			'powered_cache_commented_posts',
+			'comment_author_',
+			'comment_author_email_',
+			'comment_author_url_',
+		];
 
 		if ( ! empty( $cookies ) ) {
 			$wp_cookies = array_merge( $cookies, $wp_cookies );
