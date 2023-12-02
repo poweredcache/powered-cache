@@ -303,12 +303,6 @@ class Config {
 		array_shift( $config_file );
 		array_unshift( $config_file, '<?php', "define( 'WP_CACHE', $status_string ); // Powered Cache" );
 
-		foreach ( $config_file as $key => $line ) {
-			if ( '' === $line ) {
-				unset( $config_file[ $key ] );
-			}
-		}
-
 		if ( ! @file_put_contents( $config_path, implode( PHP_EOL, $config_file ) ) ) {  // phpcs:ignore
 			return false;
 		}
