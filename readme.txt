@@ -3,7 +3,7 @@ Contributors:  poweredcache, wphandle, skopco, m_uysl
 Tags: cache, caching, web vitals, performance, fastest, page speed, optimization, cdn, object cache, minify, powered cache
 Requires at least:  5.7
 Tested up to:  6.4
-Stable tag:  3.3.1
+Stable tag:  3.3.2
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -170,6 +170,14 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 3.3.2 (December 03, 2023) =
+- [Fix] Improved comment cookie handling to prevent serving cached pages to users with a comment cookie. Props [@jumbo](https://profiles.wordpress.org/jumbo/).
+- [Fix] Ensured empty lines in wp-config.php are not removed upon WP_CACHE definition. Props [@jumbo](https://profiles.wordpress.org/jumbo/).
+- [Fix] CDN integration now skipped for Block Editor requests. Props [@jumbo](https://profiles.wordpress.org/jumbo/).
+- [Improvement] Added support for custom wp-content structure in File Optimizer.
+- [Improvement] Added File Optimizer rewrite rules for Nginx.
+- [Misc] Dependency updates.
 
 = 3.3.1 (November 01, 2023) =
 - [Fix] Save file optimizer rewrite setting.
@@ -369,6 +377,9 @@ Yes, it’s compatible with PHP 8+
 Detailed changelog located in [changelog page](https://poweredcache.com/changelog)
 
 == Upgrade notice ==
+
+= 3.3.2 =
+ - Contains a bug fix related to CDN integration. If you enabled CDN integration, please [search-replace](https://developer.wordpress.org/cli/commands/search-replace/) command to update your CDN hostname(s) with the original URL in the database.
 
 = 2.0 =
  - Requirements have been updated.
