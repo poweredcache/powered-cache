@@ -44,7 +44,7 @@ function setup() {
  *
  * @since 1.0
  */
-function maybe_display_plugin_compatability_notices() {
+function maybe_display_plugin_compatibility_notices() {
 	$settings = \PoweredCache\Utils\get_settings();
 
 	$plugins = array(

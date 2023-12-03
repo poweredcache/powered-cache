@@ -93,7 +93,7 @@ Bug reports and pull requests are welcome on [Github](https://github.com/powered
 
 ## Documentation
 __Documentation site__: [https://docs.poweredcache.com/](https://docs.poweredcache.com/)
-__Developer Docs :__ [https://poweredcache.github.io/docs/](https://poweredcache.github.io/docs/)  (***Hook referance***)
+__Developer Docs :__ [https://poweredcache.github.io/docs/](https://poweredcache.github.io/docs/)  (***Hook reference***)
 
 
 ## Setup

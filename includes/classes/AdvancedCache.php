@@ -458,7 +458,7 @@ class AdvancedCache {
 	}
 
 	/**
-	 * Get the list of rejected uri that nerver get cached
+	 * Get the list of rejected uri that never get cached
 	 *
 	 * @return mixed|void
 	 * @since 2.0
@@ -476,7 +476,7 @@ class AdvancedCache {
 		 *
 		 * @hook   powered_cache_rejected_uri_list
 		 *
-		 * @param  {array} $rejected_uri_list The list of rejected uri that nerver get cached.
+		 * @param  {array} $rejected_uri_list The list of rejected uri that never get cached.
 		 *
 		 * @return {array} New value
 		 * @since  2.0
@@ -525,7 +525,7 @@ class AdvancedCache {
 	 *
 	 * @return array
 	 * @since     3.0 deprecated
-	 * @depecated Use `self::get_ignored_query_strings` instead
+	 * @deprecated Use `self::get_ignored_query_strings` instead
 	 */
 	public static function get_accepted_query_strings() {
 		_deprecated_function( '\PoweredCache\AdvancedCache::get_accepted_query_strings', '3.0', '\PoweredCache\AdvancedCache::get_ignored_query_strings' );

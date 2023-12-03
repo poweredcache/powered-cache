@@ -1,6 +1,6 @@
 <?php
 /**
- * Compatability related functionalities with 3rd party
+ * Compatibility related functionalities with 3rd party
  *
  * @package PoweredCache
  */

@@ -138,7 +138,7 @@ function get_settings( $force_network_wide = false ) {
 		'cloudflare_email'               => '',
 		'cloudflare_api_key'             => '',
 		'cloudflare_zone'                => '',
-		'enable_heartbeat'               => false, // extention status
+		'enable_heartbeat'               => false, // extension status
 		'heartbeat_dashboard_status'     => 'enable', // enable,disable,modify
 		'heartbeat_dashboard_interval'   => 60, // default interval in seconds
 		'heartbeat_editor_status'        => 'enable', // enable,disable,modify
@@ -883,7 +883,7 @@ function cdn_addresses() {
 	 *
 	 * @hook   powered_cache_cdn_addresses
 	 *
-	 * @param  {array} $cdn_addresses CDN Adresses.
+	 * @param  {array} $cdn_addresses CDN Addresses.
 	 *
 	 * @return {array} New value.
 	 * @since  1.0

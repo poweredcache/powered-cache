@@ -1,6 +1,6 @@
 <?php
 /**
- * Domain mapping compatability.
+ * Domain mapping compatibility.
  *
  * @package PoweredCache\Compat
  */

@@ -276,7 +276,7 @@ msgid "Close this modal"
 msgstr ""
 
 #: includes/admin/partials/modals.php:41
-msgid "Welcome to Powered Cache Diagnostic. Running the diagnostic test helps to identify potential issues with the caching. This is only a test. It might take additinal steps to fixing the issues."
+msgid "Welcome to Powered Cache Diagnostic. Running the diagnostic test helps to identify potential issues with the caching. This is only a test. It might take additional steps to fixing the issues."
 msgstr ""
 
 #: includes/admin/partials/modals.php:49
@@ -513,7 +513,7 @@ msgid "Enter query strings for cache (one per line)"
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:475
-msgid "Powered Cache will create seperate caching file for the value of these query strings."
+msgid "Powered Cache will create separate caching file for the value of these query strings."
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:487
@@ -630,7 +630,7 @@ msgid "Critical CSS is a technique that extracts the CSS above the fold to displ
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:769
-msgid "Additonal files to critical (one per line)"
+msgid "Additional files to critical (one per line)"
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:778
@@ -1313,7 +1313,7 @@ msgid "Show caching footprints in the HTML output."
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:2654
-msgid "Adds helpful informations to cached output."
+msgid "Adds helpful information to cached output."
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:2662

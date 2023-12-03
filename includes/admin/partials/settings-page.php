@@ -472,7 +472,7 @@ $settings = \PoweredCache\Utils\get_settings();
 												rows="5"
 										><?php echo esc_textarea( $settings['cache_query_strings'] ); ?></textarea>
 										<span id="cache_query_strings_description" class="sui-description">
-											<?php esc_html_e( 'Powered Cache will create seperate caching file for the value of these query strings.', 'powered-cache' ); ?>
+											<?php esc_html_e( 'Powered Cache will create separate caching file for the value of these query strings.', 'powered-cache' ); ?>
 											<a href="<?php echo esc_url( get_doc_url( '/advanced-options/', 'cache-query-strings' ) ); ?>" target="_blank">(?)</a>
 										</span>
 									</div>
@@ -766,7 +766,7 @@ $settings = \PoweredCache\Utils\get_settings();
 								<div class="sui-row">
 									<div class="sui-col-md-8">
 										<div class="sui-form-field">
-											<label for="critical_css_additional_files" class="sui-label"><i><?php esc_html_e( 'Additonal files to critical (one per line)', 'powered-cache' ); ?></i></label>
+											<label for="critical_css_additional_files" class="sui-label"><i><?php esc_html_e( 'Additional files to critical (one per line)', 'powered-cache' ); ?></i></label>
 											<textarea
 													id="critical_css_additional_files"
 													name="critical_css_additional_files"
@@ -2651,7 +2651,7 @@ js-(before|after|extra)</pre>
 									>
 									<span class="sui-toggle-slider" aria-hidden="true"></span>
 									<span id="enable_cache_footprint_label" class="sui-toggle-label"><?php esc_html_e( 'Show caching footprints in the HTML output.', 'powered-cache' ); ?></span>
-									<span id="enable_cache_footprint_description" class="sui-description"><?php esc_html_e( 'Adds helpful informations to cached output.', 'powered-cache' ); ?></span>
+									<span id="enable_cache_footprint_description" class="sui-description"><?php esc_html_e( 'Adds helpful information to cached output.', 'powered-cache' ); ?></span>
 								</label>
 							</div>
 						</div>
