@@ -110,6 +110,32 @@ class Helper {
 	}
 
 	/**
+	 * Get the optimizer relative path
+	 * This is used for rewrite_file_optimizer option
+	 *
+	 * @return mixed|null
+	 * @since 3.3.2
+	 */
+	public static function get_file_optimizer_relative_path() {
+		// Calculate the relative path from the WordPress root to file-optimizer.php
+		$relative_path = str_replace( ABSPATH, '', POWERED_CACHE_PATH . 'includes/file-optimizer.php' );
+		$relative_path = ltrim( $relative_path, '/' ); // Remove leading slash
+		/**
+		 * Filters relative path for file optimizer
+		 *
+		 * @hook   powered_cache_fo_relative_path
+		 *
+		 * @param  {string} relative path of file-optimizer.php
+		 *
+		 * @return {string} New value.
+		 * @since  3.3.2
+		 */
+		$relative_path = apply_filters( 'powered_cache_fo_relative_path', $relative_path );
+
+		return $relative_path;
+	}
+
+	/**
 	 * Check if the given SRC excluded
 	 *
 	 * @param string $src URL

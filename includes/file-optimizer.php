@@ -61,13 +61,20 @@ $concat_types     = array(
 	'js'  => 'application/javascript',
 );
 
+$wp_content_base = '/wp-content';
+if ( isset( $_SERVER['SCRIPT_NAME'] ) && false === strpos( $_SERVER['SCRIPT_NAME'], '/wp-content' ) ) {
+	$script_name = explode( '/', ltrim( $_SERVER['SCRIPT_NAME'], '/' ) );
+	if ( ! empty( $script_name[0] ) ) {
+		$wp_content_base = '/' . $script_name[0];
+	}
+}
 
 $current_dir = file_optimizer_normalize_path( realpath( dirname( __DIR__ ) ) );
 
 /* Constants */
 // By default determine the document root from this scripts path in the plugins dir (you can hardcode this define)
-define( 'CONCAT_FILES_ROOT', substr( $current_dir, 0, strpos( $current_dir, '/wp-content' ) ) );
-define( 'POWERED_CACHE_FO_CACHE_DIR', CONCAT_FILES_ROOT . '/wp-content/cache/min/' );
+define( 'CONCAT_FILES_ROOT', substr( $current_dir, 0, strpos( $current_dir, $wp_content_base ) ) );
+define( 'POWERED_CACHE_FO_CACHE_DIR', CONCAT_FILES_ROOT . $wp_content_base.'/cache/min/' );
 define( 'POWERED_CACHE_FO_DEBUG', false );
 
 if ( ! defined( 'POWERED_CACHE_FO_DISABLE_CACHE_HEADERS' ) ) {

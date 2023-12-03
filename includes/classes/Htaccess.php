@@ -580,12 +580,14 @@ class Htaccess {
 			return;
 		}
 
+		$file_optimizer_path = \PoweredCache\Optimizer\Helper::get_file_optimizer_relative_path();
+
 		$rules  = '';
 		$rules .= '<IfModule mod_rewrite.c>' . PHP_EOL;
 		$rules .= '    # Enable rewrite engine' . PHP_EOL;
 		$rules .= '    RewriteEngine On' . PHP_EOL;
 		$rules .= '    # Redirect all requests starting with /_static/' . PHP_EOL;
-		$rules .= '    RewriteRule ^_static/.* wp-content/plugins/powered-cache/includes/file-optimizer.php [L]' . PHP_EOL;
+		$rules .= '    RewriteRule ^_static/.* ' . $file_optimizer_path . ' [L]' . PHP_EOL;
 		$rules .= '</IfModule>' . PHP_EOL;
 
 		return $rules;

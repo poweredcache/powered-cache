@@ -587,10 +587,12 @@ class Config {
 
 		// file optimizer rewrite rule
 		if ( $settings['rewrite_file_optimizer'] ) {
+			$file_optimizer_path = \PoweredCache\Optimizer\Helper::get_file_optimizer_relative_path();
+
 			$contents .= 'location /_static/ {' . PHP_EOL;
 			$contents .= '  fastcgi_pass unix:/var/run/fastcgi.sock;' . PHP_EOL;
 			$contents .= '  include /etc/nginx/fastcgi_params;' . PHP_EOL;
-			$contents .= '  fastcgi_param SCRIPT_FILENAME $document_root/wp-content/plugins/powered-cache/includes/file-optimizer.php;' . PHP_EOL;
+			$contents .= '  fastcgi_param SCRIPT_FILENAME $document_root/' . $file_optimizer_path . ';' . PHP_EOL;
 			$contents .= '}' . PHP_EOL . PHP_EOL;
 		}
 
