@@ -128,6 +128,11 @@ class CDN {
 			return true;
 		}
 
+		// Skip CDN integration for Block Editor requests, particularly when using the media endpoint for in-editor image resizing/manipulation.
+		if ( isset( $_SERVER['HTTP_X_WP_NONCE'] ) && wp_is_json_request() ) {
+			return true;
+		}
+
 		// check conditional tags
 		if ( is_admin() || is_trackback() || is_robots() || is_preview() ) {
 			return true;
