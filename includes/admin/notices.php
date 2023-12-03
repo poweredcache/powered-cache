@@ -21,13 +21,13 @@ use const PoweredCache\Constants\PURGE_CACHE_PLUGIN_NOTICE_TRANSIENT;
  */
 function setup() {
 	if ( POWERED_CACHE_IS_NETWORK ) {
-		add_action( 'network_admin_notices', __NAMESPACE__ . '\\maybe_display_plugin_compatability_notices' );
+		add_action( 'network_admin_notices', __NAMESPACE__ . '\\maybe_display_plugin_compatibility_notices' );
 		add_action( 'network_admin_notices', __NAMESPACE__ . '\\maybe_display_advanced_cache_notices' );
 		add_action( 'network_admin_notices', __NAMESPACE__ . '\\maybe_display_object_cache_notices' );
 		add_action( 'network_admin_notices', __NAMESPACE__ . '\\maybe_display_htaccess_notice' );
 		add_action( 'network_admin_notices', __NAMESPACE__ . '\\maybe_display_purge_cache_plugin_notice' );
 	} else {
-		add_action( 'admin_notices', __NAMESPACE__ . '\\maybe_display_plugin_compatability_notices' );
+		add_action( 'admin_notices', __NAMESPACE__ . '\\maybe_display_plugin_compatibility_notices' );
 		add_action( 'admin_notices', __NAMESPACE__ . '\\maybe_display_advanced_cache_notices' );
 		add_action( 'admin_notices', __NAMESPACE__ . '\\maybe_display_object_cache_notices' );
 		add_action( 'admin_notices', __NAMESPACE__ . '\\maybe_display_htaccess_notice' );
