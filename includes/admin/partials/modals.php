@@ -38,7 +38,7 @@
 			<div id="pcmodal--powered-cache-diagnostic-message" class="sui-box-body">
 
 				<p id="pcmodal--powered-cache-diagnostic-desc">
-					<?php esc_html_e( 'Welcome to Powered Cache Diagnostic. Running the diagnostic test helps to identify potential issues with the caching. This is only a test. It might take additinal steps to fixing the issues.', 'powered-cache' ); ?>
+					<?php esc_html_e( 'Welcome to Powered Cache Diagnostic. Running the diagnostic test helps to identify potential issues with the caching. This is only a test. It might take additional steps to fixing the issues.', 'powered-cache' ); ?>
 				</p>
 
 				<div class="sui-border-frame diagnostic-modal-performance">

@@ -96,7 +96,7 @@ Bug reports and pull requests are welcome on [Github](https://github.com/powered
 
 __Documentation site__: [https://docs.poweredcache.com/](https://docs.poweredcache.com/)
 
-__Developer Docs__: [https://poweredcache.github.io/docs/](https://poweredcache.github.io/docs/)  (***Hook referance***)
+__Developer Docs__: [https://poweredcache.github.io/docs/](https://poweredcache.github.io/docs/)  (***Hook reference***)
 
 
 == Installation ==
@@ -247,7 +247,7 @@ Yes, it’s compatible with PHP 8+
 = 3.0 (May 15, 2023) =
 - Added: Bunny Fonts as replacement of Google Fonts
 - Added: global `nopoweredcache` parameter to skip optimizations
-- Added: Cache query strings to generate seperate cache based on query and value
+- Added: Cache query strings to generate separate cache based on query and value
 - Added: WooCommerce compat for geolocation with page cache support.
 - Added: Delayed JS execution.
 - Added: Remove Unused CSS feature.

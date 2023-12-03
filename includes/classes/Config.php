@@ -500,7 +500,7 @@ class Config {
 
 		$config_file_string .= "\$GLOBALS['powered_cache_options'] = " . var_export( $configuration, true ) . ';' . PHP_EOL . PHP_EOL;
 
-		// mobile cache varibales
+		// mobile cache variables
 		$config_file_string .= '$powered_cache_mobile_browsers = ' . var_export( mobile_browsers(), true ) . ';' . PHP_EOL;
 		$config_file_string .= '$powered_cache_mobile_prefixes = ' . var_export( mobile_prefixes(), true ) . ';' . PHP_EOL;
 		$config_file_string .= '$powered_cache_rejected_user_agents = ' . var_export( AdvancedCache::get_rejected_user_agents(), true ) . ';' . PHP_EOL;

@@ -1,6 +1,6 @@
 <?php
 /**
- * Compatability with Autoptimize
+ * Compatibility with Autoptimize
  *
  * @package PoweredCache\Compat
  */

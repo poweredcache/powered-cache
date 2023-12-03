@@ -31,7 +31,7 @@ if ( function_exists( '\get_cacsp_options' ) ) {
  * @since 2.1.1
  */
 function add_vary_cookie( $cookies ) {
-	$status = get_cacsp_options( 'cacsp_option_actived' );
+	$status = get_cacsp_options( 'cacsp_option_activated' );
 
 	if ( 'true' === $status && ! in_array( 'cookies_and_content_security_policy', $cookies, true ) ) {
 		$cookies[] = 'cookies_and_content_security_policy';
@@ -68,4 +68,4 @@ function deactivate() {
 
 add_action( 'activate_cookies-and-content-security-policy/cookies-and-content-security-policy.php', __NAMESPACE__ . '\\activate', 24 );
 add_action( 'deactivate_cookies-and-content-security-policy/cookies-and-content-security-policy.php', __NAMESPACE__ . '\\deactivate', 24 );
-add_action( 'update_option_cacsp_option_actived', __NAMESPACE__ . '\\activate' );
+add_action( 'update_option_cacsp_option_activated', __NAMESPACE__ . '\\activate' );

@@ -207,7 +207,7 @@ foreach ( $args as $index => $arg ) {
 
 // array( '/foo/bar.css', '/foo1/bar/baz.css' )
 if ( 0 == count( $args ) || count( $args ) > $concat_max_files ) {
-	maybe_add_debug_log( sprintf( "File Optimizer 400 - Concating too many or zero file: %s files on queue", count( $args ) ) );
+	maybe_add_debug_log( sprintf( "File Optimizer 400 - Concatenating too many or zero file: %s files on queue", count( $args ) ) );
 	concat_http_status_exit( 400 );
 }
 

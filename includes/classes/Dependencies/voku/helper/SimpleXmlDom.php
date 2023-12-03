@@ -159,8 +159,8 @@ class SimpleXmlDom extends AbstractSimpleXmlDom implements \IteratorAggregate, S
         if (!empty($string)) {
             $newDocument = new XmlDomParser($string);
 
-            $tmpDomString = $this->normalizeStringForComparision($newDocument);
-            $tmpStr = $this->normalizeStringForComparision($string);
+            $tmpDomString = $this->normalizeStringForComparison($newDocument);
+            $tmpStr = $this->normalizeStringForComparison($string);
 
             if ($tmpDomString !== $tmpStr) {
                 throw new \RuntimeException(
@@ -219,8 +219,8 @@ class SimpleXmlDom extends AbstractSimpleXmlDom implements \IteratorAggregate, S
 
         $newDocument = new XmlDomParser($string);
 
-        $tmpDomOuterTextString = $this->normalizeStringForComparision($newDocument);
-        $tmpStr = $this->normalizeStringForComparision($string);
+        $tmpDomOuterTextString = $this->normalizeStringForComparison($newDocument);
+        $tmpStr = $this->normalizeStringForComparison($string);
 
         if ($tmpDomOuterTextString !== $tmpStr) {
             throw new \RuntimeException(
@@ -334,7 +334,7 @@ class SimpleXmlDom extends AbstractSimpleXmlDom implements \IteratorAggregate, S
      *
      * @return \DOMElement|false
      *                          <p>DOMElement a new instance of class DOMElement or false
-     *                          if an error occured.</p>
+     *                          if an error occurred.</p>
      */
     protected function changeElementName(\DOMNode $node, string $name)
     {
@@ -803,13 +803,13 @@ class SimpleXmlDom extends AbstractSimpleXmlDom implements \IteratorAggregate, S
     }
 
     /**
-     * Normalize the given input for comparision.
+     * Normalize the given input for comparison.
      *
      * @param string|XmlDomParser $input
      *
      * @return string
      */
-    private function normalizeStringForComparision($input): string
+    private function normalizeStringForComparison($input): string
     {
         if ($input instanceof XmlDomParser) {
             $string = $input->html(false, false);

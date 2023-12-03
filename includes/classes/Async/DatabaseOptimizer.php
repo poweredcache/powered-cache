@@ -224,7 +224,7 @@ class DatabaseOptimizer extends Powered_Cache_WP_Background_Process {
 
 	/**
 	 * Sometimes canceling a process is glitchy
-	 * Try to cancell all items in the queue up to $max_attempt
+	 * Try to cancel all items in the queue up to $max_attempt
 	 */
 	public function cancel_process() {
 		$max_attempt = 5;

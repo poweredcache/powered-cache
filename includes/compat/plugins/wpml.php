@@ -25,7 +25,7 @@ if ( class_exists( '\SitePress' ) ) {
 	add_filter( 'populate_preload_queue_urls', __NAMESPACE__ . '\\add_language_urls_to_queue' );
 
 	/**
-	 * Create seperate configurations when WPML used in domain mapping mode
+	 * Create separate configurations when WPML used in domain mapping mode
 	 *
 	 * @param string $config_file        Configuration path
 	 * @param string $config_file_string Configuration content
@@ -258,7 +258,7 @@ if ( class_exists( '\SitePress' ) ) {
 	}
 
 	/**
-	 * Modify preload queue for the langauge(s)
+	 * Modify preload queue for the language(s)
 	 *
 	 * @param array $urls Preload Urls in original language
 	 *
