@@ -29,7 +29,7 @@ use PoweredCache\Dependencies\MatthiasMullie\PathConverter\ConverterInterface;
 class CSS extends Minify
 {
     /**
-     * @var int maximum import size in kB
+     * @var int maximum inport size in kB
      */
     protected $maxImportSize = 5;
 
