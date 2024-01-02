@@ -3,7 +3,7 @@ Contributors:  poweredcache, wphandle, skopco, m_uysl
 Tags: cache, caching, web vitals, performance, fastest, page speed, optimization, cdn, object cache, minify, powered cache
 Requires at least:  5.7
 Tested up to:  6.4
-Stable tag:  3.3.2
+Stable tag:  3.3.3
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -170,6 +170,11 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 3.3.3 (January 02, 2024) =
+- [Fix] Typos. Props [@szepeviktor](https://github.com/szepeviktor).
+- [Added] WebP option as preferred image format.
+- [Added] Windows specific warning for File Optimizer rewrite.
 
 = 3.3.2 (December 03, 2023) =
 - [Fix] Improved comment cookie handling to prevent serving cached pages to users with a comment cookie. Props [@jumbo](https://profiles.wordpress.org/jumbo/).
