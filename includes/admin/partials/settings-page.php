@@ -1105,6 +1105,18 @@ js-(before|after|extra)</pre>
 										</span>
 									</label>
 								</div>
+								<?php if ( strtoupper( substr( PHP_OS, 0, 3 ) ) === 'WIN' ) : ?>
+									<div role="alert" class="sui-notice sui-notice-yellow sui-active" aria-live="assertive" style="display: block;">
+										<div class="sui-notice-content">
+											<div class="sui-notice-message">
+												<span class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></span>
+												<p>
+													<?php esc_html_e( 'This feature may not work on Windows servers without manual .htaccess configuration.', 'powered-cache' ); ?>
+												</p>
+											</div>
+										</div>
+									</div>
+								<?php endif; ?>
 							</div>
 						</div>
 					<?php endif; ?>
