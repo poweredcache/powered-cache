@@ -306,7 +306,7 @@ function sanitize_options( $options ) {
 	$sanitized_options['js_delay']                         = ! empty( $options['js_delay'] );
 	$sanitized_options['js_delay_exclusions']              = sanitize_textarea_field( $options['js_delay_exclusions'] );
 	$sanitized_options['enable_image_optimization']        = ! empty( $options['enable_image_optimization'] );
-	$sanitized_options['image_optimizer_preferred_format'] = sanitize_text_field( $options['image_optimizer_preferred_format'] );
+	$sanitized_options['image_optimizer_preferred_format'] = sanitize_text_field( wp_unslash( $options['image_optimizer_preferred_format'] ) ?? '' );
 	$sanitized_options['enable_lazy_load']                 = ! empty( $options['enable_lazy_load'] );
 	$sanitized_options['lazy_load_post_content']           = ! empty( $options['lazy_load_post_content'] );
 	$sanitized_options['lazy_load_images']                 = ! empty( $options['lazy_load_images'] );
