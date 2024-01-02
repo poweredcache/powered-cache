@@ -1151,6 +1151,7 @@ js-(before|after|extra)</pre>
 											name="enable_image_optimization"
 											aria-labelledby="enable_image_optimization_label"
 											aria-describedby="enable_image_optimization_description"
+											aria-controls="image-optimizer-details"
 											value="1"
 										<?php checked( 1, $settings['enable_image_optimization'] ); ?>
 									>
@@ -1161,6 +1162,28 @@ js-(before|after|extra)</pre>
 									</span>
 								</label>
 							</div>
+
+							<div style="<?php echo( ! $settings['enable_image_optimization'] ? 'display:none' : '' ); ?>" tabindex="0" id="image-optimizer-details">
+								<div class="sui-form-field">
+									<label for="image_optimizer_preferred_format" class="sui-toggle">
+										<input
+											type="checkbox"
+											id="image_optimizer_preferred_format"
+											name="image_optimizer_preferred_format"
+											aria-labelledby="image_optimizer_preferred_format_label"
+											aria-describedby="image_optimizer_preferred_format_description"
+											value="webp"
+											<?php checked( 'webp', $settings['image_optimizer_preferred_format'] ); ?>
+										>
+										<span class="sui-toggle-slider" aria-hidden="true"></span>
+										<span id="image_optimizer_preferred_format_label" class="sui-toggle-label"><?php esc_html_e( 'Use WebP over AVIF', 'powered-cache' ); ?></span>
+										<span id="image_optimizer_preferred_format_description" class="sui-description">
+											<?php esc_html_e( 'Activate this option to prioritize the WebP format over AVIF for image optimization.', 'powered-cache' ); ?>
+										</span>
+									</label>
+								</div>
+							</div>
+
 						</div>
 					</div>
 
