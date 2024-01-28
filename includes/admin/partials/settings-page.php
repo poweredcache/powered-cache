@@ -1530,7 +1530,7 @@ js-(before|after|extra)</pre>
 									<div id="cdn-zone-<?php echo absint( $key ); ?>" class="cdn-zone sui-form-field">
 										<input id="cdn_hostname_<?php echo absint( $key ); ?>" value="<?php echo esc_attr( $cdn ); ?>" name="cdn_hostname[]" style="width: 300px" placeholder="cdn.example.org" class="cdn_hostname sui-form-control sui-input-md sui-field-has-suffix">
 										<span><?php esc_html_e( 'for', 'powered-cache' ); ?></span>
-										<span class="sui-field-suffix" style="width: 120px">
+										<span class="sui-field-suffix" style="min-width: 120px;">
 											<div class="sui-form-field sui-input-md">
 												<select id="cdn_zone_<?php echo absint( $key ); ?>" name="cdn_zone[]" class="sui-form-control cdn_zone">
 													<?php foreach ( cdn_zones() as $zone => $zone_name ) : ?>
