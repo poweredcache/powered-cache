@@ -76,9 +76,7 @@ class AdvancedCache {
 		add_action( 'admin_bar_menu', array( $this, 'admin_bar_menu' ) );
 		add_action( 'admin_post_powered_cache_purge_page_cache', array( $this, 'purge_page_cache' ) );
 		add_action( 'admin_post_powered_cache_purge_page_cache_network', array( $this, 'purge_page_cache_network_wide' ) );
-		add_action( 'pre_post_update', array( $this, 'purge_on_post_update' ), 10, 1 );
-		add_action( 'save_post', array( $this, 'purge_on_post_update' ), 10, 1 );
-		add_action( 'wp_trash_post', array( $this, 'purge_on_post_update' ), 10, 1 );
+		add_action( 'transition_post_status', array( $this, 'purge_on_post_update' ), 9999, 3 );
 		add_action( 'switch_theme', array( $this, 'purge_on_switch_theme' ) );
 		add_action( 'wp_set_comment_status', array( $this, 'purge_post_on_comment_status_change' ), 10, 2 );
 		add_action( 'set_comment_cookies', array( $this, 'set_comment_cookie' ), 10, 2 );
@@ -172,7 +170,7 @@ class AdvancedCache {
 
 		if ( current_user_can( 'manage_options' ) ) {
 			if ( isset( $_GET['type'] ) && 'current-page' === $_GET['type'] && ! empty( $_GET['post'] ) ) {
-				$this->purge_on_post_update( absint( $_GET['post'] ) );
+				$this->purge_post( absint( $_GET['post'] ) );
 			} elseif ( $this->settings['async_cache_cleaning'] ) {
 				$this->cache_purger->push_to_queue( [ 'call' => 'clean_site_cache_dir' ] );
 				$this->cache_purger->save()->dispatch();
@@ -193,47 +191,77 @@ class AdvancedCache {
 
 
 	/**
+	 * Purge cache when post updated
+	 *
+	 * @param string   $new_status New Post status.
+	 * @param string   $old_status Old Post status.
+	 * @param \WP_Post $post       Post object.
+	 *
+	 * @return void
+	 * @since 3.4 adjusted for `transition_post_status` hook
+	 * @since 1.0
+	 */
+	public function purge_on_post_update( $new_status, $old_status, $post ) {
+		if ( 'publish' === $new_status || 'publish' === $old_status ) {
+			$this->purge_post( $post->ID );
+		}
+	}
+
+	/**
 	 * Purge post related page cache
 	 *
 	 * @param int $post_id Post ID
 	 *
-	 * @since 1.0
+	 * @since 3.4
 	 */
-	public function purge_on_post_update( $post_id ) {
-		$current_post_status = get_post_status( $post_id );
+	public function purge_post( $post_id ) {
+		$current_post = get_post( $post_id );
 
-		$urls = array();
+		if ( ! is_a( $current_post, 'WP_Post' ) ) {
+			return;
+		}
 
-		if ( in_array( $current_post_status, array( 'publish', 'trash' ), true ) ) {
-			$urls = get_post_related_urls( $post_id );
+		if ( wp_is_post_autosave( $post_id ) || wp_is_post_revision( $post_id ) ) {
+			return;
+		}
 
-			/**
-			 * Page cache purge urls.
-			 *
-			 * @hook   powered_cache_advanced_cache_purge_urls
-			 *
-			 * @param  {array} $urls The list of URLs that will purged
-			 * @param  {int} $post_id Post ID.
-			 *
-			 * @return {array} New value
-			 * @since  1.0
-			 */
-			$urls = apply_filters( 'powered_cache_advanced_cache_purge_urls', $urls, $post_id );
+		if ( ! is_post_type_viewable( $current_post->post_type ) ) {
+			return;
+		}
 
-			if ( $this->settings['async_cache_cleaning'] ) {
-				$this->cache_purger->push_to_queue(
-					[
-						'call' => 'delete_page_cache',
-						'urls' => $urls,
-					]
-				);
-				$this->cache_purger->save()->dispatch();
-			} else {
-				foreach ( $urls as $url ) {
-					delete_page_cache( $url );
-				}
+		if ( ! in_array( $current_post->post_status, array( 'publish', 'private', 'trash', 'pending', 'draft' ), true ) ) {
+			return;
+		}
+
+		$urls = get_post_related_urls( $post_id );
+
+		/**
+		 * Page cache purge urls.
+		 *
+		 * @hook   powered_cache_advanced_cache_purge_urls
+		 *
+		 * @param  {array} $urls The list of URLs that will purged
+		 * @param  {int} $post_id Post ID.
+		 *
+		 * @return {array} New value
+		 * @since  1.0
+		 */
+		$urls = apply_filters( 'powered_cache_advanced_cache_purge_urls', $urls, $post_id );
+
+		if ( $this->settings['async_cache_cleaning'] ) {
+			$this->cache_purger->push_to_queue(
+				[
+					'call' => 'delete_page_cache',
+					'urls' => $urls,
+				]
+			);
+			$this->cache_purger->save()->dispatch();
+		} else {
+			foreach ( $urls as $url ) {
+				delete_page_cache( $url );
 			}
 		}
+
 
 		/**
 		 * Fires after purging cache on post update.
@@ -639,6 +667,8 @@ class AdvancedCache {
 
 		return $rewrite_status;
 	}
+
+
 
 }
 
