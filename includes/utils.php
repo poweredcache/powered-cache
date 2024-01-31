@@ -712,69 +712,116 @@ function mobile_prefixes() {
  * @since 1.1 powered_cache_post_related_urls filter added
  */
 function get_post_related_urls( $post_id ) {
+	// Valid post statuses that require cache purging.
+	$valid_post_statuses = [ 'publish', 'private', 'trash', 'pending', 'draft' ];
+	$post_status         = get_post_status( $post_id );
 
-	$current_post_status = get_post_status( $post_id );
+	// Post types that should not have their cache purged.
+	$excluded_post_types = [ 'nav_menu_item', 'revision' ];
+	$post_type           = get_post_type( $post_id );
+	$rest_api_route      = 'wp/v2';
 
-	// array to collect all our URLs
-	$related_urls = array();
+	$related_urls = [];
 
-	if ( get_permalink( $post_id ) ) {
-		// we're going to add a ton of things to flush.
+	if ( false !== get_permalink( $post_id ) && in_array( $post_status, $valid_post_statuses, true ) && ! in_array( $post_type, $excluded_post_types, true ) ) {
+		// Add the post URL.
+		$related_urls[] = get_permalink( $post_id );
 
-		// related category urls
-		$categories = get_the_category( $post_id );
-		if ( $categories ) {
-			foreach ( $categories as $cat ) {
-				array_push( $related_urls, get_category_link( $cat->term_id ) );
+		// Add REST API URL if applicable.
+		if ( $rest_api_route ) {
+			$post_type_object = get_post_type_object( $post_type );
+			if ( isset( $post_type_object->rest_base ) ) {
+				$related_urls[] = get_rest_url() . $rest_api_route . '/' . $post_type_object->rest_base . '/' . $post_id . '/';
+			} elseif ( in_array( $post_type, [ 'post', 'page' ], true ) ) {
+				$related_urls[] = get_rest_url() . $rest_api_route . '/' . $post_type . 's/' . $post_id . '/';
 			}
 		}
 
-		// related tags url
+		// Add AMP URL if AMP plugin is active.
+		if ( function_exists( 'amp_get_permalink' ) ) {
+			$related_urls[] = amp_get_permalink( $post_id );
+		}
+
+		// Regular AMP url for posts if ant of the following are active:
+		// https://wordpress.org/plugins/accelerated-mobile-pages/
+		if ( defined( 'AMPFORWP_AMP_QUERY_VAR' ) ) {
+			$related_urls[] = get_permalink( $post_id ) . 'amp/';
+		}
+
+		// Handle trashed post URLs.
+		if ( 'trash' === $post_status ) {
+			$trash_permalink = str_replace( '__trashed', '', get_permalink( $post_id ) );
+			$related_urls[]  = $trash_permalink;
+			$related_urls[]  = $trash_permalink . 'feed/';
+		}
+
+		// Purge categories and tags associated with the post.
+		$categories = get_the_category( $post_id );
+		foreach ( $categories as $category ) {
+			$related_urls[] = get_category_link( $category->term_id );
+			if ( $rest_api_route ) {
+				$related_urls[] = get_rest_url() . $rest_api_route . '/categories/' . $category->term_id . '/';
+			}
+		}
+
 		$tags = get_the_tags( $post_id );
 		if ( $tags ) {
 			foreach ( $tags as $tag ) {
-				array_push( $related_urls, get_tag_link( $tag->term_id ) );
+				$related_urls[] = get_tag_link( $tag->term_id );
+				if ( $rest_api_route ) {
+					$related_urls[] = get_rest_url() . $rest_api_route . '/tags/' . $tag->term_id . '/';
+				}
 			}
 		}
 
-		// Author URL
-		array_push( $related_urls, get_author_posts_url( get_post_field( 'post_author', $post_id ) ), get_author_feed_link( get_post_field( 'post_author', $post_id ) ) );
+		// Purge author and feed URLs for posts.
+		if ( 'post' === $post_type ) {
+			$author_id      = get_post_field( 'post_author', $post_id );
+			$related_urls[] = get_author_posts_url( $author_id );
+			$related_urls[] = get_author_feed_link( $author_id );
+			if ( $rest_api_route ) {
+				$related_urls[] = get_rest_url() . $rest_api_route . '/users/' . $author_id . '/';
+			}
 
-		// Archives and their feeds
-		if ( get_post_type_archive_link( get_post_type( $post_id ) ) === true ) {
-			array_push( $related_urls, get_post_type_archive_link( get_post_type( $post_id ) ), get_post_type_archive_feed_link( get_post_type( $post_id ) ) );
+			// Include various feed URLs.
+			$feed_urls    = [
+				get_bloginfo_rss( 'rdf_url' ),
+				get_bloginfo_rss( 'rss_url' ),
+				get_bloginfo_rss( 'rss2_url' ),
+				get_bloginfo_rss( 'atom_url' ),
+				get_bloginfo_rss( 'comments_rss2_url' ),
+				get_post_comments_feed_link( $post_id ),
+			];
+			$related_urls = array_merge( $related_urls, $feed_urls );
 		}
 
-		// Post URL
-		array_push( $related_urls, get_permalink( $post_id ) );
-
-		// Also clean URL for trashed post.
-		if ( 'trash' === $current_post_status ) {
-			$trashpost = get_permalink( $post_id );
-			$trashpost = str_replace( '__trashed', '', $trashpost );
-			array_push( $related_urls, $trashpost, $trashpost . 'feed/' );
+		// Purge archive pages if not excluded.
+		if ( ! in_array( $post_type, [ 'post', 'page' ], true ) ) {
+			$related_urls[] = get_post_type_archive_link( $post_type );
+			$related_urls[] = get_post_type_archive_feed_link( $post_type );
 		}
 
-		// Add in AMP permalink if Automattic's AMP is installed
-		if ( function_exists( 'amp_get_permalink' ) ) {
-			array_push( $related_urls, amp_get_permalink( $post_id ) );
-		}
+		// Always purge the home page.
+		$related_urls[] = home_url( '/' );
 
-		// Regular AMP url for posts
-		array_push( $related_urls, get_permalink( $post_id ) . 'amp/' );
-
-		// Feeds
-		array_push( $related_urls, get_bloginfo_rss( 'rdf_url' ), get_bloginfo_rss( 'rss_url' ), get_bloginfo_rss( 'rss2_url' ), get_bloginfo_rss( 'atom_url' ), get_bloginfo_rss( 'comments_rss2_url' ), get_post_comments_feed_link( $post_id ) );
-
-		// Home Page and (if used) posts page
-		array_push( $related_urls, trailingslashit( home_url() ) );
-		if ( get_option( 'show_on_front' ) === 'page' ) {
-			// Ensure we have a page_for_posts setting to avoid empty URL
-			if ( get_option( 'page_for_posts' ) ) {
-				array_push( $related_urls, get_permalink( get_option( 'page_for_posts' ) ) );
+		// Purge the posts page if it's set to a static page.
+		if ( 'page' === get_option( 'show_on_front' ) ) {
+			$posts_page_id = get_option( 'page_for_posts' );
+			if ( $posts_page_id ) {
+				$related_urls[] = get_permalink( $posts_page_id );
 			}
 		}
 	}
+
+	// Remove query strings and ensure unique URLs before purging.
+	$related_urls = array_unique(
+		array_map(
+			function ( $url ) {
+				return strtok( $url, '?' );
+			},
+			$related_urls
+		)
+	);
 
 	/**
 	 * Filters post related urls.
