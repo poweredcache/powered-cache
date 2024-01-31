@@ -11,6 +11,8 @@ use PoweredCache\Async\CachePreloader;
 use PoweredCache\Async\CachePurger;
 use PoweredCache\Async\DatabaseOptimizer;
 use PoweredCache\Config;
+use const PoweredCache\Constants\ALLOPTIONS_CRITICAL_THRESHOLD;
+use const PoweredCache\Constants\ALLOPTIONS_WARNING_THRESHOLD;
 use const PoweredCache\Constants\ICON_BASE64;
 use const PoweredCache\Constants\MENU_SLUG;
 use const PoweredCache\Constants\PURGE_CACHE_CRON_NAME;
@@ -55,6 +57,7 @@ function setup() {
 	add_action( 'admin_post_powered_cache_purge_all_cache', __NAMESPACE__ . '\\purge_all_cache' );
 	add_action( 'admin_post_powered_cache_download_rewrite_settings', __NAMESPACE__ . '\\download_rewrite_config' );
 	add_action( 'wp_ajax_powered_cache_run_diagnostic', __NAMESPACE__ . '\\run_diagnostic' );
+	add_action( 'wp_ajax_powered_cache_check_alloptions', __NAMESPACE__ . '\\check_alloptions' );
 	add_action( 'admin_post_deactivate_plugin', __NAMESPACE__ . '\\deactivate_plugin' );
 	add_filter( 'plugin_action_links_' . plugin_basename( POWERED_CACHE_PLUGIN_FILE ), __NAMESPACE__ . '\\action_links' );
 	add_filter( 'network_admin_plugin_action_links_' . plugin_basename( POWERED_CACHE_PLUGIN_FILE ), __NAMESPACE__ . '\\action_links' );
@@ -807,6 +810,52 @@ function run_diagnostic() {
 	}
 
 	wp_send_json_error( [ esc_html__( 'Invalid request', 'powered-cache' ) ] );
+}
+
+/**
+ * Check alloptions size like performance lab does.
+ * It's critical to know this before enabling memcached based persistent object cache backends.
+ * When alloptions size is too big (1mb in this case), it will cause performance degradation instead of improvement.
+ *
+ * @return void
+ * @since 3.4
+ */
+function check_alloptions() {
+	$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
+	if ( ! wp_verify_nonce( $nonce, 'powered_cache_update_settings' ) || ! can_configure_object_cache() ) {
+		wp_send_json_error( [ 'message' => esc_html__( 'Invalid request', 'powered-cache' ) ] );
+
+		return;
+	}
+
+	$autoload_option_size  = \PoweredCache\Utils\autoloaded_options_size();
+	$autoload_option_count = count( wp_load_alloptions() );
+
+	if ( $autoload_option_size > ALLOPTIONS_CRITICAL_THRESHOLD ) {
+		$status = 'critical';
+	} elseif ( $autoload_option_size > ALLOPTIONS_WARNING_THRESHOLD && $autoload_option_size <= ALLOPTIONS_CRITICAL_THRESHOLD ) {
+		$status = 'warning';
+	} else {
+		$status = 'good';
+	}
+
+	$message = '<p><b>' . esc_html__( 'Autoloaded options could affect performance:', 'powered-cache' ) . '</b> ' .
+            sprintf(
+                esc_html__(
+		           /* translators: 1: Number of autoloaded options. 2: Size of autoloaded options. */
+                    'Your site has %1$s autoloaded options (size: %2$s) in the options table, which could cause your site to be slow. You can reduce the number of autoloaded options by cleaning up your site\'s options table.',
+                    'powered-cache'
+                ),
+                esc_html( number_format_i18n( $autoload_option_count ) ),
+                esc_html( size_format( $autoload_option_size ) )
+            ) . '</p>';
+
+	wp_send_json_success(
+        [
+			'status'  => $status,
+			'message' => $message,
+		]
+    );
 }
 
 

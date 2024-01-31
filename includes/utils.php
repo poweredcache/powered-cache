@@ -1407,3 +1407,17 @@ function bypass_request() {
 
 	return false;
 }
+
+
+/**
+ * Calculate total amount of autoloaded data.
+ *
+ * @return int autoloaded data in bytes.
+ * @global wpdb $wpdb WordPress database abstraction object.
+ * @since 3.4
+ */
+function autoloaded_options_size() {
+	global $wpdb;
+
+	return (int) $wpdb->get_var( 'SELECT SUM(LENGTH(option_value)) FROM ' . $wpdb->prefix . 'options WHERE autoload = \'yes\'' ); // phpcs:ignore
+}

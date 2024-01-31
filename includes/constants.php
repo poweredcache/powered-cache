@@ -26,3 +26,6 @@ const POST_META_DISABLE_JS_DELAY          = 'powered_cache_disable_js_delay';
 const DB_VERSION_OPTION_NAME              = 'powered_cache_db_version';
 const DB_CLEANUP_COUNT_CACHE_KEY          = 'powered_cache_db_cleanup_counts';
 const PURGE_CACHE_PLUGIN_NOTICE_TRANSIENT = 'powered_cache_purge_cache_plugin_notice';
+
+const ALLOPTIONS_CRITICAL_THRESHOLD = 900000; // 900KB
+const ALLOPTIONS_WARNING_THRESHOLD  = 700000; // 700KB

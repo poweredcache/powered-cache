@@ -163,7 +163,18 @@ $settings = \PoweredCache\Utils\get_settings();
 										<?php endforeach; ?>
 									</select>
 									<span id="object_cache_description" class="sui-description"><?php esc_html_e( 'You will also need to configure the object cache backend.', 'powered-cache' ); ?><a href="<?php echo esc_url( get_doc_url( 'object-caching' ) ); ?>" target="_blank"><?php esc_html_e( 'Learn More', 'powered-cache' ); ?></a></span>
+
+									<div role="alert" id="object_cache_alloptions_message" class="sui-hidden sui-notice" aria-live="assertive">
+										<div class="sui-notice-content">
+											<div class="sui-notice-message">
+
+											</div>
+										</div>
+									</div>
 								</div>
+
+
+
 							</div>
 						</div>
 					<?php endif; ?>

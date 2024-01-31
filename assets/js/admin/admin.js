@@ -128,5 +128,45 @@ import './modules/modal';
 		}
 	});
 
+	$('#object_cache').on('change', function () {
+		// Check if new selection is memcached or memcache
+		if ($(this).val() === 'memcached' || $(this).val() === 'memcache') {
+			$.ajax({
+				url   : ajaxurl,
+				method: 'post',
+				data  : {
+					nonce : $('#powered_cache_settings_nonce').val(),
+					action: 'powered_cache_check_alloptions',
+				},
+				success(response) {
+					if (response.success && response.data.status) {
+						let $alloptionsContainer = $('#object_cache_alloptions_message');
+
+						if (response.data.status === 'success') {
+							return;
+						}
+
+						let statusClass = 'sui-notice-warning'; // Default to warning
+
+						if (response.data.status === 'critical') {
+							statusClass = 'sui-notice-error'; // Change to error if critical
+						}
+
+						$alloptionsContainer.addClass(statusClass);
+
+						let message = '<span class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></span>';
+						message += response.data.message;
+
+						$alloptionsContainer.find('.sui-notice-message').html(message);
+						$alloptionsContainer.removeClass('sui-hidden');
+						$alloptionsContainer.show();
+					}
+				},
+			});
+		} else {
+			$('#object_cache_alloptions_message').hide();
+		}
+	});
+
 
 })(jQuery);
