@@ -246,7 +246,8 @@ class AdvancedCache {
 		 * @return {array} New value
 		 * @since  1.0
 		 */
-		$urls = apply_filters( 'powered_cache_advanced_cache_purge_urls', $urls, $post_id );
+		$urls         = apply_filters( 'powered_cache_advanced_cache_purge_urls', $urls, $post_id );
+		$deleted_urls = [];
 
 		if ( $this->settings['async_cache_cleaning'] ) {
 			$this->cache_purger->push_to_queue(
@@ -258,10 +259,11 @@ class AdvancedCache {
 			$this->cache_purger->save()->dispatch();
 		} else {
 			foreach ( $urls as $url ) {
-				delete_page_cache( $url );
+				if ( delete_page_cache( $url ) ) {
+					$deleted_urls[] = $url;
+				}
 			}
 		}
-
 
 		/**
 		 * Fires after purging cache on post update.
@@ -269,11 +271,11 @@ class AdvancedCache {
 		 * @hook  powered_cache_advanced_cache_purge_post
 		 *
 		 * @param {int} $post_id The Post ID.
-		 * @param {array} $urls The list of related urls with the updated post.
+		 * @param {array} $deleted_urls The list of purged urls with the updated post.
 		 *
 		 * @since 1.0
 		 */
-		do_action( 'powered_cache_advanced_cache_purge_post', $post_id, $urls );
+		do_action( 'powered_cache_advanced_cache_purge_post', $post_id, $deleted_urls );
 	}
 
 	/**
