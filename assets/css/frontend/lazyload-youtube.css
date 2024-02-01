@@ -1,0 +1,49 @@
+.wp-has-aspect-ratio .pcll-youtube-player {
+	bottom: 0;
+	height: 100%;
+	left: 0;
+	padding-bottom: 0;
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 100%;
+}
+
+.pcll-youtube-player {
+	height: 0;
+	max-width: 100%;
+	overflow: hidden;
+	padding-bottom: 56.23%;
+	position: relative;
+}
+
+.pcll-youtube-player iframe {
+	background: transparent;
+	height: 100%;
+	left: 0;
+	position: absolute;
+	top: 0;
+	width: 100%;
+	z-index: 100;
+}
+
+.pcll-youtube-player img {
+	border: none;
+	bottom: 0;
+	cursor: pointer;
+	display: block;
+	height: auto;
+	left: 0;
+	margin: auto;
+	max-width: 100%;
+	position: absolute;
+	right: 0;
+	top: 0;
+	transition: .3s all;
+	width: 100%;
+}
+
+.pcll-youtube-player:hover {
+	-webkit-filter: brightness(85%);
+	filter: brightness(85%);
+}

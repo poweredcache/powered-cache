@@ -1336,6 +1336,21 @@ js-(before|after|extra)</pre>
 													<span id="lazy_load_avatars_label"><?php esc_html_e( 'Enable for avatars.', 'powered-cache' ); ?></span>
 												</label>
 											</div>
+											<div class="sui-row">
+												<label for="lazy_load_youtube" class="sui-checkbox">
+
+													<input
+														type="checkbox"
+														id="lazy_load_youtube"
+														name="lazy_load_youtube"
+														value="1"
+														<?php checked( 1, $settings['lazy_load_youtube'] ); ?>
+													>
+
+													<span aria-hidden="true"></span>
+													<span id="lazy_load_youtube_label"><?php esc_html_e( 'Replace Youtube videos by thumbnail.', 'powered-cache' ); ?></span>
+												</label>
+											</div>
 										</div>
 									</div>
 									<div class="sui-border-frame">

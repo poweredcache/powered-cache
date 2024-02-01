@@ -148,6 +148,13 @@ class LazyLoad {
 				]
 			);
 		}
+
+		if ( $this->settings['lazy_load_youtube'] ) {
+			wp_register_style( 'pcll-youtube-lazyload', false ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
+			wp_enqueue_style( 'pcll-youtube-lazyload' );
+			wp_add_inline_style( 'pcll-youtube-lazyload', $this->add_inline_youtube_css() );
+		}
+
 	}
 
 	/**
@@ -226,6 +233,20 @@ class LazyLoad {
 		}
 
 		/**
+		 * Filters whether replace youtube iframe with thumbnail.
+		 *
+		 * @hook   powered_cache_lazy_load_youtube
+		 *
+		 * @param  {boolean} true to replace youtube iframe with thumbnail
+		 *
+		 * @return {boolean} New value.
+		 * @since  3.4
+		 */
+		if ( true === apply_filters( 'powered_cache_lazy_load_youtube', $this->settings['lazy_load_youtube'] ) ) {
+			add_filter( 'powered_cache_lazy_load_filter', array( __CLASS__, 'replace_youtube_iframe_with_thumbnail' ), 9 );
+		}
+
+		/**
 		 * Filters whether apply or not apply lazyload for avatars.
 		 *
 		 * @hook   powered_cache_lazy_load_avatar
@@ -239,6 +260,16 @@ class LazyLoad {
 			add_filter( 'get_avatar', array( __CLASS__, 'filter' ), 200 );
 		}
 
+		/**
+		 * * Filters whether apply or not apply lazyload for html.
+		 *
+		 * @hook   powered_cache_lazy_load_html
+		 *
+		 * @param  {boolean} true to apply lazyload for html
+		 *
+		 * @return {boolean} New value.
+		 * @since  1.0
+		 */
 		add_filter( 'powered_cache_lazy_load_html', array( __CLASS__, 'filter' ) );
 	}
 
@@ -539,6 +570,84 @@ class LazyLoad {
 		$excluded_files[] = POWERED_CACHE_URL . 'dist/js/lazyload.js';
 
 		return $excluded_files;
+	}
+
+	/**
+	 * Replace youtube iframe with thumbnail
+	 *
+	 * @param string $content HTML content, or the content of the current post if called in the loop.
+	 *
+	 * @return array|string|string[]|null
+	 * @since 3.4
+	 */
+	public static function replace_youtube_iframe_with_thumbnail( $content ) {
+		$match_content = self::get_content_haystack( $content );
+
+		// Regular expression to match YouTube iframes
+		$pattern = '/<iframe[^>]+src="https?:\/\/www\.youtube\.com\/embed\/([a-zA-Z0-9_-]+)([^"]*)"[^>]*><\/iframe>/i';
+
+		// Find all YouTube iframes
+		preg_match_all( $pattern, $match_content, $matches );
+
+		$search  = array();
+		$replace = array();
+
+		foreach ( $matches[0] as $iframe_html ) {
+			// Extract video ID and additional parameters
+			preg_match( $pattern, $iframe_html, $iframe_parts );
+			$video_id = $iframe_parts[1];
+			$params   = $iframe_parts[2];
+
+			// Construct the replacement HTML using the video ID
+			$replacement = '<div class="pcll-youtube-player" data-src="https://www.youtube.com/embed/' . $video_id . $params . '">
+                            <img src="https://img.youtube.com/vi/' . $video_id . '/0.jpg" style="width:100%;height:auto;">
+            				<div style="width: 100%; height: 100%;cursor:pointer;">
+							    <svg class="pcll-youtube-play-button" viewBox="0 0 68 48" style="position: absolute; left: 50%; top: 50%; width: 68px; height: 48px; margin-left: -34px; margin-top: -24px; transition: opacity .25s cubic-bezier(0,0,.2,1); z-index: 63; cursor: pointer;">
+							        <path d="M66.52,7.74c-0.78-2.93-3.07-5.22-6-6C53.08,0.74,34,0.74,34,0.74s-19.08,0-26.52,1C4.57,2.52,2.28,4.81,1.5,7.74C0.68,11,0.68,24,0.68,24s0,13,0.82,16.26c0.78,2.93,3.07,5.22,6,6c7.44,1,26.52,1,26.52,1s19.08,0,26.52-1c2.93-0.78,5.22-3.07,6-6C67.32,37,67.32,24,67.32,24S67.32,11,66.52,7.74z" fill-opacity="0.8" fill="#FF0000"></path>
+							        <path d="M 45,24 27,14 27,34" fill="#fff"></path>
+							    </svg>
+							</div>
+                        </div>';
+
+			// Add original iframe HTML and replacement HTML to their respective arrays
+			array_push( $search, $iframe_html );
+			array_push( $replace, $replacement );
+		}
+
+		// Replace all YouTube iframes with their corresponding thumbnail placeholders
+		$content = str_replace( $search, $replace, $content );
+
+		return $content;
+	}
+
+
+	/**
+	 * Add inline css for youtube lazyload
+	 *
+	 * @return string
+	 * @since 3.4
+	 */
+	public function add_inline_youtube_css() {
+		$css = '';
+
+		$yt_lazyload = wp_normalize_path( POWERED_CACHE_PATH . 'dist/css/lazyload-youtube.css' );
+		if ( file_exists( $yt_lazyload ) ) {
+			$css = (string) file_get_contents( $yt_lazyload ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		}
+
+		/**
+		 * Filters the inline css for youtube lazyload
+		 *
+		 * @hook  powered_cache_lazy_load_youtube_css
+		 *
+		 * @param string $css
+		 *
+		 * @return string
+		 * @since 3.4
+		 */
+		$css = apply_filters( 'powered_cache_lazy_load_youtube_css', $css );
+
+		return $css;
 	}
 
 }

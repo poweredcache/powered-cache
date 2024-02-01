@@ -19,6 +19,7 @@ var PCLL = ( function() {
 			PCLL.debounce = PCLL.getOptionIntValue('debounce', 50);
 			PCLL.immediateLoadCount = PCLL.getOptionIntValue('immediate_load_count', 3)
 			PCLL.checkRecurring();
+			PCLL.lazyLoadYouTube();
 			return PCLL;
 		},
 
@@ -148,6 +149,35 @@ var PCLL = ( function() {
 			} else {
 				el.fireEvent( 'on' + event.eventType, event );
 			}
+		},
+
+		lazyLoadYouTube: function (el) {
+			var lazyloadYoutube = document.querySelectorAll('.pcll-youtube-player');
+
+			lazyloadYoutube.forEach(function (div) {
+				div.addEventListener('click', function () {
+					var iframe = document.createElement('iframe');
+					iframe.setAttribute('frameborder', '0');
+					iframe.setAttribute('allowfullscreen', '');
+					iframe.setAttribute('allow', 'autoplay'); // Explicitly allow autoplay
+
+					// Construct the iframe src with autoplay and feature parameters
+					var baseSrc = this.getAttribute('data-src');
+					var separator = baseSrc.includes('?') ? '&' : '?'; // Determine the correct separator
+					var videoSrc = `${baseSrc}${separator}autoplay=1&feature=oembed`; // Append autoplay=1 and feature=oembed
+
+					iframe.setAttribute('src', videoSrc);
+					iframe.style.width = '100%';
+					iframe.style.height = this.offsetHeight + 'px';
+					iframe.style.position = 'absolute';
+					iframe.style.top = '0';
+					iframe.style.left = '0';
+
+					var wrapper = this.parentElement;
+					wrapper.innerHTML = '';
+					wrapper.appendChild(iframe);
+				});
+			});
 		},
 
 		getOptionIntValue: function( name, defaultValue ) {
