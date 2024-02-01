@@ -1353,8 +1353,25 @@ js-(before|after|extra)</pre>
 											</div>
 										</div>
 									</div>
-									<div class="sui-border-frame">
+									<div class="sui-form-field">
+										<span id="cdn_rejected_files_label" class="sui-settings-label"><?php esc_html_e( 'Excluded images or iframes', 'powered-cache' ); ?></span>
 
+										<textarea
+												placeholder="/wp-content/themes/example/images/logo.png"
+												id="lazy_load_exclusions"
+												name="lazy_load_exclusions"
+												class="sui-form-control"
+												aria-labelledby="lazy_load_exclusions_label"
+												aria-describedby="lazy_load_exclusions_description"
+												rows="5"
+											><?php echo esc_textarea( $settings['lazy_load_exclusions'] ); ?></textarea>
+										<span id="lazy_load_exclusions_description" class="sui-description">
+											<?php esc_html_e( 'Specify keywords to exclude images or iframes from being lazy loaded. You can use full or partial strings, including the filename, CSS class, or domain. (one per line)', 'powered-cache' ); ?>
+											<a href="<?php echo esc_url( get_doc_url( '/enable-lazy-load/' ) ); ?>" target="_blank">(?)</a>
+										</span>
+									</div>
+
+									<div class="sui-border-frame">
 										<div class="sui-form-field">
 											<label for="lazy_load_skip_first_nth_img" id="lazy_load_skip_first_nth_img-label">
 												<?php esc_html_e( 'Lazy Load from nth image', 'powered-cache' ); ?>

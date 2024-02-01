@@ -23,7 +23,7 @@ class LazyLoad {
 	 *
 	 * @var array $settings
 	 */
-	private $settings;
+	private static $settings = null;
 
 	/**
 	 * Return an instance of the current class
@@ -45,9 +45,11 @@ class LazyLoad {
 	 * Setup routine
 	 */
 	public function setup() {
-		$this->settings = \PoweredCache\Utils\get_settings();
+		if ( ! self::$settings ) {
+			self::$settings = \PoweredCache\Utils\get_settings();
+		}
 
-		if ( $this->settings['enable_lazy_load'] ) {
+		if ( self::$settings['enable_lazy_load'] ) {
 			add_action( 'wp', [ $this, 'init' ], 9999 ); // run this as late as possible
 			add_action( 'powered_cache_lazy_load_compat', [ $this, 'compat' ] );
 			add_action( 'powered_cache_lazy_load_run_filter', [ $this, 'maybe_disable_through_meta' ] );
@@ -65,7 +67,7 @@ class LazyLoad {
 		 * @return {boolean} New value.
 		 * @since  2.0
 		 */
-		if ( apply_filters( 'powered_cache_disable_native_lazyload', $this->settings['disable_wp_lazy_load'] ) ) {
+		if ( apply_filters( 'powered_cache_disable_native_lazyload', self::$settings['disable_wp_lazy_load'] ) ) {
 			add_filter( 'wp_lazy_loading_enabled', '__return_false' );
 		}
 
@@ -136,7 +138,7 @@ class LazyLoad {
 		 * @return {int} New value
 		 * @since  3.1
 		 */
-		$immediate_load_count = apply_filters( 'powered_cache_lazy_load_skip_first_nth_img', $this->settings['lazy_load_skip_first_nth_img'] );
+		$immediate_load_count = apply_filters( 'powered_cache_lazy_load_skip_first_nth_img', self::$settings['lazy_load_skip_first_nth_img'] );
 
 		if ( 200 !== (int) $threshold || 3 !== (int) $immediate_load_count ) {
 			wp_localize_script(
@@ -149,7 +151,7 @@ class LazyLoad {
 			);
 		}
 
-		if ( $this->settings['lazy_load_youtube'] ) {
+		if ( self::$settings['lazy_load_youtube'] ) {
 			wp_register_style( 'pcll-youtube-lazyload', false ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 			wp_enqueue_style( 'pcll-youtube-lazyload' );
 			wp_add_inline_style( 'pcll-youtube-lazyload', $this->add_inline_youtube_css() );
@@ -172,7 +174,7 @@ class LazyLoad {
 		 * @return {boolean} New value.
 		 * @since  1.0
 		 */
-		if ( true === apply_filters( 'powered_cache_lazy_load_images', $this->settings['lazy_load_images'] ) ) {
+		if ( true === apply_filters( 'powered_cache_lazy_load_images', self::$settings['lazy_load_images'] ) ) {
 			add_filter( 'powered_cache_lazy_load_filter', array( __CLASS__, 'filter_images' ) );
 		}
 
@@ -186,7 +188,7 @@ class LazyLoad {
 		 * @return {boolean} New value.
 		 * @since  1.0
 		 */
-		if ( true === apply_filters( 'powered_cache_lazy_load_iframes', $this->settings['lazy_load_iframes'] ) ) {
+		if ( true === apply_filters( 'powered_cache_lazy_load_iframes', self::$settings['lazy_load_iframes'] ) ) {
 			add_filter( 'powered_cache_lazy_load_filter', array( __CLASS__, 'filter_iframes' ) );
 		}
 
@@ -200,7 +202,7 @@ class LazyLoad {
 		 * @return {boolean} New value.
 		 * @since  1.0
 		 */
-		if ( true === apply_filters( 'powered_cache_lazy_load_post_content', $this->settings['lazy_load_post_content'] ) ) {
+		if ( true === apply_filters( 'powered_cache_lazy_load_post_content', self::$settings['lazy_load_post_content'] ) ) {
 			add_filter( 'the_content', array( __CLASS__, 'filter' ), 200 );
 		}
 
@@ -214,7 +216,7 @@ class LazyLoad {
 		 * @return {boolean} New value.
 		 * @since  1.0
 		 */
-		if ( true === apply_filters( 'powered_cache_lazy_load_widget_text', $this->settings['lazy_load_widgets'] ) ) {
+		if ( true === apply_filters( 'powered_cache_lazy_load_widget_text', self::$settings['lazy_load_widgets'] ) ) {
 			add_filter( 'widget_text', array( __CLASS__, 'filter' ), 200 );
 		}
 
@@ -228,7 +230,7 @@ class LazyLoad {
 		 * @return {boolean} New value.
 		 * @since  1.0
 		 */
-		if ( true === apply_filters( 'powered_cache_lazy_load_post_thumbnail', $this->settings['lazy_load_post_thumbnail'] ) ) {
+		if ( true === apply_filters( 'powered_cache_lazy_load_post_thumbnail', self::$settings['lazy_load_post_thumbnail'] ) ) {
 			add_filter( 'post_thumbnail_html', array( __CLASS__, 'filter' ), 200 );
 		}
 
@@ -242,7 +244,7 @@ class LazyLoad {
 		 * @return {boolean} New value.
 		 * @since  3.4
 		 */
-		if ( true === apply_filters( 'powered_cache_lazy_load_youtube', $this->settings['lazy_load_youtube'] ) ) {
+		if ( true === apply_filters( 'powered_cache_lazy_load_youtube', self::$settings['lazy_load_youtube'] ) ) {
 			add_filter( 'powered_cache_lazy_load_filter', array( __CLASS__, 'replace_youtube_iframe_with_thumbnail' ), 9 );
 		}
 
@@ -256,7 +258,7 @@ class LazyLoad {
 		 * @return {boolean} New value.
 		 * @since  1.0
 		 */
-		if ( true === apply_filters( 'powered_cache_lazy_load_avatar', $this->settings['lazy_load_avatars'] ) ) {
+		if ( true === apply_filters( 'powered_cache_lazy_load_avatar', self::$settings['lazy_load_avatars'] ) ) {
 			add_filter( 'get_avatar', array( __CLASS__, 'filter' ), 200 );
 		}
 
@@ -342,6 +344,9 @@ class LazyLoad {
 		$replace = array();
 
 		foreach ( $matches[0] as $img_html ) {
+			if ( self::is_excluded( $img_html ) ) {
+				continue;
+			}
 
 			// don't to the replacement if the image is a data-uri
 			if ( ! preg_match( "/src=['\"]data:image/is", $img_html ) ) {
@@ -402,6 +407,10 @@ class LazyLoad {
 		$replace = array();
 
 		foreach ( $matches[0] as $iframe_html ) {
+
+			if ( self::is_excluded( $iframe_html ) ) {
+				continue;
+			}
 
 			// Don't mess with the Gravity Forms ajax iframe
 			if ( strpos( $iframe_html, 'gform_ajax_frame' ) ) {
@@ -593,6 +602,10 @@ class LazyLoad {
 		$replace = array();
 
 		foreach ( $matches[0] as $iframe_html ) {
+			if ( self::is_excluded( $iframe_html ) ) {
+				continue;
+			}
+
 			// Extract video ID and additional parameters
 			preg_match( $pattern, $iframe_html, $iframe_parts );
 			$video_id = $iframe_parts[1];
@@ -648,6 +661,52 @@ class LazyLoad {
 		$css = apply_filters( 'powered_cache_lazy_load_youtube_css', $css );
 
 		return $css;
+	}
+
+
+	/**
+	 * Get lazyload exclusion list
+	 *
+	 * @return array
+	 * @since 3.4
+	 */
+	public static function get_exclusions() {
+		if ( ! self::$settings ) {
+			self::$settings = \PoweredCache\Utils\get_settings();
+		}
+
+		$excluded_files = preg_split( '#(\r\n|\n|\r)#', self::$settings['lazy_load_exclusions'], - 1, PREG_SPLIT_NO_EMPTY );
+
+		/**
+		 * Filter the lazyload exclusions
+		 *
+		 * @hook   powered_cache_lazy_load_exclusions
+		 *
+		 * @param  {array} $settings Excluded files
+		 *
+		 * @return {array} New value
+		 * @since  3.4
+		 */
+		return (array) apply_filters( 'powered_cache_lazy_load_exclusions', $excluded_files );
+	}
+
+	/**
+	 * Check if excluded or not from defer
+	 *
+	 * @param string $tag Resource
+	 *
+	 * @return bool
+	 * @since 3.4
+	 */
+	public static function is_excluded( $tag ) {
+		$excluded_files = self::get_exclusions();
+		$excluded_files = implode( '|', $excluded_files );
+
+		if ( ! empty( $excluded_files ) && preg_match( '#(' . $excluded_files . ')#', $tag ) ) {
+			return true;
+		}
+
+		return false;
 	}
 
 }

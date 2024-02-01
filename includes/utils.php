@@ -105,6 +105,7 @@ function get_settings( $force_network_wide = false ) {
 		'lazy_load_avatars'                => true,
 		'lazy_load_youtube'                => false,
 		'lazy_load_skip_first_nth_img'     => 3,
+		'lazy_load_exclusions'             => '',
 		'disable_wp_lazy_load'             => false,
 		'disable_wp_embeds'                => false,
 		'disable_emoji_scripts'            => false,
