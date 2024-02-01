@@ -74,7 +74,7 @@ class CachePreloader extends Powered_Cache_WP_Background_Process {
 			}
 		}
 
-		\PoweredCache\Utils\log( sprintf( 'Preloading completed...%s', $item ) );
+		\PoweredCache\Utils\log( sprintf( 'Preloaded...:%s', $item ) );
 
 		return false;
 	}

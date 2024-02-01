@@ -211,7 +211,7 @@ class Preloader {
 		$preload_urls = apply_filters( 'populate_preload_queue_urls', $preload_urls );
 
 		foreach ( $preload_urls as $url ) {
-			$this->cache_preloader->push_to_queue( $url );
+			$this->add_url_to_preload_queue( $url );
 		}
 	}
 
@@ -230,8 +230,7 @@ class Preloader {
 		}
 
 		foreach ( $urls as $url ) {
-			$this->cache_preloader->push_to_queue( $url );
-			\PoweredCache\Utils\log( sprintf( 'Pushed to preload queue [add_purged_urls_to_preload_queue]: %s', $url ) );
+			$this->add_url_to_preload_queue( $url );
 		}
 
 		$this->cache_preloader->save()->dispatch();
@@ -280,8 +279,7 @@ class Preloader {
 			if ( $has_trailingslash ) {
 				$url = trailingslashit( $url );
 			}
-			$this->cache_preloader->push_to_queue( $url );
-			\PoweredCache\Utils\log( sprintf( 'Pushed to preload queue [add_expired_urls_to_preload_queue]: %s', $url ) );
+			$this->add_url_to_preload_queue( $url );
 		}
 
 		$this->cache_preloader->save()->dispatch();
@@ -597,7 +595,7 @@ class Preloader {
 		 */
 		do_action( 'powered_cache_preload_http_request', $url, $args );
 
-		\PoweredCache\Utils\log( sprintf( 'Preloading...%s: %s', $url, print_r( $args, true ) ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+		\PoweredCache\Utils\log( sprintf( 'Preloading...: %s', $url ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 		return wp_remote_get( esc_url_raw( $url ), $args );
 	}
@@ -640,5 +638,32 @@ class Preloader {
 		 */
 		return apply_filters( 'powered_cache_preload_mobile_user_agent', 'Powered Cache Preloader mobile iPhone' );
 	}
+
+	/**
+	 * Add a URL to the preload queue with optional filtering.
+	 *
+	 * @param string $url The URL to add to the preload queue.
+	 * @since 3.4
+	 */
+	protected function add_url_to_preload_queue( $url ) {
+		/**
+		 * Filters whether a URL should be added to the preload queue.
+		 *
+		 * @param  {boolean}   $preload Whether to preload the URL. Default true.
+		 * @param  {string} $url     The URL to be preloaded.
+		 *
+		 * @return {boolean} Whether to preload the URL.
+		 * @since  3.4
+		 */
+		$do_preload = apply_filters( 'powered_cache_preload_filter_url', true, $url );
+
+		if ( $do_preload ) {
+			$this->cache_preloader->push_to_queue( $url );
+			\PoweredCache\Utils\log( sprintf( 'URL added to preload queue    : %s', $url ) );
+		} else {
+			\PoweredCache\Utils\log( sprintf( 'URL skipped from preload queue: %s', $url ) );
+		}
+	}
+
 
 }
