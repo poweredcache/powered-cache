@@ -33,6 +33,7 @@
   },
   "10up-toolkit": {
     "entry": {
+      "lazyload-youtube": "./assets/css/frontend/lazyload-youtube.css",
       "admin": "./assets/js/admin/admin.js",
       "editor": "./assets/js/admin/editor.js",
       "classic-editor": "./assets/js/admin/classic-editor.js",
