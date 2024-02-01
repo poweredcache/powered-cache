@@ -643,11 +643,14 @@ class Preloader {
 	 * Add a URL to the preload queue with optional filtering.
 	 *
 	 * @param string $url The URL to add to the preload queue.
+	 *
 	 * @since 3.4
 	 */
 	protected function add_url_to_preload_queue( $url ) {
 		/**
 		 * Filters whether a URL should be added to the preload queue.
+		 *
+		 * @hook   powered_cache_preload_add_url_to_queue
 		 *
 		 * @param  {boolean}   $preload Whether to preload the URL. Default true.
 		 * @param  {string} $url     The URL to be preloaded.
@@ -655,7 +658,7 @@ class Preloader {
 		 * @return {boolean} Whether to preload the URL.
 		 * @since  3.4
 		 */
-		$do_preload = apply_filters( 'powered_cache_preload_filter_url', true, $url );
+		$do_preload = apply_filters( 'powered_cache_preload_add_url_to_queue', true, $url );
 
 		if ( $do_preload ) {
 			$this->cache_preloader->push_to_queue( $url );
