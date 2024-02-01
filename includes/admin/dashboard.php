@@ -11,6 +11,7 @@ use PoweredCache\Async\CachePreloader;
 use PoweredCache\Async\CachePurger;
 use PoweredCache\Async\DatabaseOptimizer;
 use PoweredCache\Config;
+use PoweredCache\Preloader;
 use const PoweredCache\Constants\ALLOPTIONS_CRITICAL_THRESHOLD;
 use const PoweredCache\Constants\ALLOPTIONS_WARNING_THRESHOLD;
 use const PoweredCache\Constants\ICON_BASE64;
@@ -205,6 +206,12 @@ function process_form_submit() {
 		if ( $old_options['enable_cache_preload'] && ! $options['enable_cache_preload'] ) {
 			cancel_preloading();
 		}
+
+		//  start the preloading process when it is turned on
+		if ( ! $old_options['enable_cache_preload'] && $options['enable_cache_preload'] ) {
+			start_preloading();
+		}
+
 
 		if ( $old_options['async_cache_cleaning'] && ! $options['async_cache_cleaning'] ) {
 			cancel_async_cache_cleaning();
@@ -685,9 +692,19 @@ function db_optimize( $options ) {
  * Cancel preloading process on toggling preload option
  */
 function cancel_preloading() {
-	\PoweredCache\Utils\log( 'Cancel preload process' );
+	\PoweredCache\Utils\log( 'Cancel preload process - Settings toggle' );
 	$cache_preloader = CachePreloader::factory();
 	$cache_preloader->cancel_process();
+}
+
+/**
+ * Kick-start preloading process
+ *
+ * @return void
+ */
+function start_preloading() {
+	\PoweredCache\Utils\log( 'Enable Preloader - Settings toggle' );
+	Preloader::factory()->setup_preload_queue();
 }
 
 /**

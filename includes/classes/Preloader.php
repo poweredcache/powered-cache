@@ -134,6 +134,10 @@ class Preloader {
 	 * Setup preload
 	 */
 	public function setup_preload_queue() {
+		if ( ! $this->cache_preloader ) {
+			$this->cache_preloader = CachePreloader::factory();
+		}
+
 		// cancel existing process before populating
 		$this->cache_preloader->cancel_process();
 

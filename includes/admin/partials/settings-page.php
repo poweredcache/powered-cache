@@ -7,6 +7,7 @@
 
 namespace PoweredCache\Admin\Partials\SettingsPage;
 
+use PoweredCache\Async\CachePreloader;
 use function PoweredCache\Utils\can_configure_htaccess;
 use function PoweredCache\Utils\can_configure_object_cache;
 use function PoweredCache\Utils\can_control_all_settings;
@@ -1652,7 +1653,26 @@ js-(before|after|extra)</pre>
 								<p><?php esc_html_e( 'It seems page caching is not activated yet. Page caching needs to be enabled in order to get the advantage of preloading features!', 'powered-cache' ); ?></p>
 							</div>
 						</div>
+
 					</div>
+
+					<?php
+					if ( CachePreloader::factory()->is_process_running() ) {
+						$batch          = CachePreloader::factory()->get_batches( 1 );
+						$remaining_item = ! empty( $batch[0] ) && $batch[0]->data ? count( $batch[0]->data ) : 0;
+					}
+					?>
+
+					<?php if ( isset( $remaining_item ) ): ?>
+						<div class="sui-notice sui-notice-warning" style="padding:10px 20px;margin-bottom:0;">
+							<div class="sui-notice-content">
+								<div class="sui-notice-message">
+									<span class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></span>
+									<p><?php echo esc_html( sprintf( __( 'Preloading is currently running. Remaining item: %d (Refresh to see progress)', 'powered-cache' ), $remaining_item ) ); ?></p>
+								</div>
+							</div>
+						</div>
+					<?php endif; ?>
 
 					<div class="sui-box-settings-row">
 
