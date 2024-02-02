@@ -123,6 +123,8 @@ class Preloader {
 			exit;
 		}
 
+		\PoweredCache\Utils\log( sprintf( 'Preload triggered from admin bar.' ) );
+
 		$this->setup_preload_queue();
 
 		$redirect_url = add_query_arg( 'pc_action', 'start_preload', wp_get_referer() );
@@ -599,7 +601,7 @@ class Preloader {
 		 */
 		do_action( 'powered_cache_preload_http_request', $url, $args );
 
-		\PoweredCache\Utils\log( sprintf( 'Preloading...: %s', $url ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+		\PoweredCache\Utils\log( sprintf( 'Processing..: %s', $url ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 		return wp_remote_get( esc_url_raw( $url ), $args );
 	}
@@ -615,12 +617,27 @@ class Preloader {
 		 *
 		 * @hook   powered_cache_preload_request_interval
 		 *
-		 * @param  {int} $delay Delay time in milliseconds.
+		 * @param  {int} $delay Delay time in microseconds.
 		 *
 		 * @return {int} New value.
 		 * @since  2.0
 		 */
-		usleep( absint( apply_filters( 'powered_cache_preload_request_interval', $delay ) ) );
+		$delay = absint( apply_filters( 'powered_cache_preload_request_interval', $delay ) );
+
+		// Convert the delay to seconds and microseconds
+		$seconds      = intdiv( $delay, 1000000 ); // Get full seconds
+		$microseconds = $delay % 1000000;   // Get remaining microseconds
+
+		// Use sleep() for full second delays
+		if ( $seconds > 0 ) {
+			sleep( $seconds );
+		}
+
+		// Use usleep() for remaining microseconds
+		// sleeping more than 1 seconds may not be supported by the operating system with usleep
+		if ( $microseconds > 0 ) {
+			usleep( $microseconds );
+		}
 	}
 
 

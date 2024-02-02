@@ -120,6 +120,7 @@ function get_settings( $force_network_wide = false ) {
 		'preload_public_posts'             => true,
 		'preload_public_tax'               => true,
 		'enable_sitemap_preload'           => false,
+		'preload_request_interval'         => 2, // in seconds
 		'preload_sitemap'                  => '',
 		'prefetch_dns'                     => '',
 		'preconnect_resource'              => '',

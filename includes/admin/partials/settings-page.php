@@ -1663,7 +1663,7 @@ js-(before|after|extra)</pre>
 					}
 					?>
 
-					<?php if ( isset( $remaining_item ) ): ?>
+					<?php if ( isset( $remaining_item ) ) : ?>
 						<div class="sui-notice sui-notice-warning" style="padding:10px 20px;margin-bottom:0;">
 							<div class="sui-notice-content">
 								<div class="sui-notice-message">
@@ -1759,6 +1759,26 @@ js-(before|after|extra)</pre>
 												<span id="preload_public_tax_label" class="sui-toggle-label"><?php esc_html_e( 'Enable for public taxonomies', 'powered-cache' ); ?></span>
 												<span id="preload_public_tax_description" class="sui-description"><?php esc_html_e( 'Preload archive pages of taxonomies. (tags, category etc..)', 'powered-cache' ); ?></span>
 											</label>
+										</div>
+										<div class="sui-row sui-border-frame">
+
+											<div class="sui-form-field">
+												<label for="preload_request_interval" id="preload_request_interval-label" class="sui-label"><?php esc_html_e( 'Preloader request interval', 'powered-cache' ); ?></label>
+												<input
+													name="preload_request_interval"
+													value="<?php echo esc_attr( $settings['preload_request_interval'] ); ?>"
+													id="preload_request_interval"
+													class="sui-form-control sui-field-has-prefix"
+													type="number"
+													min="1"
+													max="10"
+												/>
+												<span class="sui-field-suffix">
+													<span id="preload_request_interval_description" class="sui-description"><?php esc_html_e( 'Seconds', 'powered-cache' ); ?></span>
+												</span>
+												<span id="preload_request_interval_description" class="sui-description"><?php esc_html_e( 'Adjust the delay between preload requests. If your website is hosted on a slow server, consider increasing the interval between requests.', 'powered-cache' ); ?></span>
+
+											</div>
 										</div>
 									</div>
 

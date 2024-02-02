@@ -55,26 +55,27 @@ class CachePreloader extends Powered_Cache_WP_Background_Process {
 	 */
 	protected function task( $item ) {
 		$this->settings = \PoweredCache\Utils\get_settings();
+		$delay          = absint( $this->settings['preload_request_interval'] ) * 1000000; // convert to microseconds
 
-		\PoweredCache\Utils\log( sprintf( 'Preloading...%s', $item ) );
+		\PoweredCache\Utils\log( sprintf( 'Preloading..: %s', $item ) );
 
 		if ( filter_var( $item, FILTER_VALIDATE_URL ) ) {
 
 			if ( ! is_url_cached( $item, false, $this->settings['gzip_compression'] ) ) {
 				Preloader::preload_request( $item );
-				Preloader::wait();
+				Preloader::wait( $delay );
 			}
 
 			// make the preload request by using mobile agent
 			if ( $this->settings['cache_mobile'] && $this->settings['cache_mobile_separate_file'] ) {
 				if ( ! is_url_cached( $item, true, $this->settings['gzip_compression'] ) ) {
 					Preloader::preload_request( $item, [ 'user-agent' => Preloader::mobile_user_agent() ] );
-					Preloader::wait();
+					Preloader::wait( $delay );
 				}
 			}
 		}
 
-		\PoweredCache\Utils\log( sprintf( 'Preloaded...:%s', $item ) );
+		\PoweredCache\Utils\log( sprintf( 'Preloaded...: %s', $item ) );
 
 		return false;
 	}

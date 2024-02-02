@@ -207,11 +207,10 @@ function process_form_submit() {
 			cancel_preloading();
 		}
 
-		//  start the preloading process when it is turned on
+		// start the preloading process when it is turned on
 		if ( ! $old_options['enable_cache_preload'] && $options['enable_cache_preload'] ) {
 			start_preloading();
 		}
-
 
 		if ( $old_options['async_cache_cleaning'] && ! $options['async_cache_cleaning'] ) {
 			cancel_async_cache_cleaning();
@@ -384,6 +383,7 @@ function sanitize_options( $options ) {
 	$sanitized_options['preload_public_posts']           = ! empty( $options['preload_public_posts'] );
 	$sanitized_options['preload_public_tax']             = ! empty( $options['preload_public_tax'] );
 	$sanitized_options['enable_sitemap_preload']         = ! empty( $options['enable_sitemap_preload'] );
+	$sanitized_options['preload_request_interval']       = absint( $options['preload_request_interval'] );
 	$sanitized_options['preload_sitemap']                = sanitize_textarea_field( $options['preload_sitemap'] );
 	$sanitized_options['prefetch_dns']                   = sanitize_textarea_field( $options['prefetch_dns'] );
 	$sanitized_options['preconnect_resource']            = sanitize_textarea_field( $options['preconnect_resource'] );
