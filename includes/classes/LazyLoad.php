@@ -676,6 +676,7 @@ class LazyLoad {
 		}
 
 		$excluded_files = preg_split( '#(\r\n|\n|\r)#', self::$settings['lazy_load_exclusions'], - 1, PREG_SPLIT_NO_EMPTY );
+		$excluded_files[] = 'selectors.core.image.lightboxObjectFit'; // exclude core lightboxed images
 
 		/**
 		 * Filter the lazyload exclusions
