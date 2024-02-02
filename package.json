@@ -1,6 +1,6 @@
 {
   "name": "powered-cache",
-  "version": "3.3.3",
+  "version": "3.4.0",
   "description": "Comprehensive caching and performance plugin for WordPress.",
   "author": {
     "name": "PoweredCache",
@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@wordpress/element": "^4.0",
-    "@wpmudev/shared-ui": "2.12.23",
+    "@wpmudev/shared-ui": "2.12.24",
     "10up-toolkit": "^5.2"
   },
   "dependencies": {
