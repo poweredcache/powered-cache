@@ -675,20 +675,20 @@ class LazyLoad {
 			self::$settings = \PoweredCache\Utils\get_settings();
 		}
 
-		$excluded_files = preg_split( '#(\r\n|\n|\r)#', self::$settings['lazy_load_exclusions'], - 1, PREG_SPLIT_NO_EMPTY );
-		$excluded_files[] = 'selectors.core.image.lightboxObjectFit'; // exclude core lightboxed images
+		$load_exclusions = preg_split( '#(\r\n|\n|\r)#', self::$settings['lazy_load_exclusions'], - 1, PREG_SPLIT_NO_EMPTY );
+		$load_exclusions[] = 'selectors.core.image.lightboxObjectFit'; // exclude core lightboxed images
 
 		/**
 		 * Filter the lazyload exclusions
 		 *
 		 * @hook   powered_cache_lazy_load_exclusions
 		 *
-		 * @param  {array} $settings Excluded files
+		 * @param  {array} $load_exclusions The current exclusions
 		 *
 		 * @return {array} New value
 		 * @since  3.4
 		 */
-		return (array) apply_filters( 'powered_cache_lazy_load_exclusions', $excluded_files );
+		return (array) apply_filters( 'powered_cache_lazy_load_exclusions', $load_exclusions );
 	}
 
 	/**
