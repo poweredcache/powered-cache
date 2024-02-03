@@ -1668,7 +1668,7 @@ js-(before|after|extra)</pre>
 							<div class="sui-notice-content">
 								<div class="sui-notice-message">
 									<span class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></span>
-									<p><?php echo esc_html( sprintf( __( 'Preloading is currently running. Remaining item: %d (Refresh to see progress)', 'powered-cache' ), $remaining_item ) ); ?></p>
+									<p><?php echo esc_html( sprintf( __( 'Preloader is currently running. Remaining items: %d (Refresh to see progress)', 'powered-cache' ), $remaining_item ) ); ?></p>
 								</div>
 							</div>
 						</div>
