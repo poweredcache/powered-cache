@@ -314,7 +314,7 @@ function powered_cache_page_buffer( $buffer, $flags ) {
 	if ( array_key_exists( 'cache_footprint', $GLOBALS['powered_cache_options'] ) && true === $GLOBALS['powered_cache_options']['cache_footprint'] ) {
 		if ( preg_match( '#</html>#i', $buffer ) ) {
 			$buffer .= PHP_EOL;
-			$buffer .= "<!-- Cache served by PoweredCache -->";
+			$buffer .= "<!-- Cache served by Powered Cache -->";
 			$buffer .= PHP_EOL;
 			$buffer .= "<!-- If you like fast websites like this, visit: https://poweredcache.com -->";
 			$buffer .= PHP_EOL;
@@ -322,6 +322,10 @@ function powered_cache_page_buffer( $buffer, $flags ) {
 			$buffer .= PHP_EOL;
 			$buffer .= "<!-- Dynamic page generated in $generation_time -->";
 			$buffer .= PHP_EOL;
+			if ( false !== stripos( $_SERVER['HTTP_USER_AGENT'], 'Powered Cache Preloader' ) ) {
+				$buffer .= "<!-- This page is preloaded by Powered Cache Preloader -->";
+				$buffer .= PHP_EOL;
+			}
 		}
 	}
 
