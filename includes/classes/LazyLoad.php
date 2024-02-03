@@ -675,7 +675,7 @@ class LazyLoad {
 			self::$settings = \PoweredCache\Utils\get_settings();
 		}
 
-		$load_exclusions = preg_split( '#(\r\n|\n|\r)#', self::$settings['lazy_load_exclusions'], - 1, PREG_SPLIT_NO_EMPTY );
+		$load_exclusions   = preg_split( '#(\r\n|\n|\r)#', self::$settings['lazy_load_exclusions'], - 1, PREG_SPLIT_NO_EMPTY );
 		$load_exclusions[] = 'selectors.core.image.lightboxObjectFit'; // exclude core lightboxed images
 
 		/**
