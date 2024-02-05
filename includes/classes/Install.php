@@ -110,13 +110,13 @@ class Install {
 	 */
 	public function maybe_upgrade() {
 		if ( version_compare( get_option( DB_VERSION_OPTION_NAME ), POWERED_CACHE_DB_VERSION, '<' ) ) {
+			\PoweredCache\Utils\log( sprintf( 'Upgrade DB version: %s', POWERED_CACHE_DB_VERSION ) );
 			$this->maybe_migrate_from_1x();
 			$this->upgrade_30();
 			$this->upgrade_32();
 			$this->upgrade_33();
 			$this->upgrade_34();
 
-			\PoweredCache\Utils\log( sprintf( 'Upgrade DB version: %s', POWERED_CACHE_DB_VERSION ) );
 			update_option( DB_VERSION_OPTION_NAME, POWERED_CACHE_DB_VERSION );
 		}
 	}
