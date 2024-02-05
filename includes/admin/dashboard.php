@@ -11,7 +11,9 @@ use PoweredCache\Async\CachePreloader;
 use PoweredCache\Async\CachePurger;
 use PoweredCache\Async\DatabaseOptimizer;
 use PoweredCache\Config;
+use PoweredCache\Encryption;
 use PoweredCache\Preloader;
+use function PoweredCache\Utils\mask_string;
 use const PoweredCache\Constants\ALLOPTIONS_CRITICAL_THRESHOLD;
 use const PoweredCache\Constants\ALLOPTIONS_WARNING_THRESHOLD;
 use const PoweredCache\Constants\ICON_BASE64;
@@ -31,6 +33,7 @@ use function PoweredCache\Utils\is_premium;
 use function PoweredCache\Utils\powered_cache_flush;
 use function PoweredCache\Utils\remove_dir;
 use function PoweredCache\Utils\sanitize_css;
+use const PoweredCache\Constants\UNMASK_CHARACTER_LENGTH;
 
 // phpcs:disable WordPress.WhiteSpace.PrecisionAlignment.Found
 // phpcs:disable Generic.WhiteSpace.DisallowSpaceIndent.SpacesUsed
@@ -140,6 +143,7 @@ function process_form_submit() {
 		$action      = isset( $_POST['powered_cache_form_action'] ) ? sanitize_text_field( wp_unslash( $_POST['powered_cache_form_action'] ) ) : 'save_settings';
 		$old_options = \PoweredCache\Utils\get_settings();
 		$options     = sanitize_options( $_POST );
+		$options     = maybe_process_cloudflare_settings( $options );
 
 		switch ( $action ) {
 			case 'reset_settings':
@@ -923,4 +927,47 @@ function action_links( $actions ) {
 	}
 
 	return array_reverse( $actions );
+}
+
+/**
+ * Conditionally process Cloudflare API key and token settings based on the form input.
+ *
+ * @param array $options The form options submitted by the user.
+ *
+ * @return array Updated options with processed Cloudflare settings.
+ */
+function maybe_process_cloudflare_settings( $options ) {
+	// Retrieve the previous Cloudflare API key and token values.
+	$prev_cf_api_key   = \PoweredCache\Extensions\Cloudflare\Cloudflare::get_cf_api_key();
+	$prev_cf_api_token = \PoweredCache\Extensions\Cloudflare\Cloudflare::get_cf_api_token();
+
+	// Check if the submitted Cloudflare API key matches the masked version of the previous key.
+	if ( isset( $options['cloudflare_api_key'] ) && mask_string( $prev_cf_api_key, UNMASK_CHARACTER_LENGTH ) === $options['cloudflare_api_key'] ) {
+		$options['cloudflare_api_key'] = $prev_cf_api_key; // Use the unmasked value.
+	}
+
+	if ( isset( $options['cloudflare_api_token'] ) && mask_string( $prev_cf_api_token, UNMASK_CHARACTER_LENGTH ) === $options['cloudflare_api_token'] ) {
+		$options['cloudflare_api_token'] = $prev_cf_api_token; // Use the unmasked value.
+	}
+
+	$encryption = new Encryption();
+	// Encrypt sensitive data if it's not empty.
+	if ( ! empty( $options['cloudflare_api_key'] ) ) {
+		$options['cloudflare_api_key'] = $encryption->encrypt( $options['cloudflare_api_key'] );
+	}
+
+	if ( ! empty( $options['cloudflare_api_token'] ) ) {
+		$options['cloudflare_api_token'] = $encryption->encrypt( $options['cloudflare_api_token'] );
+	}
+
+	// Override with empty values if constants are defined.
+	if ( defined( 'POWERED_CACHE_CF_API_KEY' ) && POWERED_CACHE_CF_API_KEY ) {
+		$options['cloudflare_api_key'] = '';
+	}
+
+	if ( defined( 'POWERED_CACHE_CF_API_TOKEN' ) && POWERED_CACHE_CF_API_TOKEN ) {
+		$options['cloudflare_api_token'] = '';
+	}
+
+	return $options;
 }

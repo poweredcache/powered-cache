@@ -7,6 +7,8 @@
 
 namespace PoweredCache\Extensions\Cloudflare;
 
+use function PoweredCache\Utils\get_decrypted_setting;
+
 /**
  * Class Cloudflare
  */
@@ -56,7 +58,10 @@ class Cloudflare {
 	 */
 	public function setup() {
 		$this->settings = \PoweredCache\Utils\get_settings();
-		$this->cf_api   = API::factory( $this->settings['cloudflare_email'], $this->settings['cloudflare_api_key'], $this->settings['cloudflare_api_token'] );
+		$cf_api_key     = self::get_cf_api_key();
+		$cf_api_token   = self::get_cf_api_token();
+
+		$this->cf_api = API::factory( $this->settings['cloudflare_email'], $cf_api_key, $cf_api_token );
 
 		// Fixes Flexible SSL
 		if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $_SERVER['HTTP_X_FORWARDED_PROTO'] ) {
@@ -134,6 +139,36 @@ class Cloudflare {
 		$redirect_url = add_query_arg( 'pc_action', 'flush_cf_cache_failed', wp_get_referer() );
 		wp_safe_redirect( esc_url_raw( $redirect_url ) );
 		exit;
+	}
+
+	/**
+	 * Get CF API Key
+	 *
+	 * @return bool|mixed|string
+	 */
+	public static function get_cf_api_key() {
+		if ( defined( 'POWERED_CACHE_CF_API_KEY' ) && POWERED_CACHE_CF_API_KEY ) {
+			return POWERED_CACHE_CF_API_KEY;
+		}
+
+		$cf_api_key = get_decrypted_setting( 'cloudflare_api_key' );
+
+		return $cf_api_key;
+	}
+
+	/**
+	 * Get CF API Token
+	 *
+	 * @return bool|mixed|string
+	 */
+	public static function get_cf_api_token() {
+		if ( defined( 'POWERED_CACHE_CF_API_TOKEN' ) && POWERED_CACHE_CF_API_TOKEN ) {
+			return POWERED_CACHE_CF_API_TOKEN;
+		}
+
+		$cf_api_token = get_decrypted_setting( 'cloudflare_api_token' );
+
+		return $cf_api_token;
 	}
 
 }

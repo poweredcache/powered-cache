@@ -13,11 +13,14 @@ use function PoweredCache\Utils\can_configure_object_cache;
 use function PoweredCache\Utils\can_control_all_settings;
 use function PoweredCache\Utils\cdn_zones;
 use function PoweredCache\Utils\get_available_object_caches;
+use function PoweredCache\Utils\get_decrypted_setting;
 use function PoweredCache\Utils\get_doc_url;
 use function PoweredCache\Utils\get_timeout_with_interval;
 use function PoweredCache\Utils\is_premium;
+use function PoweredCache\Utils\mask_string;
 use function PoweredCache\Utils\sanitize_css;
 use function PoweredCache\Utils\scheduled_cleanup_frequency_options;
+use const PoweredCache\Constants\UNMASK_CHARACTER_LENGTH;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -28,7 +31,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 // phpcs:disable WordPressVIPMinimum.Security.ProperEscapingFunction.htmlAttrNotByEscHTML
 // phpcs:disable WordPressVIPMinimum.Security.ProperEscapingFunction.notAttrEscAttr
 
-$settings = \PoweredCache\Utils\get_settings();
+$settings     = \PoweredCache\Utils\get_settings();
+$cf_api_key   = \PoweredCache\Extensions\Cloudflare\Cloudflare::get_cf_api_key();
+$cf_api_token = \PoweredCache\Extensions\Cloudflare\Cloudflare::get_cf_api_token();
 
 ?>
 
@@ -2289,10 +2294,10 @@ js-(before|after|extra)</pre>
 									<div class="sui-form-field">
 										<label for="cloudflare-api-token" id="cloudflare-api-token-label" class="sui-label"><?php esc_html_e( 'API Token', 'powered-cache' ); ?></label>
 										<input
-												name="cloudflare_api_token"
-												value="<?php echo esc_attr( $settings['cloudflare_api_token'] ); ?>"
-												id="cloudflare-api-token"
-												class="sui-form-control"
+											name="cloudflare_api_token"
+											value="<?php echo esc_attr( $cf_api_token ? mask_string( $cf_api_token, UNMASK_CHARACTER_LENGTH ) : '' ); ?>"
+											id="cloudflare-api-token"
+											class="sui-form-control"
 										/>
 										<span id="cloudflare_api_token_description" class="sui-description">
 											<?php esc_html_e( 'Recommended authentication method.', 'powered-cache' ); ?>
@@ -2304,7 +2309,7 @@ js-(before|after|extra)</pre>
 									</div>
 
 
-										<div id="cloudflare-api-details" class="sui-row" style="<?php echo( ! empty( $settings['cloudflare_api_token'] ) ? 'display:none' : '' ); ?>">
+										<div id="cloudflare-api-details" class="sui-row" style="<?php echo( ! empty( $cf_api_token ) ? 'display:none' : '' ); ?>">
 											<div class="sui-col">
 												<div class="sui-form-field">
 													<label for="cloudflare-email" id="cloudflare-email-label" class="sui-label"><?php esc_html_e( 'Cloudflare Email', 'powered-cache' ); ?></label>
@@ -2323,10 +2328,9 @@ js-(before|after|extra)</pre>
 													<label for="cloudflare-api-key" id="cloudflare-api-key-label" class="sui-label"><?php esc_html_e( 'API Key', 'powered-cache' ); ?></label>
 													<input
 															name="cloudflare_api_key"
-															value="<?php echo esc_attr( $settings['cloudflare_api_key'] ); ?>"
+															value="<?php echo esc_attr( $cf_api_key ? mask_string( $cf_api_key, UNMASK_CHARACTER_LENGTH ) : '' ); ?>"
 															id="cloudflare-api-key"
 															class="sui-form-control"
-															type="password"
 													/>
 												</div>
 											</div>

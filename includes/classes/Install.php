@@ -98,6 +98,7 @@ class Install {
 			$this->upgrade_30( true );
 			$this->upgrade_32( true );
 			$this->upgrade_33( true );
+			$this->upgrade_34( true );
 
 			\PoweredCache\Utils\log( sprintf( '[Networkwide] Upgrade DB version: %s', POWERED_CACHE_DB_VERSION ) );
 			update_site_option( DB_VERSION_OPTION_NAME, POWERED_CACHE_DB_VERSION );
@@ -113,6 +114,7 @@ class Install {
 			$this->upgrade_30();
 			$this->upgrade_32();
 			$this->upgrade_33();
+			$this->upgrade_34();
 
 			\PoweredCache\Utils\log( sprintf( 'Upgrade DB version: %s', POWERED_CACHE_DB_VERSION ) );
 			update_option( DB_VERSION_OPTION_NAME, POWERED_CACHE_DB_VERSION );
@@ -229,6 +231,41 @@ class Install {
 		}
 
 		\PoweredCache\Utils\log( 'Upgraded to version 3.3' );
+	}
+
+	/**
+	 * Upgrade routine for version 3.4
+	 *
+	 * @param bool $network_wide whether plugin activated network-wide or not
+	 * *
+	 * @return void
+	 */
+	public function upgrade_34( $network_wide = false ) {
+		$current_version = $network_wide ? get_site_option( DB_VERSION_OPTION_NAME ) : get_option( DB_VERSION_OPTION_NAME );
+		if ( ! version_compare( $current_version, '3.4', '<' ) ) {
+			return;
+		}
+
+		$settings = \PoweredCache\Utils\get_settings( $network_wide );
+
+		$encryption = new Encryption();
+
+		if ( ! empty( $settings['cloudflare_api_key'] ) && false === $encryption->decrypt( $settings['cloudflare_api_key'] ) ) {
+			$settings['cloudflare_api_key'] = $encryption->encrypt( $settings['cloudflare_api_key'] );
+		}
+
+		if ( ! empty( $settings['cloudflare_api_token'] ) && false === $encryption->decrypt( $settings['cloudflare_api_token'] ) ) {
+			$settings['cloudflare_api_token'] = $encryption->encrypt( $settings['cloudflare_api_token'] );
+		}
+
+		if ( $network_wide ) {
+			update_site_option( SETTING_OPTION, $settings );
+		} else {
+			update_option( SETTING_OPTION, $settings );
+		}
+
+		Config::factory()->save_configuration( $settings, $network_wide );
+		\PoweredCache\Utils\log( 'Upgraded to version 3.4' );
 	}
 
 	/**

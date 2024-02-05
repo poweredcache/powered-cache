@@ -7,6 +7,7 @@
 
 namespace PoweredCache\Utils;
 
+use PoweredCache\Encryption;
 use const PoweredCache\Constants\SETTING_OPTION;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -1423,4 +1424,44 @@ function autoloaded_options_size() {
 	global $wpdb;
 
 	return (int) $wpdb->get_var( 'SELECT SUM(LENGTH(option_value)) FROM ' . $wpdb->prefix . 'options WHERE autoload = \'yes\'' ); // phpcs:ignore
+}
+
+/**
+ * Mask the string with asterisk
+ *
+ * @param string $input_string  String
+ * @param int    $unmask_length The length of the string that will not be masked
+ *
+ * @return string
+ * @since 3.4
+ */
+function mask_string( $input_string, $unmask_length ) {
+	$output_string = substr( $input_string, 0, $unmask_length );
+
+	if ( strlen( $input_string ) > $unmask_length ) {
+		$output_string .= str_repeat( '*', strlen( $input_string ) - $unmask_length );
+	}
+
+	return $output_string;
+}
+
+/**
+ * Get sensitive data in decrypted form
+ *
+ * @param string $field field name
+ *
+ * @return bool|mixed|string
+ */
+function get_decrypted_setting( $field ) {
+	$settings = \PoweredCache\Utils\get_settings();
+	$value    = isset( $settings[ $field ] ) ? $settings[ $field ] : '';
+
+	// decrypt the value
+	$encryption      = new Encryption();
+	$decrypted_value = $encryption->decrypt( $value );
+	if ( false !== $decrypted_value ) {
+		return $decrypted_value;
+	}
+
+	return $value;
 }

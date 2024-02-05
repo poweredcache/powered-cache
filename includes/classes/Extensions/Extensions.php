@@ -84,8 +84,8 @@ class Extensions {
 		}
 
 		if (
-			( ! empty( $this->settings['cloudflare_email'] ) && ! empty( $this->settings['cloudflare_email'] ) )
-			|| ( ! empty( $this->settings['cloudflare_api_token'] ) )
+			( ! empty( $this->settings['cloudflare_email'] ) && ! empty( Cloudflare\Cloudflare::get_cf_api_key() ) )
+			|| ( ! empty( Cloudflare\Cloudflare::get_cf_api_token() ) )
 		) {
 			return true;
 		}
