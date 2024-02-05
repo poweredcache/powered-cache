@@ -7,7 +7,7 @@ namespace PoweredCache\Utils;
 
 use PoweredCache as Base;
 
-class Core_Tests extends Base\TestCase {
+class Util_Tests extends Base\TestCase {
 
 	protected $testFiles
 		= [
