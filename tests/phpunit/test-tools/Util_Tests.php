@@ -9,15 +9,44 @@ use PoweredCache as Base;
 
 class Util_Tests extends Base\TestCase {
 
+	private $tempDir;
+	private $expiredFilesDir;
+
 	protected $testFiles
 		= [
 			'utils.php',
 			'constants.php',
 		];
 
+	public function setUp(): void {
+		// Create a temporary directory for testing
+		$this->tempDir = sys_get_temp_dir() . '/powered-cache-tests';
+		mkdir( $this->tempDir );
+
+		$this->expiredFilesDir = $this->tempDir . '/testExpiredFiles';
+
+		// Create files with different modification times
+		$currentTime = time();
+		$fileTimes   = [
+			'expired.txt'    => $currentTime - 3600, // 1 hour ago
+			'recent.txt'     => $currentTime - 300, // 5 minutes ago
+			'subdir/old.txt' => $currentTime - 7200, // 2 hours ago in a subdirectory
+		];
+
+		foreach ( $fileTimes as $file => $mtime ) {
+			$filePath = $this->expiredFilesDir . '/' . $file;
+			$dirName  = dirname( $filePath );
+			if ( ! file_exists( $dirName ) ) {
+				mkdir( $dirName, 0777, true );
+			}
+			touch( $filePath, $mtime );
+		}
+	}
+
 	public function testIsDirEmpty() {
 		// Setup: Create a temporary directory
-		$tempDir = sys_get_temp_dir() . '/test_dir';
+		$tempDir = $this->tempDir . '/testEmptyDir' . uniqid();
+
 		mkdir( $tempDir );
 
 		// Test that the directory is initially empty
@@ -157,6 +186,59 @@ class Util_Tests extends Base\TestCase {
 
 		// Unset the global variable to clean up after the test
 		unset( $GLOBALS['powered_cache_mobile_browsers'], $GLOBALS['powered_cache_mobile_prefixes'], $_SERVER['HTTP_USER_AGENT'] );
+	}
+
+	public function testGetExpiredFiles() {
+		// Test with a lifespan where only 'expired.txt' and 'subdir/old.txt' should be expired
+		$expiredFiles = get_expired_files( $this->expiredFilesDir, 1800 ); // 30 minutes lifespan
+		sort( $expiredFiles ); // Sort files for consistent comparison
+
+		$expected = [
+			$this->expiredFilesDir . '/expired.txt',
+			$this->expiredFilesDir . '/subdir/old.txt',
+		];
+		sort( $expected ); // Sort files for consistent comparison
+
+		$this->assertEquals( $expected, $expiredFiles, 'Expired files did not match expected' );
+	}
+
+	public function testGetUrlDir() {
+		// Mock the wp_parse_url function
+		\WP_Mock::userFunction( 'wp_parse_url', [
+			'return' => function ( $url ) {
+				return parse_url( $url );
+			},
+		] );
+
+		// Mock the trailingslashit function
+		\WP_Mock::userFunction( 'trailingslashit', [
+			'return' => function ( $path ) {
+				return rtrim( $path, '/' ) . '/';
+			},
+		] );
+
+		// Test data and expected results
+		$testData = [
+			'http://example.com'       => '/path/to/cache/dir/example.com/',
+			'http://example.com/test'  => '/path/to/cache/dir/example.com/test/',
+			'http://example.com/test/' => '/path/to/cache/dir/example.com/test/',
+		];
+
+		// Mock the get_page_cache_dir function to return a fixed path
+		\WP_Mock::userFunction( 'PoweredCache\Utils\get_page_cache_dir', [
+			'return' => '/path/to/cache/dir/',
+		] );
+
+		// Run the tests
+		foreach ( $testData as $url => $expected ) {
+			$this->assertEquals( $expected, \PoweredCache\Utils\get_url_dir( $url ) );
+		}
+	}
+
+	public function tearDown(): void {
+		\WP_Mock::tearDown();
+		// Cleanup the temporary directory
+		system( 'rm -rf ' . escapeshellarg( $this->tempDir ) );
 	}
 
 }
