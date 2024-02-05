@@ -174,6 +174,11 @@ var PCLL = ( function() {
 					iframe.style.left = '0';
 
 					var wrapper = this.parentElement;
+					if (!wrapper) {
+						// Create a new wrapper element if none exists
+						wrapper = document.createElement('div');
+						this.after(wrapper); // Insert the new wrapper after the div in the DOM
+					}
 					wrapper.innerHTML = '';
 					wrapper.appendChild(iframe);
 				});
