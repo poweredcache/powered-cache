@@ -852,7 +852,7 @@ function get_post_related_urls( $post_id ) {
  */
 function delete_page_cache( $url ) {
 
-	$dir = trailingslashit( get_url_dir( trim( $url ) ) );
+	$dir = get_url_dir( trim( $url ) );
 
 	if ( is_dir( $dir ) ) {
 		$files = scandir( $dir );
@@ -894,6 +894,7 @@ function get_url_dir( $url ) {
 	}
 
 	$path = trailingslashit( get_page_cache_dir() ) . ltrim( $sub_dir, '/' );
+	$path = trailingslashit( $path );
 
 	/**
 	 * Filters the path of the given url in the cache directory.
