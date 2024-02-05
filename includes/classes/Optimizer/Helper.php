@@ -248,6 +248,9 @@ class Helper {
 		$settings       = \PoweredCache\Utils\get_settings();
 		$excluded_files = preg_split( '#(\r\n|\n|\r)#', $settings['js_delay_exclusions'], - 1, PREG_SPLIT_NO_EMPTY );
 
+		$excluded_files[] = 'wp-includes/js/dist/interactivity.min.js';
+		$excluded_files[] = 'wp-includes/blocks/image/view.min.js'; // lightbox doesnt work in delayed mode
+
 		/**
 		 * Filter the delay exclusions
 		 *
