@@ -1465,3 +1465,59 @@ function get_decrypted_setting( $field ) {
 
 	return $value;
 }
+
+
+/**
+ * Check if a given IP is within a specific range.
+ * Supports both IPv4 and IPv6 addresses.
+ *
+ * @param string $ip    The IP address to check.
+ * @param string $range The IP range in CIDR notation.
+ *
+ * @return bool True if the IP is in the range, false otherwise.
+ */
+function is_ip_in_range( $ip, $range ) {
+	if ( false !== strpos( $range, '/' ) ) {
+		list( $subnet, $bits ) = explode( '/', $range, 2 );
+	} else {
+		$subnet = $range;
+		$bits   = ( false === filter_var( $subnet, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) ? 32 : 128;
+	}
+
+	$bits = intval( $bits );
+
+	if ( false !== filter_var( $subnet, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
+		$subnet_bin = inet_pton( $subnet );
+		$ip_bin     = inet_pton( $ip );
+
+		if ( false === $subnet_bin || false === $ip_bin ) {
+			return false;
+		}
+
+		$subnet_bin = str_pad( $subnet_bin, 16, "\0" );
+		$ip_bin     = str_pad( $ip_bin, 16, "\0" );
+
+		for ( $i = 0; $i * 8 < $bits; $i ++ ) {
+			if ( $bits >= ( $i + 1 ) * 8 && $subnet_bin[ $i ] !== $ip_bin[ $i ] ) {
+				return false;
+			} elseif ( $bits > $i * 8 ) {
+				$bitmask = 0xff00 >> ( $bits % 8 );
+				if ( ( ord( $subnet_bin[ $i ] ) & $bitmask ) !== ( ord( $ip_bin[ $i ] ) & $bitmask ) ) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	if ( false === filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
+		return false;
+	}
+
+	$subnet_decimal = ip2long( $subnet );
+	$ip_decimal     = ip2long( $ip );
+	$mask_decimal   = - 1 << ( 32 - $bits );
+
+	return ( $subnet_decimal & $mask_decimal ) === ( $ip_decimal & $mask_decimal );
+}

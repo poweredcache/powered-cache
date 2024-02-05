@@ -8,6 +8,7 @@
 namespace PoweredCache\Extensions\Cloudflare;
 
 use function PoweredCache\Utils\get_decrypted_setting;
+use function PoweredCache\Utils\is_ip_in_range;
 
 /**
  * Class Cloudflare
@@ -69,8 +70,14 @@ class Cloudflare {
 		}
 
 		// real user ip
-		if ( isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) {
-			$_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_CF_CONNECTING_IP']; // phpcs:ignore
+		if ( isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) && isset( $_SERVER['REMOTE_ADDR'] ) && self::is_cf_ip() ) {
+			$cf_ip     = filter_var( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ), FILTER_VALIDATE_IP );
+			$remote_ip = filter_var( wp_unslash( $_SERVER['REMOTE_ADDR'] ), FILTER_VALIDATE_IP );
+
+			// Overwrite REMOTE_ADDR with the valid Cloudflare IP only if they are different.
+			if ( false !== $cf_ip && $cf_ip !== $remote_ip ) {
+				$_SERVER['REMOTE_ADDR'] = $cf_ip;
+			}
 		}
 
 		add_action( 'admin_bar_menu', array( $this, 'admin_bar_menu' ) );
@@ -169,6 +176,51 @@ class Cloudflare {
 		$cf_api_token = get_decrypted_setting( 'cloudflare_api_token' );
 
 		return $cf_api_token;
+	}
+
+	/**
+	 * Check if a request comes from a CloudFlare IP.
+	 *
+	 * @return bool
+	 */
+	public static function is_cf_ip() {
+		$cloudflare_ips = [
+			// Cloudflare IPv4 ranges
+			'173.245.48.0/20',
+			'103.21.244.0/22',
+			'103.22.200.0/22',
+			'103.31.4.0/22',
+			'141.101.64.0/18',
+			'108.162.192.0/18',
+			'190.93.240.0/20',
+			'188.114.96.0/20',
+			'197.234.240.0/22',
+			'198.41.128.0/17',
+			'162.158.0.0/15',
+			'104.16.0.0/13',
+			'104.24.0.0/14',
+			'131.0.72.0/22',
+			// Cloudflare IPv6 ranges
+			'2400:cb00::/32',
+			'2606:4700::/32',
+			'2405:b500::/32',
+			'2405:8100::/32',
+			'2a06:98c0::/29',
+			'2c0f:f248::/32',
+		];
+
+		if ( isset( $_SERVER['REMOTE_ADDR'] ) ) {
+			$remote_ip = filter_var( wp_unslash( $_SERVER['REMOTE_ADDR'] ), FILTER_VALIDATE_IP );
+			if ( false !== $remote_ip ) {
+				foreach ( $cloudflare_ips as $cloudflare_ip ) {
+					if ( is_ip_in_range( $remote_ip, $cloudflare_ip ) ) {
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
 	}
 
 }
