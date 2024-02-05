@@ -58,7 +58,7 @@ function setup() {
 	add_filter( 'admin_body_class', __NAMESPACE__ . '\\add_sui_admin_body_class' );
 	add_action( 'admin_bar_menu', __NAMESPACE__ . '\\admin_bar_menu', 999 );
 	add_action( 'admin_bar_menu', __NAMESPACE__ . '\\purge_all_admin_bar_menu' );
-	add_action( 'admin_post_powered_cache_purge_all_cache', __NAMESPACE__ . '\\purge_all_cache' );
+	add_action( 'admin_post_powered_cache_purge_all_cache', __NAMESPACE__ . '\\purge_all_cache_action' );
 	add_action( 'admin_post_powered_cache_download_rewrite_settings', __NAMESPACE__ . '\\download_rewrite_config' );
 	add_action( 'wp_ajax_powered_cache_run_diagnostic', __NAMESPACE__ . '\\run_diagnostic' );
 	add_action( 'wp_ajax_powered_cache_check_alloptions', __NAMESPACE__ . '\\check_alloptions' );
@@ -187,6 +187,9 @@ function process_form_submit() {
 				break;
 			case 'save_settings_and_optimize':
 				db_optimize( $options );
+				break;
+			case 'save_settings_and_clear_cache':
+				purge_all_cache( $options );
 				break;
 			case 'save_settings':
 			default:
@@ -494,20 +497,21 @@ function maybe_display_message() {
 	$screen = get_current_screen();
 
 	$success_messages = [
-		'flush_page_cache_network'   => esc_html__( 'Page cache deleted for all websites!', 'powered-cache' ),
-		'flush_page_cache'           => esc_html__( 'Page cache deleted successfully!', 'powered-cache' ),
-		'flush_object_cache'         => esc_html__( 'Object cache deleted successfully!', 'powered-cache' ),
-		'flush_all_cache'            => esc_html__( 'All cached items flushed successfully!', 'powered-cache' ),
-		'start_preload'              => esc_html__( 'The cache preloading has been initialized!', 'powered-cache' ),
-		'generate_critical'          => esc_html__( 'The Critical CSS generation process has been initialized!', 'powered-cache' ),
-		'generate_critical_network'  => esc_html__( 'The Critical CSS generation process has been initialized for all sites! This might take a while, depending on the network size.', 'powered-cache' ),
-		'generate_ucss'              => esc_html__( 'The UCSS generation process has been initialized!', 'powered-cache' ),
-		'generate_ucss_network'      => esc_html__( 'The UCSS generation process has been initialized for all sites! This might take a while, depending on the network size.', 'powered-cache' ),
-		'flush_cf_cache'             => esc_html__( 'Cloudflare cache flushed, it can take up to 30 seconds to delete all cache from Cloudflare!', 'powered-cache' ),
-		'reset_settings'             => esc_html__( 'Settings have been reset!', 'powered-cache' ),
-		'import_settings'            => esc_html__( 'Settings have been imported!', 'powered-cache' ),
-		'save_settings_and_optimize' => esc_html__( 'Settings saved and database being optimized...', 'powered-cache' ),
-		'save_settings'              => esc_html__( 'Settings saved.', 'powered-cache' ),
+		'flush_page_cache_network'      => esc_html__( 'Page cache deleted for all websites!', 'powered-cache' ),
+		'flush_page_cache'              => esc_html__( 'Page cache deleted successfully!', 'powered-cache' ),
+		'flush_object_cache'            => esc_html__( 'Object cache deleted successfully!', 'powered-cache' ),
+		'flush_all_cache'               => esc_html__( 'All cached items flushed successfully!', 'powered-cache' ),
+		'start_preload'                 => esc_html__( 'The cache preloading has been initialized!', 'powered-cache' ),
+		'generate_critical'             => esc_html__( 'The Critical CSS generation process has been initialized!', 'powered-cache' ),
+		'generate_critical_network'     => esc_html__( 'The Critical CSS generation process has been initialized for all sites! This might take a while, depending on the network size.', 'powered-cache' ),
+		'generate_ucss'                 => esc_html__( 'The UCSS generation process has been initialized!', 'powered-cache' ),
+		'generate_ucss_network'         => esc_html__( 'The UCSS generation process has been initialized for all sites! This might take a while, depending on the network size.', 'powered-cache' ),
+		'flush_cf_cache'                => esc_html__( 'Cloudflare cache flushed, it can take up to 30 seconds to delete all cache from Cloudflare!', 'powered-cache' ),
+		'reset_settings'                => esc_html__( 'Settings have been reset!', 'powered-cache' ),
+		'import_settings'               => esc_html__( 'Settings have been imported!', 'powered-cache' ),
+		'save_settings_and_optimize'    => esc_html__( 'Settings saved and database being optimized...', 'powered-cache' ),
+		'save_settings_and_clear_cache' => esc_html__( 'Settings have been successfully saved, and all cache has been cleared.', 'powered-cache' ),
+		'save_settings'                 => esc_html__( 'Settings saved.', 'powered-cache' ),
 	];
 
 	if ( isset( $_GET['language'] ) ) {
@@ -579,7 +583,7 @@ function purge_all_admin_bar_menu( $wp_admin_bar ) {
  *
  * @since 1.1
  */
-function purge_all_cache() {
+function purge_all_cache_action() {
 
 	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'powered_cache_purge_all_cache' ) ) { // phpcs:ignore
 		wp_nonce_ays( '' );
@@ -597,8 +601,27 @@ function purge_all_cache() {
 		exit;
 	}
 
+	purge_all_cache();
+
+	$redirect_url = add_query_arg( 'pc_action', 'flush_all_cache', wp_get_referer() );
+
+	wp_safe_redirect( esc_url_raw( $redirect_url ) );
+	exit;
+}
+
+
+/**
+ * Purge all cache
+ *
+ * @param array $settings plugin settings
+ *
+ * @return void
+ */
+function purge_all_cache( $settings = array() ) {
 	$cache_purger = CachePurger::factory();
-	$settings     = \PoweredCache\Utils\get_settings();
+	if ( empty( $settings ) ) {
+		$settings = \PoweredCache\Utils\get_settings();
+	}
 
 	if ( $settings['async_cache_cleaning'] ) {
 		if ( function_exists( 'wp_cache_flush' ) ) {
@@ -614,7 +637,6 @@ function purge_all_cache() {
 	 * Fires after purging all cache
 	 *
 	 * @hook  powered_cache_purge_all_cache
-	 *
 	 * @since 1.1
 	 */
 	do_action( 'powered_cache_purge_all_cache' );
@@ -624,11 +646,6 @@ function purge_all_cache() {
 	} else {
 		delete_transient( PURGE_CACHE_PLUGIN_NOTICE_TRANSIENT );
 	}
-
-	$redirect_url = add_query_arg( 'pc_action', 'flush_all_cache', wp_get_referer() );
-
-	wp_safe_redirect( esc_url_raw( $redirect_url ) );
-	exit;
 }
 
 

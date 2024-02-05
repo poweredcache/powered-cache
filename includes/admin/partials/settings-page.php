@@ -310,12 +310,7 @@ $cf_api_token = \PoweredCache\Extensions\Cloudflare\Cloudflare::get_cf_api_token
 				</div>
 
 				<div class="sui-box-footer">
-					<div class="sui-actions-left">
-						<button type="submit" name="powered_cache_form_action" value="save_settings" class="sui-button sui-button-blue">
-							<i class="sui-icon-save" aria-hidden="true"></i>
-							<?php esc_html_e( 'Update settings', 'powered-cache' ); ?>
-						</button>
-					</div>
+					<?php require 'settings-form-action.php'; ?>
 				</div>
 
 			</div>
@@ -557,12 +552,7 @@ $cf_api_token = \PoweredCache\Extensions\Cloudflare\Cloudflare::get_cf_api_token
 
 				</div>
 				<div class="sui-box-footer">
-					<div class="sui-actions-left">
-						<button type="submit" name="powered_cache_form_action" value="save_settings" class="sui-button sui-button-blue">
-							<i class="sui-icon-save" aria-hidden="true"></i>
-							<?php esc_html_e( 'Update settings', 'powered-cache' ); ?>
-						</button>
-					</div>
+					<?php require 'settings-form-action.php'; ?>
 				</div>
 			</div>
 
@@ -1142,12 +1132,7 @@ js-(before|after|extra)</pre>
 				</div>
 
 				<div class="sui-box-footer">
-					<div class="sui-actions-left">
-						<button type="submit" name="powered_cache_form_action" value="save_settings" class="sui-button sui-button-blue">
-							<i class="sui-icon-save" aria-hidden="true"></i>
-							<?php esc_html_e( 'Update settings', 'powered-cache' ); ?>
-						</button>
-					</div>
+					<?php require 'settings-form-action.php'; ?>
 				</div>
 			</div>
 
@@ -1511,12 +1496,7 @@ js-(before|after|extra)</pre>
 
 				</div>
 				<div class="sui-box-footer">
-					<div class="sui-actions-left">
-						<button type="submit" name="powered_cache_form_action" value="save_settings" class="sui-button sui-button-blue">
-							<i class="sui-icon-save" aria-hidden="true"></i>
-							<?php esc_html_e( 'Update settings', 'powered-cache' ); ?>
-						</button>
-					</div>
+					<?php require 'settings-form-action.php'; ?>
 				</div>
 			</div>
 
@@ -1633,12 +1613,7 @@ js-(before|after|extra)</pre>
 
 				</div>
 				<div class="sui-box-footer">
-					<div class="sui-actions-left">
-						<button type="submit" name="powered_cache_form_action" value="save_settings" class="sui-button sui-button-blue">
-							<i class="sui-icon-save" aria-hidden="true"></i>
-							<?php esc_html_e( 'Update settings', 'powered-cache' ); ?>
-						</button>
-					</div>
+					<?php require 'settings-form-action.php'; ?>
 				</div>
 			</div>
 
@@ -1946,12 +1921,7 @@ js-(before|after|extra)</pre>
 
 				</div>
 				<div class="sui-box-footer">
-					<div class="sui-actions-left">
-						<button type="submit" name="powered_cache_form_action" value="save_settings" class="sui-button sui-button-blue">
-							<i class="sui-icon-save" aria-hidden="true"></i>
-							<?php esc_html_e( 'Update settings', 'powered-cache' ); ?>
-						</button>
-					</div>
+					<?php require 'settings-form-action.php'; ?>
 				</div>
 			</div>
 

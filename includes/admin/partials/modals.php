@@ -6,7 +6,9 @@
  */
 
 // phpcs:disable WordPress.WhiteSpace.PrecisionAlignment.Found
-
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 ?>
 <div class="sui-modal sui-modal-lg">
 	<?php wp_nonce_field( 'powered_cache_run_diagnostic', 'powered_cache_run_diagnostic' ); ?>
