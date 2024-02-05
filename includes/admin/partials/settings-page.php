@@ -2837,6 +2837,20 @@ js-(before|after|extra)</pre>
 						<div class="sui-box-settings-col-2">
 							<div class="sui-form-field">
 								<button type="submit" role="button" name="powered_cache_form_action" value="export_settings" class="sui-button sui-button-ghost sui-button-blue"><?php esc_html_e( 'Download Settings', 'powered-cache' ); ?></button>
+								<?php if ( $settings['enable_cloudflare'] ) : ?>
+									<div role="alert" class="sui-notice sui-notice-yellow sui-active sui-padding-top" aria-live="assertive" style="display: block;">
+										<div class="sui-notice-content">
+											<div class="sui-notice-message">
+												<span class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></span>
+												<p>
+													<strong><?php esc_html_e( 'Please note:', 'powered-cache' ); ?></strong>
+													<?php esc_html_e( 'Due to the sensitive nature of Cloudflare API credentials, they will not be included in the exported settings file.', 'powered-cache' ); ?>
+													<a href="<?php echo esc_url( get_doc_url( 'cloudflare' ) ); ?>" target="_blank"><?php esc_html_e( 'Learn More', 'powered-cache' ); ?></a>
+												</p>
+											</div>
+										</div>
+									</div>
+								<?php endif; ?>
 							</div>
 						</div>
 					</div>

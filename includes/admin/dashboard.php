@@ -163,10 +163,24 @@ function process_form_submit() {
 			case 'export_settings':
 				$filename = sprintf( 'powered-cache-settings-%s-%s.json', gmdate( 'Y-m-d' ), uniqid() );
 				if ( POWERED_CACHE_IS_NETWORK ) {
-					$options = wp_json_encode( get_site_option( SETTING_OPTION ), JSON_PRETTY_PRINT );
+					$options = get_site_option( SETTING_OPTION );
 				} else {
-					$options = wp_json_encode( get_option( SETTING_OPTION ), JSON_PRETTY_PRINT );
+					$options = get_option( SETTING_OPTION );
 				}
+
+				$sensitive_options = [
+					'cloudflare_email', // PII data
+					'cloudflare_api_key',
+					'cloudflare_api_token',
+				];
+
+				foreach ( $sensitive_options as $option_key ) {
+					if ( isset( $options[ $option_key ] ) ) {
+						$options[ $option_key ] = '';
+					}
+				}
+
+				$options = wp_json_encode( $options, JSON_PRETTY_PRINT );
 
 				nocache_headers();
 				// phpcs:disable WordPress.PHP.NoSilencedErrors.Discouraged
