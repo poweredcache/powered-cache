@@ -27,7 +27,7 @@ class TestCase extends BaseTestCase {
 		parent::setUp();
 	}
 
-	public function assertActionsCalled() {
+	public function assertActionsCalled(): void {
 		$actions_not_added = $expected_actions = 0;
 		try {
 			WP_Mock::assertActionsCalled();
