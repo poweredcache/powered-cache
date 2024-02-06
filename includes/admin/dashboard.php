@@ -335,6 +335,7 @@ function sanitize_options( $options ) {
 	$sanitized_options['js_defer_exclusions']              = sanitize_textarea_field( $options['js_defer_exclusions'] );
 	$sanitized_options['js_delay']                         = ! empty( $options['js_delay'] );
 	$sanitized_options['js_delay_exclusions']              = sanitize_textarea_field( $options['js_delay_exclusions'] );
+	$sanitized_options['js_delay_timeout']                 = absint( $options['js_delay_timeout'] );
 	$sanitized_options['enable_image_optimization']        = ! empty( $options['enable_image_optimization'] );
 	$sanitized_options['image_optimizer_preferred_format'] = isset( $options['image_optimizer_preferred_format'] ) ? sanitize_text_field( wp_unslash( $options['image_optimizer_preferred_format'] ) ) : '';
 	$sanitized_options['enable_lazy_load']                 = ! empty( $options['enable_lazy_load'] );

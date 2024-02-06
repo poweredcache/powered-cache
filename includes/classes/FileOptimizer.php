@@ -752,7 +752,7 @@ class FileOptimizer {
 		 * @return {int} New value.
 		 * @since  3.0
 		 */
-		$delay_timeout  = apply_filters( 'powered_cache_delayed_js_timeout', 0 );
+		$delay_timeout  = apply_filters( 'powered_cache_delayed_js_timeout', $this->settings['js_delay_timeout'] );
 		$script_path    = POWERED_CACHE_PATH . 'dist/js/script-loader.js';
 		$script_content = file_get_contents( $script_path ); // phpcs:ignore
 

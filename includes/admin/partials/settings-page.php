@@ -1079,6 +1079,25 @@ js-(before|after|extra)</pre>
 										<a href="<?php echo esc_url( get_doc_url( '/js-execution/' ) ); ?>" target="_blank">(?)</a>
 									</span>
 								</div>
+
+								<div class="sui-row sui-border-frame">
+									<div class="sui-form-field">
+										<label for="js_delay_timeout" id="js_delay_timeout-label" class="sui-label"><?php esc_html_e( 'Delay Timeout', 'powered-cache' ); ?></label>
+										<input
+											name="js_delay_timeout"
+											value="<?php echo esc_attr( $settings['js_delay_timeout'] ); ?>"
+											id="js_delay_timeout"
+											class="sui-form-control sui-field-has-suffix"
+											type="number"
+											min="0"
+											max="100000"
+										/>
+										<span class="sui-field-suffix">
+											<span class="sui-description"><?php esc_html_e( 'Milliseconds', 'powered-cache' ); ?></span>
+										</span>
+										<span class="sui-description"><?php esc_html_e( 'Enter a delay in milliseconds for auto-loading JavaScript if no user interaction occurs. With a delay above 0, the script loads after the set time or upon any user action, whichever comes first. Enter 0 to disable.  (1000ms = 1s)', 'powered-cache' ); ?></span>
+									</div>
+								</div>
 							</div>
 
 						</div>

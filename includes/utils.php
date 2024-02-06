@@ -90,6 +90,7 @@ function get_settings( $force_network_wide = false ) {
 		'js_defer_exclusions'              => '',
 		'js_delay'                         => false,
 		'js_delay_exclusions'              => '',
+		'js_delay_timeout'                 => 0,
 		'js_execution_optimized_only'      => true,   // deprecated @since 3.2
 		'rewrite_file_optimizer'           => $is_apache,
 		// media optimization
