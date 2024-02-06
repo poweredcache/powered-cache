@@ -723,17 +723,14 @@ class FileOptimizer {
 				continue;
 			}
 
-			if ( strpos( $script, 'type=' ) === false || strpos( $script, "type='text/javascript'" ) !== false ) {
+			if ( ! preg_match( '/type=/', $script ) || preg_match( '/type=[\'"]text\/javascript[\'"]/', $script ) ) {
 				$new_script = $script;
 
 				// Check if script has a src attribute
 				if ( strpos( $attributes, 'src=' ) !== false ) {
-					$new_script = preg_replace( "/src=[\"\']([^\"\']*)[\"\']/", 'data-src="$1"', $new_script );
-					$new_script = preg_replace( '/<script([^>]*)>/', '<script data-type="lazy"$1>', $new_script );
+					$new_script = preg_replace( '/<script([^>]*)>/', '<script type="pc-delayed-js"$1>', $new_script );
 				} else {
-					$new_content = 'data:text/javascript;base64,' . base64_encode( $content ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
-					$new_script  = preg_replace( '/<script([^>]*)>/', "<script data-src=\"$new_content\" $1>", $new_script ); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-					$new_script  = preg_replace( '/<script([^>]*)>(.*?)<\/script>/si', '<script data-type="lazy"$1></script>', $new_script );
+					$new_script = preg_replace( '/<script([^>]*)>/', '<script type="pc-delayed-js"$1>', $new_script );
 				}
 
 				$html = str_replace( $script, $new_script, $html );
@@ -750,22 +747,79 @@ class FileOptimizer {
 		 *
 		 * @hook   powered_cache_delayed_js_timeout
 		 *
-		 * @param  {int} $delay_in_ms Delay time in microsecond
+		 * @param  {int} $delay_in_ms Delay time in milliseconds
 		 *
 		 * @return {int} New value.
 		 * @since  3.0
 		 */
 		$delay_timeout  = apply_filters( 'powered_cache_delayed_js_timeout', 0 );
-		$script_content = file_get_contents( POWERED_CACHE_PATH . 'dist/js/script-loader.js' ); // phpcs:ignore
+		$script_path    = POWERED_CACHE_PATH . 'dist/js/script-loader.js';
+		$script_content = file_get_contents( $script_path ); // phpcs:ignore
 
 		if ( ! $script_content ) {
 			return $html;
 		}
 
-		$html .= '<script id="powered-cache-delayed-js">';
-		$html .= 'window.PCScriptLoaderTimeout=' . absint( $delay_timeout ) . ';';
-		$html .= $script_content;
-		$html .= '</script>';
+		$head_pos = strpos( $html, '</head>' );
+
+		if ( false === $head_pos ) { // bail if no head tag
+			return $html;
+		}
+
+		$delay_js_script_content = '<script id="powered-cache-delayed-js">' . $script_content . '</script>' . PHP_EOL;
+
+		/**
+		 * Delayed JS script content
+		 *
+		 * @hook          powered_cache_delayed_js_script_content
+		 *
+		 * @param         {string} $delay_js_script_content Delayed JS script content
+		 * @param         {string} $script_path Script path
+		 * @param         {string} $html HTML buffer
+		 * @param         {int} $delay_timeout Delay time in milliseconds
+		 *
+		 * @return        {string} New value.
+		 * @since         3.4
+		 */
+		$delay_js_script_content = apply_filters( 'powered_cache_delayed_js_script_content', $delay_js_script_content, $script_path, $html, $delay_timeout );
+
+		$html = substr_replace( $html, $delay_js_script_content, $head_pos, 0 );
+
+		$script_loader  = PHP_EOL . '<script id="powered-cache-delayed-script-loader">' . PHP_EOL;
+		$script_loader .= 'console.log("[Powered Cache] - Script(s) will be loaded with delay or interaction");' . PHP_EOL;
+		$script_loader .= 'window.PCScriptLoaderTimeout=' . absint( $delay_timeout ) . ';' . PHP_EOL;
+
+		$script_loader .= 'Defer.all(\'script[type="pc-delayed-js"]\', 0, true);' . PHP_EOL;
+
+		if ( absint( $delay_timeout ) > 0 ) {
+			$script_loader .= 'Defer.all(\'script[type="pc-delayed-js"]\', window.PCScriptLoaderTimeout, false);' . PHP_EOL;
+		}
+		$script_loader .= '</script>' . PHP_EOL;
+
+		/**
+		 * Delayed JS script loader content
+		 *
+		 * @hook                 powered_cache_delayed_js_script_loader
+		 *
+		 * @param                {string} $script_loader Delayed JS script loader content
+		 * @param                {string} $html HTML buffer
+		 * @param                {int} $delay_timeout Delay time in milliseconds
+		 *
+		 * @return               {string} New value.
+		 * @since                3.4
+		 */
+		$script_loader = apply_filters( 'powered_cache_delayed_js_script_loader', $script_loader, $html, $delay_timeout );
+
+		$body_pos = strpos( $html, '</body>' );
+
+		if ( false !== $body_pos ) {
+			$html = substr_replace( $html, $script_loader, $body_pos, 0 );
+		} else {
+			$html_pos = strpos( $html, '</html>' );
+			if ( false !== $html_pos ) {
+				$html = substr_replace( $html, $script_loader, $html_pos, 0 );
+			}
+		}
 
 		return $html;
 	}

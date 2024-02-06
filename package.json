@@ -12,18 +12,20 @@
   "scripts": {
     "start": "composer install && npm install --production=false && npm run build",
     "watch": "10up-toolkit watch",
-    "build": "10up-toolkit build",
+    "build": "10up-toolkit build && npm run copy-defer",
     "format-js": "10up-toolkit format-js",
     "lint-js": "10up-toolkit lint-js",
     "lint-style": "10up-toolkit lint-style",
     "test": "10up-toolkit test-unit-jest",
     "make-pot": "wp i18n make-pot . languages/powered-cache.pot --include='includes'",
-    "build-release": "npm install --production=false && composer install && npm run build && npm run make-pot"
+    "build-release": "npm install --production=false && composer install && npm run build && npm run make-pot",
+    "copy-defer": "cp node_modules/@shinsenter/defer.js/dist/defer_plus.min.js dist/js/script-loader.js"
   },
   "engines": {
     "node": ">=16"
   },
   "devDependencies": {
+    "@shinsenter/defer.js": "^3.6.0",
     "@wordpress/element": "^4.0",
     "@wpmudev/shared-ui": "2.12.24",
     "10up-toolkit": "^5.2"
@@ -38,7 +40,6 @@
       "editor": "./assets/js/admin/editor.js",
       "classic-editor": "./assets/js/admin/classic-editor.js",
       "lazyload": "./assets/js/frontend/lazyload.js",
-      "script-loader": "./assets/js/frontend/script-loader.js",
       "admin-style": "./assets/css/admin/admin-style.css"
     },
     "wpDependencyExternals": false
