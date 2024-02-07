@@ -19,11 +19,11 @@ __Developer Docs__: [https://poweredcache.github.io/docs/](https://poweredcache.
 
 - __Page Cache Rule Management__: Need advanced caching configurations? Got it covered under advanced options. [Details](https://docs.poweredcache.com/advanced-options/)
 
-- __File Optimization__: Easily minify and combine CSS, JS files.
+- __File Optimization__: Easily minify and combine CSS, JS files. Eliminate render-blocking resource problems easily. [And more](https://docs.poweredcache.com/category/file-optimization/)
 
 - __Database Optimization__: Keep redundant data away from your database.
 
-- __Media Optimization__: Enable Lazy Load, control WordPress embeds, remove emoji scripts.
+- __Media Optimization__: Enable Lazy Load, replace YouTube videos with thumbnails, control WordPress embeds, remove emoji scripts.
 
 - __Combine Google Fonts__: Combine Google Fonts URLs into a single URL and optimize the font loading.
 
@@ -120,4 +120,5 @@ We have used code or ideas from the following projects:
 * [Mozart](https://github.com/coenjacobs/mozart) for wrapping dependencies.
 * [CDN Enabler](https://github.com/keycdn/cdn-enabler) for some CDN functionalities.
 * [HtmlMin](https://github.com/voku/HtmlMin) for HTML minification.
+* [Defer.js](https://github.com/shinsenter/defer.js) for Delayed JS execution.
 
