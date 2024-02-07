@@ -1767,15 +1767,15 @@ js-(before|after|extra)</pre>
 													name="preload_request_interval"
 													value="<?php echo esc_attr( $settings['preload_request_interval'] ); ?>"
 													id="preload_request_interval"
-													class="sui-form-control sui-field-has-prefix"
+													class="sui-form-control sui-field-has-suffix"
 													type="number"
 													min="1"
 													max="10"
 												/>
 												<span class="sui-field-suffix">
-													<span id="preload_request_interval_description" class="sui-description"><?php esc_html_e( 'Seconds', 'powered-cache' ); ?></span>
+													<span class="sui-description"><?php esc_html_e( 'Seconds', 'powered-cache' ); ?></span>
 												</span>
-												<span id="preload_request_interval_description" class="sui-description"><?php esc_html_e( 'Adjust the delay between preload requests. If your website is hosted on a slow server, consider increasing the interval between requests.', 'powered-cache' ); ?></span>
+												<span class="sui-description"><?php esc_html_e( 'Adjust the delay between preload requests. If your website is hosted on a slow server, consider increasing the interval between requests.', 'powered-cache' ); ?></span>
 
 											</div>
 										</div>
