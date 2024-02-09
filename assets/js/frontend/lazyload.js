@@ -169,18 +169,8 @@ var PCLL = ( function() {
 					iframe.setAttribute('src', videoSrc);
 					iframe.style.width = '100%';
 					iframe.style.height = this.offsetHeight + 'px';
-					iframe.style.position = 'absolute';
-					iframe.style.top = '0';
-					iframe.style.left = '0';
-
-					var wrapper = this.parentElement;
-					if (!wrapper) {
-						// Create a new wrapper element if none exists
-						wrapper = document.createElement('div');
-						this.after(wrapper); // Insert the new wrapper after the div in the DOM
-					}
-					wrapper.innerHTML = '';
-					wrapper.appendChild(iframe);
+					this.innerHTML = '';
+					this.appendChild(iframe);
 				});
 			});
 		},
