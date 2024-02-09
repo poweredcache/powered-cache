@@ -43,7 +43,7 @@
 	width: 100%;
 }
 
-.pcll-youtube-player:hover {
+.pcll-youtube-player img:hover {
 	-webkit-filter: brightness(85%);
 	filter: brightness(85%);
 }
