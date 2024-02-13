@@ -3,7 +3,7 @@ Contributors:  poweredcache, wphandle, skopco, m_uysl
 Tags: cache, caching, web vitals, performance, powered cache, fastest, page speed, optimization, cdn, object cache, minify
 Requires at least:  5.7
 Tested up to:  6.4
-Stable tag:  3.4
+Stable tag:  3.4.1
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -170,6 +170,9 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 3.4.1 (February 13, 2024) =
+- [Fix] YouTube video positioning when iframe is replaced with thumbnail.
 
 = 3.4 (February 07, 2024) =
 - [Added] Lazyload - Replace YouTube videos with thumbnails.
