@@ -720,6 +720,7 @@ function get_post_related_urls( $post_id ) {
 	// Valid post statuses that require cache purging.
 	$valid_post_statuses = [ 'publish', 'private', 'trash', 'pending', 'draft' ];
 	$post_status         = get_post_status( $post_id );
+	$post                = get_post( $post_id );
 
 	// Post types that should not have their cache purged.
 	$excluded_post_types = [ 'nav_menu_item', 'revision' ];
@@ -834,6 +835,19 @@ function get_post_related_urls( $post_id ) {
 		if ( ! in_array( $post_type, [ 'post', 'page' ], true ) ) {
 			$related_urls[] = get_post_type_archive_link( $post_type );
 			$related_urls[] = get_post_type_archive_feed_link( $post_type );
+		}
+
+		$post_date = strtotime( $post->post_date );
+
+		if ( $post_date ) {
+			// Generate the date archive URLs
+			$year  = gmdate( 'Y', $post_date );
+			$month = gmdate( 'm', $post_date );
+			$day   = gmdate( 'd', $post_date );
+
+			$related_urls[] = get_year_link( $year );
+			$related_urls[] = get_month_link( $year, $month );
+			$related_urls[] = get_day_link( $year, $month, $day );
 		}
 
 		// Always purge the home page.
