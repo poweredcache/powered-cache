@@ -735,8 +735,9 @@ function get_post_related_urls( $post_id ) {
 		// Add REST API URL if applicable.
 		if ( $rest_api_route ) {
 			$post_type_object = get_post_type_object( $post_type );
-			if ( isset( $post_type_object->rest_base ) ) {
-				$related_urls[] = get_rest_url() . $rest_api_route . '/' . $post_type_object->rest_base . '/' . $post_id . '/';
+			if ( ! empty( $post_type_object->show_in_rest ) ) {
+				$post_type_base = $post_type_object->rest_base ? $post_type_object->rest_base : $post_type_object->name;
+				$related_urls[] = get_rest_url() . $rest_api_route . '/' . $post_type_base . '/' . $post_id . '/';
 			} elseif ( in_array( $post_type, [ 'post', 'page' ], true ) ) {
 				$related_urls[] = get_rest_url() . $rest_api_route . '/' . $post_type . 's/' . $post_id . '/';
 			}
@@ -760,21 +761,50 @@ function get_post_related_urls( $post_id ) {
 			$related_urls[]  = $trash_permalink . 'feed/';
 		}
 
-		// Purge categories and tags associated with the post.
-		$categories = get_the_category( $post_id );
-		foreach ( $categories as $category ) {
-			$related_urls[] = get_category_link( $category->term_id );
-			if ( $rest_api_route ) {
-				$related_urls[] = get_rest_url() . $rest_api_route . '/categories/' . $category->term_id . '/';
-			}
-		}
+		$taxonomies = get_object_taxonomies( get_post_type( $post_id ), 'objects' );
 
-		$tags = get_the_tags( $post_id );
-		if ( $tags ) {
-			foreach ( $tags as $tag ) {
-				$related_urls[] = get_tag_link( $tag->term_id );
-				if ( $rest_api_route ) {
-					$related_urls[] = get_rest_url() . $rest_api_route . '/tags/' . $tag->term_id . '/';
+		// Purge terms associated with the post.
+		foreach ( $taxonomies as $taxonomy ) {
+			// Skip non-public taxonomies.
+			if ( ! $taxonomy->public ) {
+				continue;
+			}
+
+			$terms = get_the_terms( $post_id, $taxonomy->name );
+
+			if ( empty( $terms ) || is_wp_error( $terms ) ) {
+				continue;
+			}
+
+			foreach ( $terms as $term ) {
+				$term_url = get_term_link( $term->slug, $taxonomy->name );
+				if ( ! is_wp_error( $term_url ) ) {
+					$related_urls[] = $term_url;
+					if ( $taxonomy->show_in_rest ) {
+						$taxonomy_base  = $taxonomy->rest_base ? $taxonomy->rest_base : $taxonomy->name;
+						$related_urls[] = rest_url( "{$taxonomy->rest_namespace}/{$taxonomy_base}/{$term->term_id}/" ); // REST API URL for the term
+					}
+				}
+
+				if ( ! is_taxonomy_hierarchical( $taxonomy->name ) ) {
+					continue;
+				}
+
+				$ancestors = (array) get_ancestors( $term->term_id, $taxonomy->name );
+				foreach ( $ancestors as $ancestor ) {
+					$ancestor_object = get_term( $ancestor, $taxonomy->name );
+					if ( ! is_a( $ancestor, '\WP_Term' ) ) {
+						continue;
+					}
+
+					$ancestor_term_url = get_term_link( $ancestor_object->slug, $taxonomy->name );
+					if ( ! is_wp_error( $ancestor_term_url ) ) {
+						$related_urls[] = $ancestor_term_url;
+						if ( $taxonomy->show_in_rest ) {
+							$taxonomy_base  = $taxonomy->rest_base ? $taxonomy->rest_base : $taxonomy->name;
+							$related_urls[] = rest_url( "{$taxonomy->rest_namespace}/{$taxonomy_base}/{$ancestor_object->term_id}/" ); // REST API URL for the ancestor term
+						}
+					}
 				}
 			}
 		}
