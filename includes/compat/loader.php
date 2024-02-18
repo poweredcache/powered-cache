@@ -39,6 +39,7 @@ function load_compat_files() {
 	require_once POWERED_CACHE_COMPAT_DIR . 'plugins/woocommerce.php';
 	require_once POWERED_CACHE_COMPAT_DIR . 'plugins/phastpress.php';
 	require_once POWERED_CACHE_COMPAT_DIR . 'plugins/wps-hide-login.php';
+	require_once POWERED_CACHE_COMPAT_DIR . 'plugins/short-pixel-ai.php';
 
 	require_once POWERED_CACHE_COMPAT_DIR . 'themes/bricks.php';
 
