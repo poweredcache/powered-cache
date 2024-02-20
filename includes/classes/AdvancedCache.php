@@ -84,6 +84,9 @@ class AdvancedCache {
 		add_filter( 'powered_cache_page_cache_enable', array( $this, 'maybe_caching_disabled' ) );
 		add_filter( 'powered_cache_mod_rewrite', array( $this, 'maybe_disable_mod_rewrite' ), 99 );
 		add_action( 'wp_update_site', array( $this, 'purge_on_site_update' ), 10, 2 );
+		add_action( 'create_term', array( $this, 'purge_on_term_change' ), 10, 3 );
+		add_action( 'edit_term', array( $this, 'purge_on_term_change' ), 10, 3 );
+		add_action( 'delete_term', array( $this, 'purge_on_term_change' ), 10, 3 );
 	}
 
 	/**
@@ -671,6 +674,38 @@ class AdvancedCache {
 	}
 
 
+	/**
+	 * Purge cache when term change
+	 *
+	 * @param int    $term_id  Term ID
+	 * @param int    $tt_id    Term Taxonomy ID
+	 * @param string $taxonomy Taxonomy
+	 *
+	 * @since 3.4.2
+	 */
+	public function purge_on_term_change( $term_id, $tt_id, $taxonomy ) {
+		$term_taxonomy = get_taxonomy( $taxonomy );
+
+		if ( ! $term_taxonomy->public ) {
+			return;
+		}
+
+		$term_url = get_term_link( $term_id, $taxonomy );
+
+		if ( ! is_wp_error( $term_url ) ) {
+			if ( $this->settings['async_cache_cleaning'] ) {
+				$this->cache_purger->push_to_queue(
+					[
+						'call' => 'delete_page_cache',
+						'urls' => $term_url,
+					]
+				);
+				$this->cache_purger->save()->dispatch();
+			} else {
+				delete_page_cache( $term_url );
+			}
+		}
+	}
 
 }
 
