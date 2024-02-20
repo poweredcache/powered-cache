@@ -3,7 +3,7 @@ Contributors:  poweredcache, wphandle, skopco, m_uysl
 Tags: cache, caching, web vitals, performance, powered cache, fastest, page speed, optimization, cdn, object cache, minify
 Requires at least:  5.7
 Tested up to:  6.4
-Stable tag:  3.4.1
+Stable tag:  3.4.2
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -170,6 +170,12 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 3.4.2 (February 20, 2024) =
+- [Added] Term cache clearing upon term changes.
+- [Added] Compatibility with ShortPixel Adaptive Images when delay JS is enabled.
+- [Added] Date archive cache clearing upon post updates.
+- [Improved] Term archive purging upon post updates.
 
 = 3.4.1 (February 13, 2024) =
 - [Fix] YouTube video positioning when iframe is replaced with thumbnail.
