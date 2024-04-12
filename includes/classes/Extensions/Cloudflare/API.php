@@ -89,15 +89,16 @@ class API {
 		}
 
 		if ( is_array( $args ) && array_key_exists( 'files', $args ) ) {
-			$data['files'] = $args['files'];
+			$data['files'] = (array) $args['files'];
 		}
+
 		if ( is_array( $args ) && array_key_exists( 'tags', $args ) ) {
-			$data['files'] = $args['tags'];
+			$data['tags'] = (array) $args['tags'];
 		}
 
 		$endpoint = $this->end_point . '/zones/' . $zone_id . '/purge_cache';
 
-		$result = $this->remote_request( $endpoint, 'DELETE' );
+		$result = $this->remote_request( $endpoint, 'DELETE', $data );
 
 		return $result;
 	}
