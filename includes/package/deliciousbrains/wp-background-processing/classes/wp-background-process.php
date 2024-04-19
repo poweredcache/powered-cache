@@ -5,11 +5,6 @@
  * @package WP-Background-Processing
  */
 
-// phpcs:disable Generic.Commenting.DocComment.MissingShort
-/** @noinspection PhpIllegalPsrClassPathInspection */
-/** @noinspection AutoloadingIssuesInspection */
-// phpcs:disable Generic.Commenting.DocComment.MissingShort
-
 /**
  * Abstract Powered_Cache_WP_Background_Process class.
  *
@@ -55,6 +50,13 @@ abstract class Powered_Cache_WP_Background_Process extends Powered_Cache_WP_Asyn
 	protected $cron_interval_identifier;
 
 	/**
+	 * Restrict object instantiation when using unserialize.
+	 *
+	 * @var bool|array
+	 */
+	protected $allowed_batch_data_classes = true;
+
+	/**
 	 * The status set when process is cancelling.
 	 *
 	 * @var int
@@ -70,15 +72,30 @@ abstract class Powered_Cache_WP_Background_Process extends Powered_Cache_WP_Asyn
 
 	/**
 	 * Initiate new background process.
+	 *
+	 * @param bool|array $allowed_batch_data_classes Optional. Array of class Powered_Cache_names that can be unserialized. Default true (any class).
 	 */
-	public function __construct() {
+	public function __construct( $allowed_batch_data_classes = true ) {
 		parent::__construct();
+
+		if ( empty( $allowed_batch_data_classes ) && false !== $allowed_batch_data_classes ) {
+			$allowed_batch_data_classes = true;
+		}
+
+		if ( ! is_bool( $allowed_batch_data_classes ) && ! is_array( $allowed_batch_data_classes ) ) {
+			$allowed_batch_data_classes = true;
+		}
+
+		// If allowed_batch_data_classes property set in subclass,
+		// only apply override if not allowing any class.
+		if ( true === $this->allowed_batch_data_classes || true !== $allowed_batch_data_classes ) {
+			$this->allowed_batch_data_classes = $allowed_batch_data_classes;
+		}
 
 		$this->cron_hook_identifier     = $this->identifier . '_cron';
 		$this->cron_interval_identifier = $this->identifier . '_cron_interval';
 
 		add_action( $this->cron_hook_identifier, array( $this, 'handle_cron_healthcheck' ) );
-		// phpcs:ignore WordPress.WP.CronInterval.ChangeDetected
 		add_filter( 'cron_schedules', array( $this, 'schedule_cron_healthcheck' ) );
 	}
 
@@ -339,7 +356,6 @@ abstract class Powered_Cache_WP_Background_Process extends Powered_Cache_WP_Asyn
 	 * Is queue empty?
 	 *
 	 * @return bool
-	 * @noinspection IsEmptyFunctionUsageInspection
 	 */
 	protected function is_queue_empty() {
 		return empty( $this->get_batch() );
@@ -355,7 +371,6 @@ abstract class Powered_Cache_WP_Background_Process extends Powered_Cache_WP_Asyn
 	 *
 	 * @deprecated 1.1.0 Superseded.
 	 * @see        is_processing()
-	 * @noinspection PhpUnused
 	 */
 	protected function is_process_running() {
 		return $this->is_processing();
@@ -451,7 +466,7 @@ abstract class Powered_Cache_WP_Background_Process extends Powered_Cache_WP_Asyn
 			SELECT *
 			FROM ' . $table . '
 			WHERE ' . $column . ' LIKE %s
-			ORDER BY ' . $key_column . '
+			ORDER BY ' . $key_column . ' ASC
 			';
 
 		$args = array( $key );
@@ -467,11 +482,13 @@ abstract class Powered_Cache_WP_Background_Process extends Powered_Cache_WP_Asyn
 		$batches = array();
 
 		if ( ! empty( $items ) ) {
+			$allowed_classes = $this->allowed_batch_data_classes;
+
 			$batches = array_map(
-				static function ( $item ) use ( $column, $value_column ) {
+				static function ( $item ) use ( $column, $value_column, $allowed_classes ) {
 					$batch       = new stdClass();
 					$batch->key  = $item->{$column};
-					$batch->data = maybe_unserialize( $item->{$value_column} );
+					$batch->data = static::maybe_unserialize( $item->{$value_column}, $allowed_classes );
 
 					return $batch;
 				},
@@ -487,8 +504,6 @@ abstract class Powered_Cache_WP_Background_Process extends Powered_Cache_WP_Asyn
 	 *
 	 * Pass each queue item to the task handler, while remaining
 	 * within server memory and time limit constraints.
-	 *
-	 * @noinspection DisconnectedForeachInstructionInspection
 	 */
 	protected function handle() {
 		$this->lock_process();
@@ -586,7 +601,7 @@ abstract class Powered_Cache_WP_Background_Process extends Powered_Cache_WP_Asyn
 			$memory_limit = '128M';
 		}
 
-		if ( ! $memory_limit || -1 === (int) $memory_limit ) {
+		if ( ! $memory_limit || -1 === intval( $memory_limit ) ) {
 			// Unlimited, set to 32GB.
 			$memory_limit = '32000M';
 		}
@@ -606,10 +621,7 @@ abstract class Powered_Cache_WP_Background_Process extends Powered_Cache_WP_Asyn
 		$finish = $this->start_time + apply_filters( $this->identifier . '_default_time_limit', 20 ); // 20 seconds
 		$return = false;
 
-		if (
-			! ( defined( 'WP_CLI' ) && WP_CLI ) &&
-			time() >= $finish
-		) {
+		if ( time() >= $finish ) {
 			$return = true;
 		}
 
@@ -639,6 +651,25 @@ abstract class Powered_Cache_WP_Background_Process extends Powered_Cache_WP_Asyn
 	}
 
 	/**
+	 * Get the cron healthcheck interval in minutes.
+	 *
+	 * Default is 5 minutes, minimum is 1 minute.
+	 *
+	 * @return int
+	 */
+	public function get_cron_interval() {
+		$interval = 5;
+
+		if ( property_exists( $this, 'cron_interval' ) ) {
+			$interval = $this->cron_interval;
+		}
+
+		$interval = apply_filters( $this->cron_interval_identifier, $interval );
+
+		return is_int( $interval ) && 0 < $interval ? $interval : 5;
+	}
+
+	/**
 	 * Schedule the cron healthcheck job.
 	 *
 	 * @access public
@@ -648,11 +679,7 @@ abstract class Powered_Cache_WP_Background_Process extends Powered_Cache_WP_Asyn
 	 * @return mixed
 	 */
 	public function schedule_cron_healthcheck( $schedules ) {
-		$interval = apply_filters( $this->cron_interval_identifier, 5 );
-
-		if ( property_exists( $this, 'cron_interval' ) ) {
-			$interval = apply_filters( $this->cron_interval_identifier, $this->cron_interval );
-		}
+		$interval = $this->get_cron_interval();
 
 		if ( 1 === $interval ) {
 			$display = __( 'Every Minute' );
@@ -695,7 +722,7 @@ abstract class Powered_Cache_WP_Background_Process extends Powered_Cache_WP_Asyn
 	 */
 	protected function schedule_event() {
 		if ( ! wp_next_scheduled( $this->cron_hook_identifier ) ) {
-			wp_schedule_event( time(), $this->cron_interval_identifier, $this->cron_hook_identifier );
+			wp_schedule_event( time() + ( $this->get_cron_interval() * MINUTE_IN_SECONDS ), $this->cron_interval_identifier, $this->cron_hook_identifier );
 		}
 	}
 
@@ -717,7 +744,6 @@ abstract class Powered_Cache_WP_Background_Process extends Powered_Cache_WP_Asyn
 	 *
 	 * @deprecated 1.1.0 Superseded.
 	 * @see        cancel()
-	 * @noinspection PhpUnused
 	 */
 	public function cancel_process() {
 		$this->cancel();
@@ -736,4 +762,25 @@ abstract class Powered_Cache_WP_Background_Process extends Powered_Cache_WP_Asyn
 	 * @return mixed
 	 */
 	abstract protected function task( $item );
+
+	/**
+	 * Maybe unserialize data, but not if an object.
+	 *
+	 * @param mixed      $data            Data to be unserialized.
+	 * @param bool|array $allowed_classes Array of class Powered_Cache_names that can be unserialized.
+	 *
+	 * @return mixed
+	 */
+	protected static function maybe_unserialize( $data, $allowed_classes ) {
+		if ( is_serialized( $data ) ) {
+			$options = array();
+			if ( is_bool( $allowed_classes ) || is_array( $allowed_classes ) ) {
+				$options['allowed_classes'] = $allowed_classes;
+			}
+
+			return @unserialize( $data, $options ); // @phpcs:ignore
+		}
+
+		return $data;
+	}
 }
