@@ -3,7 +3,7 @@ Contributors:  poweredcache, wphandle, skopco, m_uysl
 Tags: cache, web vitals, performance, page speed, optimize
 Requires at least:  5.7
 Tested up to:  6.5
-Stable tag:  3.4.2
+Stable tag:  3.4.3
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -170,6 +170,11 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 3.4.3 (April 22, 2024) =
+- [Fixed] Cloudflare cache purge issue.
+- [Updated] Background job processing.
+- Dependency updates.
 
 = 3.4.2 (February 20, 2024) =
 - [Added] Term cache clearing upon term changes.
