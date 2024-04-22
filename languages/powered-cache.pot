@@ -2,20 +2,21 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Powered Cache 3.4.2\n"
+"Project-Id-Version: Powered Cache 3.4.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/powered-cache\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-02-20T12:29:16+00:00\n"
+"POT-Creation-Date: 2024-04-22T09:13:19+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.9.0\n"
 "X-Domain: powered-cache\n"
 
 #. Plugin Name of the plugin
 #. Author of the plugin
+#: powered-cache.php
 #: includes/admin/dashboard.php:100
 #: includes/admin/dashboard.php:487
 #: includes/admin/partials/settings-page.php:45
@@ -25,10 +26,12 @@ msgstr ""
 
 #. Plugin URI of the plugin
 #. Author URI of the plugin
+#: powered-cache.php
 msgid "https://poweredcache.com"
 msgstr ""
 
 #. Description of the plugin
+#: powered-cache.php
 msgid "Powered Cache is the most powerful caching and performance suite for WordPress, designed to easily improve your PageSpeed and Web Vitals Score."
 msgstr ""
 
