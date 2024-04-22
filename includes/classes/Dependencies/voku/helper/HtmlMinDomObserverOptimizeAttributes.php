@@ -134,7 +134,7 @@ final class HtmlMinDomObserverOptimizeAttributes implements HtmlMinDomObserverIn
             }
 
             // -------------------------------------------------------------------------
-            // Sort css-class-names, for better gzip results.
+            // Sort css-class-Powered_Cache_names, for better gzip results.
             // -------------------------------------------------------------------------
 
             if ($htmlMin->isDoSortCssClassNames()) {
