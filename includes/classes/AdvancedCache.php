@@ -78,7 +78,8 @@ class AdvancedCache {
 		add_action( 'admin_post_powered_cache_purge_page_cache_network', array( $this, 'purge_page_cache_network_wide' ) );
 		add_action( 'transition_post_status', array( $this, 'purge_on_post_update' ), 9999, 3 );
 		add_action( 'switch_theme', array( $this, 'purge_on_switch_theme' ) );
-		add_action( 'wp_set_comment_status', array( $this, 'purge_post_on_comment_status_change' ), 10, 2 );
+		add_action( 'wp_set_comment_status', array( $this, 'purge_post_on_comment_update' ) );
+		add_action( 'edit_comment', array( $this, 'purge_post_on_comment_update' ) );
 		add_action( 'set_comment_cookies', array( $this, 'set_comment_cookie' ), 10, 2 );
 		add_filter( 'powered_cache_post_related_urls', array( $this, 'powered_cache_post_related_urls' ) );
 		add_filter( 'powered_cache_page_cache_enable', array( $this, 'maybe_caching_disabled' ) );
@@ -282,29 +283,50 @@ class AdvancedCache {
 	}
 
 	/**
-	 * Delete page cache when post update
+	 * Purge post cache when comment status change
 	 *
 	 * @param int    $comment_id     Comment ID
-	 * @param string $comment_status Status of the comment
+	 * @param string $comment_status Comment status
 	 *
-	 * @since 1.0
+	 * @return void
+	 * @deprecated since 3.4.4
 	 */
 	public function purge_post_on_comment_status_change( $comment_id, $comment_status ) {
+		// deprecate this method in favor of `purge_post_on_comment_update`
+		_deprecated_function( __METHOD__, '3.4.4', 'purge_post_on_comment_update' );
+		$this->purge_post_on_comment_update( $comment_id );
 		$comment  = get_comment( $comment_id );
 		$post_id  = $comment->comment_post_ID;
 		$post_url = get_permalink( $post_id );
-		delete_page_cache( $post_url );
+
+		do_action( 'powered_cache_advanced_cache_purge_on_comment_update', $post_id, $post_url, $comment_id );
+	}
+
+	/**
+	 * Delete page cache when a comment update
+	 *
+	 * @param int $comment_id Comment ID
+	 *
+	 * @since 3.4.4
+	 */
+	public function purge_post_on_comment_update( $comment_id ) {
+		$comment  = get_comment( $comment_id );
+		$post_id  = $comment->comment_post_ID;
+		$post_url = get_permalink( $post_id );
+		delete_page_cache( $post_url, true );
 
 		/**
 		 * Fires after purging cache for a post that associated a comment
+		 *
+		 * @hook  powered_cache_advanced_cache_purge_on_comment_update
 		 *
 		 * @param {int} $post_id Post ID.
 		 * @param {string} $post_url Post permalink.
 		 * @param {int} $comment_id Comment ID.
 		 *
-		 * @since 2.0
+		 * @since 3.4.4
 		 */
-		do_action( 'powered_cache_advanced_cache_purge_on_comment_status_change', $post_id, $post_url, $comment_id );
+		do_action( 'powered_cache_advanced_cache_purge_on_comment_update', $post_id, $post_url, $comment_id );
 	}
 
 	/**

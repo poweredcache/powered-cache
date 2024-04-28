@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 add_action( 'mercator.mapping.deleted', __NAMESPACE__ . '\\mapping_cleanup' );
 add_action( 'powered_cache_clean_site_cache_dir', __NAMESPACE__ . '\\maybe_clean_mapped_domain_dir' );
 add_action( 'powered_cache_advanced_cache_purge_post', __NAMESPACE__ . '\\maybe_purge_on_post_update', 10, 2 );
-add_action( 'powered_cache_advanced_cache_purge_on_comment_status_change', __NAMESPACE__ . '\\maybe_purge_on_comment_status_change', 10, 2 );
+add_action( 'powered_cache_advanced_cache_purge_on_comment_update', __NAMESPACE__ . '\\maybe_purge_on_comment_update', 10, 2 );
 add_action( 'powered_cache_create_config_file', __NAMESPACE__ . '\\maybe_create_config_files', 10, 3 );
 add_action( 'wp_delete_site', __NAMESPACE__ . '\\purge_on_site_delete' ); // works on WP 5.1+
 add_action( 'powered_cache_after_clean_up', __NAMESPACE__ . '\\maybe_delete_config' );
@@ -91,7 +91,7 @@ function maybe_purge_on_post_update( $post_id, $urls ) {
 	foreach ( $mapped_domains as $domain ) {
 		$new_purge_urls = str_replace( site_url(), $domain, $urls );
 		foreach ( $new_purge_urls as $new_purge_url ) {
-			delete_page_cache( $new_purge_url );
+			delete_page_cache( $new_purge_url, true );
 		}
 	}
 }
@@ -102,7 +102,7 @@ function maybe_purge_on_post_update( $post_id, $urls ) {
  * @param int    $post_id  Post ID.
  * @param string $post_url Post ID of the comment.
  */
-function maybe_purge_on_comment_status_change( $post_id, $post_url ) {
+function maybe_purge_on_comment_update( $post_id, $post_url ) {
 	$mapped_domains = get_mapped_domains();
 	if ( ! $mapped_domains ) {
 		return;
@@ -110,7 +110,7 @@ function maybe_purge_on_comment_status_change( $post_id, $post_url ) {
 
 	foreach ( $mapped_domains as $domain ) {
 		$post_url = str_replace( site_url(), $domain, $post_url );
-		delete_page_cache( $post_url );
+		delete_page_cache( $post_url, true );
 	}
 }
 
