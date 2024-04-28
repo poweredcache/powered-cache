@@ -890,13 +890,13 @@ function get_post_related_urls( $post_id ) {
 /**
  * Delete cache file
  *
- * @param string $url Target URL
+ * @param string $url                   Target URL
+ * @param bool   $delete_subdirectories Whether delete subdirectories or not
  *
  * @return bool  true when found cache dir, otherwise false
  * @since 1.0
  */
-function delete_page_cache( $url ) {
-
+function delete_page_cache( $url, $delete_subdirectories = false ) {
 	$dir = get_url_dir( trim( $url ) );
 
 	if ( is_dir( $dir ) ) {
@@ -911,7 +911,7 @@ function delete_page_cache( $url ) {
 			}
 		}
 
-		if ( file_exists( $dir ) && is_dir_empty( $dir ) ) {
+		if ( file_exists( $dir ) && ( $delete_subdirectories || is_dir_empty( $dir ) ) ) {
 			remove_dir( $dir );
 		}
 
