@@ -3,7 +3,7 @@ Contributors:  poweredcache, wphandle, skopco, m_uysl
 Tags: cache, web vitals, performance, page speed, optimize
 Requires at least:  5.7
 Tested up to:  6.5
-Stable tag:  3.4.4
+Stable tag:  3.4.5
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -170,6 +170,11 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 3.4.5 (May 14, 2024) =
+- [Improved] HTML minification without dom optimization.
+- [Fixed] Resolved PHP warnings caused by accessing superglobals.
+- Dependency updates.
 
 = 3.4.4 (April 29, 2024) =
 - [Fixed] Resolved an issue with comment cache not purging correctly.
