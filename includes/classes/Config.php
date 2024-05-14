@@ -212,7 +212,7 @@ class Config {
 		$string .= "define( 'POWERED_CACHE_PAGE_CACHING', true );" . PHP_EOL . PHP_EOL;
 		// lookup order 1) network-wide , 2) subdomain specific (if any) 3) domain specific
 		$string .= "\$config_locations[] = WP_CONTENT_DIR . '/pc-config/config-network.php';" . PHP_EOL;
-		$string .= "\$host = isset( \$_SERVER['HTTP_HOST'] ) ? \$_SERVER['HTTP_HOST'] : '';" . PHP_EOL. PHP_EOL;
+		$string .= "\$host = isset( \$_SERVER['HTTP_HOST'] ) ? \$_SERVER['HTTP_HOST'] : '';" . PHP_EOL . PHP_EOL;
 		$string .= "if ( is_multisite() && defined( 'SUBDOMAIN_INSTALL' ) && ! SUBDOMAIN_INSTALL ) {" . PHP_EOL;
 		$string .= "\t" . "\$request_uri = explode( '/', ltrim( \$_SERVER['REQUEST_URI'], '/' ) );" . PHP_EOL;
 		$string .= "\t" . 'if ( ! empty( $request_uri[0] ) ) {' . PHP_EOL;
