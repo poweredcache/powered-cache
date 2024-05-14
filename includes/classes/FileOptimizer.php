@@ -296,8 +296,16 @@ class FileOptimizer {
 		$html_min = new HtmlMin();
 		$html_min->doOptimizeViaHtmlDomParser( $this->settings['minify_html_dom_optimization'] );
 		$html_min->doRemoveOmittedQuotes( false );
+		$html_min->doRemoveOmittedHtmlTags( false );
 		$html_min->overwriteSpecialScriptTags( [ 'x-tmpl-mustache', 'text/template' ] );
 		$buffer = $html_min->minify( $buffer );
+
+		if ( ! $this->settings['minify_html_dom_optimization'] ) {
+			// Remove line breaks and spaces between tags
+			$buffer = preg_replace( '/>\s+</', '><', $buffer );
+			// Remove comments
+			$buffer = preg_replace( '/<!--(.|\s)*?-->/', '', $buffer );
+		}
 
 		return $buffer;
 	}
