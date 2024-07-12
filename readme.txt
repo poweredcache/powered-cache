@@ -9,7 +9,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
 Requires PHP: 7.2.5
 
-The most powerful caching and performance suite for WordPress. Easily Improve PageSpeed & Web Vitals Score.
+Powered Cache is the most powerful caching and performance suite for WordPress. Easily Improve PageSpeed & Web Vitals Score.
 
 == Description ==
 
