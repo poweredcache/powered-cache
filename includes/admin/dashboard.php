@@ -512,6 +512,7 @@ function maybe_display_message() {
 	$screen = get_current_screen();
 
 	$success_messages = [
+		'purge_image_optimizer_cache'   => esc_html__( 'Image optimizer cache purged successfully!', 'powered-cache' ),
 		'flush_page_cache_network'      => esc_html__( 'Page cache deleted for all websites!', 'powered-cache' ),
 		'flush_page_cache'              => esc_html__( 'Page cache deleted successfully!', 'powered-cache' ),
 		'flush_object_cache'            => esc_html__( 'Object cache deleted successfully!', 'powered-cache' ),
@@ -534,6 +535,7 @@ function maybe_display_message() {
 	}
 
 	$err_messages = [
+		'purge_image_optimizer_cache_failed'      => esc_html__( 'Could not purge image optimizer cache. Please try again later and ensure your license key is activated!', 'powered-cache' ),
 		'generic_permission_err'                  => esc_html__( 'You don\'t have permission to perform this action!', 'powered-cache' ),
 		'flush_page_cache_network_err_permission' => esc_html__( 'You don\'t have permission to perform this action!', 'powered-cache' ),
 		'flush_page_cache_err_permission'         => esc_html__( 'You don\'t have permission to perform this action!', 'powered-cache' ),

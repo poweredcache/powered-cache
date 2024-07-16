@@ -16,6 +16,7 @@ use function PoweredCache\Utils\get_available_object_caches;
 use function PoweredCache\Utils\get_decrypted_setting;
 use function PoweredCache\Utils\get_doc_url;
 use function PoweredCache\Utils\get_timeout_with_interval;
+use function PoweredCache\Utils\is_local_site;
 use function PoweredCache\Utils\is_premium;
 use function PoweredCache\Utils\mask_string;
 use function PoweredCache\Utils\sanitize_css;
@@ -1215,6 +1216,15 @@ js-(before|after|extra)</pre>
 										</span>
 									</label>
 								</div>
+								<?php if ( ! is_multisite() && ! is_local_site() && is_premium() ) : ?>
+									<div class="sui-form-field">
+										<a
+											href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=powered_cache_purge_image_optimizer' ), 'powered_cache_purge_image_optimizer' ) ); ?>"
+											class="sui-button sui-button-ghost" id="clear_image_optimizer_cache">
+											<?php esc_html_e( 'Clear Image Optimizer Cache', 'powered-cache' ); ?>
+										</a>
+									</div>
+								<?php endif; ?>
 							</div>
 
 						</div>
