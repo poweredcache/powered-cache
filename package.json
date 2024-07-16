@@ -28,7 +28,7 @@
     "@shinsenter/defer.js": "^3.6.0",
     "@wordpress/element": "^4.0",
     "@wpmudev/shared-ui": "2.12.24",
-    "10up-toolkit": "^6.0"
+    "10up-toolkit": "^6.2"
   },
   "dependencies": {
     "normalize.css": "^8.0.1"
