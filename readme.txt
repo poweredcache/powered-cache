@@ -2,8 +2,8 @@
 Contributors:  poweredcache, wphandle, skopco, m_uysl
 Tags: cache, web vitals, performance, page speed, optimize
 Requires at least:  5.7
-Tested up to:  6.5
-Stable tag:  3.4.5
+Tested up to:  6.6
+Stable tag:  3.5
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -170,6 +170,11 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 3.5 (July 16, 2024) =
+- [Added] Image Optimizer purge feature.
+- Dependency updates.
+- Tested with WP 6.6
 
 = 3.4.5 (May 14, 2024) =
 - [Improved] HTML minification without dom optimization.
