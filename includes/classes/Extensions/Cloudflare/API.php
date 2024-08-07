@@ -98,9 +98,13 @@ class API {
 
 		$endpoint = $this->end_point . '/zones/' . $zone_id . '/purge_cache';
 
-		$result = $this->remote_request( $endpoint, 'DELETE', $data );
+		$result = $this->remote_request( $endpoint, 'POST', $data );
 
-		return $result;
+		if ( ! empty( $result['success'] ) ) {
+			return boolval( $result['success'] );
+		}
+
+		return false;
 	}
 
 	/**
@@ -110,7 +114,7 @@ class API {
 	 * @param string $type req type
 	 * @param array  $data data
 	 *
-	 * @return mixed|string
+	 * @return mixed|array
 	 */
 	private function remote_request( $url, $type = 'GET', $data = array() ) {
 		$args = array(
@@ -135,11 +139,9 @@ class API {
 
 		$response = wp_remote_request( $url, $args );
 
-		if ( is_wp_error( $response ) ) {
-			return $response->get_error_message();
-		} else {
-			return json_decode( wp_remote_retrieve_body( $response ) );
-		}
+		\PoweredCache\Utils\log( sprintf( 'Cloudflare API Response: %s', print_r( wp_remote_retrieve_body( $response ), true ) ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+
+		return json_decode( wp_remote_retrieve_body( $response ), true );
 	}
 
 	/**
