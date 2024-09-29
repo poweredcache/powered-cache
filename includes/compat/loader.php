@@ -20,6 +20,7 @@ function load_compat_files() {
 	require_once POWERED_CACHE_COMPAT_DIR . 'plugins/advanced-custom-fields.php';
 	require_once POWERED_CACHE_COMPAT_DIR . 'plugins/autoptimize.php';
 	require_once POWERED_CACHE_COMPAT_DIR . 'plugins/bj-lazy-load.php';
+	require_once POWERED_CACHE_COMPAT_DIR . 'plugins/clear-cache-for-widgets.php';
 	require_once POWERED_CACHE_COMPAT_DIR . 'plugins/lazy-load.php';
 	require_once POWERED_CACHE_COMPAT_DIR . 'plugins/rocket-lazy-load.php';
 	require_once POWERED_CACHE_COMPAT_DIR . 'plugins/jetpack-boost.php';
