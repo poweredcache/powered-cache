@@ -3,7 +3,7 @@ Contributors:  poweredcache, wphandle, skopco, m_uysl
 Tags: cache, web vitals, performance, page speed, optimize
 Requires at least:  5.7
 Tested up to:  6.6
-Stable tag:  3.5.1
+Stable tag:  3.5.2
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -170,6 +170,11 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 3.5.1 (October 01, 2024) =
+- [Added] Clear Cache for Me compatibility.
+- [Updated] Minifier libraries.
+- Various dependency updates.
 
 = 3.5.1 (August 14, 2024) =
 - [Added] Logging for CF cache purge.
