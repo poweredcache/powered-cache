@@ -171,7 +171,7 @@ Yes, it’s compatible with PHP 8+
 
 == Changelog ==
 
-= 3.5.1 (October 01, 2024) =
+= 3.5.2 (October 01, 2024) =
 - [Added] Clear Cache for Me compatibility.
 - [Updated] Minifier libraries.
 - Various dependency updates.
