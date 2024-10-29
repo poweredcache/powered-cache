@@ -2,8 +2,8 @@
 Contributors:  poweredcache, wphandle, skopco, m_uysl
 Tags: cache, web vitals, performance, page speed, optimize
 Requires at least:  5.7
-Tested up to:  6.6
-Stable tag:  3.5.2
+Tested up to:  6.7
+Stable tag:  3.5.3
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -170,6 +170,14 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 3.5.3 (October 29, 2024) =
+- [Added] AMP compatibility for delay js.
+- [Added] `powered_cache_cache_dir_htaccess_file_content` filter to modify the cache directory .htaccess content.
+- [Updated] Cache key for logged-in user cache. (Advised to purge cache if you are using logged-in user cache).
+- [Improved] Cookie control for cache skipping.
+- Tested with Upcoming WP 6.7
+- Various dependency updates.
 
 = 3.5.2 (October 01, 2024) =
 - [Added] Clear Cache for Me compatibility.
