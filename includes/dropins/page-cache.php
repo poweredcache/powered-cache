@@ -546,8 +546,8 @@ function powered_cache_index_file( $content_type = 'text/html' ) {
 		if ( false !== $usr_cookie ) {
 			$cookie_info = explode( '|', $usr_cookie );
 
-			// user specific cache dir
-			$file_name .= '_' . $cookie_info[0] . '-' . $cookie_info[1];
+			// user specific cache index
+			$file_name .= '-user_' . $cookie_info[0] . '-' . substr( sha1( $cookie_info[0] ), 0, 6 );
 		}
 	}
 
