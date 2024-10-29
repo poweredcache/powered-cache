@@ -435,7 +435,23 @@ class Config {
 
 		$file = get_cache_dir() . '.htaccess';
 
-		$file_string = 'Options -Indexes';
+		$file_string  = '<IfModule mod_autoindex.c>' . PHP_EOL;
+		$file_string .= ' Options -Indexes' . PHP_EOL;
+		$file_string .= '</IfModule>' . PHP_EOL . PHP_EOL;
+		$file_string .= '<FilesMatch "^.*-user_.*\.(html|html\.gz)$">' . PHP_EOL;
+		$file_string .= ' Order Allow,Deny' . PHP_EOL;
+		$file_string .= ' Deny from all' . PHP_EOL;
+		$file_string .= '</FilesMatch>' . PHP_EOL;
+
+		/**
+		 * Filters the content of the .htaccess file in the cache directory.
+		 *
+		 * @param {string} $file_string Default configuration
+		 *
+		 * @hook  powered_cache_cache_dir_htaccess_file_content
+		 * @since 3.5.3
+		 */
+		$file_string = apply_filters( 'powered_cache_cache_dir_htaccess_file_content', $file_string );
 
 		if ( ! file_put_contents( $file, $file_string ) ) {
 			return false;
