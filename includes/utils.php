@@ -875,11 +875,12 @@ function get_post_related_urls( $post_id ) {
 	/**
 	 * Filters post related urls.
 	 *
-	 * @hook  powered_cache_post_related_urls
+	 * @hook   powered_cache_post_related_urls
 	 *
-	 * @param {array} $related_urls The list of the URLs that related with the post.
+	 * @param  {array} $related_urls The list of the URLs that related with the post.
 	 *
-	 * @since 1.0
+	 * @return {array} New value.
+	 * @since  1.0
 	 */
 	$related_urls = apply_filters( 'powered_cache_post_related_urls', $related_urls );
 
