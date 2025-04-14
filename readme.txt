@@ -2,8 +2,8 @@
 Contributors:  poweredcache, wphandle, skopco, m_uysl
 Tags: cache, web vitals, performance, page speed, optimize
 Requires at least:  5.7
-Tested up to:  6.7
-Stable tag:  3.5.3
+Tested up to:  6.8
+Stable tag:  3.5.4
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -170,6 +170,10 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 3.5.4 (April 14, 2025) =
+- Dependency updates.
+- Tested with WP 6.8
 
 = 3.5.3 (October 29, 2024) =
 - [Added] AMP compatibility for delay js.
