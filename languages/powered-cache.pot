@@ -1,17 +1,17 @@
-# Copyright (C) 2024 Powered Cache
+# Copyright (C) 2025 Powered Cache
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Powered Cache 3.5.3\n"
+"Project-Id-Version: Powered Cache 3.5.4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/powered-cache\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-10-29T14:34:54+00:00\n"
+"POT-Creation-Date: 2025-04-14T08:56:18+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.10.0\n"
+"X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: powered-cache\n"
 
 #. Plugin Name of the plugin
