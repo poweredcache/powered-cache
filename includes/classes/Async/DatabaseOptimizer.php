@@ -213,7 +213,9 @@ class DatabaseOptimizer extends Powered_Cache_WP_Background_Process {
 				$query = $wpdb->get_results( $wpdb->prepare( "SELECT table_name, data_free FROM information_schema.tables WHERE table_schema = %s and Engine <> 'InnoDB' and data_free > 0", DB_NAME ) );
 				if ( $query ) {
 					foreach ( $query as $table ) {
-						$wpdb->query( "OPTIMIZE TABLE $table->table_name" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+						if ( ! empty( $table->table_name ) ) {
+							$wpdb->query( "OPTIMIZE TABLE `" . esc_sql( $table->table_name ) . "`" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+						}
 					}
 				}
 				break;
