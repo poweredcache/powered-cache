@@ -25,7 +25,7 @@
     "10up/phpcs-composer": "dev-master",
     "coenjacobs/mozart": "^0.7.1",
     "matthiasmullie/minify": "^1.3",
-    "deliciousbrains/wp-background-processing": "^1.3",
+    "deliciousbrains/wp-background-processing": "^1.4",
     "voku/html-min": "^4.5"
   },
   "scripts": {
