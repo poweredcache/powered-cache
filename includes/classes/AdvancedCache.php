@@ -260,6 +260,7 @@ class AdvancedCache {
 					'urls' => $urls,
 				]
 			);
+			$deleted_urls = $urls;
 			$this->cache_purger->save()->dispatch();
 		} else {
 			foreach ( $urls as $url ) {
@@ -276,10 +277,11 @@ class AdvancedCache {
 		 *
 		 * @param {int} $post_id The Post ID.
 		 * @param {array} $deleted_urls The list of purged urls with the updated post.
+		 * @param {array} $urls The list of urls that will be purged. @since 3.6
 		 *
 		 * @since 1.0
 		 */
-		do_action( 'powered_cache_advanced_cache_purge_post', $post_id, $deleted_urls );
+		do_action( 'powered_cache_advanced_cache_purge_post', $post_id, $deleted_urls, $urls );
 	}
 
 	/**

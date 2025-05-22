@@ -30,6 +30,13 @@ class Preloader {
 	private $cache_preloader;
 
 	/**
+	 * Tracks whether we’ve added any URLs this request
+	 *
+	 * @var $queue_dirty
+	 */
+	private $queue_dirty = false;
+
+	/**
 	 * Return an instance of the current class
 	 *
 	 * @return Preloader
@@ -75,6 +82,7 @@ class Preloader {
 		add_action( 'powered_cache_clean_site_cache_dir', [ $this, 'setup_preload_queue' ] );
 		add_action( 'powered_cache_advanced_cache_purge_post', [ $this, 'add_purged_urls_to_preload_queue' ], 10, 2 );
 		add_action( 'powered_cache_expired_files_deleted', [ $this, 'add_expired_urls_to_preload_queue' ], 10, 2 );
+		add_action( 'shutdown', [ $this, 'dispatch_preload_queue' ], 0 );
 	}
 
 	/**
@@ -155,8 +163,6 @@ class Preloader {
 			$this->populate_preload_queue();
 		}
 
-		$this->cache_preloader->save()->dispatch();
-
 		if ( $this->settings['enable_sitemap_preload'] && function_exists( '\PoweredCachePremium\Utils\preload_sitemap' ) ) {
 			\PoweredCachePremium\Utils\preload_sitemap();
 		}
@@ -231,6 +237,13 @@ class Preloader {
 	 * @since 2.0
 	 */
 	public function add_purged_urls_to_preload_queue( $post_id, $urls ) {
+		$post_url = get_permalink( $post_id );
+
+		// include post itself all the time
+		if ( ! empty( $post_url ) ) {
+			$this->add_url_to_preload_queue( $post_url );
+		}
+
 		if ( ! $urls ) {
 			return;
 		}
@@ -239,7 +252,6 @@ class Preloader {
 			$this->add_url_to_preload_queue( $url );
 		}
 
-		$this->cache_preloader->save()->dispatch();
 	}
 
 	/**
@@ -288,7 +300,6 @@ class Preloader {
 			$this->add_url_to_preload_queue( $url );
 		}
 
-		$this->cache_preloader->save()->dispatch();
 	}
 
 	/**
@@ -683,11 +694,33 @@ class Preloader {
 
 		if ( $do_preload ) {
 			$this->cache_preloader->push_to_queue( $url );
+			$this->queue_dirty = true;
 			\PoweredCache\Utils\log( sprintf( 'URL added to preload queue    : %s', $url ) );
 		} else {
 			\PoweredCache\Utils\log( sprintf( 'URL skipped from preload queue: %s', $url ) );
 		}
 	}
 
+	/**
+	 * Dispatch the preload queue if it has been modified.
+	 *
+	 * @return void
+	 * @since 3.6
+	 */
+	public function dispatch_preload_queue() {
+		if ( ! $this->queue_dirty ) {
+			return;
+		}
+
+		// Make sure our background process instance exists
+		if ( ! $this->cache_preloader ) {
+			$this->cache_preloader = CachePreloader::factory();
+		}
+
+		// This will serialize the queue into the DB and fire off the async request
+		$this->cache_preloader->save()->dispatch();
+
+		\PoweredCache\Utils\log( 'Dispatched preload queue in shutdown hook.' );
+	}
 
 }
