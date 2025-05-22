@@ -484,6 +484,32 @@ class AdvancedCache {
 		return apply_filters( 'powered_cache_vary_cookies', $cookies );
 	}
 
+	/**
+	 * Get the list of rejected referrers
+	 *
+	 * @return mixed|null
+	 * @since 3.6
+	 */
+	public static function get_rejected_referrers() {
+		$settings           = \PoweredCache\Utils\get_settings();
+		$rejected_referrers = [];
+
+		if ( ! empty( $settings['rejected_referrers'] ) ) {
+			$rejected_referrers = preg_split( '#(\r\n|\r|\n)#', $settings['rejected_referrers'], - 1, PREG_SPLIT_NO_EMPTY );
+		}
+
+		/**
+		 * Filter rejected referrer list.
+		 *
+		 * @hook   powered_cache_rejected_referrers
+		 *
+		 * @param  {array} $rejected_referrers The referrer that will not see the cached page.
+		 *
+		 * @return {array} Rejected referrer list.
+		 * @since  3.6
+		 */
+		return apply_filters( 'powered_cache_rejected_referrers', $rejected_referrers );
+	}
 
 	/**
 	 * Get the list of rejected user agents

@@ -409,6 +409,40 @@ $cf_api_token = \PoweredCache\Extensions\Cloudflare\Cloudflare::get_cf_api_token
 						</div>
 					</div>
 
+					<!-- Rejected Referrers -->
+					<div class="sui-box-settings-row">
+						<div class="sui-box-settings-col-1">
+							<span class="sui-settings-label" id="rejected_referrers_label">
+								<?php esc_html_e( 'Rejected Referrers', 'powered-cache' ); ?>
+							</span>
+						</div>
+
+						<div class="sui-box-settings-col-2">
+							<div class="sui-row">
+								<div class="sui-col-md-8">
+									<div class="sui-form-field">
+										<label for="rejected_referrers" class="sui-label">
+											<i><?php esc_html_e( 'Enter rejected referrers (one per line)', 'powered-cache' ); ?></i>
+										</label>
+										<textarea
+											placeholder="https://example.com"
+											id="rejected_referrers"
+											name="rejected_referrers"
+											class="sui-form-control"
+											aria-labelledby="rejected_referrers_label"
+											aria-describedby="rejected_referrers_description"
+											rows="5"
+										><?php echo esc_textarea( $settings['rejected_referrers'] ); ?></textarea>
+										<span id="rejected_referrers_description" class="sui-description">
+											<?php esc_html_e( 'Never cache pages that use the specified referrers.', 'powered-cache' ); ?>
+											<a href="<?php echo esc_url( get_doc_url( '/advanced-options/', 'rejected-referrers' ) ); ?>" target="_blank">(?)</a>
+										</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
 					<!-- Cookie Vary -->
 					<div class="sui-box-settings-row">
 						<div class="sui-box-settings-col-1">

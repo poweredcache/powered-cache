@@ -309,6 +309,7 @@ function sanitize_options( $options ) {
 	$sanitized_options['rewrite_file_optimizer']           = ! empty( $options['rewrite_file_optimizer'] );
 	$sanitized_options['rejected_user_agents']             = sanitize_textarea_field( $options['rejected_user_agents'] );
 	$sanitized_options['rejected_cookies']                 = sanitize_textarea_field( $options['rejected_cookies'] );
+	$sanitized_options['rejected_referrers']               = sanitize_textarea_field( $options['rejected_referrers'] );
 	$sanitized_options['vary_cookies']                     = sanitize_textarea_field( $options['vary_cookies'] );
 	$sanitized_options['rejected_uri']                     = sanitize_textarea_field( $options['rejected_uri'] );
 	$sanitized_options['cache_query_strings']              = sanitize_textarea_field( $options['cache_query_strings'] );

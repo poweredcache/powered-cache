@@ -60,6 +60,7 @@ function get_settings( $force_network_wide = false ) {
 		'auto_configure_htaccess'          => $is_apache,
 		'rejected_user_agents'             => '',
 		'rejected_cookies'                 => '',
+		'rejected_referrers'               => '',
 		'vary_cookies'                     => '',
 		'rejected_uri'                     => '',
 		'ignored_query_strings'            => '',

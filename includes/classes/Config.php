@@ -522,6 +522,7 @@ class Config {
 		$config_file_string .= '$powered_cache_mobile_prefixes = ' . var_export( mobile_prefixes(), true ) . ';' . PHP_EOL;
 		$config_file_string .= '$powered_cache_rejected_user_agents = ' . var_export( AdvancedCache::get_rejected_user_agents(), true ) . ';' . PHP_EOL;
 		$config_file_string .= '$powered_cache_rejected_cookies = ' . var_export( AdvancedCache::get_rejected_cookies(), true ) . ';' . PHP_EOL;
+		$config_file_string .= '$powered_cache_rejected_referrers = ' . var_export( AdvancedCache::get_rejected_referrers(), true ) . ';' . PHP_EOL;
 		$config_file_string .= '$powered_cache_vary_cookies = ' . var_export( AdvancedCache::get_vary_cookies(), true ) . ';' . PHP_EOL;
 		$config_file_string .= '$powered_cache_rejected_uri = ' . var_export( AdvancedCache::get_rejected_uri(), true ) . ';' . PHP_EOL;
 		$config_file_string .= '$powered_cache_ignored_query_strings = ' . var_export( AdvancedCache::get_ignored_query_strings(), true ) . ';' . PHP_EOL;
