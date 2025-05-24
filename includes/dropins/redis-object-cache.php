@@ -156,6 +156,38 @@ function wp_cache_get_multiple( $keys, $group = '', $force = false ) {
 }
 
 /**
+ * Removes all cache items from the in-memory runtime cache.
+ *
+ * @see WP_Object_Cache::flush()
+ *
+ * @return bool True on success, false on failure.
+ */
+function wp_cache_flush_runtime() {
+	global $wp_object_cache;
+
+	return $wp_object_cache->flush( false );
+}
+
+/**
+ * Removes all cache items in a group, if the object cache implementation supports it.
+ *
+ * Before calling this function, always check for group flushing support using the
+ * `wp_cache_supports( 'flush_group' )` function.
+ *
+ * @see WP_Object_Cache::flush_group()
+ * @global WP_Object_Cache $wp_object_cache Object cache global instance.
+ *
+ * @param string $group Name of group to remove from cache.
+ * @return bool True if group was flushed, false otherwise.
+ */
+function wp_cache_flush_group( $group ) {
+	global $wp_object_cache;
+
+	return $wp_object_cache->flush_group( $group );
+}
+
+
+/**
  * Increment numeric cache item's value
  *
  * @uses $wp_object_cache Object Cache Class
@@ -302,13 +334,13 @@ function wp_cache_reset() {
 function wp_cache_supports( $feature ) {
 	switch ( $feature ) {
 		case 'get_multiple':
+		case 'flush_runtime':
+		case 'flush_group':
 			return true;
 
 		case 'add_multiple':
 		case 'set_multiple':
 		case 'delete_multiple':
-		case 'flush_runtime':
-		case 'flush_group':
 		default:
 			return false;
 	}
@@ -1169,9 +1201,15 @@ class WP_Object_Cache {
 	 *               not with a message describing the issue.
 	 */
 	public function check_client_dependencies() {
-		if ( ! class_exists( 'Redis' ) ) {
+		$class_to_check = 'Redis';
+		if ( defined( 'WP_REDIS_USE_RELAY' ) && WP_REDIS_USE_RELAY ) {
+			$class_to_check = 'Relay\Relay';
+		}
+
+		if ( ! class_exists( $class_to_check ) ) {
 			return 'Warning! PHPRedis extension is unavailable, which is required by WP Redis object cache.';
 		}
+
 		return true;
 	}
 
