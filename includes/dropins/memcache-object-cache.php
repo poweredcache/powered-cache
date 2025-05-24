@@ -1,7 +1,7 @@
 <?php
 /**
  * Upstream: https://github.com/poweredcache/wp-memcached
- * Upstream version: 682a9683dbe3239724ab67e8f50628d1e281099f
+ * Upstream version: 92d60df2dabac6a70b863a54d95602a0424fe391
  */
 defined( 'ABSPATH' ) || exit;
 
@@ -72,11 +72,12 @@ if ( class_exists( 'Memcache' ) ):
 	function wp_cache_get( $key, $group = '', $force = false, &$found = null ) {
 		global $wp_object_cache;
 
-		$value = apply_filters( 'pre_wp_cache_get', false, $key, $group, $force );
-		if ( false !== $value ) {
-			$found = true;
-
-			return $value;
+		if ( function_exists( 'apply_filters' ) ) {
+			$value = apply_filters( 'pre_wp_cache_get', false, $key, $group, $force );
+			if ( false !== $value ) {
+				$found = true;
+				return $value;
+			}
 		}
 
 		return $wp_object_cache->get( $key, $group, $force, $found );
@@ -92,7 +93,6 @@ if ( class_exists( 'Memcache' ) ):
 	 * Retrieve multiple cache entries
 	 *
 	 * @param array $groups Array of arrays, of groups and keys to retrieve
-	 *
 	 * @return mixed
 	 */
 	function wp_cache_get_multi( $groups ) {
@@ -153,7 +153,6 @@ if ( class_exists( 'Memcache' ) ):
 	 * @param string $feature Name of the feature to check for. Possible values include:
 	 *                        'add_multiple', 'set_multiple', 'get_multiple', 'delete_multiple',
 	 *                        'flush_runtime', 'flush_group'.
-	 *
 	 * @return bool True if the feature is supported, false otherwise.
 	 */
 	function wp_cache_supports( $feature ) {
@@ -172,39 +171,38 @@ if ( class_exists( 'Memcache' ) ):
 
 		var $no_mc_groups = array();
 
-		var $cache = array();
+		var $cache         = array();
 		/** @var Memcache[] */
-		var $mc = array();
-		var $default_mcs = array();
-		var $stats
-			= array(
-				'get'          => 0,
-				'get_local'    => 0,
-				'get_multi'    => 0,
-				'set'          => 0,
-				'set_local'    => 0,
-				'add'          => 0,
-				'delete'       => 0,
-				'delete_local' => 0,
-				'slow-ops'     => 0,
-			);
-		var $group_ops = array();
-		var $cache_hits = 0;
-		var $cache_misses = 0;
+		var $mc            = array();
+		var $default_mcs   = array();
+		var $stats         = array(
+			'get'          => 0,
+			'get_local'    => 0,
+			'get_multi'    => 0,
+			'set'          => 0,
+			'set_local'    => 0,
+			'add'          => 0,
+			'delete'       => 0,
+			'delete_local' => 0,
+			'slow-ops'     => 0,
+		);
+		var $group_ops     = array();
+		var $cache_hits    = 0;
+		var $cache_misses  = 0;
 		var $global_prefix = '';
-		var $blog_prefix = '';
-		var $key_salt = '';
+		var $blog_prefix   = '';
+		var $key_salt      = '';
 
-		var $flush_group = 'WP_Object_Cache';
-		var $global_flush_group = 'WP_Object_Cache_global';
-		var $flush_key = "flush_number_v4";
-		var $old_flush_key = "flush_number";
-		var $flush_number = array();
+		var $flush_group         = 'WP_Object_Cache';
+		var $global_flush_group  = 'WP_Object_Cache_global';
+		var $flush_key           = "flush_number_v4";
+		var $old_flush_key       = "flush_number";
+		var $flush_number        = array();
 		var $global_flush_number = null;
 
-		var $cache_enabled = true;
+		var $cache_enabled      = true;
 		var $default_expiration = 0;
-		var $max_expiration = 2592000; // 30 days
+		var $max_expiration     = 2592000; // 30 days
 
 		var $stats_callback = null;
 
@@ -235,7 +233,7 @@ if ( class_exists( 'Memcache' ) ):
 				return false;
 			}
 
-			if ( isset( $this->cache[ $key ]['value'] ) && false !== $this->cache[ $key ]['value'] ) {
+			if ( isset( $this->cache[ $key ][ 'value' ] ) && false !== $this->cache[ $key ][ 'value' ] ) {
 				return false;
 			}
 
@@ -248,7 +246,7 @@ if ( class_exists( 'Memcache' ) ):
 
 			$size = $this->get_data_size( $data );
 			$this->timer_start();
-			$result  = $mc->add( $key, $data, false, $expire );
+			$result = $mc->add( $key, $data, false, $expire );
 			$elapsed = $this->timer_stop();
 
 			$comment = '';
@@ -266,13 +264,13 @@ if ( class_exists( 'Memcache' ) ):
 					'value' => $data,
 					'found' => true,
 				];
-			} else if ( false === $result && true === isset( $this->cache[ $key ]['value'] ) && false === $this->cache[ $key ]['value'] ) {
+			} else if ( false === $result && true === isset( $this->cache[$key][ 'value' ] ) && false === $this->cache[$key][ 'value' ] ) {
 				/*
 				 * Here we unset local cache if remote add failed and local cache value is equal to `false` in order
 				 * to update the local cache anytime we get a new information from remote server. This way, the next
 				 * cache get will go to remote server and will fetch recent data.
 				 */
-				unset( $this->cache[ $key ] );
+				unset( $this->cache[$key] );
 			}
 
 			return $result;
@@ -308,7 +306,7 @@ if ( class_exists( 'Memcache' ) ):
 
 		function incr( $id, $n = 1, $group = 'default' ) {
 			$key = $this->key( $id, $group );
-			$mc  = $this->get_mc( $group );
+			$mc = $this->get_mc( $group );
 
 			$incremented = $mc->increment( $key, $n );
 
@@ -317,20 +315,20 @@ if ( class_exists( 'Memcache' ) ):
 				'found' => false !== $incremented,
 			];
 
-			return $this->cache[ $key ]['value'];
+			return $this->cache[ $key ][ 'value' ];
 		}
 
 		function decr( $id, $n = 1, $group = 'default' ) {
 			$key = $this->key( $id, $group );
-			$mc  = $this->get_mc( $group );
+			$mc = $this->get_mc( $group );
 
-			$decremented         = $mc->decrement( $key, $n );
+			$decremented = $mc->decrement( $key, $n );
 			$this->cache[ $key ] = [
 				'value' => $decremented,
 				'found' => false !== $decremented,
 			];
 
-			return $this->cache[ $key ]['value'];
+			return $this->cache[ $key ][ 'value' ];
 		}
 
 		function close() {
@@ -351,7 +349,7 @@ if ( class_exists( 'Memcache' ) ):
 			$mc = $this->get_mc( $group );
 
 			$this->timer_start();
-			$result  = $mc->delete( $key );
+			$result = $mc->delete( $key );
 			$elapsed = $this->timer_stop();
 
 			$this->group_ops_stats( 'delete', $key, $group, null, $elapsed );
@@ -378,12 +376,12 @@ if ( class_exists( 'Memcache' ) ):
 			$key = $this->key( $this->flush_key, $group );
 
 			$values = array();
-			$size   = 19; // size of microsecond timestamp serialized
+			$size = 19; // size of microsecond timestamp serialized
 			foreach ( $this->default_mcs as $i => $mc ) {
 				$flags = false;
 				$this->timer_start();
 				$values[ $i ] = $mc->get( $key, $flags );
-				$elapsed      = $this->timer_stop();
+				$elapsed = $this->timer_stop();
 
 				if ( empty( $values[ $i ] ) ) {
 					$this->group_ops_stats( 'get_flush_number', $key, $group, null, $elapsed, 'not_in_memcache' );
@@ -413,9 +411,9 @@ if ( class_exists( 'Memcache' ) ):
 		}
 
 		function set_flush_number( $value, $group ) {
-			$key    = $this->key( $this->flush_key, $group );
+			$key = $this->key( $this->flush_key, $group );
 			$expire = 0;
-			$size   = 19;
+			$size = 19;
 			foreach ( $this->default_mcs as $i => $mc ) {
 				$this->timer_start();
 				$mc->set( $key, $value, false, $expire );
@@ -430,7 +428,7 @@ if ( class_exists( 'Memcache' ) ):
 			if ( empty( $flush_number ) ) {
 				// Look for the v3 flush number key.
 				$flush_number = intval( $this->get( $this->old_flush_key, $group ) );
-				if ( ! empty( $flush_number ) ) {
+				if ( !empty( $flush_number ) ) {
 					// Found v3 flush number. Upgrade to v4 with replication.
 					$this->set_flush_number( $flush_number, $group );
 					// Delete v3 key so we can't later restore it and find stale keys.
@@ -448,7 +446,6 @@ if ( class_exists( 'Memcache' ) ):
 			if ( ! isset( $this->global_flush_number ) ) {
 				$this->global_flush_number = $this->get_flush_number( $this->global_flush_group );
 			}
-
 			return $this->global_flush_number;
 		}
 
@@ -456,7 +453,6 @@ if ( class_exists( 'Memcache' ) ):
 			if ( ! isset( $this->flush_number[ $this->blog_prefix ] ) ) {
 				$this->flush_number[ $this->blog_prefix ] = $this->get_flush_number( $this->flush_group );
 			}
-
 			return $this->flush_number[ $this->blog_prefix ];
 		}
 
@@ -480,7 +476,7 @@ if ( class_exists( 'Memcache' ) ):
 
 			$this->rotate_site_keys( $flush_number );
 
-			if ( is_main_site() ) {
+			if ( function_exists( 'is_main_site' ) && is_main_site() ) {
 				$this->rotate_global_keys( $flush_number );
 			}
 
@@ -512,17 +508,17 @@ if ( class_exists( 'Memcache' ) ):
 		}
 
 		function get( $id, $group = 'default', $force = false, &$found = null ) {
-			$key   = $this->key( $id, $group );
-			$mc    = $this->get_mc( $group );
+			$key = $this->key( $id, $group );
+			$mc = $this->get_mc( $group );
 			$found = true;
 
 			if ( isset( $this->cache[ $key ] ) && ( ! $force || in_array( $group, $this->no_mc_groups ) ) ) {
-				if ( isset( $this->cache[ $key ]['value'] ) && is_object( $this->cache[ $key ]['value'] ) ) {
-					$value = clone $this->cache[ $key ]['value'];
+				if ( isset( $this->cache[ $key ][ 'value' ] ) && is_object( $this->cache[ $key ][ 'value' ] ) ) {
+					$value = clone $this->cache[ $key ][ 'value' ];
 				} else {
-					$value = $this->cache[ $key ]['value'];
+					$value = $this->cache[ $key ][ 'value' ];
 				}
-				$found = $this->cache[ $key ]['found'];
+				$found = $this->cache[ $key ][ 'found' ];
 
 				$this->group_ops_stats( 'get_local', $key, $group, null, null, 'local' );
 			} else if ( in_array( $group, $this->no_mc_groups ) ) {
@@ -537,7 +533,7 @@ if ( class_exists( 'Memcache' ) ):
 			} else {
 				$flags = false;
 				$this->timer_start();
-				$value   = $mc->get( $key, $flags );
+				$value = $mc->get( $key, $flags );
 				$elapsed = $this->timer_stop();
 
 				// Value will be unchanged if the key doesn't exist.
@@ -594,39 +590,39 @@ if ( class_exists( 'Memcache' ) ):
 			/*
 			format: $get['group-name'] = array( 'key1', 'key2' );
 			*/
-			$return       = array();
+			$return = array();
 			$return_cache = array(
 				'value' => false,
 				'found' => false,
 			);
 
 			foreach ( $groups as $group => $ids ) {
-				$mc   = $this->get_mc( $group );
+				$mc = $this->get_mc( $group );
 				$keys = array();
 				$this->timer_start();
 
 				foreach ( $ids as $id ) {
-					$key    = $this->key( $id, $group );
+					$key = $this->key( $id, $group );
 					$keys[] = $key;
 
 					if ( isset( $this->cache[ $key ] ) ) {
-						if ( is_object( $this->cache[ $key ]['value'] ) ) {
-							$return[ $key ]       = clone $this->cache[ $key ]['value'];
+						if ( is_object( $this->cache[ $key ][ 'value'] ) ) {
+							$return[ $key ] = clone $this->cache[ $key ][ 'value'];
 							$return_cache[ $key ] = [
-								'value' => clone $this->cache[ $key ]['value'],
-								'found' => $this->cache[ $key ]['found'],
+								'value' => clone $this->cache[ $key ][ 'value'],
+								'found' => $this->cache[ $key ][ 'found'],
 							];
 						} else {
-							$return[ $key ]       = $this->cache[ $key ]['value'];
+							$return[ $key ] = $this->cache[ $key ][ 'value'];
 							$return_cache[ $key ] = [
-								'value' => $this->cache[ $key ]['value'],
-								'found' => $this->cache[ $key ]['found'],
+								'value' => $this->cache[ $key ][ 'value' ],
+								'found' => $this->cache[ $key ][ 'found' ],
 							];
 						}
 
 						continue;
 					} else if ( in_array( $group, $this->no_mc_groups ) ) {
-						$return[ $key ]       = false;
+						$return[ $key ] = false;
 						$return_cache[ $key ] = [
 							'value' => false,
 							'found' => false,
@@ -634,8 +630,8 @@ if ( class_exists( 'Memcache' ) ):
 
 						continue;
 					} else {
-						$fresh_get            = $mc->get( $key );
-						$return[ $key ]       = $fresh_get;
+						$fresh_get = $mc->get( $key );
+						$return[ $key ] = $fresh_get;
 						$return_cache[ $key ] = [
 							'value' => $fresh_get,
 							'found' => false !== $fresh_get,
@@ -712,7 +708,6 @@ if ( class_exists( 'Memcache' ) ):
 			} else {
 				$number = $this->get_blog_flush_number();
 			}
-
 			return $number . ':';
 		}
 
@@ -735,7 +730,7 @@ if ( class_exists( 'Memcache' ) ):
 		}
 
 		function replace( $id, $data, $group = 'default', $expire = 0 ) {
-			$key    = $this->key( $id, $group );
+			$key = $this->key( $id, $group );
 			$expire = intval( $expire );
 			if ( 0 === $expire || $expire > $this->max_expiration ) {
 				$expire = $this->default_expiration;
@@ -748,7 +743,7 @@ if ( class_exists( 'Memcache' ) ):
 
 			$size = $this->get_data_size( $data );
 			$this->timer_start();
-			$result  = $mc->replace( $key, $data, false, $expire );
+			$result = $mc->replace( $key, $data, false, $expire );
 			$elapsed = $this->timer_stop();
 			$this->group_ops_stats( 'replace', $key, $group, $size, $elapsed );
 
@@ -765,7 +760,7 @@ if ( class_exists( 'Memcache' ) ):
 		function set( $id, $data, $group = 'default', $expire = 0 ) {
 			$key = $this->key( $id, $group );
 
-			if ( isset( $this->cache[ $key ] ) && ( 'checkthedatabaseplease' === $this->cache[ $key ]['value'] ) ) {
+			if ( isset( $this->cache[ $key ] ) && ( 'checkthedatabaseplease' === $this->cache[ $key ][ 'value' ] ) ) {
 				return false;
 			}
 
@@ -793,12 +788,12 @@ if ( class_exists( 'Memcache' ) ):
 
 			$size = $this->get_data_size( $data );
 			$this->timer_start();
-			$result  = $mc->set( $key, $data, false, $expire );
+			$result = $mc->set( $key, $data, false, $expire );
 			$elapsed = $this->timer_stop();
 			$this->group_ops_stats( 'set', $key, $group, $size, $elapsed );
 
 			// Update the found cache value with the result of the set in memcache.
-			$this->cache[ $key ]['found'] = $result;
+			$this->cache[ $key ][ 'found' ] = $result;
 
 			return $result;
 		}
@@ -823,16 +818,16 @@ if ( class_exists( 'Memcache' ) ):
 
 		function colorize_debug_line( $line, $trailing_html = '' ) {
 			$colors = array(
-				'get'          => 'green',
-				'get_local'    => 'lightgreen',
-				'get_multi'    => 'fuchsia',
+				'get' => 'green',
+				'get_local' => 'lightgreen',
+				'get_multi' => 'fuchsia',
 				'get_multiple' => 'navy',
-				'set'          => 'purple',
-				'set_local'    => 'orchid',
-				'add'          => 'blue',
-				'delete'       => 'red',
+				'set' => 'purple',
+				'set_local' => 'orchid',
+				'add' => 'blue',
+				'delete' => 'red',
 				'delete_local' => 'tomato',
-				'slow-ops'     => 'crimson',
+				'slow-ops' => 'crimson',
 			);
 
 			$cmd = substr( $line, 0, strpos( $line, ' ' ) );
@@ -885,16 +880,16 @@ if ( class_exists( 'Memcache' ) ):
 		 * @return array $stats
 		 */
 		function get_stats() {
-			$stats                     = [];
-			$stats['totals']           = [
+			$stats = [];
+			$stats['totals'] = [
 				'query_time' => $this->time_total,
-				'size'       => $this->size_total,
+				'size' => $this->size_total,
 			];
 			$stats['operation_counts'] = $this->stats;
-			$stats['operations']       = [];
-			$stats['groups']           = [];
-			$stats['slow-ops']         = [];
-			$stats['slow-ops-groups']  = [];
+			$stats['operations'] = [];
+			$stats['groups'] = [];
+			$stats['slow-ops'] = [];
+			$stats['slow-ops-groups'] = [];
 			foreach ( $this->group_ops as $cache_group => $dataset ) {
 				if ( empty( $cache_group ) ) {
 					$cache_group = 'default';
@@ -902,11 +897,11 @@ if ( class_exists( 'Memcache' ) ):
 
 				foreach ( $dataset as $data ) {
 					$operation = $data[0];
-					$op        = [
-						'key'    => $data[1],
-						'size'   => $data[2],
-						'time'   => $data[3],
-						'group'  => $cache_group,
+					$op = [
+						'key' => $data[1],
+						'size' => $data[2],
+						'time' => $data[3],
+						'group' => $cache_group,
 						'result' => $data[4],
 					];
 
@@ -958,28 +953,24 @@ if ( class_exists( 'Memcache' ) ):
 			// Always show `slow-ops` first
 			if ( in_array( 'slow-ops', $groups ) ) {
 				$slow_ops_key = array_search( 'slow-ops', $groups );
-				$slow_ops     = $groups[ $slow_ops_key ];
+				$slow_ops = $groups[ $slow_ops_key ];
 				unset( $groups[ $slow_ops_key ] );
 				array_unshift( $groups, $slow_ops );
 				$active_group = 'slow-ops';
 			}
 
-			$total_ops    = 0;
+			$total_ops = 0;
 			$group_titles = array();
 			foreach ( $groups as $group ) {
 				$group_name = $group;
 				if ( empty( $group_name ) ) {
 					$group_name = 'default';
 				}
-				$group_ops              = count( $this->group_ops[ $group ] );
-				$group_size             = size_format( array_sum( array_map( function ( $op ) {
-					return $op[2];
-				}, $this->group_ops[ $group ] ) ), 2 );
-				$group_time             = number_format_i18n( sprintf( '%0.1f', array_sum( array_map( function ( $op ) {
-						return $op[3];
-					}, $this->group_ops[ $group ] ) ) * 1000 ), 1 );
-				$total_ops              += $group_ops;
-				$group_title            = "{$group_name} [$group_ops][$group_size][{$group_time} ms]";
+				$group_ops = count( $this->group_ops[ $group ] );
+				$group_size = size_format( array_sum( array_map( function ( $op ) { return $op[2]; }, $this->group_ops[ $group ] ) ), 2 );
+				$group_time = number_format_i18n( sprintf( '%0.1f', array_sum( array_map( function ( $op ) { return $op[3]; }, $this->group_ops[ $group ] ) ) * 1000 ), 1 );
+				$total_ops += $group_ops;
+				$group_title = "{$group_name} [$group_ops][$group_size][{$group_time} ms]";
 				$group_titles[ $group ] = $group_title;
 				echo "\t<li><a href='#' onclick='memcachedToggleVisibility( \"object-cache-stats-menu-target-" . esc_js( $group_name ) . "\", \"object-cache-stats-menu-target-\" );'>" . esc_html( $group_title ) . "</a></li>\n";
 			}
@@ -1012,7 +1003,7 @@ if ( class_exists( 'Memcache' ) ):
 
 			// key
 			$json_encoded_key = json_encode( $arr[1] );
-			$line             .= $json_encoded_key . " ";
+			$line .= $json_encoded_key . " ";
 
 			// comment
 			if ( ! empty( $arr[4] ) ) {
@@ -1033,8 +1024,8 @@ if ( class_exists( 'Memcache' ) ):
 			$bt_link = '';
 			if ( isset( $arr[6] ) ) {
 				$key_hash = md5( $index . $json_encoded_key );
-				$bt_link  = " <small><a href='#' onclick='memcachedToggleVisibility( \"object-cache-stats-debug-$key_hash\" );'>Toggle Backtrace</a></small>";
-				$bt_link  .= "<pre id='object-cache-stats-debug-$key_hash' style='display:none'>" . esc_html( $arr[6] ) . "</pre>";
+				$bt_link = " <small><a href='#' onclick='memcachedToggleVisibility( \"object-cache-stats-debug-$key_hash\" );'>Toggle Backtrace</a></small>";
+				$bt_link .= "<pre id='object-cache-stats-debug-$key_hash' style='display:none'>" . esc_html( $arr[6] ) . "</pre>";
 			}
 
 			return $this->colorize_debug_line( $line, $bt_link );
@@ -1042,7 +1033,6 @@ if ( class_exists( 'Memcache' ) ):
 
 		/**
 		 * @param int|string $group
-		 *
 		 * @return Memcache
 		 */
 		function get_mc( $group ) {
@@ -1086,7 +1076,7 @@ if ( class_exists( 'Memcache' ) ):
 			foreach ( $buckets as $bucket => $servers ) {
 				$this->mc[ $bucket ] = new Memcache();
 
-				foreach ( $servers as $i => $server ) {
+				foreach ( $servers as $i => $server  ) {
 					if ( 'unix://' == substr( $server, 0, 7 ) ) {
 						$node = $server;
 						$port = 0;
@@ -1168,6 +1158,7 @@ if ( class_exists( 'Memcache' ) ):
 
 		/**
 		 * Key format: key_salt:flush_number:table_prefix:key_name
+		 *
 		 * We want to strip the `key_salt:flush_number` part to not leak the memcached keys.
 		 * If `key_salt` is set we strip `'key_salt:flush_number`, otherwise just strip the `flush_number` part.
 		 */
@@ -1182,7 +1173,7 @@ if ( class_exists( 'Memcache' ) ):
 					$offset = strpos( $value, ':' ) + 1;
 				}
 
-				$start        = strpos( $value, ':', $offset );
+				$start = strpos( $value, ':', $offset );
 				$keys[ $key ] = substr( $value, $start + 1 );
 			}
 
@@ -1200,7 +1191,7 @@ if ( class_exists( 'Memcache' ) ):
 		}
 
 		function timer_stop() {
-			$time_total       = microtime( true ) - $this->time_start;
+			$time_total = microtime( true ) - $this->time_start;
 			$this->time_total += $time_total;
 
 			return $time_total;
