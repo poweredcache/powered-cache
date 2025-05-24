@@ -4,40 +4,45 @@
  * APCu drop-in
  *
  * @link https://github.com/l3rady/WordPress-APCu-Object-Cache
+ * @revision 9401d4bf8b8adfdcd94e16a4d01bf81b9b88e968
  */
 
-if ( ! function_exists( 'apcu_add' ) ) {
-	return;
-}
 // Stop direct access
 defined( 'ABSPATH' ) or exit;
 
-
-/**
- * Determines whether the object cache implementation supports a particular feature.
- *
- * @param string $feature Name of the feature to check for. Possible values include:
- *                        'add_multiple', 'set_multiple', 'get_multiple', 'delete_multiple',
- *                        'flush_runtime', 'flush_group'.
- *
- * @return bool True if the feature is supported, false otherwise.
- */
-function wp_cache_supports( $feature ) {
-	return false;
+if ( ! function_exists( 'apcu_add' ) ) {
+	return;
 }
 
 /**
  * Adds data to the cache, if the cache key does not already exist.
  *
- * @param int|string $key    The cache key to use for retrieval later
- * @param mixed      $data   The data to add to the cache store
- * @param string     $group  The group to add the cache to
- * @param int        $expire When the cache data should be expired
+ * @param int|string $key The cache key to use for retrieval later
+ * @param mixed $data The data to add to the cache store
+ * @param string $group The group to add the cache to
+ * @param int $expire When the cache data should be expired
  *
  * @return bool False if cache key and group already exist, true on success
  */
-function wp_cache_add( $key, $data, $group = 'default', $expire = 0 ) {
-	return WP_Object_Cache::instance()->add( $key, $data, $group, $expire );
+function wp_cache_add($key, $data, $group = 'default', $expire = 0)
+{
+	return WP_Object_Cache::instance()->add($key, $data, $group, $expire);
+}
+
+
+/**
+ * Adds multiple values to the cache in one call.
+ *
+ * @param array  $data   Array of keys and values to be set.
+ * @param string $group  Optional. Where the cache contents are grouped. Default default.
+ * @param int    $expire Optional. When to expire the cache contents, in seconds.
+ *                       Default 0 (no expiration).
+ * @return bool[] Array of return values, grouped by key. Each value is either
+ *                true on success, or false if cache key and group already exist.
+ */
+function wp_cache_add_multiple(array $data, $group = 'default', $expire = 0)
+{
+	return WP_Object_Cache::instance()->add_multiple($data, $group, $expire);
 }
 
 
@@ -51,7 +56,8 @@ function wp_cache_add( $key, $data, $group = 'default', $expire = 0 ) {
  *
  * @return bool Always returns True
  */
-function wp_cache_close() {
+function wp_cache_close()
+{
 	return true;
 }
 
@@ -59,27 +65,43 @@ function wp_cache_close() {
 /**
  * Decrement numeric cache item's value
  *
- * @param int|string $key    The cache key to increment
- * @param int        $offset The amount by which to decrement the item's value. Default is 1.
- * @param string     $group  The group the key is in.
+ * @param int|string $key The cache key to increment
+ * @param int $offset The amount by which to decrement the item's value. Default is 1.
+ * @param string $group The group the key is in.
  *
  * @return false|int False on failure, the item's new value on success.
  */
-function wp_cache_decr( $key, $offset = 1, $group = 'default' ) {
-	return WP_Object_Cache::instance()->decr( $key, $offset, $group );
+function wp_cache_decr($key, $offset = 1, $group = 'default')
+{
+	return WP_Object_Cache::instance()->decr($key, $offset, $group);
 }
 
 
 /**
  * Removes the cache contents matching key and group.
  *
- * @param int|string $key   What the contents in the cache are called
- * @param string     $group Where the cache contents are grouped
+ * @param int|string $key What the contents in the cache are called
+ * @param string $group Where the cache contents are grouped
  *
  * @return bool True on successful removal, false on failure
  */
-function wp_cache_delete( $key, $group = 'default' ) {
-	return WP_Object_Cache::instance()->delete( $key, $group );
+function wp_cache_delete($key, $group = 'default')
+{
+	return WP_Object_Cache::instance()->delete($key, $group);
+}
+
+
+/**
+ * Deletes multiple values from the cache in one call.
+ *
+ * @param array  $keys  Array of keys under which the cache to deleted.
+ * @param string $group Optional. Where the cache contents are grouped. Default default.
+ * @return bool[] Array of return values, grouped by key. Each value is either
+ *                true on success, or false if the contents were not deleted.
+ */
+function wp_cache_delete_multiple(array $keys, $group = 'default')
+{
+	return WP_Object_Cache::instance()->delete_multiple($keys, $group);
 }
 
 
@@ -88,55 +110,67 @@ function wp_cache_delete( $key, $group = 'default' ) {
  *
  * @return bool False on failure, true on success
  */
-function wp_cache_flush() {
+function wp_cache_flush()
+{
 	return WP_Object_Cache::instance()->flush();
+}
+
+
+/**
+ * Removes all cache items from the in-memory runtime cache.
+ *
+ * @return bool True on success, false on failure.
+ */
+function wp_cache_flush_runtime()
+{
+	return WP_Object_Cache::instance()->flush_runtime();
 }
 
 
 /**
  * Retrieves the cache contents from the cache by key and group.
  *
- * @param int|string  $key   What the contents in the cache are called
- * @param string      $group Where the cache contents are grouped
- * @param bool        $force Does nothing with APCu object cache
+ * @param int|string $key What the contents in the cache are called
+ * @param string $group Where the cache contents are grouped
+ * @param bool $force Does nothing with APCu object cache
  * @param bool       &$found Whether key was found in the cache. Disambiguates a return of false, a storable value.
  *
  * @return bool|mixed False on failure to retrieve contents or the cache contents on success
  */
-function wp_cache_get( $key, $group = 'default', $force = false, &$found = null ) {
-	return WP_Object_Cache::instance()->get( $key, $group, $force, $found );
+function wp_cache_get($key, $group = 'default', $force = false, &$found = null)
+{
+	return WP_Object_Cache::instance()->get($key, $group, $force, $found);
 }
 
 
 /**
- * Retrieve multiple values from cache.
+ * Retrieves multiple values from the cache in one call.
  *
- * Gets multiple values from cache, including across multiple groups
- *
- * Usage: array( 'group0' => array( 'key0', 'key1', 'key2', ), 'group1' => array( 'key0' ) )
- *
- * @param array $groups Array of groups and keys to retrieve
- *
- * @return array Array of cached values as
- *    array( 'group0' => array( 'key0' => 'value0', 'key1' => 'value1', 'key2' => 'value2', ) )
- *    Non-existent keys are not returned.
+ * @param array  $keys  Array of keys under which the cache contents are stored.
+ * @param string $group Optional. Where the cache contents are grouped. Default empty.
+ * @param bool   $force Optional. Whether to force an update of the local cache
+ *                      from the persistent cache. Default false.
+ * @return array Array of return values, grouped by key. Each value is either
+ *               the cache contents on success, or false on failure.
  */
-function wp_cache_get_multi( $groups ) {
-	return WP_Object_Cache::instance()->get_multi( $groups );
+function wp_cache_get_multiple($keys, $group = 'default', $force = false)
+{
+	return WP_Object_Cache::instance()->get_multiple($keys, $group, $force);
 }
 
 
 /**
  * Increment numeric cache item's value
  *
- * @param int|string $key    The cache key to increment
- * @param int        $offset The amount by which to increment the item's value. Default is 1.
- * @param string     $group  The group the key is in.
+ * @param int|string $key The cache key to increment
+ * @param int $offset The amount by which to increment the item's value. Default is 1.
+ * @param string $group The group the key is in.
  *
  * @return false|int False on failure, the item's new value on success.
  */
-function wp_cache_incr( $key, $offset = 1, $group = 'default' ) {
-	return WP_Object_Cache::instance()->incr( $key, $offset, $group );
+function wp_cache_incr($key, $offset = 1, $group = 'default')
+{
+	return WP_Object_Cache::instance()->incr($key, $offset, $group);
 }
 
 
@@ -145,7 +179,8 @@ function wp_cache_incr( $key, $offset = 1, $group = 'default' ) {
  *
  * @global WP_Object_Cache $wp_object_cache WordPress Object Cache
  */
-function wp_cache_init() {
+function wp_cache_init()
+{
 	$GLOBALS['wp_object_cache'] = WP_Object_Cache::instance();
 }
 
@@ -153,30 +188,48 @@ function wp_cache_init() {
 /**
  * Replaces the contents of the cache with new data.
  *
- * @param int|string $key    What to call the contents in the cache
- * @param mixed      $data   The contents to store in the cache
- * @param string     $group  Where to group the cache contents
- * @param int        $expire When to expire the cache contents
+ * @param int|string $key What to call the contents in the cache
+ * @param mixed $data The contents to store in the cache
+ * @param string $group Where to group the cache contents
+ * @param int $expire When to expire the cache contents
  *
  * @return bool False if not exists, true if contents were replaced
  */
-function wp_cache_replace( $key, $data, $group = 'default', $expire = 0 ) {
-	return WP_Object_Cache::instance()->replace( $key, $data, $group, $expire );
+function wp_cache_replace($key, $data, $group = 'default', $expire = 0)
+{
+	return WP_Object_Cache::instance()->replace($key, $data, $group, $expire);
 }
 
 
 /**
  * Saves the data to the cache.
  *
- * @param int|string $key    What to call the contents in the cache
- * @param mixed      $data   The contents to store in the cache
- * @param string     $group  Where to group the cache contents
- * @param int        $expire When to expire the cache contents
+ * @param int|string $key What to call the contents in the cache
+ * @param mixed $data The contents to store in the cache
+ * @param string $group Where to group the cache contents
+ * @param int $expire When to expire the cache contents
  *
  * @return bool False on failure, true on success
  */
-function wp_cache_set( $key, $data, $group = 'default', $expire = 0 ) {
-	return WP_Object_Cache::instance()->set( $key, $data, $group, $expire );
+function wp_cache_set($key, $data, $group = 'default', $expire = 0)
+{
+	return WP_Object_Cache::instance()->set($key, $data, $group, $expire);
+}
+
+
+/**
+ * Sets multiple values to the cache in one call.
+ *
+ * @param array  $data   Array of keys and values to be set.
+ * @param string $group  Optional. Where the cache contents are grouped. Default default.
+ * @param int    $expire Optional. When to expire the cache contents, in seconds.
+ *                       Default 0 (no expiration).
+ * @return bool[] Array of return values, grouped by key. Each value is either
+ *                true on success, or false on failure.
+ */
+function wp_cache_set_multiple(array $data, $group = 'default', $expire = 0)
+{
+	return WP_Object_Cache::instance()->set_multiple($data, $group, $expire);
 }
 
 
@@ -187,8 +240,9 @@ function wp_cache_set( $key, $data, $group = 'default', $expire = 0 ) {
  *
  * @param int $blog_id Blog ID
  */
-function wp_cache_switch_to_blog( $blog_id ) {
-	WP_Object_Cache::instance()->switch_to_blog( $blog_id );
+function wp_cache_switch_to_blog($blog_id)
+{
+	WP_Object_Cache::instance()->switch_to_blog($blog_id);
 }
 
 
@@ -197,8 +251,9 @@ function wp_cache_switch_to_blog( $blog_id ) {
  *
  * @param string|array $groups A group or an array of groups to add
  */
-function wp_cache_add_global_groups( $groups ) {
-	WP_Object_Cache::instance()->add_global_groups( $groups );
+function wp_cache_add_global_groups($groups)
+{
+	WP_Object_Cache::instance()->add_global_groups($groups);
 }
 
 
@@ -207,8 +262,9 @@ function wp_cache_add_global_groups( $groups ) {
  *
  * @param string|array $groups A group or an array of groups to add
  */
-function wp_cache_add_non_persistent_groups( $groups ) {
-	WP_Object_Cache::instance()->add_non_persistent_groups( $groups );
+function wp_cache_add_non_persistent_groups($groups)
+{
+	WP_Object_Cache::instance()->add_non_persistent_groups($groups);
 }
 
 
@@ -217,9 +273,9 @@ function wp_cache_add_non_persistent_groups( $groups ) {
  *
  * @return bool Always returns false
  */
-function wp_cache_reset() {
-	_deprecated_function( __FUNCTION__, '3.5', 'wp_cache_switch_to_blog()' );
-
+function wp_cache_reset()
+{
+	_deprecated_function(__FUNCTION__, '3.5', 'wp_cache_switch_to_blog()');
 	return false;
 }
 
@@ -232,8 +288,9 @@ function wp_cache_reset() {
  *
  * @return bool
  */
-function wp_cache_flush_site( $sites = null ) {
-	return WP_Object_Cache::instance()->flush_sites( $sites );
+function wp_cache_flush_site($sites = null)
+{
+	return WP_Object_Cache::instance()->flush_sites($sites);
 }
 
 
@@ -244,8 +301,35 @@ function wp_cache_flush_site( $sites = null ) {
  *
  * @return bool
  */
-function wp_cache_flush_group( $groups = 'default' ) {
-	return WP_Object_Cache::instance()->flush_groups( $groups );
+function wp_cache_flush_group($groups = 'default')
+{
+	return WP_Object_Cache::instance()->flush_groups($groups);
+}
+
+
+/**
+ * Determines whether the object cache implementation supports a particular feature.
+ *
+ * @since 6.1.0
+ *
+ * @param string $feature Name of the feature to check for. Possible values include:
+ *                        'add_multiple', 'set_multiple', 'get_multiple', 'delete_multiple',
+ *                        'flush_runtime', 'flush_group'.
+ * @return bool True if the feature is supported, false otherwise.
+ */
+function wp_cache_supports( $feature ) {
+	switch ( $feature ) {
+		case 'add_multiple':
+		case 'set_multiple':
+		case 'get_multiple':
+		case 'delete_multiple':
+		case 'flush_runtime':
+		case 'flush_group':
+			return true;
+
+		default:
+			return false;
+	}
 }
 
 
@@ -257,23 +341,24 @@ function wp_cache_flush_group( $groups = 'default' ) {
  * contents available by using a key, which is used to name and later retrieve
  * the cache contents.
  */
-class WP_Object_Cache {
+class WP_Object_Cache
+{
 
 	/**
 	 * @var string MD5 hash of the current installation ABSPATH
 	 */
-	private $abspath;
+	private $_absPath;
 
 	/**
 	 * @var bool Stores if APCu is available.
 	 */
-	private $apcu_available;
+	private $_apcuAvailable;
 
 	/**
 	 * @var int The sites current blog ID. This only
 	 *    differs if running a multi-site installations
 	 */
-	private $blog_prefix;
+	private $_blogPrefix;
 
 	/**
 	 * @var int Keeps count of how many times the
@@ -291,129 +376,167 @@ class WP_Object_Cache {
 	 * @var array Holds a list of cache groups that are
 	 *    shared across all sites in a multi-site installation
 	 */
-	private $global_groups = [];
+	private $_globalGroups = [];
 
 	/**
 	 * @var array Holds an array of versions of the retrieved groups
 	 */
-	private $group_versions = [];
+	private $_groupVersions = [];
 
 	/**
 	 * @var bool True if the current installation is a multi-site
 	 */
-	private $multi_site;
+	private $_multiSite;
 
 	/**
 	 * @var array Holds cache that is to be non persistent
 	 */
-	private $non_persistent_cache = [];
+	private $_nonPersistentCache = [];
 
 	/**
 	 * @var array Holds a list of cache groups that are not to be saved to APCu
 	 */
-	private $non_persistent_groups = [];
+	private $_nonPersistentGroups = [];
 
 	/**
 	 * @var array
 	 */
-	private $local_cache = [];
+	private $_localCache = [];
 
 	/**
 	 * @var array Holds an array of versions of the retrieved sites
 	 */
-	private $site_versions = [];
+	private $_siteVersions = [];
 
-	private static $instance;
+	private static $_instance;
 
 	/**
 	 * Singleton. Return instance of WP_Object_Cache
 	 *
 	 * @return WP_Object_Cache
 	 */
-	public static function instance() {
-		if ( self::$instance === null ) {
-			self::$instance = new WP_Object_Cache();
+	public static function instance()
+	{
+		if (self::$_instance === null) {
+			self::$_instance = new WP_Object_Cache();
 		}
 
-		return self::$instance;
+		return self::$_instance;
 	}
 
 	/**
 	 * __clone not allowed
 	 */
-	private function __clone() {
+	private function __clone()
+	{
 	}
 
 	/**
 	 * Direct access to __construct not allowed.
 	 */
-	private function __construct() {
+	private function __construct()
+	{
 		global $blog_id;
 
-		if ( ! defined( 'WP_APCU_KEY_SALT' ) ) {
+		if (!defined('WP_APCU_KEY_SALT')) {
 			/**
 			 * Set in config if you are using some sort of shared
 			 * config where ABSPATH is the same on all sites
 			 */
-			define( 'WP_APCU_KEY_SALT', 'wp' );
+			define('WP_APCU_KEY_SALT', 'wp');
 		}
 
 		/**
 		 * define('WP_APCU_LOCAL_CACHE', false) to disable local
 		 * array cache and force all cache to be returned from APCu
 		 */
-		if ( ! defined( 'WP_APCU_LOCAL_CACHE' ) ) {
-			define( 'WP_APCU_LOCAL_CACHE', true );
+		if (!defined('WP_APCU_LOCAL_CACHE')) {
+			define('WP_APCU_LOCAL_CACHE', true);
 		}
 
-		$this->abspath        = md5( ABSPATH );
-		$this->apcu_available = ( extension_loaded( 'apcu' ) && ini_get( 'apc.enabled' ) );
-		$this->multi_site     = is_multisite();
-		$this->blog_prefix    = $this->multi_site ? $blog_id : 1;
+		$this->_absPath = md5(ABSPATH);
+		$this->_apcuAvailable = (extension_loaded('apcu') && ini_get('apc.enabled'));
+		$this->_multiSite = is_multisite();
+		$this->_blogPrefix = $this->_multiSite ? $blog_id : 1;
+	}
+
+	public function stats()
+	{
+		echo '<p>';
+		echo "<strong>Cache Hits:</strong> {$this->cache_hits}<br />";
+		echo "<strong>Cache Misses:</strong> {$this->cache_misses}<br />";
+		echo '</p>';
+		echo '<ul>';
+
+		foreach ( $this->_localCache as $group => $cache ) {
+			echo '<li><strong>Group:</strong> ' . esc_html( $group ) . ' - ( ' . number_format( strlen( serialize( $cache ) ) / KB_IN_BYTES, 2 ) . 'k )</li>';
+		}
+		echo '</ul>';
 	}
 
 	/**
 	 * Adds data to the cache, if the cache key does not already exist.
 	 *
-	 * @param int|string $key   The cache key to use for retrieval later
-	 * @param mixed      $var   The data to add to the cache store
-	 * @param string     $group The group to add the cache to
-	 * @param int        $ttl   When the cache data should be expired
+	 * @param int|string $key The cache key to use for retrieval later
+	 * @param mixed $var The data to add to the cache store
+	 * @param string $group The group to add the cache to
+	 * @param int $ttl When the cache data should be expired
 	 *
 	 * @return bool False if cache key and group already exist, true on success
 	 */
-	public function add( $key, $var, $group = 'default', $ttl = 0 ) {
-		if ( wp_suspend_cache_addition() ) {
+	public function add($key, $var, $group = 'default', $ttl = 0)
+	{
+		if (function_exists('wp_suspend_cache_addition') && wp_suspend_cache_addition()) {
 			return false;
 		}
 
-		$key = $this->_key( $key, $group );
+		$key = $this->_key($key, $group);
 
-		if ( ! $this->apcu_available || $this->_is_non_persistent_group( $group ) ) {
-			return $this->_add_np( $key, $var );
+		if (!$this->_apcuAvailable || $this->_is_non_persistent_group($group)) {
+			return $this->_add_np($key, $var);
 		}
 
-		return $this->_add( $key, $var, $ttl );
+		return $this->_add($key, $var, $ttl);
+	}
+
+	/**
+	 * Adds multiple values to the cache in one call.
+	 *
+	 * @param array  $data   Array of keys and values to be added.
+	 * @param string $group  Optional. Where the cache contents are grouped. Default default.
+	 * @param int    $ttl    Optional. When to expire the cache contents, in seconds.
+	 *                       Default 0 (no expiration).
+	 * @return bool[] Array of return values, grouped by key. Each value is either
+	 *                true on success, or false if cache key and group already exist.
+	 */
+	public function add_multiple(array $data, $group = 'default', $ttl = 0)
+	{
+		$values = [];
+
+		foreach ($data as $key => $value) {
+			$values[$key] = $this->add($key, $value, $group, $ttl);
+		}
+
+		return $values;
 	}
 
 	/**
 	 * Adds data to APCu cache, if the cache key does not already exist.
 	 *
 	 * @param string $key The cache key to use for retrieval later
-	 * @param mixed  $var The data to add to the cache store
-	 * @param int    $ttl When the cache data should be expired
+	 * @param mixed $var The data to add to the cache store
+	 * @param int $ttl When the cache data should be expired
 	 *
 	 * @return bool False if cache key and group already exist, true on success
 	 */
-	private function _add( $key, $var, $ttl ) {
-		if ( apcu_add( $key, $var, max( (int) $ttl, 0 ) ) ) {
-			if ( WP_APCU_LOCAL_CACHE ) {
-				$this->local_cache[ $key ] = is_object( $var ) ? clone $var : $var;
+	private function _add($key, $var, $ttl)
+	{
+		if (apcu_add($key, $var, max((int)$ttl, 0))) {
+			if (WP_APCU_LOCAL_CACHE) {
+				$this->_localCache[$key] = is_object($var) ? clone $var : $var;
 			}
-
 			return true;
 		}
-
 		return false;
 	}
 
@@ -421,16 +544,17 @@ class WP_Object_Cache {
 	 * Adds data to non persistent cache, if the cache key does not already exist.
 	 *
 	 * @param string $key The cache key to use for retrieval later
-	 * @param mixed  $var The data to add to the cache store
+	 * @param mixed $var The data to add to the cache store
 	 *
 	 * @return bool False if cache key and group already exist, true on success
 	 */
-	private function _add_np( $key, $var ) {
-		if ( $this->_exists_np( $key ) ) {
+	private function _add_np($key, $var)
+	{
+		if ($this->_exists_np($key)) {
 			return false;
 		}
 
-		return $this->_set_np( $key, $var );
+		return $this->_set_np($key, $var);
 	}
 
 	/**
@@ -438,9 +562,10 @@ class WP_Object_Cache {
 	 *
 	 * @param string|array $groups List of groups that are global.
 	 */
-	public function add_global_groups( $groups ) {
-		foreach ( (array) $groups as $group ) {
-			$this->global_groups[ $group ] = true;
+	public function add_global_groups($groups)
+	{
+		foreach ((array)$groups as $group) {
+			$this->_globalGroups[$group] = true;
 		}
 	}
 
@@ -449,72 +574,75 @@ class WP_Object_Cache {
 	 *
 	 * @param string|array $groups List of groups that are non persistent.
 	 */
-	public function add_non_persistent_groups( $groups ) {
-		foreach ( (array) $groups as $group ) {
-			$this->non_persistent_groups[ $group ] = true;
+	public function add_non_persistent_groups($groups)
+	{
+		foreach ((array)$groups as $group) {
+			$this->_nonPersistentGroups[$group] = true;
 		}
 	}
 
 	/**
 	 * Decrement numeric cache item's value
 	 *
-	 * @param int|string $key    The cache key to increment
-	 * @param int        $offset The amount by which to decrement the item's value. Default is 1.
-	 * @param string     $group  The group the key is in.
+	 * @param int|string $key The cache key to increment
+	 * @param int $offset The amount by which to decrement the item's value. Default is 1.
+	 * @param string $group The group the key is in.
 	 *
 	 * @return false|int False on failure, the item's new value on success.
 	 */
-	public function decr( $key, $offset = 1, $group = 'default' ) {
-		$key = $this->_key( $key, $group );
+	public function decr($key, $offset = 1, $group = 'default')
+	{
+		$key = $this->_key($key, $group);
 
-		if ( ! $this->apcu_available || $this->_is_non_persistent_group( $group ) ) {
-			return $this->_decr_np( $key, $offset );
+		if (!$this->_apcuAvailable || $this->_is_non_persistent_group($group)) {
+			return $this->_decr_np($key, $offset);
 		}
 
-		return $this->_decr( $key, $offset );
+		return $this->_decr($key, $offset);
 	}
 
 	/**
 	 * Decrement numeric APCu cache item's value
 	 *
-	 * @param string $key    The cache key to increment
-	 * @param int    $offset The amount by which to decrement the item's value. Default is 1.
+	 * @param string $key The cache key to increment
+	 * @param int $offset The amount by which to decrement the item's value. Default is 1.
 	 *
 	 * @return false|int False on failure, the item's new value on success.
 	 */
-	private function _decr( $key, $offset ) {
-		$this->_get( $key, $success );
-		if ( ! $success ) {
+	private function _decr($key, $offset)
+	{
+		$this->_get($key, $success);
+		if (!$success) {
 			return false;
 		}
 
-		$value = apcu_dec( $key, max( (int) $offset, 0 ) );
-		if ( $value !== false && WP_APCU_LOCAL_CACHE ) {
-			$this->local_cache[ $key ] = $value;
+		$value = apcu_dec($key, max((int)$offset, 0));
+		if ($value !== false && WP_APCU_LOCAL_CACHE) {
+			$this->_localCache[$key] = $value;
 		}
-
 		return $value;
 	}
 
 	/**
 	 * Decrement numeric non persistent cache item's value
 	 *
-	 * @param string $key    The cache key to increment
-	 * @param int    $offset The amount by which to decrement the item's value. Default is 1.
+	 * @param string $key The cache key to increment
+	 * @param int $offset The amount by which to decrement the item's value. Default is 1.
 	 *
 	 * @return false|int False on failure, the item's new value on success.
 	 */
-	private function _decr_np( $key, $offset ) {
-		if ( ! $this->_exists_np( $key ) ) {
+	private function _decr_np($key, $offset)
+	{
+		if (!$this->_exists_np($key)) {
 			return false;
 		}
 
-		$offset = max( (int) $offset, 0 );
-		$var    = $this->_get_np( $key );
-		$var    = is_numeric( $var ) ? $var : 0;
-		$var    -= $offset;
+		$offset = max((int)$offset, 0);
+		$var = $this->_get_np($key);
+		$var = is_numeric($var) ? $var : 0;
+		$var -= $offset;
 
-		return $this->_set_np( $key, $var );
+		return $this->_set_np($key, $var);
 	}
 
 	/**
@@ -522,20 +650,40 @@ class WP_Object_Cache {
 	 *
 	 * If the cache key does not exist in the group, then nothing will happen.
 	 *
-	 * @param int|string $key        What the contents in the cache are called
-	 * @param string     $group      Where the cache contents are grouped
-	 * @param bool       $deprecated Deprecated.
+	 * @param int|string $key What the contents in the cache are called
+	 * @param string $group Where the cache contents are grouped
+	 * @param bool $deprecated Deprecated.
 	 *
 	 * @return bool False if the contents weren't deleted and true on success
 	 */
-	public function delete( $key, $group = 'default', $deprecated = false ) {
-		$key = $this->_key( $key, $group );
+	public function delete($key, $group = 'default', $deprecated = false)
+	{
+		$key = $this->_key($key, $group);
 
-		if ( ! $this->apcu_available || $this->_is_non_persistent_group( $group ) ) {
-			return $this->_delete_np( $key );
+		if (!$this->_apcuAvailable || $this->_is_non_persistent_group($group)) {
+			return $this->_delete_np($key);
 		}
 
-		return $this->_delete( $key );
+		return $this->_delete($key);
+	}
+
+	/**
+	 * Deletes multiple values from the cache in one call.
+	 *
+	 * @param array  $keys  Array of keys to be deleted.
+	 * @param string $group Optional. Where the cache contents are grouped. Default default.
+	 * @return bool[] Array of return values, grouped by key. Each value is either
+	 *                true on success, or false if the contents were not deleted.
+	 */
+	public function delete_multiple(array $keys, $group = 'default')
+	{
+		$values = [];
+
+		foreach ($keys as $key) {
+			$values[$key] = $this->delete($key, $group);
+		}
+
+		return $values;
 	}
 
 	/**
@@ -547,10 +695,10 @@ class WP_Object_Cache {
 	 *
 	 * @return bool False if the contents weren't deleted and true on success
 	 */
-	private function _delete( $key ) {
-		unset( $this->local_cache[ $key ] );
-
-		return apcu_delete( $key );
+	private function _delete($key)
+	{
+		unset($this->_localCache[$key]);
+		return apcu_delete($key);
 	}
 
 	/**
@@ -562,9 +710,10 @@ class WP_Object_Cache {
 	 *
 	 * @return bool False if the contents weren't deleted and true on success
 	 */
-	private function _delete_np( $key ) {
-		if ( array_key_exists( $key, $this->non_persistent_cache ) ) {
-			unset( $this->non_persistent_cache[ $key ] );
+	private function _delete_np($key)
+	{
+		if (array_key_exists($key, $this->_nonPersistentCache)) {
+			unset($this->_nonPersistentCache[$key]);
 
 			return true;
 		}
@@ -579,8 +728,9 @@ class WP_Object_Cache {
 	 *
 	 * @return bool True if cache key exists else false
 	 */
-	private function _exists_np( $key ) {
-		return array_key_exists( $key, $this->non_persistent_cache );
+	private function _exists_np($key)
+	{
+		return array_key_exists($key, $this->_nonPersistentCache);
 	}
 
 	/**
@@ -588,14 +738,33 @@ class WP_Object_Cache {
 	 *
 	 * @return bool Always returns true
 	 */
-	public function flush() {
-		$this->non_persistent_cache = [];
+	public function flush()
+	{
+		$this->_nonPersistentCache = [];
 
-		if ( WP_APCU_LOCAL_CACHE ) {
-			$this->local_cache = [];
+		if (WP_APCU_LOCAL_CACHE) {
+			$this->_localCache = [];
 		}
 
-		if ( $this->apcu_available ) {
+		if ($this->_apcuAvailable) {
+			apcu_clear_cache();
+		}
+
+		return true;
+	}
+
+	/**
+	 * if using local cache clear that else flush all
+	 *
+	 * @return bool Always returns true
+	 */
+	public function flush_runtime()
+	{
+		$this->_nonPersistentCache = [];
+
+		if (WP_APCU_LOCAL_CACHE) {
+			$this->_localCache = [];
+		} elseif ($this->_apcuAvailable) {
 			apcu_clear_cache();
 		}
 
@@ -609,16 +778,17 @@ class WP_Object_Cache {
 	 *
 	 * @return bool
 	 */
-	public function flush_groups( $groups ) {
-		$groups = (array) $groups;
+	public function flush_groups($groups)
+	{
+		$groups = (array)$groups;
 
-		if ( empty( $groups ) ) {
+		if (empty($groups)) {
 			return false;
 		}
 
-		foreach ( $groups as $group ) {
-			$version = $this->_get_group_cache_version( $group );
-			$this->_set_group_cache_version( $group, $version + 1 );
+		foreach ($groups as $group) {
+			$version = $this->_get_group_cache_version($group);
+			$this->_set_group_cache_version($group, $version + 1);
 		}
 
 		return true;
@@ -632,21 +802,22 @@ class WP_Object_Cache {
 	 *
 	 * @return bool
 	 */
-	public function flush_sites( $sites ) {
-		$sites = (array) $sites;
+	public function flush_sites($sites)
+	{
+		$sites = (array)$sites;
 
-		if ( empty( $sites ) ) {
-			$sites = [ $this->blog_prefix ];
+		if (empty($sites)) {
+			$sites = [$this->_blogPrefix];
 		}
 
 		// Add global groups (site 0) to be flushed.
-		if ( ! in_array( 0, $sites, false ) ) {
+		if (!in_array(0, $sites, false)) {
 			$sites[] = 0;
 		}
 
-		foreach ( $sites as $site ) {
-			$version = $this->_get_site_cache_version( $site );
-			$this->_set_site_cache_version( $site, $version + 1 );
+		foreach ($sites as $site) {
+			$version = $this->_get_site_cache_version($site);
+			$this->_set_site_cache_version($site, $version + 1);
 		}
 
 		return true;
@@ -661,26 +832,27 @@ class WP_Object_Cache {
 	 *
 	 * On failure, the number of cache misses will be incremented.
 	 *
-	 * @param int|string  $key   What the contents in the cache are called
-	 * @param string      $group Where the cache contents are grouped
-	 * @param bool        $force Not used.
+	 * @param int|string $key What the contents in the cache are called
+	 * @param string $group Where the cache contents are grouped
+	 * @param bool $force Not used.
 	 * @param bool       &$success
 	 *
 	 * @return bool|mixed False on failure to retrieve contents or the cache contents on success
 	 */
-	public function get( $key, $group = 'default', $force = false, &$success = null ) {
-		$key = $this->_key( $key, $group );
+	public function get($key, $group = 'default', $force = false, &$success = null)
+	{
+		$key = $this->_key($key, $group);
 
-		if ( ! $this->apcu_available || $this->_is_non_persistent_group( $group ) ) {
-			$var = $this->_get_np( $key, $success );
+		if (!$this->_apcuAvailable || $this->_is_non_persistent_group($group)) {
+			$var = $this->_get_np($key, $success);
 		} else {
-			$var = $this->_get( $key, $success );
+			$var = $this->_get($key, $success);
 		}
 
-		if ( $success ) {
-			$this->cache_hits ++;
+		if ($success) {
+			$this->cache_hits++;
 		} else {
-			$this->cache_misses ++;
+			$this->cache_misses++;
 		}
 
 		return $var;
@@ -689,24 +861,25 @@ class WP_Object_Cache {
 	/**
 	 * Retrieves the APCu cache contents, if it exists
 	 *
-	 * @param string  $key What the contents in the cache are called
+	 * @param string $key What the contents in the cache are called
 	 * @param bool   &$success
 	 *
 	 * @return bool|mixed False on failure to retrieve contents or the cache contents on success
 	 */
-	private function _get( $key, &$success = null ) {
-		if ( WP_APCU_LOCAL_CACHE && array_key_exists( $key, $this->local_cache )
+	private function _get($key, &$success = null)
+	{
+		if (WP_APCU_LOCAL_CACHE && array_key_exists($key, $this->_localCache)
 		) {
 			$success = true;
-			$var     = $this->local_cache[ $key ];
+			$var = $this->_localCache[$key];
 		} else {
-			$var = apcu_fetch( $key, $success );
-			if ( $success && WP_APCU_LOCAL_CACHE ) {
-				$this->local_cache[ $key ] = $var;
+			$var = apcu_fetch($key, $success);
+			if ($success && WP_APCU_LOCAL_CACHE) {
+				$this->_localCache[$key] = $var;
 			}
 		}
 
-		if ( is_object( $var ) ) {
+		if (is_object($var)) {
 			$var = clone $var;
 		}
 
@@ -716,20 +889,19 @@ class WP_Object_Cache {
 	/**
 	 * Retrieves the non persistent cache contents, if it exists
 	 *
-	 * @param string  $key What the contents in the cache are called
+	 * @param string $key What the contents in the cache are called
 	 * @param bool   &$success
 	 *
 	 * @return bool|mixed False on failure to retrieve contents or the cache contents on success
 	 */
-	private function _get_np( $key, &$success = null ) {
-		if ( array_key_exists( $key, $this->non_persistent_cache ) ) {
+	private function _get_np($key, &$success = null)
+	{
+		if (array_key_exists($key, $this->_nonPersistentCache)) {
 			$success = true;
-
-			return $this->non_persistent_cache[ $key ];
+			return $this->_nonPersistentCache[$key];
 		}
 
 		$success = false;
-
 		return false;
 	}
 
@@ -740,11 +912,12 @@ class WP_Object_Cache {
 	 *
 	 * @return int cache version
 	 */
-	private function _get_cache_version( $key ) {
-		if ( $this->apcu_available ) {
-			$version = (int) apcu_fetch( $key );
-		} elseif ( array_key_exists( $key, $this->non_persistent_cache ) ) {
-			$version = (int) $this->non_persistent_cache[ $key ];
+	private function _get_cache_version($key)
+	{
+		if ($this->_apcuAvailable) {
+			$version = (int)apcu_fetch($key);
+		} elseif (array_key_exists($key, $this->_nonPersistentCache)) {
+			$version = (int)$this->_nonPersistentCache[$key];
 		} else {
 			$version = 0;
 		}
@@ -755,13 +928,14 @@ class WP_Object_Cache {
 	/**
 	 * Build cache version key
 	 *
-	 * @param string $type  Type of key, for site or group
-	 * @param mixed  $value the group or site id
+	 * @param string $type Type of key, for site or group
+	 * @param mixed $value the group or site id
 	 *
 	 * @return string The key
 	 */
-	private function _get_cache_version_key( $type, $value ) {
-		return WP_APCU_KEY_SALT . ':' . $this->abspath . ':' . $type . ':' . $value;
+	private function _get_cache_version_key($type, $value)
+	{
+		return WP_APCU_KEY_SALT . ':' . $this->_absPath . ':' . $type . ':' . $value;
 	}
 
 	/**
@@ -771,9 +945,10 @@ class WP_Object_Cache {
 	 *
 	 * @return int The group cache version
 	 */
-	private function _get_group_cache_version( $group ) {
-		if ( ! isset( $this->group_versions[ $group ] ) ) {
-			$this->group_versions[ $group ] = $this->_get_cache_version(
+	private function _get_group_cache_version($group)
+	{
+		if (!isset($this->_groupVersions[$group])) {
+			$this->_groupVersions[$group] = $this->_get_cache_version(
 				$this->_get_cache_version_key(
 					'GroupVersion',
 					$group
@@ -781,44 +956,31 @@ class WP_Object_Cache {
 			);
 		}
 
-		return $this->group_versions[ $group ];
+		return $this->_groupVersions[$group];
 	}
+
 
 	/**
-	 * Retrieve multiple values from cache.
+	 * Retrieves multiple values from the cache in one call.
 	 *
-	 * Gets multiple values from cache, including across multiple groups
-	 *
-	 * Usage: array( 'group0' => array( 'key0', 'key1', 'key2', ), 'group1' => array( 'key0' ) )
-	 *
-	 * @param array $groups Array of groups and keys to retrieve
-	 *
-	 * @return array|bool Array of cached values as
-	 *    array( 'group0' => array( 'key0' => 'value0', 'key1' => 'value1', 'key2' => 'value2', ) )
-	 *    Non-existent keys are not returned.
+	 * @param array  $keys  Array of keys under which the cache contents are stored.
+	 * @param string $group Optional. Where the cache contents are grouped. Default 'default'.
+	 * @param bool   $force Optional. Whether to force an update of the local cache
+	 *                      from the persistent cache. Default false.
+	 * @return array Array of return values, grouped by key. Each value is either
+	 *               the cache contents on success, or false on failure.
 	 */
-	public function get_multi( $groups ) {
-		if ( empty( $groups ) || ! is_array( $groups ) ) {
-			return false;
+	public function get_multiple($keys, $group = 'default', $force = false)
+	{
+		$values = [];
+
+		foreach ($keys as $key) {
+			$values[$key] = $this->get($key, $group, $force);
 		}
 
-		$vars    = [];
-		$success = false;
-
-		foreach ( $groups as $group => $keys ) {
-			$vars[ $group ] = [];
-
-			foreach ( $keys as $key ) {
-				$var = $this->get( $key, $group, false, $success );
-
-				if ( $success ) {
-					$vars[ $group ][ $key ] = $var;
-				}
-			}
-		}
-
-		return $vars;
+		return $values;
 	}
+
 
 	/**
 	 * Get the sites cache version
@@ -827,9 +989,10 @@ class WP_Object_Cache {
 	 *
 	 * @return int The site cache version
 	 */
-	private function _get_site_cache_version( $site ) {
-		if ( ! isset( $this->site_versions[ $site ] ) ) {
-			$this->site_versions[ $site ] = $this->_get_cache_version(
+	private function _get_site_cache_version($site)
+	{
+		if (!isset($this->_siteVersions[$site])) {
+			$this->_siteVersions[$site] = $this->_get_cache_version(
 				$this->_get_cache_version_key(
 					'SiteVersion',
 					$site
@@ -837,69 +1000,71 @@ class WP_Object_Cache {
 			);
 		}
 
-		return $this->site_versions[ $site ];
+		return $this->_siteVersions[$site];
 	}
 
 	/**
 	 * Increment numeric cache item's value
 	 *
-	 * @param int|string $key    The cache key to increment
-	 * @param int        $offset The amount by which to increment the item's value. Default is 1.
-	 * @param string     $group  The group the key is in.
+	 * @param int|string $key The cache key to increment
+	 * @param int $offset The amount by which to increment the item's value. Default is 1.
+	 * @param string $group The group the key is in.
 	 *
 	 * @return false|int False on failure, the item's new value on success.
 	 */
-	public function incr( $key, $offset = 1, $group = 'default' ) {
-		$key = $this->_key( $key, $group );
+	public function incr($key, $offset = 1, $group = 'default')
+	{
+		$key = $this->_key($key, $group);
 
-		if ( ! $this->apcu_available || $this->_is_non_persistent_group( $group ) ) {
-			return $this->_incr_np( $key, $offset );
+		if (!$this->_apcuAvailable || $this->_is_non_persistent_group($group)) {
+			return $this->_incr_np($key, $offset);
 		}
 
-		return $this->_incr( $key, $offset );
+		return $this->_incr($key, $offset);
 	}
 
 	/**
 	 * Increment numeric APCu cache item's value
 	 *
-	 * @param string $key    The cache key to increment
-	 * @param int    $offset The amount by which to increment the item's value. Default is 1.
+	 * @param string $key The cache key to increment
+	 * @param int $offset The amount by which to increment the item's value. Default is 1.
 	 *
 	 * @return false|int False on failure, the item's new value on success.
 	 */
-	private function _incr( $key, $offset ) {
-		$this->_get( $key, $success );
-		if ( ! $success ) {
+	private function _incr($key, $offset)
+	{
+		$this->_get($key, $success);
+		if (!$success) {
 			return false;
 		}
 
-		$value = apcu_inc( $key, max( (int) $offset, 0 ) );
-		if ( $value !== false && WP_APCU_LOCAL_CACHE ) {
-			$this->local_cache[ $key ] = $value;
+		$value = apcu_inc($key, max((int)$offset, 0));
+		if ($value !== false && WP_APCU_LOCAL_CACHE) {
+			$this->_localCache[$key] = $value;
 		}
-
 		return $value;
 	}
 
 	/**
 	 * Increment numeric non persistent cache item's value
 	 *
-	 * @param string $key    The cache key to increment
-	 * @param int    $offset The amount by which to increment the item's value. Default is 1.
+	 * @param string $key The cache key to increment
+	 * @param int $offset The amount by which to increment the item's value. Default is 1.
 	 *
 	 * @return false|int False on failure, the item's new value on success.
 	 */
-	private function _incr_np( $key, $offset ) {
-		if ( ! $this->_exists_np( $key ) ) {
+	private function _incr_np($key, $offset)
+	{
+		if (!$this->_exists_np($key)) {
 			return false;
 		}
 
-		$offset = max( (int) $offset, 0 );
-		$var    = $this->_get_np( $key );
-		$var    = is_numeric( $var ) ? $var : 0;
-		$var    += $offset;
+		$offset = max((int)$offset, 0);
+		$var = $this->_get_np($key);
+		$var = is_numeric($var) ? $var : 0;
+		$var += $offset;
 
-		return $this->_set_np( $key, $var );
+		return $this->_set_np($key, $var);
 	}
 
 	/**
@@ -909,128 +1074,154 @@ class WP_Object_Cache {
 	 *
 	 * @return bool True if the group is a non persistent group else false
 	 */
-	private function _is_non_persistent_group( $group ) {
-		return isset( $this->non_persistent_groups[ $group ] );
+	private function _is_non_persistent_group($group)
+	{
+		return isset($this->_nonPersistentGroups[$group]);
 	}
 
 	/**
 	 * Works out a cache key based on a given key and group
 	 *
-	 * @param int|string $key   The key
-	 * @param string     $group The group
+	 * @param int|string $key The key
+	 * @param string $group The group
 	 *
 	 * @return string Returns the calculated cache key
 	 */
-	private function _key( $key, $group ) {
-		if ( empty( $group ) ) {
+	private function _key($key, $group)
+	{
+		if (empty($group)) {
 			$group = 'default';
 		}
 
 		$prefix = 0;
 
-		if ( ! isset( $this->global_groups[ $group ] ) ) {
-			$prefix = $this->blog_prefix;
+		if (!isset($this->_globalGroups[$group])) {
+			$prefix = $this->_blogPrefix;
 		}
 
-		$group_version = $this->_get_group_cache_version( $group );
-		$site_version  = $this->_get_site_cache_version( $prefix );
+		$group_version = $this->_get_group_cache_version($group);
+		$site_version = $this->_get_site_cache_version($prefix);
 
-		return WP_APCU_KEY_SALT . ':' . $this->abspath . ':' . $prefix . ':' . $group . ':' . $key . ':v' . $site_version . '.' . $group_version;
+		return WP_APCU_KEY_SALT . ':' . $this->_absPath . ':' . $prefix . ':' . $group . ':' . $key . ':v' . $site_version . '.' . $group_version;
 	}
 
 	/**
 	 * Replace the contents in the cache, if contents already exist
 	 *
-	 * @param int|string $key   What to call the contents in the cache
-	 * @param mixed      $var   The contents to store in the cache
-	 * @param string     $group Where to group the cache contents
-	 * @param int        $ttl   When to expire the cache contents
+	 * @param int|string $key What to call the contents in the cache
+	 * @param mixed $var The contents to store in the cache
+	 * @param string $group Where to group the cache contents
+	 * @param int $ttl When to expire the cache contents
 	 *
 	 * @return bool False if not exists, true if contents were replaced
 	 */
-	public function replace( $key, $var, $group = 'default', $ttl = 0 ) {
-		$key = $this->_key( $key, $group );
+	public function replace($key, $var, $group = 'default', $ttl = 0)
+	{
+		$key = $this->_key($key, $group);
 
-		if ( ! $this->apcu_available || $this->_is_non_persistent_group( $group ) ) {
-			return $this->_replace_np( $key, $var );
+		if (!$this->_apcuAvailable || $this->_is_non_persistent_group($group)) {
+			return $this->_replace_np($key, $var);
 		}
 
-		return $this->_replace( $key, $var, $ttl );
+		return $this->_replace($key, $var, $ttl);
 	}
 
 	/**
 	 * Replace the contents in the APCu cache, if contents already exist
 	 *
 	 * @param string $key What to call the contents in the cache
-	 * @param mixed  $var The contents to store in the cache
-	 * @param int    $ttl When to expire the cache contents
+	 * @param mixed $var The contents to store in the cache
+	 * @param int $ttl When to expire the cache contents
 	 *
 	 * @return bool False if not exists, true if contents were replaced
 	 */
-	private function _replace( $key, $var, $ttl ) {
-		$this->_get( $key, $success );
-		if ( $success ) {
+	private function _replace($key, $var, $ttl)
+	{
+		$this->_get($key, $success);
+		if ($success) {
 			return false;
 		}
 
-		return $this->_set( $key, $var, $ttl );
+		return $this->_set($key, $var, $ttl);
 	}
 
 	/**
 	 * Replace the contents in the non persistent cache, if contents already exist
 	 *
 	 * @param string $key What to call the contents in the cache
-	 * @param mixed  $var The contents to store in the cache
+	 * @param mixed $var The contents to store in the cache
 	 *
 	 * @return bool False if not exists, true if contents were replaced
 	 */
-	private function _replace_np( $key, $var ) {
-		if ( ! $this->_exists_np( $key ) ) {
+	private function _replace_np($key, $var)
+	{
+		if (!$this->_exists_np($key)) {
 			return false;
 		}
 
-		return $this->_set_np( $key, $var );
+		return $this->_set_np($key, $var);
 	}
 
 	/**
 	 * Sets the data contents into the cache
 	 *
-	 * @param int|string $key   What to call the contents in the cache
-	 * @param mixed      $var   The contents to store in the cache
-	 * @param string     $group Where to group the cache contents
-	 * @param int        $ttl   When the cache data should be expired
+	 * @param int|string $key What to call the contents in the cache
+	 * @param mixed $var The contents to store in the cache
+	 * @param string $group Where to group the cache contents
+	 * @param int $ttl When the cache data should be expired
 	 *
 	 * @return bool True if cache set successfully else false
 	 */
-	public function set( $key, $var, $group = 'default', $ttl = 0 ) {
-		$key = $this->_key( $key, $group );
+	public function set($key, $var, $group = 'default', $ttl = 0)
+	{
+		$key = $this->_key($key, $group);
 
-		if ( ! $this->apcu_available || $this->_is_non_persistent_group( $group ) ) {
-			return $this->_set_np( $key, $var );
+		if (!$this->_apcuAvailable || $this->_is_non_persistent_group($group)) {
+			return $this->_set_np($key, $var);
 		}
 
-		return $this->_set( $key, $var, $ttl );
+		return $this->_set($key, $var, $ttl);
+	}
+
+	/**
+	 * Sets multiple values to the cache in one call.
+	 *
+	 * @param array  $data   Array of key and value to be set.
+	 * @param string $group  Optional. Where the cache contents are grouped. Default default.
+	 * @param int    $ttl    Optional. When to expire the cache contents, in seconds.
+	 *                       Default 0 (no expiration).
+	 * @return bool[] Array of return values, grouped by key. Each value is always true.
+	 */
+	public function set_multiple(array $data, $group = 'default', $ttl = 0)
+	{
+		$values = [];
+
+		foreach ( $data as $key => $var ) {
+			$values[$key] = $this->set($key, $var, $group, $ttl);
+		}
+
+		return $values;
 	}
 
 	/**
 	 * Sets the data contents into the APCu cache
 	 *
 	 * @param string $key What to call the contents in the cache
-	 * @param mixed  $var The contents to store in the cache
-	 * @param int    $ttl When the cache data should be expired
+	 * @param mixed $var The contents to store in the cache
+	 * @param int $ttl When the cache data should be expired
 	 *
 	 * @return bool True if cache set successfully else false
 	 */
-	private function _set( $key, $var, $ttl ) {
-		if ( is_object( $var ) ) {
+	private function _set($key, $var, $ttl)
+	{
+		if (is_object($var)) {
 			$var = clone $var;
 		}
 
-		if ( apcu_store( $key, $var, max( (int) $ttl, 0 ) ) ) {
-			if ( WP_APCU_LOCAL_CACHE ) {
-				$this->local_cache[ $key ] = $var;
+		if (apcu_store($key, $var, max((int)$ttl, 0))) {
+			if (WP_APCU_LOCAL_CACHE) {
+				$this->_localCache[$key] = $var;
 			}
-
 			return true;
 		}
 
@@ -1041,42 +1232,45 @@ class WP_Object_Cache {
 	 * Sets the data contents into the non persistent cache
 	 *
 	 * @param string $key What to call the contents in the cache
-	 * @param mixed  $var The contents to store in the cache
+	 * @param mixed $var The contents to store in the cache
 	 *
 	 * @return bool True if cache set successfully else false
 	 */
-	private function _set_np( $key, $var ) {
-		if ( is_object( $var ) ) {
+	private function _set_np($key, $var)
+	{
+		if (is_object($var)) {
 			$var = clone $var;
 		}
 
-		return $this->non_persistent_cache[ $key ] = $var;
+		return $this->_nonPersistentCache[$key] = $var;
 	}
 
 	/**
 	 * Set the cache version for a given key
 	 *
 	 * @param string $key
-	 * @param int    $version
+	 * @param int $version
 	 *
 	 * @return mixed
 	 */
-	private function _set_cache_version( $key, $version ) {
-		if ( $this->apcu_available ) {
-			return apcu_store( $key, $version );
+	private function _set_cache_version($key, $version)
+	{
+		if ($this->_apcuAvailable) {
+			return apcu_store($key, $version);
 		}
 
-		return $this->non_persistent_cache[ $key ] = $version;
+		return $this->_nonPersistentCache[$key] = $version;
 	}
 
 	/**
 	 * Set the version for a groups cache
 	 *
 	 * @param string $group
-	 * @param int    $version
+	 * @param int $version
 	 */
-	private function _set_group_cache_version( $group, $version ) {
-		$this->_set_cache_version( $this->_get_cache_version_key( 'GroupVersion', $group ), $version );
+	private function _set_group_cache_version($group, $version)
+	{
+		$this->_set_cache_version($this->_get_cache_version_key('GroupVersion', $group), $version);
 	}
 
 	/**
@@ -1085,8 +1279,9 @@ class WP_Object_Cache {
 	 * @param int $site
 	 * @param int $version
 	 */
-	private function _set_site_cache_version( $site, $version ) {
-		$this->_set_cache_version( $this->_get_cache_version_key( 'SiteVersion', $site ), $version );
+	private function _set_site_cache_version($site, $version)
+	{
+		$this->_set_cache_version($this->_get_cache_version_key('SiteVersion', $site), $version);
 	}
 
 	/**
@@ -1096,84 +1291,96 @@ class WP_Object_Cache {
 	 *
 	 * @param int $blog_id Blog ID
 	 */
-	public function switch_to_blog( $blog_id ) {
-		$this->blog_prefix = $this->multi_site ? $blog_id : 1;
+	public function switch_to_blog($blog_id)
+	{
+		$this->_blogPrefix = $this->_multiSite ? $blog_id : 1;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getAbspath() {
-		return $this->abspath;
+	public function getAbsPath()
+	{
+		return $this->_absPath;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function getApcuAvailable() {
-		return $this->apcu_available;
+	public function getApcuAvailable()
+	{
+		return $this->_apcuAvailable;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getBlogPrefix() {
-		return $this->blog_prefix;
+	public function getBlogPrefix()
+	{
+		return $this->_blogPrefix;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getCacheHits() {
+	public function getCacheHits()
+	{
 		return $this->cache_hits;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getCacheMisses() {
+	public function getCacheMisses()
+	{
 		return $this->cache_misses;
 	}
 
 	/**
 	 * @return array
 	 */
-	public function getGlobalGroups() {
-		return $this->global_groups;
+	public function getGlobalGroups()
+	{
+		return $this->_globalGroups;
 	}
 
 	/**
 	 * @return array
 	 */
-	public function getGroupVersions() {
-		return $this->group_versions;
+	public function getGroupVersions()
+	{
+		return $this->_groupVersions;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function getMultiSite() {
-		return $this->multi_site;
+	public function getMultiSite()
+	{
+		return $this->_multiSite;
 	}
 
 	/**
 	 * @return array
 	 */
-	public function getNonPersistentCache() {
-		return $this->non_persistent_cache;
+	public function getNonPersistentCache()
+	{
+		return $this->_nonPersistentCache;
 	}
 
 	/**
 	 * @return array
 	 */
-	public function getNonPersistentGroups() {
-		return $this->non_persistent_groups;
+	public function getNonPersistentGroups()
+	{
+		return $this->_nonPersistentGroups;
 	}
 
 	/**
 	 * @return array
 	 */
-	public function getSiteVersions() {
-		return $this->site_versions;
+	public function getSiteVersions()
+	{
+		return $this->_siteVersions;
 	}
 }
