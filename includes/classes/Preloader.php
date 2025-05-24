@@ -720,7 +720,7 @@ class Preloader {
 		// This will serialize the queue into the DB and fire off the async request
 		$this->cache_preloader->save()->dispatch();
 
-		\PoweredCache\Utils\log( 'Dispatched preload queue in shutdown hook.' );
+		\PoweredCache\Utils\log( 'Dispatched preload queue.' );
 	}
 
 }

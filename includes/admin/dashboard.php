@@ -734,6 +734,7 @@ function cancel_preloading() {
 	\PoweredCache\Utils\log( 'Cancel preload process - Settings toggle' );
 	$cache_preloader = CachePreloader::factory();
 	$cache_preloader->cancel_process();
+	$cache_preloader->delete_all();
 }
 
 /**
@@ -744,6 +745,8 @@ function cancel_preloading() {
 function start_preloading() {
 	\PoweredCache\Utils\log( 'Enable Preloader - Settings toggle' );
 	Preloader::factory()->setup_preload_queue();
+	// kickstart the preloading process
+	Preloader::factory()->dispatch_preload_queue();
 }
 
 /**

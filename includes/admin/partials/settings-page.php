@@ -1698,23 +1698,23 @@ js-(before|after|extra)</pre>
 						</div>
 
 					</div>
-
-					<?php
-					if ( CachePreloader::factory()->is_process_running() ) {
+					<?php if ( $settings['enable_cache_preload'] ) : ?>
+						<?php
 						$batch          = CachePreloader::factory()->get_batches( 1 );
 						$remaining_item = ! empty( $batch[0] ) && $batch[0]->data ? count( $batch[0]->data ) : 0;
-					}
-					?>
-
-					<?php if ( isset( $remaining_item ) ) : ?>
-						<div class="sui-notice sui-notice-warning" style="padding:10px 20px;margin-bottom:0;">
-							<div class="sui-notice-content">
-								<div class="sui-notice-message">
-									<span class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></span>
-									<p><?php echo esc_html( sprintf( __( 'Preloader is currently running. Remaining items: %d (Refresh to see progress)', 'powered-cache' ), $remaining_item ) ); ?></p>
+						?>
+						<?php if ( ! empty( $remaining_item ) ) : ?>
+							<div class="sui-notice sui-notice-warning" style="padding:10px 20px;margin-bottom:0;">
+								<div class="sui-notice-content">
+									<div class="sui-notice-message">
+										<span class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></span>
+										<p>
+											<?php echo esc_html( sprintf( __( 'Preloader is currently running. Remaining items: %d (Refresh to see progress)', 'powered-cache' ), $remaining_item ) ); ?>
+										</p>
+									</div>
 								</div>
 							</div>
-						</div>
+						<?php endif; ?>
 					<?php endif; ?>
 
 					<div class="sui-box-settings-row">
