@@ -153,7 +153,7 @@ class CachePreloader extends Powered_Cache_WP_Background_Process {
 		/**
 		 * Filter the max allowed server load before preloading pauses.
 		 *
-		 * @hook   powered_cache_preload_max_server_load
+		 * @hook   powered_cache_preloader_max_server_load
 		 *
 		 * @param  {float} $default_max_load Default load threshold.
 		 * @param  {array} $load             [1min, 5min, 15min] load averages.
@@ -162,14 +162,14 @@ class CachePreloader extends Powered_Cache_WP_Background_Process {
 		 * @since  3.6
 		 */
 		$max_allowed_load = apply_filters(
-			'powered_cache_preload_max_server_load',
+			'powered_cache_preloader_max_server_load',
 			$default_max_load,
 			$load
 		);
 
 		// Allow setting a custom maximum server load threshold.
-		if ( defined( 'POWERED_CACHE_PRELOAD_MAX_SERVER_LOAD' ) && is_numeric( POWERED_CACHE_PRELOAD_MAX_SERVER_LOAD ) ) {
-			$max_allowed_load = (float) POWERED_CACHE_PRELOAD_MAX_SERVER_LOAD;
+		if ( defined( 'POWERED_CACHE_PRELOADER_MAX_SERVER_LOAD' ) && is_numeric( POWERED_CACHE_PRELOADER_MAX_SERVER_LOAD ) ) {
+			$max_allowed_load = (float) POWERED_CACHE_PRELOADER_MAX_SERVER_LOAD;
 		}
 
 		if ( $should_continue && ( $weighted_load > $max_allowed_load || $load_spike_detected ) ) {
