@@ -96,6 +96,22 @@ if ( ! defined( 'POWERED_CACHE_IS_NETWORK' ) ) {
 	define( 'POWERED_CACHE_IS_NETWORK', $network_activated );
 }
 
+if ( Utils\is_dev_mode_active() ) {
+	DevMode::setup();
+
+	$frontend_request = ! (
+		( function_exists( 'is_admin' ) && is_admin() )
+		|| ( defined( 'DOING_AJAX' ) && DOING_AJAX )
+		|| ( defined( 'DOING_CRON' ) && DOING_CRON )
+		|| ( defined( 'WP_CLI' ) && WP_CLI )
+	);
+
+	// don't run the plugin for frontend requests in dev mode
+	if ( $frontend_request ) {
+		return;
+	}
+}
+
 if ( Utils\bypass_request() ) {
 	return;
 }

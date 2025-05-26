@@ -47,6 +47,12 @@ if ( ! $GLOBALS['powered_cache_options']['enable_page_cache'] ) {
 	return;
 }
 
+if ( ! empty( $GLOBALS['powered_cache_options']['dev_mode'] ) ) {
+	powered_cache_add_cache_miss_header( "Dev mode is enabled" );
+
+	return;
+}
+
 if ( isset( $_GET['nopoweredcache'] ) && $_GET['nopoweredcache'] ) {
 	powered_cache_add_cache_miss_header( "Passing nopoweredcache with the query" );
 
@@ -220,6 +226,12 @@ function powered_cache_page_buffer( $buffer, $flags ) {
 	if ( defined( 'DONOTCACHEPAGE' ) && DONOTCACHEPAGE ) {
 		\PoweredCache\Utils\log( sprintf( 'DONOTCACHEPAGE DEFINED on %s', $_SERVER['REQUEST_URI'] ) );
 		powered_cache_add_cache_miss_header( "DONOTCACHEPAGE defined" );
+
+		return $buffer;
+	}
+
+	if ( ! empty( $GLOBALS['powered_cache_options']['dev_mode'] ) ) {
+		powered_cache_add_cache_miss_header( "Dev mode is enabled" );
 
 		return $buffer;
 	}

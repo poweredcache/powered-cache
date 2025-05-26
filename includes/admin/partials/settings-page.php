@@ -2812,6 +2812,46 @@ js-(before|after|extra)</pre>
 						</div>
 					</div>
 
+					<!-- Developer Mode Toggle -->
+					<div class="sui-box-settings-row">
+						<div class="sui-box-settings-col-1">
+							<span class="sui-settings-label"><?php esc_html_e( 'Development Mode', 'powered-cache' ); ?></span>
+							<span class="sui-description"><?php esc_html_e( 'Temporarily disables caching and optimizations. Useful while making changes to your site.', 'powered-cache' ); ?></span>
+						</div>
+
+						<div class="sui-box-settings-col-2">
+							<div class="sui-form-field">
+								<?php if ( \PoweredCache\Utils\is_dev_mode_active() ) : ?>
+									<button
+										type="submit"
+										name="powered_cache_form_action"
+										value="disable_dev_mode"
+										class="sui-button sui-button-ghost sui-button-green"
+									>
+										<?php esc_html_e( 'Disable Dev Mode', 'powered-cache' ); ?>
+									</button>
+									<p class="sui-description">
+										<?php esc_html_e( 'Development mode is currently active. Caching and optimizations are disabled until turned off.', 'powered-cache' ); ?>
+									</p>
+								<?php else : ?>
+									<button
+										type="submit"
+										name="powered_cache_form_action"
+										value="enable_dev_mode"
+										class="sui-button sui-button-ghost sui-button-red"
+									>
+										<?php esc_html_e( 'Enable Dev Mode', 'powered-cache' ); ?>
+									</button>
+									<p class="sui-description">
+										<?php esc_html_e( 'Temporarily disables caching and optimizations. Useful while making changes to your site.', 'powered-cache' ); ?>
+									</p>
+								<?php endif; ?>
+
+							</div>
+						</div>
+					</div>
+
+
 					<div class="sui-box-settings-row">
 						<div class="sui-box-settings-col-1">
 							<span class="sui-settings-label"><?php esc_html_e( 'Async Cache Cleaning', 'powered-cache' ); ?>

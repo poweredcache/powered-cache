@@ -26,12 +26,14 @@ function setup() {
 		add_action( 'network_admin_notices', __NAMESPACE__ . '\\maybe_display_object_cache_notices' );
 		add_action( 'network_admin_notices', __NAMESPACE__ . '\\maybe_display_htaccess_notice' );
 		add_action( 'network_admin_notices', __NAMESPACE__ . '\\maybe_display_purge_cache_plugin_notice' );
+		add_action( 'admin_notices', __NAMESPACE__ . '\\maybe_display_dev_mode_notice' );
 	} else {
 		add_action( 'admin_notices', __NAMESPACE__ . '\\maybe_display_plugin_compatibility_notices' );
 		add_action( 'admin_notices', __NAMESPACE__ . '\\maybe_display_advanced_cache_notices' );
 		add_action( 'admin_notices', __NAMESPACE__ . '\\maybe_display_object_cache_notices' );
 		add_action( 'admin_notices', __NAMESPACE__ . '\\maybe_display_htaccess_notice' );
 		add_action( 'admin_notices', __NAMESPACE__ . '\\maybe_display_purge_cache_plugin_notice' );
+		add_action( 'admin_notices', __NAMESPACE__ . '\\maybe_display_dev_mode_notice' );
 	}
 
 	add_action( 'activated_plugin', __NAMESPACE__ . '\\observe_plugin_changes', 10, 2 );
@@ -407,4 +409,39 @@ function dismiss_notice() {
 
 	wp_safe_redirect( esc_url_raw( wp_get_referer() ) );
 	exit;
+}
+
+/**
+ * Display a notice when development mode is active
+ *
+ * @return void
+ * @since   3.6
+ * @related \PoweredCache\DevMode
+ */
+function maybe_display_dev_mode_notice() {
+	if ( ! \PoweredCache\Utils\is_dev_mode_active() ) {
+		return;
+	}
+
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+
+	// Only display on Powered Cache settings page
+	$current_screen = get_current_screen();
+
+	if (
+		! $current_screen
+		|| ( ! isset( $current_screen->id ) || false === strpos( $current_screen->id, 'powered-cache' ) )
+	) {
+		return;
+	}
+
+	?>
+	<div class="notice notice-warning is-dismissible">
+		<p><strong><?php esc_html_e( 'Development Mode is active.', 'powered-cache' ); ?></strong>
+			<?php esc_html_e( 'Caching and optimizations are currently disabled. Don’t forget to disable it when done.', 'powered-cache' ); ?>
+		</p>
+	</div>
+	<?php
 }

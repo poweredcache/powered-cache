@@ -157,6 +157,7 @@ function get_settings( $force_network_wide = false ) {
 		// misc
 		'cache_footprint'                  => true,
 		'async_cache_cleaning'             => false,
+		'dev_mode'                         => false,
 		// new options needs to migrate from extensions
 		'enable_google_tracking'           => false,
 		'enable_fb_tracking'               => false,
@@ -1568,4 +1569,22 @@ function is_ip_in_range( $ip, $range ) {
 	$mask_decimal   = - 1 << ( 32 - $bits );
 
 	return ( $subnet_decimal & $mask_decimal ) === ( $ip_decimal & $mask_decimal );
+}
+
+/**
+ * Check if the dev mode is active
+ *
+ * @return bool
+ * @since 3.6
+ */
+function is_dev_mode_active() {
+	// Check global config first (fast)
+	if ( ! empty( $GLOBALS['powered_cache_options']['dev_mode'] ) ) {
+		return true;
+	}
+
+	// Fallback to database option
+	$settings = \PoweredCache\Utils\get_settings();
+
+	return ! empty( $settings['dev_mode'] );
 }

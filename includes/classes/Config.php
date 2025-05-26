@@ -727,7 +727,11 @@ class Config {
 	public function save_configuration( $settings, $network_wide = false ) {
 
 		if ( can_configure_object_cache() ) {
-			$this->setup_object_cache( $settings['object_cache'] );
+			if ( ! empty( $settings['dev_mode'] ) ) {
+				$this->setup_object_cache(); // dev mode, no object cache
+			} else {
+				$this->setup_object_cache( $settings['object_cache'] );
+			}
 		}
 
 		$this->setup_page_cache( $settings['enable_page_cache'] );
