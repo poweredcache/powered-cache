@@ -446,14 +446,14 @@ $cf_api_token = \PoweredCache\Extensions\Cloudflare\Cloudflare::get_cf_api_token
 					<!-- Cookie Vary -->
 					<div class="sui-box-settings-row">
 						<div class="sui-box-settings-col-1">
-							<span class="sui-settings-label" id="rejected_cookies_label"><?php esc_html_e( 'Vary Cookies', 'powered-cache' ); ?></span>
+							<span class="sui-settings-label" id="vary_cookies_label"><?php esc_html_e( 'Vary Cookies', 'powered-cache' ); ?></span>
 						</div>
 
 						<div class="sui-box-settings-col-2">
 							<div class="sui-row">
 								<div class="sui-col-md-8">
 									<div class="sui-form-field">
-										<label for="vary_cookies" id="vary_cookies_label" class="sui-label"><i><?php esc_html_e( 'Enter vary cookies (one per line)', 'powered-cache' ); ?></i></label>
+										<label for="vary_cookies" class="sui-label"><i><?php esc_html_e( 'Enter vary cookies (one per line)', 'powered-cache' ); ?></i></label>
 										<textarea
 												placeholder="(Eg: cookie_notice_accepted)"
 												id="vary_cookies"
