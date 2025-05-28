@@ -551,6 +551,11 @@ class Config {
 			return false;
 		}
 
+		// OPCache invalidate
+		if ( function_exists( 'opcache_invalidate' ) ) {
+			opcache_invalidate( $config_file, true );
+		}
+
 		return true;
 	}
 
