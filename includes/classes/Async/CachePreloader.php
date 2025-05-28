@@ -147,8 +147,8 @@ class CachePreloader extends Powered_Cache_WP_Background_Process {
 		// Consider a spike if 1min load is significantly higher than longer-term averages.
 		$load_spike_detected = ( $load_1min > $load_5min * 2 || $load_5min > $load_15min * 2 );
 
-		// Fallback max load threshold (used if no CPU core info or not desired)
-		$default_max_load = 4.0;
+		// Fallback max load threshold
+		$default_max_load = 16.0;
 
 		/**
 		 * Filter the max allowed server load before preloading pauses.
