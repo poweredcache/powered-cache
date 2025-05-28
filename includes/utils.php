@@ -1088,12 +1088,12 @@ function log( $message ) {
 	 *
 	 * @hook   powered_cache_log_message_type
 	 *
-	 * @param  {null|int} null default message type
+	 * @param  {int} 0 default message type since 3.6
 	 *
-	 * @return {null|int} New value.
+	 * @return {int} New value.
 	 * @since  2.0
 	 */
-	$message_type = apply_filters( 'powered_cache_log_message_type', null );
+	$message_type = apply_filters( 'powered_cache_log_message_type', 0 );
 	$destination  = null;
 
 	if ( defined( 'POWERED_CACHE_LOG_FILE' ) ) {
@@ -1117,6 +1117,8 @@ function log( $message ) {
 	if ( defined( 'POWERED_CACHE_LOG_IP' ) && POWERED_CACHE_LOG_IP !== get_client_ip() ) {
 		return false;
 	}
+
+	$message_type = absint( $message_type );
 
 	return error_log( $log_message, $message_type, $log_destination ); // phpcs:ignore
 }
