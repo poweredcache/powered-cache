@@ -3,7 +3,7 @@ Contributors:  poweredcache, wphandle, skopco, m_uysl
 Tags: cache, web vitals, performance, page speed, optimize
 Requires at least:  5.7
 Tested up to:  6.8
-Stable tag:  3.5.4
+Stable tag:  3.6
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -170,6 +170,17 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 3.6 (May 28, 2025) =
+- [Added] Cache exclusions based on specific referrers.
+- [Added] Dev mode to disable caching and optimizations during development.
+- [Fixed] Table names are now validated before running optimize queries.
+- [Improved] Preloader performance: Now dispatched on shutdown and throttled to avoid high CPU usage.
+- [Updated] Redis object-cache drop-in.
+- [Updated] Memcache object-cache drop-in.
+- [Updated] APCu object-cache drop-in.
+- [Changed] Minimum required PHP version bumped to 7.4.
+- [Updated] Dependency packages.
 
 = 3.5.4 (April 14, 2025) =
 - Dependency updates.
