@@ -10,6 +10,7 @@ namespace PoweredCache;
 use PoweredCache\Async\CachePreloader;
 use function PoweredCache\Utils\permalink_structure_has_trailingslash;
 use function PoweredCache\Utils\site_cache_dir;
+use const PoweredCache\Constants\DEFERRED_PRELOAD_QUEUE_CRON_NAME;
 
 /**
  * Class Preloader
@@ -67,7 +68,7 @@ class Preloader {
 			return;
 		}
 
-		$this->cache_preloader = CachePreloader::factory();
+		$this->get_preloader();
 
 		/**
 		 * Page cache needs to be activated to get benefits of preloading
@@ -80,8 +81,9 @@ class Preloader {
 		add_action( 'admin_post_powered_cache_preload_cache', [ $this, 'start_preload' ] );
 		add_action( 'powered_cache_purge_all_cache', [ $this, 'setup_preload_queue' ] );
 		add_action( 'powered_cache_clean_site_cache_dir', [ $this, 'setup_preload_queue' ] );
-		add_action( 'powered_cache_advanced_cache_purge_post', [ $this, 'add_purged_urls_to_preload_queue' ], 10, 2 );
+		add_action( 'powered_cache_advanced_cache_purge_post', [ $this, 'deferred_preload_queue' ], 10, 2 );
 		add_action( 'powered_cache_expired_files_deleted', [ $this, 'add_expired_urls_to_preload_queue' ], 10, 2 );
+		add_action( DEFERRED_PRELOAD_QUEUE_CRON_NAME, [ $this, 'add_purged_urls_to_preload_queue' ], 10, 2 );
 		add_action( 'shutdown', [ $this, 'dispatch_preload_queue' ], 0 );
 	}
 
@@ -109,6 +111,20 @@ class Preloader {
 				'parent' => 'powered-cache',
 			)
 		);
+	}
+
+
+	/**
+	 * Get the instance of CachePreloader
+	 *
+	 * @return CachePreloader
+	 */
+	private function get_preloader() {
+		if ( ! $this->cache_preloader ) {
+			$this->cache_preloader = CachePreloader::factory();
+		}
+
+		return $this->cache_preloader;
 	}
 
 	/**
@@ -144,12 +160,8 @@ class Preloader {
 	 * Setup preload
 	 */
 	public function setup_preload_queue() {
-		if ( ! $this->cache_preloader ) {
-			$this->cache_preloader = CachePreloader::factory();
-		}
-
 		// cancel existing process before populating
-		$this->cache_preloader->cancel_process();
+		$this->get_preloader()->cancel_process();
 
 		if ( POWERED_CACHE_IS_NETWORK ) {
 			$sites = get_sites( [ 'fields' => 'ids' ] );
@@ -225,6 +237,26 @@ class Preloader {
 		foreach ( $preload_urls as $url ) {
 			$this->add_url_to_preload_queue( $url );
 		}
+	}
+
+	/**
+	 * Add URLs to preload queue with a delay
+	 *
+	 * @param int   $post_id Post ID
+	 * @param array $urls    The URL list of the related pages that will be preloaded
+	 *
+	 * @since 3.6
+	 */
+	public function deferred_preload_queue( $post_id, $urls ) {
+		\PoweredCache\Utils\log( sprintf( 'Post ID %d purged from cache, adding related URLs to preload queue with a delay.', $post_id ) );
+		wp_schedule_single_event(
+			time() + 10,
+			DEFERRED_PRELOAD_QUEUE_CRON_NAME,
+			[
+				'post_id' => $post_id,
+				'urls'    => $urls,
+			]
+		);
 	}
 
 
@@ -693,7 +725,7 @@ class Preloader {
 		$do_preload = apply_filters( 'powered_cache_preload_add_url_to_queue', true, $url );
 
 		if ( $do_preload ) {
-			$this->cache_preloader->push_to_queue( $url );
+			$this->get_preloader()->push_to_queue( $url );
 			$this->queue_dirty = true;
 			\PoweredCache\Utils\log( sprintf( 'URL added to preload queue    : %s', $url ) );
 		} else {
@@ -712,13 +744,8 @@ class Preloader {
 			return;
 		}
 
-		// Make sure our background process instance exists
-		if ( ! $this->cache_preloader ) {
-			$this->cache_preloader = CachePreloader::factory();
-		}
-
 		// This will serialize the queue into the DB and fire off the async request
-		$this->cache_preloader->save()->dispatch();
+		$this->get_preloader()->save()->dispatch();
 
 		\PoweredCache\Utils\log( 'Dispatched preload queue.' );
 	}

@@ -13,6 +13,7 @@ const ICON_BASE64 = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjwhR
 const SETTING_OPTION                      = 'powered_cache_settings';
 const PURGE_CACHE_CRON_NAME               = 'powered_cache_delete_expired_cache';
 const PURGE_FO_CRON_NAME                  = 'powered_cache_delete_expired_min_files'; // file optimizer cron
+const DEFERRED_PRELOAD_QUEUE_CRON_NAME    = 'powered_cache_deferred_preload_queue';
 const POST_META_DISABLE_CACHE_KEY         = 'powered_cache_disable_cache';
 const POST_META_DISABLE_LAZYLOAD_KEY      = 'powered_cache_disable_lazyload';
 const POST_META_DISABLE_CRITICAL_CSS_KEY  = 'powered_cache_disable_critical_css';
