@@ -3,7 +3,7 @@ Contributors:  poweredcache, wphandle, skopco, m_uysl
 Tags: cache, web vitals, performance, page speed, optimize
 Requires at least:  5.7
 Tested up to:  6.8
-Stable tag:  3.6
+Stable tag:  3.6.1
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -170,6 +170,9 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 3.6.1 (May 30, 2025) =
+- [Removed] Logging from page cache drop-in.
 
 = 3.6 (May 28, 2025) =
 - [Added] Cache exclusions based on specific referrers.
