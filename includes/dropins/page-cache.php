@@ -224,7 +224,6 @@ function powered_cache_page_buffer( $buffer, $flags ) {
 	// maybe we shouldn't cache template file has this constant
 	// dont check DONOTCACHEPAGE strictly some plugins define string instead bool flag
 	if ( defined( 'DONOTCACHEPAGE' ) && DONOTCACHEPAGE ) {
-		\PoweredCache\Utils\log( sprintf( 'DONOTCACHEPAGE DEFINED on %s', $_SERVER['REQUEST_URI'] ) );
 		powered_cache_add_cache_miss_header( "DONOTCACHEPAGE defined" );
 
 		return $buffer;
