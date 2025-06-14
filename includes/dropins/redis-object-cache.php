@@ -668,6 +668,31 @@ class WP_Object_Cache {
 	}
 
 	/**
+	 * Removes all cache items in a group.
+	 *
+	 * @param string $group Name of group to remove from cache.
+	 * @return true Always returns true.
+	 */
+	public function flush_group( $group ) {
+		if ( ! $this->_should_use_redis_hashes( $group ) ) {
+			return false;
+		}
+
+		$multisite_safe_group = $this->multisite && ! isset( $this->global_groups[ $group ] ) ? $this->blog_prefix . $group : $group;
+		$redis_safe_group     = $this->_key( '', $group );
+		if ( $this->_should_persist( $group ) ) {
+			$result = $this->_call_redis( 'del', $redis_safe_group );
+			if ( 1 !== $result ) {
+				return false;
+			}
+		} elseif ( ! $this->_should_persist( $group ) && ! isset( $this->cache[ $multisite_safe_group ] ) ) {
+			return false;
+		}
+		unset( $this->cache[ $multisite_safe_group ] );
+		return true;
+	}
+
+	/**
 	 * Retrieves the cache contents, if it exists
 	 *
 	 * The contents will be first attempted to be retrieved by searching by the
