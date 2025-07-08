@@ -68,7 +68,7 @@ class LazyLoad {
 		 * @since  2.0
 		 */
 		if ( apply_filters( 'powered_cache_disable_native_lazyload', self::$settings['disable_wp_lazy_load'] ) ) {
-			add_filter( 'wp_lazy_loading_enabled', '__return_false' );
+			add_filter( 'wp_lazy_loading_enabled', '__return_false', 9999 );
 		}
 
 	}
