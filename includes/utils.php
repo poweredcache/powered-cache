@@ -935,7 +935,7 @@ function delete_page_cache( $url, $delete_subdirectories = false ) {
  */
 function get_url_dir( $url ) {
 	$url_info = wp_parse_url( $url );
-	$sub_dir  = $url_info['host'];
+	$sub_dir  = isset( $url_info['host'] ) ? $url_info['host'] : '';
 
 	if ( ! empty( $url_info['path'] ) ) {
 		$sub_dir .= $url_info['path'];
