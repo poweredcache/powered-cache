@@ -111,6 +111,11 @@ var PCLL = ( function() {
 				PCLL.customEvent( el, 'lazyloaded' );
 			}, false );
 
+			// Remove native lazyload if present
+			if (el.hasAttribute('loading')) {
+				el.removeAttribute('loading');
+			}
+
 			type = el.getAttribute( 'data-lazy-type' );
 
 			if ( 'image' == type ) {
