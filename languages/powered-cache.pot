@@ -2,16 +2,16 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Powered Cache 3.6.2\n"
+"Project-Id-Version: Powered Cache 3.6.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/powered-cache\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-06-14T10:50:58+00:00\n"
+"POT-Creation-Date: 2025-07-23T13:00:43+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.11.0\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: powered-cache\n"
 
 #. Plugin Name of the plugin
@@ -110,6 +110,7 @@ msgid "Settings saved."
 msgstr ""
 
 #: includes/admin/dashboard.php:548
+#, php-format
 msgid "Page cache for %s language has been deleted!"
 msgstr ""
 
@@ -149,54 +150,67 @@ msgid "wp-config.php is writable."
 msgstr ""
 
 #: includes/admin/dashboard.php:796
+#, php-format
 msgid "wp-config.php is not writable. Please make sure the file writable or you can manually define %s constant."
 msgstr ""
 
 #: includes/admin/dashboard.php:809
+#, php-format
 msgid "Cache directory %s is not exist!"
 msgstr ""
 
 #: includes/admin/dashboard.php:811
+#, php-format
 msgid "Cache directory %s is not writeable!"
 msgstr ""
 
 #: includes/admin/dashboard.php:814
+#, php-format
 msgid "Cache directory %s exist and writable!"
 msgstr ""
 
 #: includes/admin/dashboard.php:828
+#, php-format
 msgid ".htaccess file %s is not exist!"
 msgstr ""
 
 #: includes/admin/dashboard.php:830
+#, php-format
 msgid ".htaccess file %s is not writeable!"
 msgstr ""
 
 #: includes/admin/dashboard.php:833
+#, php-format
 msgid ".htaccess file %s exist and writable!"
 msgstr ""
 
 #: includes/admin/dashboard.php:848
+#, php-format
 msgid "Required file for the page caching %s is not exist!"
 msgstr ""
 
 #: includes/admin/dashboard.php:850
+#, php-format
 msgid "Required file for the page caching %s is not writeable!"
 msgstr ""
 
 #: includes/admin/dashboard.php:853
+#, php-format
 msgid "Required file for the page caching %s exist and writable!"
 msgstr ""
 
 #: includes/admin/dashboard.php:868
+#, php-format
 msgid "Required file for the object caching %s is not exist!"
 msgstr ""
 
 #: includes/admin/dashboard.php:870
+#, php-format
 msgid "Required file for the object caching %s is not writeable!"
 msgstr ""
 
 #: includes/admin/dashboard.php:873
+#, php-format
 msgid "Required file for the object caching %s exist and writable!"
 msgstr ""
 
@@ -211,6 +225,7 @@ msgstr ""
 
 #. translators: 1: Number of autoloaded options. 2: Size of autoloaded options.
 #: includes/admin/dashboard.php:918
+#, php-format
 msgid "Your site has %1$s autoloaded options (size: %2$s) in the options table, which could cause your site to be slow. You can reduce the number of autoloaded options by cleaning up your site's options table."
 msgstr ""
 
@@ -228,21 +243,25 @@ msgstr ""
 
 #. translators: %s: Powered Cache settings page URL
 #: includes/admin/notices.php:135
+#, php-format
 msgid "<strong>Powered Cache:</strong> Page caching needs to be activated in order to speed up your website. Please activate it on <a href=\"%s\">settings page</a>"
 msgstr ""
 
 #. translators: %s: WP_CACHE definition
 #: includes/admin/notices.php:164
+#, php-format
 msgid "<code>%s</code> is not found in wp-config.php."
 msgstr ""
 
 #. translators: %s: advanced-cache.php drop-in path
 #: includes/admin/notices.php:169
+#, php-format
 msgid "<code>%s</code> file was edited or deleted. You can recreate the correct configuration files by saving Powered Cache settings."
 msgstr ""
 
 #. translators: %s: page-cache.php drop-in path
 #: includes/admin/notices.php:174
+#, php-format
 msgid "Powered Cache could not access dropin. Please check <code>%s</code> exist and accessible on your server."
 msgstr ""
 
@@ -252,6 +271,7 @@ msgstr ""
 
 #. translators: %s: object cache dropin path
 #: includes/admin/notices.php:237
+#, php-format
 msgid "The object cache file seems missing. Please check <code>%s</code> exist, writable and accessible on your server."
 msgstr ""
 
@@ -263,6 +283,7 @@ msgstr ""
 
 #. translators: %s: object cache dropin path
 #: includes/admin/notices.php:255
+#, php-format
 msgid "The object cache file couldn't be loaded. Please check <code>%s</code> exist and accessible on your server."
 msgstr ""
 
@@ -999,6 +1020,7 @@ msgid "It seems page caching is not activated yet. Page caching needs to be enab
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:1712
+#, php-format
 msgid "Preloader is currently running. Remaining items: %d (Refresh to see progress)"
 msgstr ""
 
@@ -1143,6 +1165,7 @@ msgid "Delete post revisions."
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:2036
+#, php-format
 msgid "%s revisions in database"
 msgstr ""
 
@@ -1155,6 +1178,7 @@ msgid "Delete auto-draft posts."
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:2059
+#, php-format
 msgid "%s auto-draft in database"
 msgstr ""
 
@@ -1167,6 +1191,7 @@ msgid "Permanently delete trashed posts."
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:2082
+#, php-format
 msgid "%s trashed post in database"
 msgstr ""
 
@@ -1183,6 +1208,7 @@ msgid "Comments marked as spam that haven't been deleted yet."
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:2113
+#, php-format
 msgid "%s spam comment in database"
 msgstr ""
 
@@ -1195,6 +1221,7 @@ msgid "Permanently delete trashed comments."
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:2135
+#, php-format
 msgid "%s trashed comment in database"
 msgstr ""
 
@@ -1211,6 +1238,7 @@ msgid "Permanently delete expired transients."
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:2165
+#, php-format
 msgid "%s expired transient in database"
 msgstr ""
 
@@ -1223,6 +1251,7 @@ msgid "Permanently delete all transients."
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:2188
+#, php-format
 msgid "%s transient in database"
 msgstr ""
 
@@ -1239,6 +1268,7 @@ msgid "Reduces overhead of database tables."
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:2219
+#, php-format
 msgid "%s tables to optimize"
 msgstr ""
 
@@ -1524,6 +1554,7 @@ msgid "Choose a JSON(.json) file to import the configuration."
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:3007
+#, php-format
 msgid "Made with <i class=\"sui-icon-heart\"></i> by <a href=\"%s\" rel=\"noopener\" target=\"_blank\">PoweredCache</a>"
 msgstr ""
 
@@ -1655,6 +1686,7 @@ msgstr ""
 
 #. translators: %1$s plugin name,  %2$s conflicted feature name (Eg lazyload)
 #: includes/compat/loader.php:70
+#, php-format
 msgid "It seems %1$s is activated on your site. Powered Cache works perfectly fine with %1$s but you cannot use %2$s functionalities that conflic with %1$s plugin unless you deactivate it."
 msgstr ""
 
