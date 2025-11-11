@@ -4,8 +4,6 @@ release
 vendor
 .idea
 *.log
-includes/classes/Dependencies/*/Tests/
-includes/classes/Dependencies/*/phpunit.xml.dist
 
 # Project Files
 
