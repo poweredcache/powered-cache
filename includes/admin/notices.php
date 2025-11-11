@@ -382,36 +382,52 @@ function maybe_display_purge_cache_plugin_notice() {
 			</p>
 		</div>
 		<script type="text/javascript">
-		(function() {
-			var notices = document.querySelectorAll('.powered-cache-dismissible-notice');
-			notices.forEach(function(notice) {
-				var dismissButtons = notice.querySelectorAll('.notice-dismiss, .powered-cache-dismiss-button');
-				dismissButtons.forEach(function(button) {
-					button.addEventListener('click', function(e) {
-						e.preventDefault();
-						var noticeId = notice.getAttribute('data-notice-id');
-						var nonce = notice.getAttribute('data-nonce');
+			(function() {
+				document.addEventListener('click', function(e) {
+					var button = e.target.closest('.notice-dismiss, .powered-cache-dismiss-button');
+					if (!button) {
+						return;
+					}
 
-						// Send AJAX request
-						var xhr = new XMLHttpRequest();
-						xhr.open('POST', '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>', true);
-						xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-						xhr.onload = function() {
-							if (xhr.status === 200) {
-								// Fade out and remove the notice
-								notice.style.opacity = '1';
-								notice.style.transition = 'opacity 0.3s';
-								notice.style.opacity = '0';
-								setTimeout(function() {
-									notice.remove();
-								}, 300);
+					var notice = button.closest('.powered-cache-dismissible-notice');
+					if (!notice) {
+						return;
+					}
+
+					e.preventDefault();
+
+					var noticeId = notice.getAttribute('data-notice-id');
+					var nonce    = notice.getAttribute('data-nonce');
+
+					if (button.classList.contains('powered-cache-dismiss-button')) {
+						e.preventDefault();
+						notice.style.opacity = '1';
+						notice.style.transition = 'opacity 0.3s';
+						notice.style.opacity = '0';
+
+						setTimeout(function() {
+							if (notice && notice.parentNode) {
+								notice.parentNode.removeChild(notice);
 							}
-						};
-						xhr.send('action=powered_cache_dismiss_notice_ajax&notice=' + encodeURIComponent(noticeId) + '&nonce=' + encodeURIComponent(nonce));
-					});
+						}, 300);
+					}
+
+					var xhr = new XMLHttpRequest();
+					xhr.open('POST', '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>', true);
+					xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+					xhr.onload = function () {
+						if (xhr.status !== 200) {
+							console.error('Dismiss failed');
+						}
+					};
+
+					xhr.send(
+						'action=powered_cache_dismiss_notice_ajax'
+						+ '&notice=' + encodeURIComponent(noticeId)
+						+ '&nonce=' + encodeURIComponent(nonce)
+					);
 				});
-			});
-		})();
+			})();
 		</script>
 		<?php
 	}
@@ -446,17 +462,17 @@ function dismiss_notice() {
  * Dismiss notice via AJAX
  *
  * @return void
- * @since 3.6.4
+ * @since 3.7
  */
 function dismiss_notice_ajax() {
 	check_ajax_referer( 'powered_cache_dismiss_notice_ajax', 'nonce' );
 
 	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_send_json_error( array( 'message' => __( 'Permission denied', 'powered-cache' ) ) );
+		wp_send_json_error( array( 'message' => esc_html__( 'Permission denied', 'powered-cache' ) ) );
 	}
 
 	if ( empty( $_POST['notice'] ) ) {
-		wp_send_json_error( array( 'message' => __( 'Notice ID missing', 'powered-cache' ) ) );
+		wp_send_json_error( array( 'message' => esc_html__( 'Notice ID missing', 'powered-cache' ) ) );
 	}
 
 	$notice = sanitize_text_field( wp_unslash( $_POST['notice'] ) );
@@ -467,7 +483,7 @@ function dismiss_notice_ajax() {
 		delete_transient( $notice );
 	}
 
-	wp_send_json_success( array( 'message' => __( 'Notice dismissed', 'powered-cache' ) ) );
+	wp_send_json_success( array( 'message' => esc_html__( 'Notice dismissed', 'powered-cache' ) ) );
 }
 
 /**
