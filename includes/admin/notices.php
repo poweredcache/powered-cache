@@ -39,6 +39,7 @@ function setup() {
 	add_action( 'activated_plugin', __NAMESPACE__ . '\\observe_plugin_changes', 10, 2 );
 	add_action( 'deactivated_plugin', __NAMESPACE__ . '\\observe_plugin_changes', 10, 2 );
 	add_action( 'admin_post_powered_cache_dismiss_notice', __NAMESPACE__ . '\\dismiss_notice' );
+	add_action( 'wp_ajax_powered_cache_dismiss_notice_ajax', __NAMESPACE__ . '\\dismiss_notice_ajax' );
 }
 
 /**
@@ -364,9 +365,10 @@ function maybe_display_purge_cache_plugin_notice() {
 	}
 
 	if ( $has_notice ) {
-		$message = __( '<strong>Powered Cache:</strong> One or more plugins have been activated or deactivated; consider clearing the cache if these changes impact your site\'s front end.', 'powered-cache' );
+		$message       = __( '<strong>Powered Cache:</strong> One or more plugins have been activated or deactivated; consider clearing the cache if these changes impact your site\'s front end.', 'powered-cache' );
+		$dismiss_nonce = wp_create_nonce( 'powered_cache_dismiss_notice_ajax' );
 		?>
-		<div class="notice notice-warning is-dismissible">
+		<div class="notice notice-warning is-dismissible powered-cache-dismissible-notice" data-notice-id="<?php echo esc_attr( PURGE_CACHE_PLUGIN_NOTICE_TRANSIENT ); ?>" data-nonce="<?php echo esc_attr( $dismiss_nonce ); ?>">
 			<p>
 				<?php echo wp_kses_post( $message ); ?>
 			</p>
@@ -374,14 +376,43 @@ function maybe_display_purge_cache_plugin_notice() {
 				<a href="<?php echo esc_url_raw( $purge_url ); ?>" class="button-primary">
 					<?php esc_html_e( 'Purge Cache', 'powered-cache' ); ?>
 				</a>
-				<a href="<?php echo esc_url_raw( wp_nonce_url( admin_url( 'admin-post.php?action=powered_cache_dismiss_notice&notice=' . PURGE_CACHE_PLUGIN_NOTICE_TRANSIENT ), 'powered_cache_dismiss_notice' ) ); ?>" class="button-secondary">
+				<a href="<?php echo esc_url_raw( wp_nonce_url( admin_url( 'admin-post.php?action=powered_cache_dismiss_notice&notice=' . PURGE_CACHE_PLUGIN_NOTICE_TRANSIENT ), 'powered_cache_dismiss_notice' ) ); ?>" class="button-secondary powered-cache-dismiss-button">
 					<?php esc_html_e( 'Dismiss this notice', 'powered-cache' ); ?>
 				</a>
 			</p>
-			<a href="<?php echo esc_url_raw( wp_nonce_url( admin_url( 'admin-post.php?action=powered_cache_dismiss_notice&notice=' . PURGE_CACHE_PLUGIN_NOTICE_TRANSIENT ), 'powered_cache_dismiss_notice' ) ); ?>" type="button" class="notice-dismiss" style="text-decoration:none;">
-				<span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice', 'powered-cache' ); ?></span>
-			</a>
 		</div>
+		<script type="text/javascript">
+		(function() {
+			var notices = document.querySelectorAll('.powered-cache-dismissible-notice');
+			notices.forEach(function(notice) {
+				var dismissButtons = notice.querySelectorAll('.notice-dismiss, .powered-cache-dismiss-button');
+				dismissButtons.forEach(function(button) {
+					button.addEventListener('click', function(e) {
+						e.preventDefault();
+						var noticeId = notice.getAttribute('data-notice-id');
+						var nonce = notice.getAttribute('data-nonce');
+
+						// Send AJAX request
+						var xhr = new XMLHttpRequest();
+						xhr.open('POST', '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>', true);
+						xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+						xhr.onload = function() {
+							if (xhr.status === 200) {
+								// Fade out and remove the notice
+								notice.style.opacity = '1';
+								notice.style.transition = 'opacity 0.3s';
+								notice.style.opacity = '0';
+								setTimeout(function() {
+									notice.remove();
+								}, 300);
+							}
+						};
+						xhr.send('action=powered_cache_dismiss_notice_ajax&notice=' + encodeURIComponent(noticeId) + '&nonce=' + encodeURIComponent(nonce));
+					});
+				});
+			});
+		})();
+		</script>
 		<?php
 	}
 }
@@ -409,6 +440,34 @@ function dismiss_notice() {
 
 	wp_safe_redirect( esc_url_raw( wp_get_referer() ) );
 	exit;
+}
+
+/**
+ * Dismiss notice via AJAX
+ *
+ * @return void
+ * @since 3.6.4
+ */
+function dismiss_notice_ajax() {
+	check_ajax_referer( 'powered_cache_dismiss_notice_ajax', 'nonce' );
+
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_send_json_error( array( 'message' => __( 'Permission denied', 'powered-cache' ) ) );
+	}
+
+	if ( empty( $_POST['notice'] ) ) {
+		wp_send_json_error( array( 'message' => __( 'Notice ID missing', 'powered-cache' ) ) );
+	}
+
+	$notice = sanitize_text_field( wp_unslash( $_POST['notice'] ) );
+
+	if ( POWERED_CACHE_IS_NETWORK ) {
+		delete_site_transient( $notice );
+	} else {
+		delete_transient( $notice );
+	}
+
+	wp_send_json_success( array( 'message' => __( 'Notice dismissed', 'powered-cache' ) ) );
 }
 
 /**
