@@ -797,11 +797,7 @@ class FileOptimizer {
 		$script_loader .= 'console.log("[Powered Cache] - Script(s) will be loaded with delay or interaction");' . PHP_EOL;
 		$script_loader .= 'window.PCScriptLoaderTimeout=' . absint( $delay_timeout ) . ';' . PHP_EOL;
 
-		$script_loader .= 'Defer.all(\'script[type="pc-delayed-js"]\', 0, true);' . PHP_EOL;
-
-		if ( absint( $delay_timeout ) > 0 ) {
-			$script_loader .= 'Defer.all(\'script[type="pc-delayed-js"]\', window.PCScriptLoaderTimeout, false);' . PHP_EOL;
-		}
+		$script_loader .= 'Defer.all(\'script[type="pc-delayed-js"]\', window.PCScriptLoaderTimeout, true);' . PHP_EOL;
 
 		// Dispatch DOMContentLoaded event after delayed scripts are loaded
 		// This ensures scripts that listen for DOMContentLoaded still execute
