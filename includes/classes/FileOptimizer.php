@@ -802,6 +802,29 @@ class FileOptimizer {
 		if ( absint( $delay_timeout ) > 0 ) {
 			$script_loader .= 'Defer.all(\'script[type="pc-delayed-js"]\', window.PCScriptLoaderTimeout, false);' . PHP_EOL;
 		}
+
+		// Dispatch DOMContentLoaded event after delayed scripts are loaded
+		// This ensures scripts that listen for DOMContentLoaded still execute
+		$script_loader .= '(function(){' . PHP_EOL;
+		$script_loader .= '  var pcDelayedScripts=document.querySelectorAll(\'script[type="pc-delayed-js"]\');' . PHP_EOL;
+		$script_loader .= '  if(pcDelayedScripts.length===0)return;' . PHP_EOL;
+		$script_loader .= '  var pcScriptCount=pcDelayedScripts.length;' . PHP_EOL;
+		$script_loader .= '  var pcCheckInterval=setInterval(function(){' . PHP_EOL;
+		$script_loader .= '    var remaining=document.querySelectorAll(\'script[type="pc-delayed-js"]\').length;' . PHP_EOL;
+		$script_loader .= '    if(remaining===0){' . PHP_EOL;
+		$script_loader .= '      clearInterval(pcCheckInterval);' . PHP_EOL;
+		$script_loader .= '      setTimeout(function(){' . PHP_EOL;
+		$script_loader .= '        if(document.readyState==="complete"||document.readyState==="interactive"){' . PHP_EOL;
+		$script_loader .= '          var event=document.createEvent?document.createEvent("Event"):new Event("DOMContentLoaded");' . PHP_EOL;
+		$script_loader .= '          if(document.createEvent){event.initEvent("DOMContentLoaded",true,true);}' . PHP_EOL;
+		$script_loader .= '          document.dispatchEvent(event);' . PHP_EOL;
+		$script_loader .= '          console.log("[Powered Cache] - DOMContentLoaded event dispatched for "+pcScriptCount+" delayed script(s)");' . PHP_EOL;
+		$script_loader .= '        }' . PHP_EOL;
+		$script_loader .= '      },10);' . PHP_EOL;
+		$script_loader .= '    }' . PHP_EOL;
+		$script_loader .= '  },50);' . PHP_EOL;
+		$script_loader .= '})();' . PHP_EOL;
+
 		$script_loader .= '</script>' . PHP_EOL;
 
 		/**
