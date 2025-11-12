@@ -29,3 +29,6 @@ Thumbs.db
 Desktop.ini
 *.js.map
 *.css.map
+
+# PHPUnit
+.phpunit.result.cache
