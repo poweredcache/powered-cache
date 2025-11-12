@@ -2,6 +2,7 @@ node_modules
 bower_components
 release
 vendor
+includes/classes/Dependencies/**/Tests
 .idea
 *.log
 
@@ -32,3 +33,4 @@ Desktop.ini
 
 # PHPUnit
 .phpunit.result.cache
+coverage.xml
