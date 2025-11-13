@@ -486,9 +486,15 @@ function powered_cache_serve_cache() {
 	}
 
 	// trailingslash check
-	if ( isset( $powered_cache_slash_check ) && $powered_cache_slash_check ) {
+	if ( isset( $powered_cache_slash_check ) ) {
 		$current_path = parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH );
-		if ( ! empty( $current_path ) && '/' !== substr( $current_path, - 1 ) ) {
+		if ( $powered_cache_slash_check && ! empty( $current_path ) && '/' !== substr( $current_path, - 1 ) ) {
+			header( 'X-Powered-Cache: Passing to WordPress' );
+
+			return;
+		}
+
+		if ( ! $powered_cache_slash_check && ! empty( $current_path ) && '/' === substr( $current_path, - 1 ) ) {
 			header( 'X-Powered-Cache: Passing to WordPress' );
 
 			return;
