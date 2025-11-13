@@ -1949,6 +1949,45 @@ js-(before|after|extra)</pre>
 
 					<div class="sui-box-settings-row <?php echo( ! is_premium() ? 'sui-disabled' : '' ); ?>">
 						<div class="sui-box-settings-col-1">
+							<span class="sui-settings-label"><?php esc_html_e( 'LCP Optimization', 'powered-cache' ); ?>
+								<?php if ( ! is_premium() ) : ?>
+									<span class="sui-tag sui-tag-pro"><?php esc_html_e( 'Premium', 'powered-cache' ); ?></span>
+								<?php endif; ?>
+							</span>
+							<span class="sui-description"></span>
+						</div>
+
+						<div class="sui-box-settings-col-2">
+							<div class="sui-form-field">
+								<label for="enable_lcp_optimization" class="sui-toggle">
+									<input
+										type="checkbox"
+										id="enable_lcp_optimization"
+										name="enable_lcp_optimization"
+										value="1"
+										aria-labelledby="enable_lcp_optimization_label"
+										aria-describedby="enable_lcp_optimization_description"
+										<?php checked( $settings['enable_lcp_optimization'], 1 ); ?>
+									>
+									<span class="sui-toggle-slider" aria-hidden="true"></span>
+									<span id="enable_lcp_optimization_label" class="sui-toggle-label">
+										<?php esc_html_e( 'Enable Automatic LCP Optimization', 'powered-cache' ); ?>
+									</span>
+									<span id="enable_lcp_optimization_description" class="sui-description">
+										<?php esc_html_e( 'Automatically detect and preload the Largest Contentful Paint (LCP) image to improve page loading experience.', 'powered-cache' ); ?>
+										<a href="<?php echo esc_url( get_doc_url( '/lcp-optimization/' ) ); ?>" target="_blank" rel="noopener noreferrer">
+											<?php esc_html_e( 'Learn more', 'powered-cache' ); ?>
+										</a>
+									</span>
+								</label>
+							</div>
+						</div>
+
+					</div>
+
+
+					<div class="sui-box-settings-row <?php echo( ! is_premium() ? 'sui-disabled' : '' ); ?>">
+						<div class="sui-box-settings-col-1">
 							<span class="sui-settings-label"><?php esc_html_e( 'Prefetch links', 'powered-cache' ); ?>
 								<?php if ( ! is_premium() ) : ?>
 									<span class="sui-tag sui-tag-pro"><?php esc_html_e( 'Premium', 'powered-cache' ); ?></span>
