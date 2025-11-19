@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Powered Cache 3.6.3\n"
+"Project-Id-Version: Powered Cache 3.7\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/powered-cache\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-07-23T13:00:43+00:00\n"
+"POT-Creation-Date: 2025-11-19T08:06:30+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: powered-cache\n"
@@ -18,7 +18,7 @@ msgstr ""
 #. Author of the plugin
 #: powered-cache.php
 #: includes/admin/dashboard.php:101
-#: includes/admin/dashboard.php:501
+#: includes/admin/dashboard.php:502
 #: includes/admin/partials/settings-page.php:46
 #: includes/classes/MetaBox.php:127
 msgid "Powered Cache"
@@ -41,84 +41,83 @@ msgid "Powered Cache Settings"
 msgstr ""
 
 #: includes/admin/dashboard.php:114
-#: includes/admin/dashboard.php:974
+#: includes/admin/dashboard.php:975
 msgid "Settings"
 msgstr ""
 
-#: includes/admin/dashboard.php:529
+#: includes/admin/dashboard.php:530
 msgid "Image optimizer cache purged successfully!"
 msgstr ""
 
-#: includes/admin/dashboard.php:530
+#: includes/admin/dashboard.php:531
 msgid "Page cache deleted for all websites!"
 msgstr ""
 
-#: includes/admin/dashboard.php:531
+#: includes/admin/dashboard.php:532
 msgid "Page cache deleted successfully!"
 msgstr ""
 
-#: includes/admin/dashboard.php:532
+#: includes/admin/dashboard.php:533
 msgid "Object cache deleted successfully!"
 msgstr ""
 
-#: includes/admin/dashboard.php:533
+#: includes/admin/dashboard.php:534
 msgid "All cached items flushed successfully!"
 msgstr ""
 
-#: includes/admin/dashboard.php:534
+#: includes/admin/dashboard.php:535
 msgid "The cache preloading has been initialized!"
 msgstr ""
 
-#: includes/admin/dashboard.php:535
+#: includes/admin/dashboard.php:536
 msgid "The Critical CSS generation process has been initialized!"
 msgstr ""
 
-#: includes/admin/dashboard.php:536
+#: includes/admin/dashboard.php:537
 msgid "The Critical CSS generation process has been initialized for all sites! This might take a while, depending on the network size."
 msgstr ""
 
-#: includes/admin/dashboard.php:537
+#: includes/admin/dashboard.php:538
 msgid "The UCSS generation process has been initialized!"
 msgstr ""
 
-#: includes/admin/dashboard.php:538
+#: includes/admin/dashboard.php:539
 msgid "The UCSS generation process has been initialized for all sites! This might take a while, depending on the network size."
 msgstr ""
 
-#: includes/admin/dashboard.php:539
+#: includes/admin/dashboard.php:540
 msgid "Cloudflare cache flushed, it can take up to 30 seconds to delete all cache from Cloudflare!"
 msgstr ""
 
-#: includes/admin/dashboard.php:540
+#: includes/admin/dashboard.php:541
 msgid "Settings have been reset!"
 msgstr ""
 
-#: includes/admin/dashboard.php:541
+#: includes/admin/dashboard.php:542
 msgid "Settings have been imported!"
 msgstr ""
 
-#: includes/admin/dashboard.php:542
+#: includes/admin/dashboard.php:543
 msgid "Settings saved and database being optimized..."
 msgstr ""
 
-#: includes/admin/dashboard.php:543
+#: includes/admin/dashboard.php:544
 msgid "Settings have been successfully saved, and all cache has been cleared."
 msgstr ""
 
-#: includes/admin/dashboard.php:544
+#: includes/admin/dashboard.php:545
 msgid "Settings saved."
 msgstr ""
 
-#: includes/admin/dashboard.php:548
+#: includes/admin/dashboard.php:549
 #, php-format
 msgid "Page cache for %s language has been deleted!"
 msgstr ""
 
-#: includes/admin/dashboard.php:552
+#: includes/admin/dashboard.php:553
 msgid "Could not purge image optimizer cache. Please try again later and ensure your license key is activated!"
 msgstr ""
 
-#: includes/admin/dashboard.php:553
 #: includes/admin/dashboard.php:554
 #: includes/admin/dashboard.php:555
 #: includes/admin/dashboard.php:556
@@ -126,193 +125,205 @@ msgstr ""
 #: includes/admin/dashboard.php:558
 #: includes/admin/dashboard.php:559
 #: includes/admin/dashboard.php:560
+#: includes/admin/dashboard.php:561
 msgid "You don't have permission to perform this action!"
 msgstr ""
 
-#: includes/admin/dashboard.php:561
+#: includes/admin/dashboard.php:562
 msgid "Your license key does not seem valid. A valid license is required for the Critical CSS!"
 msgstr ""
 
-#: includes/admin/dashboard.php:562
+#: includes/admin/dashboard.php:563
 msgid "Your license key does not seem valid. A valid license is required for removing unused CSS!"
 msgstr ""
 
-#: includes/admin/dashboard.php:563
+#: includes/admin/dashboard.php:564
 msgid "Could not flush Cloudflare cache. Please make sure you entered the correct credentials and zone id!"
 msgstr ""
 
-#: includes/admin/dashboard.php:605
+#: includes/admin/dashboard.php:606
 msgid "Purge All Cache"
 msgstr ""
 
-#: includes/admin/dashboard.php:794
+#: includes/admin/dashboard.php:795
 msgid "wp-config.php is writable."
 msgstr ""
 
-#: includes/admin/dashboard.php:796
+#: includes/admin/dashboard.php:797
 #, php-format
 msgid "wp-config.php is not writable. Please make sure the file writable or you can manually define %s constant."
 msgstr ""
 
-#: includes/admin/dashboard.php:809
+#: includes/admin/dashboard.php:810
 #, php-format
 msgid "Cache directory %s is not exist!"
 msgstr ""
 
-#: includes/admin/dashboard.php:811
+#: includes/admin/dashboard.php:812
 #, php-format
 msgid "Cache directory %s is not writeable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:814
+#: includes/admin/dashboard.php:815
 #, php-format
 msgid "Cache directory %s exist and writable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:828
+#: includes/admin/dashboard.php:829
 #, php-format
 msgid ".htaccess file %s is not exist!"
 msgstr ""
 
-#: includes/admin/dashboard.php:830
+#: includes/admin/dashboard.php:831
 #, php-format
 msgid ".htaccess file %s is not writeable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:833
+#: includes/admin/dashboard.php:834
 #, php-format
 msgid ".htaccess file %s exist and writable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:848
+#: includes/admin/dashboard.php:849
 #, php-format
 msgid "Required file for the page caching %s is not exist!"
 msgstr ""
 
-#: includes/admin/dashboard.php:850
+#: includes/admin/dashboard.php:851
 #, php-format
 msgid "Required file for the page caching %s is not writeable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:853
+#: includes/admin/dashboard.php:854
 #, php-format
 msgid "Required file for the page caching %s exist and writable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:868
+#: includes/admin/dashboard.php:869
 #, php-format
 msgid "Required file for the object caching %s is not exist!"
 msgstr ""
 
-#: includes/admin/dashboard.php:870
+#: includes/admin/dashboard.php:871
 #, php-format
 msgid "Required file for the object caching %s is not writeable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:873
+#: includes/admin/dashboard.php:874
 #, php-format
 msgid "Required file for the object caching %s exist and writable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:886
-#: includes/admin/dashboard.php:900
+#: includes/admin/dashboard.php:887
+#: includes/admin/dashboard.php:901
 msgid "Invalid request"
 msgstr ""
 
-#: includes/admin/dashboard.php:916
+#: includes/admin/dashboard.php:917
 msgid "Autoloaded options could affect performance:"
 msgstr ""
 
 #. translators: 1: Number of autoloaded options. 2: Size of autoloaded options.
-#: includes/admin/dashboard.php:918
+#: includes/admin/dashboard.php:919
 #, php-format
 msgid "Your site has %1$s autoloaded options (size: %2$s) in the options table, which could cause your site to be slow. You can reduce the number of autoloaded options by cleaning up your site's options table."
 msgstr ""
 
-#: includes/admin/dashboard.php:977
+#: includes/admin/dashboard.php:978
 msgid "Get Premium"
 msgstr ""
 
-#: includes/admin/notices.php:91
+#: includes/admin/notices.php:92
 msgid "The following plugins are not compatible with Powered Cache and may cause unintended results:"
 msgstr ""
 
-#: includes/admin/notices.php:96
+#: includes/admin/notices.php:97
 msgid "Deactivate"
 msgstr ""
 
 #. translators: %s: Powered Cache settings page URL
-#: includes/admin/notices.php:135
+#: includes/admin/notices.php:136
 #, php-format
 msgid "<strong>Powered Cache:</strong> Page caching needs to be activated in order to speed up your website. Please activate it on <a href=\"%s\">settings page</a>"
 msgstr ""
 
 #. translators: %s: WP_CACHE definition
-#: includes/admin/notices.php:164
+#: includes/admin/notices.php:165
 #, php-format
 msgid "<code>%s</code> is not found in wp-config.php."
 msgstr ""
 
 #. translators: %s: advanced-cache.php drop-in path
-#: includes/admin/notices.php:169
+#: includes/admin/notices.php:170
 #, php-format
 msgid "<code>%s</code> file was edited or deleted. You can recreate the correct configuration files by saving Powered Cache settings."
 msgstr ""
 
 #. translators: %s: page-cache.php drop-in path
-#: includes/admin/notices.php:174
+#: includes/admin/notices.php:175
 #, php-format
 msgid "Powered Cache could not access dropin. Please check <code>%s</code> exist and accessible on your server."
 msgstr ""
 
-#: includes/admin/notices.php:195
+#: includes/admin/notices.php:196
 msgid "Page Cache is not working, because:"
 msgstr ""
 
 #. translators: %s: object cache dropin path
-#: includes/admin/notices.php:237
+#: includes/admin/notices.php:238
 #, php-format
 msgid "The object cache file seems missing. Please check <code>%s</code> exist, writable and accessible on your server."
 msgstr ""
 
-#: includes/admin/notices.php:240
-#: includes/admin/notices.php:258
-#: includes/admin/notices.php:318
+#: includes/admin/notices.php:241
+#: includes/admin/notices.php:259
+#: includes/admin/notices.php:319
 msgid "Powered Cache:"
 msgstr ""
 
 #. translators: %s: object cache dropin path
-#: includes/admin/notices.php:255
+#: includes/admin/notices.php:256
 #, php-format
 msgid "The object cache file couldn't be loaded. Please check <code>%s</code> exist and accessible on your server."
 msgstr ""
 
-#: includes/admin/notices.php:306
+#: includes/admin/notices.php:307
 msgid "The <code>.htaccess</code> couldn't be found on your server. Please create a new <code>.htaccess</code> file. (<a href=\"https://wordpress.org/support/article/htaccess/\" target=\"_blank\" rel=\"noopener\">?</a>)"
 msgstr ""
 
-#: includes/admin/notices.php:308
+#: includes/admin/notices.php:309
 msgid "Oh no! It looks <code>.htaccess</code> file is not writable. Please make sure it is writable by the application server. Your website will be much faster when .htaccess is configured for Powered Cache."
 msgstr ""
 
-#: includes/admin/notices.php:367
+#: includes/admin/notices.php:368
 msgid "<strong>Powered Cache:</strong> One or more plugins have been activated or deactivated; consider clearing the cache if these changes impact your site's front end."
 msgstr ""
 
-#: includes/admin/notices.php:375
+#: includes/admin/notices.php:377
 msgid "Purge Cache"
 msgstr ""
 
-#: includes/admin/notices.php:378
-#: includes/admin/notices.php:382
+#: includes/admin/notices.php:380
 msgid "Dismiss this notice"
 msgstr ""
 
-#: includes/admin/notices.php:442
+#: includes/admin/notices.php:471
+msgid "Permission denied"
+msgstr ""
+
+#: includes/admin/notices.php:475
+msgid "Notice ID missing"
+msgstr ""
+
+#: includes/admin/notices.php:486
+msgid "Notice dismissed"
+msgstr ""
+
+#: includes/admin/notices.php:517
 msgid "Development Mode is active."
 msgstr ""
 
-#: includes/admin/notices.php:443
+#: includes/admin/notices.php:518
 msgid "Caching and optimizations are currently disabled. Don’t forget to disable it when done."
 msgstr ""
 
@@ -321,7 +332,7 @@ msgid "Close"
 msgstr ""
 
 #: includes/admin/partials/modals.php:31
-#: includes/admin/partials/settings-page.php:2921
+#: includes/admin/partials/settings-page.php:2960
 msgid "Diagnostic"
 msgstr ""
 
@@ -413,8 +424,8 @@ msgstr ""
 
 #: includes/admin/partials/settings-page.php:150
 #: includes/admin/partials/settings-page.php:172
-#: includes/admin/partials/settings-page.php:2276
-#: includes/admin/partials/settings-page.php:2951
+#: includes/admin/partials/settings-page.php:2315
+#: includes/admin/partials/settings-page.php:2990
 msgid "Learn More"
 msgstr ""
 
@@ -654,8 +665,16 @@ msgstr ""
 msgid "CSS Optimization"
 msgstr ""
 
+#: includes/admin/partials/settings-page.php:734
+msgid "Minify CSS"
+msgstr ""
+
 #: includes/admin/partials/settings-page.php:735
 msgid "Minify CSS files"
+msgstr ""
+
+#: includes/admin/partials/settings-page.php:750
+msgid "Combine CSS files"
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:751
@@ -680,15 +699,20 @@ msgstr ""
 #: includes/admin/partials/settings-page.php:1472
 #: includes/admin/partials/settings-page.php:1839
 #: includes/admin/partials/settings-page.php:1954
-#: includes/admin/partials/settings-page.php:2230
-#: includes/admin/partials/settings-page.php:2616
-#: includes/admin/partials/settings-page.php:2682
-#: includes/admin/partials/settings-page.php:2734
+#: includes/admin/partials/settings-page.php:1993
+#: includes/admin/partials/settings-page.php:2269
+#: includes/admin/partials/settings-page.php:2655
+#: includes/admin/partials/settings-page.php:2721
+#: includes/admin/partials/settings-page.php:2773
 msgid "Premium"
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:785
 msgid "Extract & Inline Critical-path CSS from HTML"
+msgstr ""
+
+#: includes/admin/partials/settings-page.php:802
+msgid " Critical CSS"
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:803
@@ -732,6 +756,7 @@ msgid "Unused CSS"
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:891
+#: includes/admin/partials/settings-page.php:907
 msgid "Remove Unused CSS"
 msgstr ""
 
@@ -1133,452 +1158,468 @@ msgid "The preconnect hint is best used for only the most critical connections."
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:1952
-msgid "Prefetch links"
-msgstr ""
-
-#: includes/admin/partials/settings-page.php:1973
-msgid "Enable link prefetching"
+msgid "LCP Optimization"
 msgstr ""
 
 #: includes/admin/partials/settings-page.php:1974
+msgid "Enable Automatic LCP Optimization"
+msgstr ""
+
+#: includes/admin/partials/settings-page.php:1977
+msgid "Automatically detect and preload the Largest Contentful Paint (LCP) image to improve page loading experience."
+msgstr ""
+
+#: includes/admin/partials/settings-page.php:1979
+msgid "Learn more"
+msgstr ""
+
+#: includes/admin/partials/settings-page.php:1991
+msgid "Prefetch links"
+msgstr ""
+
+#: includes/admin/partials/settings-page.php:2012
+msgid "Enable link prefetching"
+msgstr ""
+
+#: includes/admin/partials/settings-page.php:2013
 msgid "Faster subsequent page-loads by prefetching or prerendering in-viewport links during idle time."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:1996
+#: includes/admin/partials/settings-page.php:2035
 msgid "Database Optimization"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2006
+#: includes/admin/partials/settings-page.php:2045
 msgid "It seems Powered Cache has been enabled on a large multisite network. Cleanup counts might be slightly different from than actual value due to the volume of the sites in the network."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2014
+#: includes/admin/partials/settings-page.php:2053
 msgid "Post Cleanup"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2031
+#: includes/admin/partials/settings-page.php:2070
 msgid "Post Revisions"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2032
+#: includes/admin/partials/settings-page.php:2071
 msgid "Delete post revisions."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2036
+#: includes/admin/partials/settings-page.php:2075
 #, php-format
 msgid "%s revisions in database"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2054
+#: includes/admin/partials/settings-page.php:2093
 msgid "Auto Drafts"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2055
+#: includes/admin/partials/settings-page.php:2094
 msgid "Delete auto-draft posts."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2059
+#: includes/admin/partials/settings-page.php:2098
 #, php-format
 msgid "%s auto-draft in database"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2077
+#: includes/admin/partials/settings-page.php:2116
 msgid "Trashed Posts"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2078
+#: includes/admin/partials/settings-page.php:2117
 msgid "Permanently delete trashed posts."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2082
+#: includes/admin/partials/settings-page.php:2121
 #, php-format
 msgid "%s trashed post in database"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2091
+#: includes/admin/partials/settings-page.php:2130
 msgid "Comments Cleanup"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2108
+#: includes/admin/partials/settings-page.php:2147
 msgid "Spam Comments"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2109
+#: includes/admin/partials/settings-page.php:2148
 msgid "Comments marked as spam that haven't been deleted yet."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2113
+#: includes/admin/partials/settings-page.php:2152
 #, php-format
 msgid "%s spam comment in database"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2130
+#: includes/admin/partials/settings-page.php:2169
 msgid "Trashed Comments"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2131
+#: includes/admin/partials/settings-page.php:2170
 msgid "Permanently delete trashed comments."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2135
+#: includes/admin/partials/settings-page.php:2174
 #, php-format
 msgid "%s trashed comment in database"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2143
+#: includes/admin/partials/settings-page.php:2182
 msgid "Transients Cleanup"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2160
+#: includes/admin/partials/settings-page.php:2199
 msgid "Expired Transients"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2161
+#: includes/admin/partials/settings-page.php:2200
 msgid "Permanently delete expired transients."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2165
+#: includes/admin/partials/settings-page.php:2204
 #, php-format
 msgid "%s expired transient in database"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2183
+#: includes/admin/partials/settings-page.php:2222
 msgid "All Transients"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2184
+#: includes/admin/partials/settings-page.php:2223
 msgid "Permanently delete all transients."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2188
+#: includes/admin/partials/settings-page.php:2227
 #, php-format
 msgid "%s transient in database"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2197
+#: includes/admin/partials/settings-page.php:2236
 msgid "Database Optimize"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2214
+#: includes/admin/partials/settings-page.php:2253
 msgid "Optimize Tables"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2215
+#: includes/admin/partials/settings-page.php:2254
 msgid "Reduces overhead of database tables."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2219
+#: includes/admin/partials/settings-page.php:2258
 #, php-format
 msgid "%s tables to optimize"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2228
+#: includes/admin/partials/settings-page.php:2267
 msgid "Schedule Cleanups"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2234
+#: includes/admin/partials/settings-page.php:2273
 msgid "Schedule Powered Cache to automatically clean your database daily, weekly or monthly."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2251
+#: includes/admin/partials/settings-page.php:2290
 msgid "Enabled scheduled cleanups"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2257
+#: includes/admin/partials/settings-page.php:2296
 msgid "Frequency"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2273
+#: includes/admin/partials/settings-page.php:2312
 msgid "Regular cleanups of your database ensures you’re regularly removing extra bloat which can slow down your host server. Upgrade to Premium to unlock this feature today!"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2288
+#: includes/admin/partials/settings-page.php:2327
 msgid "Save settings and Optimize"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2290
+#: includes/admin/partials/settings-page.php:2329
 msgid "Tip: Make sure you have a current backup before running a cleanup."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2304
+#: includes/admin/partials/settings-page.php:2343
 msgid "Cloudflare"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2318
-#: includes/admin/partials/settings-page.php:2404
-#: includes/admin/partials/settings-page.php:2428
-#: includes/admin/partials/settings-page.php:2491
-#: includes/admin/partials/settings-page.php:2555
-#: includes/admin/partials/settings-page.php:2634
-#: includes/admin/partials/settings-page.php:2698
-#: includes/admin/partials/settings-page.php:2751
+#: includes/admin/partials/settings-page.php:2357
+#: includes/admin/partials/settings-page.php:2443
+#: includes/admin/partials/settings-page.php:2467
+#: includes/admin/partials/settings-page.php:2530
+#: includes/admin/partials/settings-page.php:2594
+#: includes/admin/partials/settings-page.php:2673
+#: includes/admin/partials/settings-page.php:2737
+#: includes/admin/partials/settings-page.php:2790
 msgid "Enable"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2325
+#: includes/admin/partials/settings-page.php:2364
 msgid "Cloudflare extension for PoweredCache. It allows to purge Cloudflare cache within WordPress."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2328
+#: includes/admin/partials/settings-page.php:2367
 msgid "API Token"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2336
+#: includes/admin/partials/settings-page.php:2375
 msgid "Recommended authentication method."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2338
+#: includes/admin/partials/settings-page.php:2377
 msgid "Create a new token"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2340
+#: includes/admin/partials/settings-page.php:2379
 msgid "Or you can enter Cloudflare email and API Key."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2348
+#: includes/admin/partials/settings-page.php:2387
 msgid "Cloudflare Email"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2361
+#: includes/admin/partials/settings-page.php:2400
 msgid "API Key"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2374
+#: includes/admin/partials/settings-page.php:2413
 msgid "Zone ID"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2390
+#: includes/admin/partials/settings-page.php:2429
 msgid "Heartbeat"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2411
+#: includes/admin/partials/settings-page.php:2450
 msgid "Heartbeat extension allows you to manage the frequency of the WordPress Heartbeat API."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2413
+#: includes/admin/partials/settings-page.php:2452
 msgid "Dashboard"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2442
-#: includes/admin/partials/settings-page.php:2506
-#: includes/admin/partials/settings-page.php:2569
+#: includes/admin/partials/settings-page.php:2481
+#: includes/admin/partials/settings-page.php:2545
+#: includes/admin/partials/settings-page.php:2608
 msgid "Disable"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2456
-#: includes/admin/partials/settings-page.php:2521
-#: includes/admin/partials/settings-page.php:2583
+#: includes/admin/partials/settings-page.php:2495
+#: includes/admin/partials/settings-page.php:2560
+#: includes/admin/partials/settings-page.php:2622
 msgid "Modify"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2460
-#: includes/admin/partials/settings-page.php:2588
+#: includes/admin/partials/settings-page.php:2499
+#: includes/admin/partials/settings-page.php:2627
 msgid "Heartbeat Interval for Dashboard"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2475
+#: includes/admin/partials/settings-page.php:2514
 msgid "Post Editor"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2525
+#: includes/admin/partials/settings-page.php:2564
 msgid "Heartbeat Interval for Post Editor"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2540
+#: includes/admin/partials/settings-page.php:2579
 msgid "Frontend"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2613
+#: includes/admin/partials/settings-page.php:2652
 msgid "Varnish"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2643
+#: includes/admin/partials/settings-page.php:2682
 msgid "Purge Varnish cache.It's recommended when you are using the Varnish server."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2648
+#: includes/admin/partials/settings-page.php:2687
 msgid "Varnish IP"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2665
+#: includes/admin/partials/settings-page.php:2704
 msgid "With our premium version of Powered Cache you can use Varnish extension and unlock some other speedbooster features."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2666
-#: includes/admin/partials/settings-page.php:2715
-#: includes/admin/partials/settings-page.php:2768
+#: includes/admin/partials/settings-page.php:2705
+#: includes/admin/partials/settings-page.php:2754
+#: includes/admin/partials/settings-page.php:2807
 msgid "Try Premium today"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2679
+#: includes/admin/partials/settings-page.php:2718
 msgid "Google Tracking"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2707
+#: includes/admin/partials/settings-page.php:2746
 msgid "Powered Cache will host Google scripts on your server to help satisfy the PageSpeed recommendation for leverage browser caching."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2714
-#: includes/admin/partials/settings-page.php:2767
+#: includes/admin/partials/settings-page.php:2753
+#: includes/admin/partials/settings-page.php:2806
 msgid "With our premium version of Powered Cache you can use this extension and unlock some other speedbooster features."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2731
+#: includes/admin/partials/settings-page.php:2770
 msgid "Facebook Tracking"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2760
+#: includes/admin/partials/settings-page.php:2799
 msgid "Powered Cache will host FB js on your server to help satisfy the PageSpeed recommendation for leverage browser caching."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2785
+#: includes/admin/partials/settings-page.php:2824
 msgid "Misc Settings"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2791
+#: includes/admin/partials/settings-page.php:2830
 msgid "Cache Footprint"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2808
+#: includes/admin/partials/settings-page.php:2847
 msgid "Show caching footprints in the HTML output."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2809
+#: includes/admin/partials/settings-page.php:2848
 msgid "Adds helpful information to cached output."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2818
+#: includes/admin/partials/settings-page.php:2857
 msgid "Development Mode"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2819
-#: includes/admin/partials/settings-page.php:2846
+#: includes/admin/partials/settings-page.php:2858
+#: includes/admin/partials/settings-page.php:2885
 msgid "Temporarily disables caching and optimizations. Useful while making changes to your site."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2831
+#: includes/admin/partials/settings-page.php:2870
 #: includes/classes/DevMode.php:55
 msgid "Disable Dev Mode"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2834
+#: includes/admin/partials/settings-page.php:2873
 msgid "Development mode is currently active. Caching and optimizations are disabled until turned off."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2843
+#: includes/admin/partials/settings-page.php:2882
 msgid "Enable Dev Mode"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2857
+#: includes/admin/partials/settings-page.php:2896
 msgid "Async Cache Cleaning"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2858
+#: includes/admin/partials/settings-page.php:2897
 msgid "Experimental"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2877
+#: includes/admin/partials/settings-page.php:2916
 msgid "Enable async cache clean-up."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2878
+#: includes/admin/partials/settings-page.php:2917
 msgid "On large sites, it might take a longer time to perform cache purging actions. This option allows performing clean-up tasks in async background processes."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2879
+#: includes/admin/partials/settings-page.php:2918
 msgid "This is an experimental feature, use it wisely. It might conflict with preloading functionality since both features work in the background."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2890
+#: includes/admin/partials/settings-page.php:2929
 msgid "Download Configuration"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2896
+#: includes/admin/partials/settings-page.php:2935
 msgid ".htaccess configuration"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2897
+#: includes/admin/partials/settings-page.php:2936
 msgid "nginx configuration"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2905
+#: includes/admin/partials/settings-page.php:2944
 msgid "Reset All Settings"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2906
+#: includes/admin/partials/settings-page.php:2945
 msgid "Fabric reset to plugin configuration"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2912
+#: includes/admin/partials/settings-page.php:2951
 msgid "Reset Settings"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2922
+#: includes/admin/partials/settings-page.php:2961
 msgid "Configuration checker for caching"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2927
+#: includes/admin/partials/settings-page.php:2966
 msgid "Run Diagnostic"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2936
+#: includes/admin/partials/settings-page.php:2975
 msgid "Export"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2942
+#: includes/admin/partials/settings-page.php:2981
 msgid "Download Settings"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2949
+#: includes/admin/partials/settings-page.php:2988
 msgid "Please note:"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2950
+#: includes/admin/partials/settings-page.php:2989
 msgid "Due to the sensitive nature of Cloudflare API credentials, they will not be included in the exported settings file."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2963
+#: includes/admin/partials/settings-page.php:3002
 msgid "Import"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2973
+#: includes/admin/partials/settings-page.php:3012
 msgid "Upload file"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2983
+#: includes/admin/partials/settings-page.php:3022
 msgid "Upload and Import"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:2987
+#: includes/admin/partials/settings-page.php:3026
 msgid "Choose a JSON(.json) file to import the configuration."
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:3007
+#: includes/admin/partials/settings-page.php:3046
 #, php-format
 msgid "Made with <i class=\"sui-icon-heart\"></i> by <a href=\"%s\" rel=\"noopener\" target=\"_blank\">PoweredCache</a>"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:3017
+#: includes/admin/partials/settings-page.php:3056
 msgid "FAQ"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:3018
+#: includes/admin/partials/settings-page.php:3057
 msgid "Blog"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:3019
+#: includes/admin/partials/settings-page.php:3058
 msgid "Changelog"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:3020
+#: includes/admin/partials/settings-page.php:3059
 msgid "Support"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:3027
+#: includes/admin/partials/settings-page.php:3066
 msgid "Facebook"
 msgstr ""
 
-#: includes/admin/partials/settings-page.php:3031
+#: includes/admin/partials/settings-page.php:3070
 msgid "Twitter"
 msgstr ""
 
@@ -1711,46 +1752,46 @@ msgstr ""
 msgid "All languages"
 msgstr ""
 
-#: includes/utils.php:378
+#: includes/utils.php:379
 msgid "Blocking – (default)"
 msgstr ""
 
-#: includes/utils.php:379
+#: includes/utils.php:380
 msgid "Non-blocking using async"
 msgstr ""
 
-#: includes/utils.php:380
+#: includes/utils.php:381
 msgid "Non-blocking using defer"
 msgstr ""
 
-#: includes/utils.php:381
+#: includes/utils.php:382
 msgid "Delayed for user interaction"
 msgstr ""
 
-#: includes/utils.php:406
+#: includes/utils.php:407
 msgid "All files"
 msgstr ""
 
-#: includes/utils.php:407
+#: includes/utils.php:408
 msgid "Images"
 msgstr ""
 
-#: includes/utils.php:408
+#: includes/utils.php:409
 msgid "JavaScript"
 msgstr ""
 
-#: includes/utils.php:409
+#: includes/utils.php:410
 msgid "CSS"
 msgstr ""
 
-#: includes/utils.php:445
+#: includes/utils.php:446
 msgid "Daily"
 msgstr ""
 
-#: includes/utils.php:446
+#: includes/utils.php:447
 msgid "Weekly"
 msgstr ""
 
-#: includes/utils.php:447
+#: includes/utils.php:448
 msgid "Monthly"
 msgstr ""
