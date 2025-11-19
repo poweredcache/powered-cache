@@ -2,8 +2,8 @@
 Contributors:  poweredcache, wphandle, skopco, m_uysl
 Tags: cache, web vitals, performance, page speed, optimize
 Requires at least:  5.7
-Tested up to:  6.8
-Stable tag:  3.6.3
+Tested up to:  6.9
+Stable tag:  3.7
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -170,6 +170,16 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 3.7 (November 19, 2025) =
+- [Improved] Cache purge dimissing - via ajaxified.
+- [Improved] Delayed JS dependency chain resolution for better performance and reliability.
+- [Improved] Delayed JS execution now supports DOMContentLoaded.
+- [Updated] Defer.js to 3.9.0
+- [Updated] Redis drop-in for object cahce.
+- [Updated] Dependencies.
+- [Fixed] Missing i18n text-domains for some strings.
+- Tested with WP 6.9
 
 = 3.6.3 (July 23, 2025) =
 - [Improved] Removed the `loading` attribute from the first *n* elements for better compatibility and performance. [#157](https://github.com/poweredcache/powered-cache/issues/157)
