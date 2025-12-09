@@ -113,7 +113,7 @@ class Config {
 		$string  = '<?php ' . "\n";
 		$string .= "defined( 'ABSPATH' ) || exit;" . PHP_EOL;
 		$string .= "define( 'POWERED_OBJECT_CACHE', true );" . PHP_EOL;
-		$string .= "if ( ! defined( 'WP_CACHE_KEY_SALT' ) ) {" . PHP_EOL;
+		$string .= "if ( ! defined( 'WP_CACHE_KEY_SALT' ) && defined( 'DB_NAME') ) {" . PHP_EOL;
 		$string .= "\t" . "define( 'WP_CACHE_KEY_SALT', DB_NAME );" . PHP_EOL;
 		$string .= '}' . PHP_EOL;
 
