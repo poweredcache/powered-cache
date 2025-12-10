@@ -125,7 +125,7 @@ class Config {
 		$string .= "\t" . 'include( \'' . $object_caches[ $backend ] . '\' );' . PHP_EOL;
 		$string .= '} else {' . PHP_EOL;
 		$string .= "\t" . 'define( \'POWERED_OBJECT_CACHE_HAS_PROBLEM\', true );' . PHP_EOL;
-		$string .= '}';
+		$string .= '}'.PHP_EOL;
 
 		/**
 		 * Filters object-cache.php file contents.
