@@ -62,10 +62,15 @@ if ( isset( $_GET['nopoweredcache'] ) && $_GET['nopoweredcache'] ) {
 // Don't cache page with these user agents
 if ( isset( $powered_cache_rejected_user_agents ) && ! empty( $powered_cache_rejected_user_agents ) ) {
 	$rejected_user_agents = implode( '|', $powered_cache_rejected_user_agents );
-	if ( ! empty( $rejected_user_agents ) && isset( $_SERVER['HTTP_USER_AGENT'] ) && @preg_match( '#(' . $rejected_user_agents . ')#', $_SERVER['HTTP_USER_AGENT'] ) ) {
-		powered_cache_add_cache_miss_header( "Rejected user agent" );
+	if ( ! empty( $rejected_user_agents ) && isset( $_SERVER['HTTP_USER_AGENT'] ) ) {
+		// Validate regex pattern before using it
+		$pattern = '#(' . $rejected_user_agents . ')#';
+		@preg_match( $pattern, '' );
+		if ( PREG_NO_ERROR === preg_last_error() && preg_match( $pattern, $_SERVER['HTTP_USER_AGENT'] ) ) {
+			powered_cache_add_cache_miss_header( "Rejected user agent" );
 
-		return;
+			return;
+		}
 	}
 }
 
@@ -150,7 +155,10 @@ if ( ! empty( $_COOKIE ) ) {
 	if ( ! empty( $powered_cache_rejected_cookies ) ) {
 		$rejected_cookies = array_diff( $powered_cache_rejected_cookies, $wp_cookies, $comment_cookies, ['powered_cache_commented_posts'] );
 		$rejected_cookies = implode( '|', $rejected_cookies );
-		if ( @preg_match( '#(' . $rejected_cookies . ')#', var_export( $_COOKIE, true ) ) ) {
+		// Validate regex pattern before using it
+		$pattern = '#(' . $rejected_cookies . ')#';
+		@preg_match( $pattern, '' );
+		if ( PREG_NO_ERROR === preg_last_error() && preg_match( $pattern, var_export( $_COOKIE, true ) ) ) {
 			powered_cache_add_cache_miss_header( "Rejected cookie" );
 			return;
 		}
@@ -173,7 +181,10 @@ if ( ! empty( $powered_cache_rejected_uri ) ) {
 			continue;
 		}
 
-		if ( @preg_match( '#^(' . $exception . ')$#', $_SERVER['REQUEST_URI'] ) ) {
+		// Validate regex pattern before using it
+		$pattern = '#^(' . $exception . ')$#';
+		@preg_match( $pattern, '' );
+		if ( PREG_NO_ERROR === preg_last_error() && preg_match( $pattern, $_SERVER['REQUEST_URI'] ) ) {
 			powered_cache_add_cache_miss_header( "Rejected page" );
 
 			return;
