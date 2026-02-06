@@ -173,7 +173,7 @@ if ( ! empty( $powered_cache_rejected_uri ) ) {
 			continue;
 		}
 
-		if ( preg_match( '#^(' . $exception . ')$#', $_SERVER['REQUEST_URI'] ) ) {
+		if ( @preg_match( '#^(' . $exception . ')$#', $_SERVER['REQUEST_URI'] ) ) {
 			powered_cache_add_cache_miss_header( "Rejected page" );
 
 			return;
