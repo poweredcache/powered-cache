@@ -138,10 +138,21 @@ class API {
 		}
 
 		$response = wp_remote_request( $url, $args );
+		if ( is_wp_error( $response ) ) {
+			\PoweredCache\Utils\log( sprintf( 'Cloudflare API Error: %s', $response->get_error_message() ) );
 
-		\PoweredCache\Utils\log( sprintf( 'Cloudflare API Response: %s', print_r( wp_remote_retrieve_body( $response ), true ) ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+			return [];
+		}
 
-		return json_decode( wp_remote_retrieve_body( $response ), true );
+		$response_body = wp_remote_retrieve_body( $response );
+		\PoweredCache\Utils\log( sprintf( 'Cloudflare API Response: %s', print_r( $response_body, true ) ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+
+		$decoded_response = json_decode( $response_body, true );
+		if ( ! is_array( $decoded_response ) ) {
+			return [];
+		}
+
+		return $decoded_response;
 	}
 
 	/**

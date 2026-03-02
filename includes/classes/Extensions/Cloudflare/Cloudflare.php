@@ -121,7 +121,8 @@ class Cloudflare {
 	 * Delete CF cache when it triggered from admin menu
 	 */
 	public function delete_cloudflare_cache() {
-		if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'powered_cache_purge_cf_cache' ) ) { // phpcs:ignore
+		$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, 'powered_cache_purge_cf_cache' ) ) {
 			wp_nonce_ays( '' );
 		}
 

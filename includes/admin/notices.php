@@ -440,7 +440,8 @@ function maybe_display_purge_cache_plugin_notice() {
  * @since 3.2
  */
 function dismiss_notice() {
-	if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), 'powered_cache_dismiss_notice' ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+	$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
+	if ( ! wp_verify_nonce( $nonce, 'powered_cache_dismiss_notice' ) ) {
 		wp_nonce_ays( '' );
 	}
 

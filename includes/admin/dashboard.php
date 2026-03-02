@@ -617,7 +617,8 @@ function purge_all_admin_bar_menu( $wp_admin_bar ) {
  */
 function purge_all_cache_action() {
 
-	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'powered_cache_purge_all_cache' ) ) { // phpcs:ignore
+	$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
+	if ( ! wp_verify_nonce( $nonce, 'powered_cache_purge_all_cache' ) ) {
 		wp_nonce_ays( '' );
 	}
 
@@ -687,7 +688,8 @@ function purge_all_cache( $settings = array() ) {
  * @since 1.1
  */
 function download_rewrite_config() {
-	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'powered_cache_download_rewrite' ) ) { // phpcs:ignore
+	$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
+	if ( ! wp_verify_nonce( $nonce, 'powered_cache_download_rewrite' ) ) {
 		wp_nonce_ays( '' );
 	}
 
@@ -940,7 +942,8 @@ function check_alloptions() {
  * @since 1.0
  */
 function deactivate_plugin() {
-	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'deactivate_plugin' ) ) { // phpcs:ignore
+	$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
+	if ( ! wp_verify_nonce( $nonce, 'deactivate_plugin' ) ) {
 		wp_nonce_ays( '' );
 	}
 
