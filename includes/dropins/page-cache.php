@@ -63,10 +63,21 @@ if ( isset( $_GET['nopoweredcache'] ) && $_GET['nopoweredcache'] ) {
 if ( isset( $powered_cache_rejected_user_agents ) && ! empty( $powered_cache_rejected_user_agents ) ) {
 	$rejected_user_agents = implode( '|', $powered_cache_rejected_user_agents );
 	if ( ! empty( $rejected_user_agents ) && isset( $_SERVER['HTTP_USER_AGENT'] ) ) {
-		// Validate regex pattern before using it
-		$pattern = '#(' . $rejected_user_agents . ')#';
-		@preg_match( $pattern, '' );
-		if ( PREG_NO_ERROR === preg_last_error() && preg_match( $pattern, $_SERVER['HTTP_USER_AGENT'] ) ) {
+		$pattern        = '#(' . $rejected_user_agents . ')#';
+		$error_occurred = false;
+
+		set_error_handler(
+			function () use ( &$error_occurred ) {
+				$error_occurred = true;
+			},
+			E_WARNING
+		);
+
+		$match = preg_match( $pattern, $_SERVER['HTTP_USER_AGENT'] );
+
+		restore_error_handler();
+
+		if ( ! $error_occurred && $match ) {
 			powered_cache_add_cache_miss_header( "Rejected user agent" );
 
 			return;
@@ -155,10 +166,21 @@ if ( ! empty( $_COOKIE ) ) {
 	if ( ! empty( $powered_cache_rejected_cookies ) ) {
 		$rejected_cookies = array_diff( $powered_cache_rejected_cookies, $wp_cookies, $comment_cookies, ['powered_cache_commented_posts'] );
 		$rejected_cookies = implode( '|', $rejected_cookies );
-		// Validate regex pattern before using it
-		$pattern = '#(' . $rejected_cookies . ')#';
-		@preg_match( $pattern, '' );
-		if ( PREG_NO_ERROR === preg_last_error() && preg_match( $pattern, var_export( $_COOKIE, true ) ) ) {
+		$pattern          = '#(' . $rejected_cookies . ')#';
+		$error_occurred   = false;
+
+		set_error_handler(
+			function () use ( &$error_occurred ) {
+				$error_occurred = true;
+			},
+			E_WARNING
+		);
+
+		$match = preg_match( $pattern, var_export( $_COOKIE, true ) );
+
+		restore_error_handler();
+
+		if ( ! $error_occurred && $match ) {
 			powered_cache_add_cache_miss_header( "Rejected cookie" );
 			return;
 		}
@@ -181,10 +203,21 @@ if ( ! empty( $powered_cache_rejected_uri ) ) {
 			continue;
 		}
 
-		// Validate regex pattern before using it
-		$pattern = '#^(' . $exception . ')$#';
-		@preg_match( $pattern, '' );
-		if ( PREG_NO_ERROR === preg_last_error() && preg_match( $pattern, $_SERVER['REQUEST_URI'] ) ) {
+		$pattern        = '#^(' . $exception . ')$#';
+		$error_occurred = false;
+
+		set_error_handler(
+			function () use ( &$error_occurred ) {
+				$error_occurred = true;
+			},
+			E_WARNING
+		);
+
+		$match = preg_match( $pattern, $_SERVER['REQUEST_URI'] );
+
+		restore_error_handler();
+
+		if ( ! $error_occurred && $match ) {
 			powered_cache_add_cache_miss_header( "Rejected page" );
 
 			return;
