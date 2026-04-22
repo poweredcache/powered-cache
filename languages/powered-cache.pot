@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Powered Cache 3.7.2\n"
+"Project-Id-Version: Powered Cache 3.7.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/powered-cache\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-02-02T14:36:26+00:00\n"
+"POT-Creation-Date: 2026-04-22T17:45:34+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: powered-cache\n"
@@ -41,7 +41,7 @@ msgid "Powered Cache Settings"
 msgstr ""
 
 #: includes/admin/dashboard.php:114
-#: includes/admin/dashboard.php:975
+#: includes/admin/dashboard.php:978
 msgid "Settings"
 msgstr ""
 
@@ -145,91 +145,91 @@ msgstr ""
 msgid "Purge All Cache"
 msgstr ""
 
-#: includes/admin/dashboard.php:795
+#: includes/admin/dashboard.php:797
 msgid "wp-config.php is writable."
 msgstr ""
 
-#: includes/admin/dashboard.php:797
+#: includes/admin/dashboard.php:799
 #, php-format
 msgid "wp-config.php is not writable. Please make sure the file writable or you can manually define %s constant."
 msgstr ""
 
-#: includes/admin/dashboard.php:810
+#: includes/admin/dashboard.php:812
 #, php-format
 msgid "Cache directory %s is not exist!"
 msgstr ""
 
-#: includes/admin/dashboard.php:812
+#: includes/admin/dashboard.php:814
 #, php-format
 msgid "Cache directory %s is not writeable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:815
+#: includes/admin/dashboard.php:817
 #, php-format
 msgid "Cache directory %s exist and writable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:829
+#: includes/admin/dashboard.php:831
 #, php-format
 msgid ".htaccess file %s is not exist!"
 msgstr ""
 
-#: includes/admin/dashboard.php:831
+#: includes/admin/dashboard.php:833
 #, php-format
 msgid ".htaccess file %s is not writeable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:834
+#: includes/admin/dashboard.php:836
 #, php-format
 msgid ".htaccess file %s exist and writable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:849
+#: includes/admin/dashboard.php:851
 #, php-format
 msgid "Required file for the page caching %s is not exist!"
 msgstr ""
 
-#: includes/admin/dashboard.php:851
+#: includes/admin/dashboard.php:853
 #, php-format
 msgid "Required file for the page caching %s is not writeable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:854
+#: includes/admin/dashboard.php:856
 #, php-format
 msgid "Required file for the page caching %s exist and writable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:869
+#: includes/admin/dashboard.php:871
 #, php-format
 msgid "Required file for the object caching %s is not exist!"
 msgstr ""
 
-#: includes/admin/dashboard.php:871
+#: includes/admin/dashboard.php:873
 #, php-format
 msgid "Required file for the object caching %s is not writeable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:874
+#: includes/admin/dashboard.php:876
 #, php-format
 msgid "Required file for the object caching %s exist and writable!"
 msgstr ""
 
-#: includes/admin/dashboard.php:887
-#: includes/admin/dashboard.php:901
+#: includes/admin/dashboard.php:889
+#: includes/admin/dashboard.php:903
 msgid "Invalid request"
 msgstr ""
 
-#: includes/admin/dashboard.php:917
+#: includes/admin/dashboard.php:919
 msgid "Autoloaded options could affect performance:"
 msgstr ""
 
 #. translators: 1: Number of autoloaded options. 2: Size of autoloaded options.
-#: includes/admin/dashboard.php:919
+#: includes/admin/dashboard.php:921
 #, php-format
 msgid "Your site has %1$s autoloaded options (size: %2$s) in the options table, which could cause your site to be slow. You can reduce the number of autoloaded options by cleaning up your site's options table."
 msgstr ""
 
-#: includes/admin/dashboard.php:978
+#: includes/admin/dashboard.php:981
 msgid "Get Premium"
 msgstr ""
 
@@ -307,23 +307,23 @@ msgstr ""
 msgid "Dismiss this notice"
 msgstr ""
 
-#: includes/admin/notices.php:471
+#: includes/admin/notices.php:472
 msgid "Permission denied"
 msgstr ""
 
-#: includes/admin/notices.php:475
+#: includes/admin/notices.php:476
 msgid "Notice ID missing"
 msgstr ""
 
-#: includes/admin/notices.php:486
+#: includes/admin/notices.php:487
 msgid "Notice dismissed"
 msgstr ""
 
-#: includes/admin/notices.php:517
+#: includes/admin/notices.php:518
 msgid "Development Mode is active."
 msgstr ""
 
-#: includes/admin/notices.php:518
+#: includes/admin/notices.php:519
 msgid "Caching and optimizations are currently disabled. Don’t forget to disable it when done."
 msgstr ""
 
