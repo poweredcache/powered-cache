@@ -19,6 +19,8 @@ class Util_Tests extends Base\TestCase {
 		];
 
 	public function setUp(): void {
+		parent::setUp();
+
 		// Create a temporary directory for testing
 		$this->tempDir = sys_get_temp_dir() . '/powered-cache-tests';
 		mkdir( $this->tempDir );

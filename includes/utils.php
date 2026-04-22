@@ -1409,6 +1409,9 @@ function powered_cache_is_mobile() {
  */
 function is_local_site() {
 	$site_url = site_url();
+	if ( ! is_string( $site_url ) ) {
+		$site_url = '';
+	}
 
 	// Check for localhost and sites using an IP only first.
 	$is_local = $site_url && false === strpos( $site_url, '.' );

@@ -155,7 +155,7 @@ class CDN {
 			return $contents;
 		}
 
-		$included_file_extensions_regex = quotemeta( implode( '|', self::get_file_extensions() ) );
+		$included_file_extensions_regex = implode( '|', array_map( 'preg_quote', self::get_file_extensions() ) );
 		$urls_regex                     = '#(?:(?:[\"\'\s=>,;]|url\()\K|^)[^\"\'\s(=>,;]+(' . $included_file_extensions_regex . ')(\?[^\/?\\\"\'\s)>,]+)?(?:(?=\/?[?\\\"\'\s)>,&])|$)#i';
 		$rewritten_contents             = preg_replace_callback( $urls_regex, [ '\PoweredCache\CDN', 'rewrite_url' ], $contents );
 
@@ -401,4 +401,3 @@ class CDN {
 	}
 
 }
-
