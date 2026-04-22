@@ -2,8 +2,8 @@
 Contributors:  poweredcache, wphandle, skopco, m_uysl
 Tags: cache, web vitals, performance, page speed, optimize
 Requires at least:  5.7
-Tested up to:  6.9
-Stable tag:  3.7.2
+Tested up to:  7.0
+Stable tag:  3.7.3
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -170,6 +170,12 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 3.7.3 (April 22, 2026) =
+- [Fixed] Regex warnings in page cache drop-in.
+- [Fixed] PHP 8.2 warning when the site URL is unavailable in local or mocked environments.
+- [Improved] PHPUnit coverage for CDN rewriting and LazyLoad HTML transformations.
+- Tested with WP 7.0
 
 = 3.7.2 (February 02, 2026) =
 - [Fixed] Elementor ajax conflict with background processing.
