@@ -13,6 +13,7 @@ use PoweredCache\Async\DatabaseOptimizer;
 use PoweredCache\Config;
 use PoweredCache\Encryption;
 use PoweredCache\Preloader;
+use PoweredCache\SettingsRepository;
 use function PoweredCache\Utils\is_dev_mode_active;
 use function PoweredCache\Utils\mask_string;
 use const PoweredCache\Constants\ALLOPTIONS_CRITICAL_THRESHOLD;
@@ -21,7 +22,6 @@ use const PoweredCache\Constants\ICON_BASE64;
 use const PoweredCache\Constants\MENU_SLUG;
 use const PoweredCache\Constants\PURGE_CACHE_CRON_NAME;
 use const PoweredCache\Constants\PURGE_CACHE_PLUGIN_NOTICE_TRANSIENT;
-use const PoweredCache\Constants\SETTING_OPTION;
 use function PoweredCache\Utils\can_configure_htaccess;
 use function PoweredCache\Utils\can_configure_object_cache;
 use function PoweredCache\Utils\can_control_all_settings;
@@ -141,33 +141,26 @@ function process_form_submit() {
 
 	$nonce = filter_input( INPUT_POST, 'powered_cache_settings_nonce', FILTER_SANITIZE_SPECIAL_CHARS );
 	if ( wp_verify_nonce( $nonce, 'powered_cache_update_settings' ) ) {
-		$action      = isset( $_POST['powered_cache_form_action'] ) ? sanitize_text_field( wp_unslash( $_POST['powered_cache_form_action'] ) ) : 'save_settings';
-		$old_options = \PoweredCache\Utils\get_settings();
-		$options     = sanitize_options( $_POST );
-		$options     = maybe_process_cloudflare_settings( $options );
+		$settings_repository = SettingsRepository::factory( POWERED_CACHE_IS_NETWORK );
+		$action              = isset( $_POST['powered_cache_form_action'] ) ? sanitize_text_field( wp_unslash( $_POST['powered_cache_form_action'] ) ) : 'save_settings';
+		$old_options         = $settings_repository->all();
+		$options             = sanitize_options( $_POST );
+		$options             = maybe_process_cloudflare_settings( $options );
 
 		switch ( $action ) {
 			case 'reset_settings':
-				if ( POWERED_CACHE_IS_NETWORK ) {
-					delete_site_option( SETTING_OPTION );
-				} else {
-					delete_option( SETTING_OPTION );
-				}
+				$settings_repository->delete();
 
 				if ( 'off' !== $old_options['object_cache'] ) {
 					wp_cache_flush();
 				}
 
-				$options = \PoweredCache\Utils\get_settings();
+				$options = $settings_repository->all();
 
 				break;
 			case 'export_settings':
 				$filename = sprintf( 'powered-cache-settings-%s-%s.json', gmdate( 'Y-m-d' ), uniqid() );
-				if ( POWERED_CACHE_IS_NETWORK ) {
-					$options = get_site_option( SETTING_OPTION );
-				} else {
-					$options = get_option( SETTING_OPTION );
-				}
+				$options  = $settings_repository->all();
 
 				$sensitive_options = [
 					'cloudflare_email', // PII data
@@ -217,11 +210,8 @@ function process_form_submit() {
 				break;
 		}
 
-		if ( POWERED_CACHE_IS_NETWORK ) {
-			update_site_option( SETTING_OPTION, $options );
-		} else {
-			update_option( SETTING_OPTION, $options );
-		}
+		$settings_repository->save( $options );
+		$options = $settings_repository->all();
 
 		Config::factory()->save_configuration( $options, POWERED_CACHE_IS_NETWORK );
 
