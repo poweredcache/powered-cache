@@ -7,13 +7,12 @@
 
 namespace PoweredCache\Admin\Dashboard;
 
-use PoweredCache\Async\CachePreloader;
 use PoweredCache\Async\CachePurger;
 use PoweredCache\Async\DatabaseOptimizer;
 use PoweredCache\Config;
 use PoweredCache\Encryption;
-use PoweredCache\Preloader;
 use PoweredCache\SettingsRepository;
+use PoweredCache\SettingsSaveService;
 use PoweredCache\SettingsTransfer;
 use function PoweredCache\Utils\is_dev_mode_active;
 use function PoweredCache\Utils\mask_string;
@@ -21,13 +20,11 @@ use const PoweredCache\Constants\ALLOPTIONS_CRITICAL_THRESHOLD;
 use const PoweredCache\Constants\ALLOPTIONS_WARNING_THRESHOLD;
 use const PoweredCache\Constants\ICON_BASE64;
 use const PoweredCache\Constants\MENU_SLUG;
-use const PoweredCache\Constants\PURGE_CACHE_CRON_NAME;
 use const PoweredCache\Constants\PURGE_CACHE_PLUGIN_NOTICE_TRANSIENT;
 use function PoweredCache\Utils\can_configure_htaccess;
 use function PoweredCache\Utils\can_configure_object_cache;
 use function PoweredCache\Utils\can_control_all_settings;
 use function PoweredCache\Utils\cdn_zones;
-use function PoweredCache\Utils\clean_site_cache_dir;
 use function PoweredCache\Utils\get_available_object_caches;
 use function PoweredCache\Utils\get_cache_dir;
 use function PoweredCache\Utils\get_timeout_with_interval;
@@ -143,6 +140,7 @@ function process_form_submit() {
 	$nonce = filter_input( INPUT_POST, 'powered_cache_settings_nonce', FILTER_SANITIZE_SPECIAL_CHARS );
 	if ( wp_verify_nonce( $nonce, 'powered_cache_update_settings' ) ) {
 		$settings_repository = SettingsRepository::factory( POWERED_CACHE_IS_NETWORK );
+		$settings_service    = SettingsSaveService::factory( $settings_repository, POWERED_CACHE_IS_NETWORK );
 		$action              = isset( $_POST['powered_cache_form_action'] ) ? sanitize_text_field( wp_unslash( $_POST['powered_cache_form_action'] ) ) : 'save_settings';
 		$old_options         = $settings_repository->all();
 		$options             = sanitize_options( $_POST );
@@ -198,62 +196,7 @@ function process_form_submit() {
 				break;
 		}
 
-		$settings_repository->save( $options );
-		$options = $settings_repository->all();
-
-		Config::factory()->save_configuration( $options, POWERED_CACHE_IS_NETWORK );
-
-		// drop object cache on backend changes
-		if ( isset( $options['object_cache'] ) && $old_options['object_cache'] !== $options['object_cache'] ) {
-			wp_cache_flush();
-		}
-
-		// Flush cache when Dev Mode is turned OFF
-		if ( ! empty( $old_options['dev_mode'] ) && empty( $options['dev_mode'] ) ) {
-			wp_cache_flush();
-		}
-
-		// maybe cancel preloading process when it turned off
-		if ( $old_options['enable_cache_preload'] && ! $options['enable_cache_preload'] ) {
-			cancel_preloading();
-		}
-
-		// start the preloading process when it is turned on
-		if ( ! $old_options['enable_cache_preload'] && $options['enable_cache_preload'] ) {
-			start_preloading();
-		}
-
-		if ( $old_options['async_cache_cleaning'] && ! $options['async_cache_cleaning'] ) {
-			cancel_async_cache_cleaning();
-		}
-
-		// cleanup existing cache on toggling cache option
-		if ( $old_options['enable_page_cache'] && ! $options['enable_page_cache'] ) {
-			clean_site_cache_dir();
-		}
-
-		// cleanup existing cache due to optimized URL changes
-		if ( $old_options['rewrite_file_optimizer'] && ! $options['rewrite_file_optimizer'] ) {
-			clean_site_cache_dir();
-		}
-
-		if ( $old_options['cache_timeout'] !== $options['cache_timeout'] ) {
-			$timestamp = wp_next_scheduled( PURGE_CACHE_CRON_NAME );
-
-			wp_unschedule_event( $timestamp, PURGE_CACHE_CRON_NAME );
-		}
-
-		/**
-		 * Fires after saving configurations.
-		 *
-		 * @hook  powered_cache_settings_saved
-		 *
-		 * @param {array} $old_options Old settings.
-		 * @param {array} $options New settings.
-		 *
-		 * @since 1.0
-		 */
-		do_action( 'powered_cache_settings_saved', $old_options, $options );
+		$options = $settings_service->save( $options, $old_options );
 
 		$redirect_url = wp_get_referer();
 
@@ -720,40 +663,6 @@ function db_optimize( $options ) {
 	}
 
 }
-
-/**
- * Cancel preloading process on toggling preload option
- */
-function cancel_preloading() {
-	\PoweredCache\Utils\log( 'Cancel preload process - Settings toggle' );
-	$cache_preloader = CachePreloader::factory();
-	$cache_preloader->cancel_process();
-	$cache_preloader->delete_all();
-}
-
-/**
- * Kick-start preloading process
- *
- * @return void
- */
-function start_preloading() {
-	\PoweredCache\Utils\log( 'Enable Preloader - Settings toggle' );
-	Preloader::factory()->setup_preload_queue();
-	// kickstart the preloading process
-	Preloader::factory()->dispatch_preload_queue();
-}
-
-/**
- * Cancel async cache purging processes
- *
- * @since 2.3
- */
-function cancel_async_cache_cleaning() {
-	\PoweredCache\Utils\log( 'Cancel CachePurger process' );
-	$cache_preloader = CachePurger::factory();
-	$cache_preloader->cancel_process();
-}
-
 
 /**
  * Perform diagnostic checks
