@@ -11,6 +11,7 @@ use PoweredCache\Async\CachePreloader;
 use PoweredCache\Async\CachePurger;
 use PoweredCache\Async\DatabaseOptimizer;
 use PoweredCache\Config;
+use PoweredCache\SettingsRestController;
 use const PoweredCache\Constants\DB_CLEANUP_COUNT_CACHE_KEY;
 use const PoweredCache\Constants\MENU_SLUG;
 use PoweredCache\Optimizer\JS;
@@ -28,6 +29,7 @@ function setup() {
 	add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\admin_styles' );
 	add_action( 'enqueue_block_editor_assets', __NAMESPACE__ . '\\block_editor_assets' );
 	add_action( 'plugins_loaded', __NAMESPACE__ . '\\register_async_process' );
+	SettingsRestController::factory();
 
 	// Hook to allow async or defer on asset loading.
 	add_filter( 'script_loader_tag', __NAMESPACE__ . '\\script_loader_tag', 10, 2 );
