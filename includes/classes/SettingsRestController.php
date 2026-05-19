@@ -15,6 +15,7 @@ namespace PoweredCache;
 class SettingsRestController {
 
 	const REST_NAMESPACE = 'powered-cache/v1';
+	const STATE_FORMAT   = 'powered-cache-settings-state';
 
 	/**
 	 * Return an instance of the current class.
@@ -43,6 +44,16 @@ class SettingsRestController {
 	 * Register settings routes.
 	 */
 	public function register_routes() {
+		register_rest_route(
+			self::REST_NAMESPACE,
+			'/settings',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'get_settings' ),
+				'permission_callback' => array( $this, 'can_read_manifest' ),
+			)
+		);
+
 		register_rest_route(
 			self::REST_NAMESPACE,
 			'/settings/manifest',
@@ -76,6 +87,29 @@ class SettingsRestController {
 				'is_apache' => (bool) $is_apache,
 			),
 			false
+		);
+	}
+
+	/**
+	 * Return current settings for admin UI consumers.
+	 *
+	 * @return array
+	 */
+	public function get_settings() {
+		global $is_apache;
+
+		$repository = SettingsRepository::factory(
+			POWERED_CACHE_IS_NETWORK,
+			array(
+				'is_apache' => (bool) $is_apache,
+			)
+		);
+
+		return array(
+			'format'         => self::STATE_FORMAT,
+			'format_version' => SettingsManifest::FORMAT_VERSION,
+			'plugin_version' => defined( 'POWERED_CACHE_VERSION' ) ? POWERED_CACHE_VERSION : '',
+			'settings'       => SettingsTransfer::redact_sensitive( $repository->all() ),
 		);
 	}
 }
