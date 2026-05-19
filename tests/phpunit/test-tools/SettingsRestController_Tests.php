@@ -38,8 +38,6 @@ class SettingsRestController_Tests extends TestCase {
 
 					$routes[ $route ] = $args;
 
-					$this->assertSame( 'GET', $args['methods'] );
-
 					return true;
 				},
 			)
@@ -47,9 +45,13 @@ class SettingsRestController_Tests extends TestCase {
 
 		$controller->register_routes();
 
-		$this->assertSame( array( $controller, 'get_settings' ), $routes['/settings']['callback'] );
+		$this->assertSame( 'GET', $routes['/settings'][0]['methods'] );
+		$this->assertSame( 'POST', $routes['/settings'][1]['methods'] );
+		$this->assertSame( array( $controller, 'get_settings' ), $routes['/settings'][0]['callback'] );
+		$this->assertSame( array( $controller, 'update_settings' ), $routes['/settings'][1]['callback'] );
 		$this->assertSame( array( $controller, 'get_manifest' ), $routes['/settings/manifest']['callback'] );
-		$this->assertSame( array( $controller, 'can_read_manifest' ), $routes['/settings']['permission_callback'] );
+		$this->assertSame( array( $controller, 'can_read_manifest' ), $routes['/settings'][0]['permission_callback'] );
+		$this->assertSame( array( $controller, 'can_read_manifest' ), $routes['/settings'][1]['permission_callback'] );
 		$this->assertSame( array( $controller, 'can_read_manifest' ), $routes['/settings/manifest']['permission_callback'] );
 	}
 
@@ -138,5 +140,116 @@ class SettingsRestController_Tests extends TestCase {
 		$this->assertSame( '', $response['settings']['cloudflare_api_token'] );
 
 		unset( $GLOBALS['is_apache'] );
+	}
+
+	/**
+	 * It preserves redacted sensitive values in partial update payloads.
+	 */
+	public function test_prepare_update_settings_preserves_redacted_sensitive_values() {
+		$controller = new SettingsRestController();
+		$current    = array(
+			'enable_page_cache'    => true,
+			'cloudflare_email'     => 'admin@example.test',
+			'cloudflare_api_key'   => 'encrypted-key',
+			'cloudflare_api_token' => 'encrypted-token',
+		);
+
+		$settings = $controller->prepare_update_settings(
+			array(
+				'enable_page_cache'    => false,
+				'cloudflare_email'     => '',
+				'cloudflare_api_key'   => '',
+				'cloudflare_api_token' => '',
+			),
+			$current
+		);
+
+		$this->assertFalse( $settings['enable_page_cache'] );
+		$this->assertSame( 'admin@example.test', $settings['cloudflare_email'] );
+		$this->assertSame( 'encrypted-key', $settings['cloudflare_api_key'] );
+		$this->assertSame( 'encrypted-token', $settings['cloudflare_api_token'] );
+	}
+
+	/**
+	 * It allows callers to explicitly clear sensitive values with null.
+	 */
+	public function test_prepare_update_settings_clears_sensitive_values_with_null() {
+		$controller = new SettingsRestController();
+		$current    = array(
+			'cloudflare_email'     => 'admin@example.test',
+			'cloudflare_api_key'   => 'encrypted-key',
+			'cloudflare_api_token' => 'encrypted-token',
+		);
+
+		$settings = $controller->prepare_update_settings(
+			array(
+				'cloudflare_email'     => null,
+				'cloudflare_api_key'   => null,
+				'cloudflare_api_token' => null,
+			),
+			$current
+		);
+
+		$this->assertSame( '', $settings['cloudflare_email'] );
+		$this->assertSame( '', $settings['cloudflare_api_key'] );
+		$this->assertSame( '', $settings['cloudflare_api_token'] );
+	}
+
+	/**
+	 * It encrypts new Cloudflare secret values before storage.
+	 */
+	public function test_prepare_update_settings_encrypts_new_cloudflare_secrets() {
+		$controller = new SettingsRestController();
+
+		$settings = $controller->prepare_update_settings(
+			array(
+				'cloudflare_api_key'   => 'new-key',
+				'cloudflare_api_token' => 'new-token',
+			),
+			array()
+		);
+
+		$encryption = new Encryption();
+
+		$this->assertSame( 'new-key', $encryption->decrypt( $settings['cloudflare_api_key'] ) );
+		$this->assertSame( 'new-token', $encryption->decrypt( $settings['cloudflare_api_token'] ) );
+	}
+
+	/**
+	 * It falls back to request params when no JSON payload is available.
+	 */
+	public function test_get_request_payload_falls_back_to_request_params() {
+		$controller = new SettingsRestController();
+		$request    = new class() {
+			/**
+			 * Return JSON params.
+			 *
+			 * @return null
+			 */
+			public function get_json_params() {
+				return null;
+			}
+
+			/**
+			 * Return request params.
+			 *
+			 * @return array
+			 */
+			public function get_params() {
+				return array(
+					'enable_page_cache' => false,
+				);
+			}
+		};
+
+		$method = new \ReflectionMethod( SettingsRestController::class, 'get_request_payload' );
+		$method->setAccessible( true );
+
+		$this->assertSame(
+			array(
+				'enable_page_cache' => false,
+			),
+			$method->invoke( $controller, $request )
+		);
 	}
 }

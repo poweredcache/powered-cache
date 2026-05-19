@@ -75,7 +75,7 @@ class SettingsTransfer {
 	 *
 	 * @return array
 	 */
-	private static function sensitive_keys() {
+	public static function sensitive_keys() {
 		return array(
 			'cloudflare_email',
 			'cloudflare_api_key',

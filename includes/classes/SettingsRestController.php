@@ -48,9 +48,16 @@ class SettingsRestController {
 			self::REST_NAMESPACE,
 			'/settings',
 			array(
-				'methods'             => 'GET',
-				'callback'            => array( $this, 'get_settings' ),
-				'permission_callback' => array( $this, 'can_read_manifest' ),
+				array(
+					'methods'             => 'GET',
+					'callback'            => array( $this, 'get_settings' ),
+					'permission_callback' => array( $this, 'can_read_manifest' ),
+				),
+				array(
+					'methods'             => 'POST',
+					'callback'            => array( $this, 'update_settings' ),
+					'permission_callback' => array( $this, 'can_read_manifest' ),
+				),
 			)
 		);
 
@@ -111,5 +118,99 @@ class SettingsRestController {
 			'plugin_version' => defined( 'POWERED_CACHE_VERSION' ) ? POWERED_CACHE_VERSION : '',
 			'settings'       => SettingsTransfer::redact_sensitive( $repository->all() ),
 		);
+	}
+
+	/**
+	 * Update settings from REST payload.
+	 *
+	 * @param mixed $request REST request.
+	 *
+	 * @return array
+	 */
+	public function update_settings( $request ) {
+		global $is_apache;
+
+		$repository = SettingsRepository::factory(
+			POWERED_CACHE_IS_NETWORK,
+			array(
+				'is_apache' => (bool) $is_apache,
+			)
+		);
+
+		$old_settings = $repository->all();
+		$changes      = SettingsTransfer::unpack( $this->get_request_payload( $request ) );
+		$settings     = $this->prepare_update_settings( $changes, $old_settings );
+		$save_service = SettingsSaveService::factory( $repository, POWERED_CACHE_IS_NETWORK );
+		$settings     = $save_service->save( $settings, $old_settings );
+
+		return array(
+			'format'         => self::STATE_FORMAT,
+			'format_version' => SettingsManifest::FORMAT_VERSION,
+			'plugin_version' => defined( 'POWERED_CACHE_VERSION' ) ? POWERED_CACHE_VERSION : '',
+			'settings'       => SettingsTransfer::redact_sensitive( $settings ),
+		);
+	}
+
+	/**
+	 * Prepare partial update payload before storage.
+	 *
+	 * @param array $changes Changed settings.
+	 * @param array $current Current settings.
+	 *
+	 * @return array
+	 */
+	public function prepare_update_settings( array $changes, array $current ) {
+		$settings = array_merge( $current, $changes );
+
+		foreach ( SettingsTransfer::sensitive_keys() as $key ) {
+			if ( ! array_key_exists( $key, $changes ) ) {
+				continue;
+			}
+
+			if ( '' === $changes[ $key ] ) {
+				$settings[ $key ] = isset( $current[ $key ] ) ? $current[ $key ] : '';
+				continue;
+			}
+
+			if ( null === $changes[ $key ] ) {
+				$settings[ $key ] = '';
+				continue;
+			}
+
+			if ( in_array( $key, array( 'cloudflare_api_key', 'cloudflare_api_token' ), true ) ) {
+				$settings[ $key ] = ( new Encryption() )->encrypt( $changes[ $key ] );
+			}
+		}
+
+		return $settings;
+	}
+
+	/**
+	 * Read request payload.
+	 *
+	 * @param mixed $request REST request.
+	 *
+	 * @return array
+	 */
+	private function get_request_payload( $request ) {
+		if ( is_array( $request ) ) {
+			return $request;
+		}
+
+		if ( is_object( $request ) && method_exists( $request, 'get_json_params' ) ) {
+			$params = $request->get_json_params();
+
+			if ( is_array( $params ) ) {
+				return $params;
+			}
+		}
+
+		if ( is_object( $request ) && method_exists( $request, 'get_params' ) ) {
+			$params = $request->get_params();
+
+			return is_array( $params ) ? $params : array();
+		}
+
+		return array();
 	}
 }

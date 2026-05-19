@@ -99,4 +99,18 @@ class SettingsTransfer_Tests extends TestCase {
 		$this->assertSame( '', $settings['cloudflare_api_token'] );
 		$this->assertTrue( $settings['enable_page_cache'] );
 	}
+
+	/**
+	 * It exposes the sensitive key list for REST and export payloads.
+	 */
+	public function test_sensitive_keys_are_shared_by_transfer_consumers() {
+		$this->assertSame(
+			array(
+				'cloudflare_email',
+				'cloudflare_api_key',
+				'cloudflare_api_token',
+			),
+			SettingsTransfer::sensitive_keys()
+		);
+	}
 }
