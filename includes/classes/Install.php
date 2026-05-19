@@ -144,13 +144,8 @@ class Install {
 		$settings['ignored_query_strings'] = $settings['accepted_query_strings'];
 		unset( $settings['accepted_query_strings'] );
 
-		if ( $network_wide ) {
-			update_site_option( SETTING_OPTION, $settings );
-		} else {
-			update_option( SETTING_OPTION, $settings );
-		}
+		$settings = $this->save_settings( $settings, $network_wide );
 
-		Config::factory()->save_configuration( $settings, $network_wide );
 		\PoweredCache\Utils\log( 'Upgraded to version 3.0' );
 	}
 
@@ -184,13 +179,8 @@ class Install {
 			unset( $settings['js_execution_optimized_only'] );
 		}
 
-		if ( $network_wide ) {
-			update_site_option( SETTING_OPTION, $settings );
-		} else {
-			update_option( SETTING_OPTION, $settings );
-		}
+		$settings = $this->save_settings( $settings, $network_wide );
 
-		Config::factory()->save_configuration( $settings, $network_wide );
 		\PoweredCache\Utils\log( 'Upgraded to version 3.2' );
 	}
 
@@ -214,13 +204,7 @@ class Install {
 			$settings['rewrite_file_optimizer'] = false;
 		}
 
-		if ( $network_wide ) {
-			update_site_option( SETTING_OPTION, $settings );
-		} else {
-			update_option( SETTING_OPTION, $settings );
-		}
-
-		Config::factory()->save_configuration( $settings, $network_wide );
+		$settings = $this->save_settings( $settings, $network_wide );
 
 		if ( $settings['auto_configure_htaccess'] && $settings['rewrite_file_optimizer'] ) {
 			if ( $network_wide ) {
@@ -258,13 +242,8 @@ class Install {
 			$settings['cloudflare_api_token'] = $encryption->encrypt( $settings['cloudflare_api_token'] );
 		}
 
-		if ( $network_wide ) {
-			update_site_option( SETTING_OPTION, $settings );
-		} else {
-			update_option( SETTING_OPTION, $settings );
-		}
+		$settings = $this->save_settings( $settings, $network_wide );
 
-		Config::factory()->save_configuration( $settings, $network_wide );
 		\PoweredCache\Utils\log( 'Upgraded to version 3.4' );
 	}
 
@@ -407,8 +386,7 @@ class Install {
 				$migrated_options['js_execution_method'] = $extension_settings['minifier']['js_execution'];
 			}
 
-			update_option( SETTING_OPTION, $migrated_options );
-			Config::factory()->save_configuration( $migrated_options ); // make it current
+			$migrated_options = $this->save_settings( $migrated_options ); // make it current
 
 			\PoweredCache\Utils\log( 'Upgraded from version 1.x' );
 
@@ -419,6 +397,23 @@ class Install {
 		}
 	}
 
+	/**
+	 * Save settings through the repository and refresh generated configuration.
+	 *
+	 * @param array $settings Settings payload.
+	 * @param bool  $network_wide Whether settings should use network storage.
+	 *
+	 * @return array Saved settings.
+	 */
+	private function save_settings( array $settings, $network_wide = false ) {
+		$settings_repository = SettingsRepository::factory( $network_wide );
+
+		$settings_repository->save( $settings );
+		$settings = $settings_repository->all();
+
+		Config::factory()->save_configuration( $settings, $network_wide );
+
+		return $settings;
+	}
 
 }
-

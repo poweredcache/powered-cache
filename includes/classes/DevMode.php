@@ -7,9 +7,6 @@
 
 namespace PoweredCache;
 
-use PoweredCache\Utils;
-use const PoweredCache\Constants\SETTING_OPTION;
-
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -100,14 +97,12 @@ class DevMode {
 			wp_die( esc_html__( 'Invalid nonce.', 'powered-cache' ) );
 		}
 
-		$settings             = Utils\get_settings();
+		$settings_repository  = SettingsRepository::factory( POWERED_CACHE_IS_NETWORK );
+		$settings             = $settings_repository->all();
 		$settings['dev_mode'] = false;
 
-		if ( POWERED_CACHE_IS_NETWORK ) {
-			update_site_option( SETTING_OPTION, $settings );
-		} else {
-			update_option( SETTING_OPTION, $settings );
-		}
+		$settings_repository->save( $settings );
+		$settings = $settings_repository->all();
 
 		Config::factory()->save_configuration( $settings, POWERED_CACHE_IS_NETWORK );
 
