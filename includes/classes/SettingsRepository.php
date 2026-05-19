@@ -34,26 +34,36 @@ class SettingsRepository {
 	private $context;
 
 	/**
+	 * Settings migrator.
+	 *
+	 * @var SettingsMigrator
+	 */
+	private $migrator;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param bool|null $network_wide Whether to use network option storage.
-	 * @param array     $context Runtime context for dynamic defaults.
+	 * @param bool|null             $network_wide Whether to use network option storage.
+	 * @param array                 $context Runtime context for dynamic defaults.
+	 * @param SettingsMigrator|null $migrator Settings migrator.
 	 */
-	public function __construct( $network_wide = null, array $context = array() ) {
+	public function __construct( $network_wide = null, array $context = array(), SettingsMigrator $migrator = null ) {
 		$this->network_wide = null === $network_wide ? $this->detect_network_mode() : (bool) $network_wide;
 		$this->context      = empty( $context ) ? $this->default_context() : $context;
+		$this->migrator     = null === $migrator ? new SettingsMigrator() : $migrator;
 	}
 
 	/**
 	 * Create a repository instance.
 	 *
-	 * @param bool|null $network_wide Whether to use network option storage.
-	 * @param array     $context Runtime context for dynamic defaults.
+	 * @param bool|null             $network_wide Whether to use network option storage.
+	 * @param array                 $context Runtime context for dynamic defaults.
+	 * @param SettingsMigrator|null $migrator Settings migrator.
 	 *
 	 * @return SettingsRepository
 	 */
-	public static function factory( $network_wide = null, array $context = array() ) {
-		return new self( $network_wide, $context );
+	public static function factory( $network_wide = null, array $context = array(), SettingsMigrator $migrator = null ) {
+		return new self( $network_wide, $context, $migrator );
 	}
 
 	/**
@@ -62,7 +72,7 @@ class SettingsRepository {
 	 * @return array
 	 */
 	public function all() {
-		return $this->normalize( $this->read_raw() );
+		return $this->normalize( $this->migrator->migrate( $this->read_raw() ) );
 	}
 
 	/**
@@ -87,7 +97,7 @@ class SettingsRepository {
 	 * @return bool
 	 */
 	public function save( array $settings ) {
-		$settings = $this->normalize( $this->sanitize( $settings ) );
+		$settings = $this->sanitize( $this->migrator->for_storage( $this->normalize( $settings ) ) );
 
 		if ( $this->network_wide ) {
 			return (bool) update_site_option( SETTING_OPTION, $settings );
