@@ -14,9 +14,11 @@
 .powered-cache-settings-page {
 	margin: 24px 24px 88px 4px;
 	max-width: 1180px;
+	--pc-admin-good: #008a20;
 	--pc-admin-muted: #646970;
 	--pc-admin-primary: #2271b1;
 	--pc-admin-primary-dark: #135e96;
+	--pc-admin-premium: #7b4ab8;
 	--pc-admin-text: #1d2327;
 	--pc-admin-warning: #8a6d1d;
 	--pc-admin-white: #fff;
@@ -58,6 +60,14 @@
 	max-width: 680px;
 }
 
+.pc-settings-header__content {
+	column-gap: 18px;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 260px;
+	row-gap: 18px;
+	width: 100%;
+}
+
 .pc-settings-eyebrow {
 	color: var(--pc-admin-primary);
 	font-size: 12px;
@@ -72,6 +82,32 @@
 	flex-wrap: wrap;
 	gap: 8px;
 	justify-content: flex-end;
+}
+
+.pc-settings-plan-card {
+	background: linear-gradient(135deg, #f6f7f7 0%, #fff 100%);
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	padding: 14px 16px;
+}
+
+.pc-settings-plan-card span {
+	color: var(--pc-admin-muted);
+	display: block;
+	font-size: 12px;
+	margin-bottom: 6px;
+}
+
+.pc-settings-plan-card strong {
+	display: block;
+	font-size: 20px;
+	line-height: 1.2;
+	margin-bottom: 6px;
+}
+
+.pc-settings-plan-card p {
+	color: var(--pc-admin-muted);
+	font-size: 13px;
 }
 
 .pc-settings-overview {
@@ -89,6 +125,18 @@
 	padding: 14px 16px;
 }
 
+.pc-settings-metric--good {
+	border-left: 4px solid var(--pc-admin-good);
+}
+
+.pc-settings-metric--warning {
+	border-left: 4px solid #dba617;
+}
+
+.pc-settings-metric--premium {
+	border-left: 4px solid var(--pc-admin-premium);
+}
+
 .pc-settings-overview span {
 	color: var(--pc-admin-muted);
 	display: block;
@@ -101,6 +149,38 @@
 	font-size: 17px;
 	line-height: 1.3;
 	text-transform: capitalize;
+}
+
+.pc-settings-overview p {
+	color: var(--pc-admin-muted);
+	font-size: 12px;
+	line-height: 1.4;
+	margin: 8px 0 0;
+}
+
+.pc-settings-upgrade-panel {
+	align-items: center;
+	background: linear-gradient(135deg, #f6f0ff 0%, #fff 70%);
+	border: 1px solid #d8c7f0;
+	border-radius: 6px;
+	column-gap: 18px;
+	display: flex;
+	justify-content: space-between;
+	margin: 0 0 18px;
+	padding: 18px 20px;
+	row-gap: 14px;
+}
+
+.pc-settings-upgrade-panel h2 {
+	font-size: 18px;
+	line-height: 1.3;
+	margin: 8px 0 6px;
+}
+
+.pc-settings-upgrade-panel p {
+	color: var(--pc-admin-muted);
+	margin: 0;
+	max-width: 760px;
 }
 
 .pc-settings-layout {
@@ -156,8 +236,13 @@
 }
 
 .pc-settings-section__header {
+	align-items: flex-start;
 	border-bottom: 1px solid #dcdcde;
+	column-gap: 18px;
+	display: flex;
+	justify-content: space-between;
 	padding: 20px 22px;
+	row-gap: 12px;
 }
 
 .pc-settings-section__header h2 {
@@ -171,8 +256,44 @@
 	margin: 0;
 }
 
+.pc-settings-section__meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	justify-content: flex-end;
+	min-width: 160px;
+}
+
+.pc-settings-section__meta span {
+	background: #f6f7f7;
+	border: 1px solid #dcdcde;
+	border-radius: 999px;
+	color: var(--pc-admin-muted);
+	font-size: 12px;
+	line-height: 1;
+	padding: 6px 8px;
+}
+
 .pc-settings-section__body {
 	display: block;
+}
+
+.pc-settings-group {
+	border-bottom: 1px solid #dcdcde;
+}
+
+.pc-settings-group:last-child {
+	border-bottom: 0;
+}
+
+.pc-settings-group h3 {
+	background: #f6f7f7;
+	border-bottom: 1px solid #ececec;
+	font-size: 13px;
+	letter-spacing: 0;
+	margin: 0;
+	padding: 10px 22px;
+	text-transform: uppercase;
 }
 
 .pc-settings-field {
@@ -190,6 +311,10 @@
 
 .pc-settings-field--locked {
 	background: #fcfcfd;
+}
+
+.pc-settings-field--locked .pc-settings-field__label {
+	margin-bottom: 0;
 }
 
 .pc-settings-field__heading {
@@ -251,6 +376,35 @@
 	min-height: 96px;
 }
 
+.pc-settings-lock-preview {
+	background: #f6f7f7;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	margin-bottom: 12px;
+	padding: 10px;
+}
+
+.pc-settings-lock-preview span {
+	background: #dcdcde;
+	border-radius: 999px;
+	display: block;
+	height: 7px;
+	margin-bottom: 8px;
+}
+
+.pc-settings-lock-preview span:nth-child(1) {
+	width: 70%;
+}
+
+.pc-settings-lock-preview span:nth-child(2) {
+	width: 92%;
+}
+
+.pc-settings-lock-preview span:nth-child(3) {
+	margin-bottom: 0;
+	width: 46%;
+}
+
 .pc-settings-savebar {
 	align-items: center;
 	background: var(--pc-admin-white);
@@ -282,10 +436,21 @@
 		flex-direction: column;
 	}
 
+	.pc-settings-header__content,
 	.pc-settings-overview,
 	.pc-settings-layout,
 	.pc-settings-field {
 		grid-template-columns: 1fr;
+	}
+
+	.pc-settings-section__header,
+	.pc-settings-upgrade-panel {
+		align-items: stretch;
+		flex-direction: column;
+	}
+
+	.pc-settings-section__meta {
+		justify-content: flex-start;
 	}
 
 	.pc-settings-nav {

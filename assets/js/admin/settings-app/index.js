@@ -75,8 +75,16 @@ const displayValue = (value, field) => {
 	return undefined === value || value === null ? '' : value;
 };
 
+const MetricCard = ({ label, value, description, tone = 'neutral' }) => (
+	<div className={`pc-settings-metric pc-settings-metric--${tone}`}>
+		<span>{label}</span>
+		<strong>{value}</strong>
+		{description && <p>{description}</p>}
+	</div>
+);
+
 const LockedField = ({ field }) => (
-	<div className="pc-settings-field pc-settings-field--locked">
+	<div className="pc-settings-field pc-settings-field--locked" aria-label={field.label}>
 		<div className="pc-settings-field__main">
 			<div className="pc-settings-field__heading">
 				<span className="pc-settings-field__label">{field.label}</span>
@@ -90,6 +98,11 @@ const LockedField = ({ field }) => (
 			)}
 		</div>
 		<div className="pc-settings-field__control">
+			<div className="pc-settings-lock-preview" aria-hidden="true">
+				<span />
+				<span />
+				<span />
+			</div>
 			<Button
 				href={appConfig.upgradeUrl || 'https://poweredcache.com/'}
 				target="_blank"
@@ -210,13 +223,10 @@ const SettingsField = ({ field, settings, onChange }) => {
 	);
 };
 
-const SettingsSection = ({ sectionKey, section, fields, settings, onChange }) => (
-	<section id={`pc-settings-section-${sectionKey}`} className="pc-settings-section">
-		<div className="pc-settings-section__header">
-			<h2>{section.label}</h2>
-			{section.description && <p>{section.description}</p>}
-		</div>
-		<div className="pc-settings-section__body">
+const SettingsGroup = ({ groupName, fields, settings, onChange }) => (
+	<div className="pc-settings-group">
+		<h3>{groupName}</h3>
+		<div className="pc-settings-group__body">
 			{fields.map((field) => (
 				<SettingsField
 					field={field}
@@ -226,8 +236,59 @@ const SettingsSection = ({ sectionKey, section, fields, settings, onChange }) =>
 				/>
 			))}
 		</div>
-	</section>
+	</div>
 );
+
+const SettingsSection = ({ sectionKey, section, fields, settings, onChange }) => {
+	const groups = fields.reduce((fieldGroups, field) => {
+		const groupName = field.group || section.label;
+
+		if (!fieldGroups[groupName]) {
+			fieldGroups[groupName] = [];
+		}
+
+		fieldGroups[groupName].push(field);
+
+		return fieldGroups;
+	}, {});
+
+	const premiumCount = fields.filter((field) => field.premium).length;
+
+	return (
+		<section id={`pc-settings-section-${sectionKey}`} className="pc-settings-section">
+			<div className="pc-settings-section__header">
+				<div>
+					<h2>{section.label}</h2>
+					{section.description && <p>{section.description}</p>}
+				</div>
+				<div
+					className="pc-settings-section__meta"
+					aria-label={__('Section summary', 'powered-cache')}
+				>
+					<span>
+						{fields.length} {__('settings', 'powered-cache')}
+					</span>
+					{!!premiumCount && (
+						<span>
+							{premiumCount} {__('Premium', 'powered-cache')}
+						</span>
+					)}
+				</div>
+			</div>
+			<div className="pc-settings-section__body">
+				{Object.entries(groups).map(([groupName, groupFields]) => (
+					<SettingsGroup
+						fields={groupFields}
+						groupName={groupName}
+						key={groupName}
+						onChange={onChange}
+						settings={settings}
+					/>
+				))}
+			</div>
+		</section>
+	);
+};
 
 const SettingsApp = () => {
 	const [manifest, setManifest] = useState(null);
@@ -348,21 +409,49 @@ const SettingsApp = () => {
 	const activeFields = fieldsBySection[activeSection] || [];
 	const activeSectionData = manifest.sections[activeSection] || {};
 	const premiumFields = Object.values(manifest.fields || {}).filter((field) => field.premium);
+	const enabledCoreCount = [
+		settings.enable_page_cache,
+		settings.cache_mobile,
+		settings.gzip_compression,
+		settings.enable_lazy_load,
+		settings.enable_cache_preload,
+	].filter(Boolean).length;
 
 	return (
 		<div className="pc-settings-shell">
 			<header className="pc-settings-header">
-				<div>
-					<p className="pc-settings-eyebrow">
-						{__('Performance Control Center', 'powered-cache')}
-					</p>
-					<h1>{__('Powered Cache', 'powered-cache')}</h1>
-					<p>
-						{__(
-							'Configure cache, optimization, media delivery, and integrations from one focused screen.',
-							'powered-cache',
-						)}
-					</p>
+				<div className="pc-settings-header__content">
+					<div>
+						<p className="pc-settings-eyebrow">
+							{__('Performance Control Center', 'powered-cache')}
+						</p>
+						<h1>{__('Powered Cache', 'powered-cache')}</h1>
+						<p>
+							{__(
+								'Configure cache, optimization, media delivery, and integrations from one focused screen.',
+								'powered-cache',
+							)}
+						</p>
+					</div>
+					<div className="pc-settings-plan-card">
+						<span>{__('Current Plan', 'powered-cache')}</span>
+						<strong>
+							{appConfig.isPremium
+								? __('Premium', 'powered-cache')
+								: __('Free', 'powered-cache')}
+						</strong>
+						<p>
+							{appConfig.isPremium
+								? __(
+										'Advanced optimization controls are unlocked.',
+										'powered-cache',
+									)
+								: __(
+										'Premium-only controls stay visible so you can see what to unlock next.',
+										'powered-cache',
+									)}
+						</p>
+					</div>
 				</div>
 				<div className="pc-settings-header__actions">
 					<Button href={appConfig.docsUrl || '#'} target="_blank" variant="secondary">
@@ -390,39 +479,76 @@ const SettingsApp = () => {
 				className="pc-settings-overview"
 				aria-label={__('Settings overview', 'powered-cache')}
 			>
-				<div>
-					<span>{__('Page Cache', 'powered-cache')}</span>
-					<strong>
-						{settings.enable_page_cache
+				<MetricCard
+					description={__('HTML cache delivery for anonymous visits.', 'powered-cache')}
+					label={__('Page Cache', 'powered-cache')}
+					tone={settings.enable_page_cache ? 'good' : 'warning'}
+					value={
+						settings.enable_page_cache
 							? __('Enabled', 'powered-cache')
-							: __('Disabled', 'powered-cache')}
-					</strong>
-				</div>
-				<div>
-					<span>{__('Object Cache', 'powered-cache')}</span>
-					<strong>
-						{settings.object_cache && settings.object_cache !== 'off'
+							: __('Disabled', 'powered-cache')
+					}
+				/>
+				<MetricCard
+					description={__(
+						'Persistent backend for dynamic WordPress data.',
+						'powered-cache',
+					)}
+					label={__('Object Cache', 'powered-cache')}
+					tone={
+						settings.object_cache && settings.object_cache !== 'off'
+							? 'good'
+							: 'neutral'
+					}
+					value={
+						settings.object_cache && settings.object_cache !== 'off'
 							? settings.object_cache
-							: __('Off', 'powered-cache')}
-					</strong>
-				</div>
-				<div>
-					<span>{__('Image Optimization', 'powered-cache')}</span>
-					<strong>
-						{settings.enable_image_optimization
-							? __('Enabled', 'powered-cache')
-							: __('Premium', 'powered-cache')}
-					</strong>
-				</div>
-				<div>
-					<span>{__('Premium Features', 'powered-cache')}</span>
-					<strong>
-						{appConfig.isPremium
-							? __('Unlocked', 'powered-cache')
-							: premiumFields.length}
-					</strong>
-				</div>
+							: __('Off', 'powered-cache')
+					}
+				/>
+				<MetricCard
+					description={__('Core optimizations currently switched on.', 'powered-cache')}
+					label={__('Active Controls', 'powered-cache')}
+					tone="good"
+					value={`${enabledCoreCount}/5`}
+				/>
+				<MetricCard
+					description={
+						appConfig.isPremium
+							? __(
+									'Premium optimizations are available on this site.',
+									'powered-cache',
+								)
+							: __(
+									'Locked controls are shown in context across the settings.',
+									'powered-cache',
+								)
+					}
+					label={__('Premium Features', 'powered-cache')}
+					tone={appConfig.isPremium ? 'good' : 'premium'}
+					value={
+						appConfig.isPremium ? __('Unlocked', 'powered-cache') : premiumFields.length
+					}
+				/>
 			</div>
+
+			{!appConfig.isPremium && (
+				<div className="pc-settings-upgrade-panel">
+					<div>
+						<span className="pc-settings-badge">{__('Premium', 'powered-cache')}</span>
+						<h2>{__('Unlock the high-impact optimization layer', 'powered-cache')}</h2>
+						<p>
+							{__(
+								'Critical CSS, unused CSS cleanup, LCP optimization, and image delivery are shown where they belong so upgrading feels like enabling the next layer rather than learning a different product.',
+								'powered-cache',
+							)}
+						</p>
+					</div>
+					<Button href={appConfig.upgradeUrl || '#'} target="_blank" variant="primary">
+						{__('Compare Premium', 'powered-cache')}
+					</Button>
+				</div>
+			)}
 
 			<div className="pc-settings-layout">
 				<nav
