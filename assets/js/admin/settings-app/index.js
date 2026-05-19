@@ -409,6 +409,7 @@ const SettingsApp = () => {
 	const activeFields = fieldsBySection[activeSection] || [];
 	const activeSectionData = manifest.sections[activeSection] || {};
 	const premiumFields = Object.values(manifest.fields || {}).filter((field) => field.premium);
+	const premiumInfo = appConfig.premium || {};
 	const enabledCoreCount = [
 		settings.enable_page_cache,
 		settings.cache_mobile,
@@ -442,7 +443,8 @@ const SettingsApp = () => {
 						</strong>
 						<p>
 							{appConfig.isPremium
-								? __(
+								? premiumInfo.licenseMessage ||
+									__(
 										'Advanced optimization controls are unlocked.',
 										'powered-cache',
 									)
@@ -515,7 +517,8 @@ const SettingsApp = () => {
 				<MetricCard
 					description={
 						appConfig.isPremium
-							? __(
+							? premiumInfo.licenseMessage ||
+								__(
 									'Premium optimizations are available on this site.',
 									'powered-cache',
 								)
@@ -524,10 +527,16 @@ const SettingsApp = () => {
 									'powered-cache',
 								)
 					}
-					label={__('Premium Features', 'powered-cache')}
-					tone={appConfig.isPremium ? 'good' : 'premium'}
+					label={
+						appConfig.isPremium
+							? __('License', 'powered-cache')
+							: __('Premium Features', 'powered-cache')
+					}
+					tone={appConfig.isPremium && !premiumInfo.licenseActive ? 'warning' : 'premium'}
 					value={
-						appConfig.isPremium ? __('Unlocked', 'powered-cache') : premiumFields.length
+						appConfig.isPremium
+							? labelFromKey(premiumInfo.licenseStatus || 'unknown')
+							: premiumFields.length
 					}
 				/>
 			</div>

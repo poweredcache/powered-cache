@@ -195,18 +195,31 @@ function admin_scripts( $hook ) {
 		true
 	);
 
+	$settings_app_config = [
+		'namespace'  => SettingsRestController::REST_NAMESPACE,
+		'restRoot'   => esc_url_raw( rest_url() ),
+		'restNonce'  => wp_create_nonce( 'wp_rest' ),
+		'isPremium'  => \PoweredCache\Utils\is_premium(),
+		'upgradeUrl' => 'https://poweredcache.com/?utm_source=poweredcache&utm_medium=plugin&utm_campaign=settings_upgrade',
+		'docsUrl'    => \PoweredCache\Utils\get_doc_url( '/' ),
+	];
+
+	/**
+	 * Filter settings app bootstrap configuration.
+	 *
+	 * @hook powered_cache_settings_app_config
+	 *
+	 * @param {array} $settings_app_config Settings app bootstrap configuration.
+	 *
+	 * @return {array} New value.
+	 *
+	 * @since 4.0.0
+	 */
+	$settings_app_config = apply_filters( 'powered_cache_settings_app_config', $settings_app_config );
+
 	wp_add_inline_script(
 		'powered-cache-admin',
-		'window.poweredCacheSettingsApp = ' . wp_json_encode(
-			[
-				'namespace'  => SettingsRestController::REST_NAMESPACE,
-				'restRoot'   => esc_url_raw( rest_url() ),
-				'restNonce'  => wp_create_nonce( 'wp_rest' ),
-				'isPremium'  => \PoweredCache\Utils\is_premium(),
-				'upgradeUrl' => 'https://poweredcache.com/?utm_source=poweredcache&utm_medium=plugin&utm_campaign=settings_upgrade',
-				'docsUrl'    => \PoweredCache\Utils\get_doc_url( '/' ),
-			]
-		) . ';',
+		'window.poweredCacheSettingsApp = ' . wp_json_encode( $settings_app_config ) . ';',
 		'before'
 	);
 
