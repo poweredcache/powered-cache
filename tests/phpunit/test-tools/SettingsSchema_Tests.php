@@ -14,11 +14,19 @@ use PoweredCache\Utils;
  */
 class SettingsSchema_Tests extends TestCase {
 
-	protected $testFiles = array(
+	/**
+	 * Test files loaded before each test.
+	 *
+	 * @var array
+	 */
+	protected $testFiles = array( // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 		'constants.php',
 		'utils.php',
 	);
 
+	/**
+	 * It keeps schema defaults in parity with the public settings helper.
+	 */
 	public function test_defaults_match_legacy_get_settings_defaults() {
 		global $is_apache;
 
@@ -37,21 +45,45 @@ class SettingsSchema_Tests extends TestCase {
 			)
 		);
 
-		\WP_Mock::userFunction(
-			'wp_parse_args',
-			array(
-				'times'  => 1,
-				'return' => static function ( $args, $defaults ) {
-					return array_merge( $defaults, $args );
-				},
-			)
-		);
-
 		$this->assertSame( Utils\get_settings(), $schema_defaults );
 
 		unset( $GLOBALS['is_apache'] );
 	}
 
+	/**
+	 * It reads network settings when the public helper forces network mode.
+	 */
+	public function test_get_settings_respects_force_network_wide() {
+		global $is_apache;
+
+		$is_apache = false;
+
+		$schema_defaults = SettingsSchema::defaults( array( 'is_apache' => false ) );
+
+		\WP_Mock::onFilter( 'powered_cache_default_settings' )->with( $schema_defaults )->reply( $schema_defaults );
+
+		\WP_Mock::userFunction(
+			'get_site_option',
+			array(
+				'times'  => 1,
+				'args'   => array( \PoweredCache\Constants\SETTING_OPTION, array() ),
+				'return' => array(
+					'enable_cdn' => true,
+				),
+			)
+		);
+
+		$settings = Utils\get_settings( true );
+
+		$this->assertTrue( $settings['enable_cdn'] );
+		$this->assertFalse( $settings['auto_configure_htaccess'] );
+
+		unset( $GLOBALS['is_apache'] );
+	}
+
+	/**
+	 * It exposes critical field metadata for consumers.
+	 */
 	public function test_critical_settings_have_expected_metadata() {
 		$fields = SettingsSchema::fields( array( 'is_apache' => false ) );
 
@@ -71,6 +103,9 @@ class SettingsSchema_Tests extends TestCase {
 		$this->assertTrue( $fields['js_execution_method']['deprecated'] );
 	}
 
+	/**
+	 * It returns fields for one schema section.
+	 */
 	public function test_sections_return_only_matching_fields() {
 		$media_fields = SettingsSchema::section( 'media' );
 
@@ -79,6 +114,9 @@ class SettingsSchema_Tests extends TestCase {
 		$this->assertArrayNotHasKey( 'enable_page_cache', $media_fields );
 	}
 
+	/**
+	 * It resolves Apache-specific defaults from runtime context.
+	 */
 	public function test_dynamic_apache_defaults_are_context_aware() {
 		$apache_defaults     = SettingsSchema::defaults( array( 'is_apache' => true ) );
 		$non_apache_defaults = SettingsSchema::defaults( array( 'is_apache' => false ) );

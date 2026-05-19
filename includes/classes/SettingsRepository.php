@@ -72,7 +72,7 @@ class SettingsRepository {
 	 * @return array
 	 */
 	public function all() {
-		return $this->normalize( $this->migrator->migrate( $this->read_raw() ) );
+		return $this->normalize( $this->migrator->migrate( $this->read_raw() ), $this->defaults() );
 	}
 
 	/**
@@ -131,17 +131,43 @@ class SettingsRepository {
 	}
 
 	/**
+	 * Return filtered settings defaults.
+	 *
+	 * @return array
+	 */
+	public function defaults() {
+		$defaults = SettingsSchema::defaults( $this->context );
+
+		/**
+		 * Filter default settings.
+		 *
+		 * @hook   powered_cache_default_settings
+		 *
+		 * @param  {array} $defaults Default settings.
+		 *
+		 * @return {array} New value
+		 * @since  2.0
+		 */
+		return apply_filters( 'powered_cache_default_settings', $defaults );
+	}
+
+	/**
 	 * Normalize settings with schema defaults.
 	 *
 	 * Unknown keys are preserved for backward compatibility with older
 	 * extensions, imports, or customer customizations.
 	 *
-	 * @param array $settings Raw settings.
+	 * @param array      $settings Raw settings.
+	 * @param array|null $defaults Optional defaults.
 	 *
 	 * @return array
 	 */
-	public function normalize( array $settings ) {
-		return array_merge( SettingsSchema::defaults( $this->context ), $settings );
+	public function normalize( array $settings, array $defaults = null ) {
+		if ( null === $defaults ) {
+			$defaults = SettingsSchema::defaults( $this->context );
+		}
+
+		return array_merge( $defaults, $settings );
 	}
 
 	/**

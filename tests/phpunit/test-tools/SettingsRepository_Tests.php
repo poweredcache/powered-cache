@@ -25,6 +25,8 @@ class SettingsRepository_Tests extends TestCase {
 	 * It reads single-site settings and fills missing defaults.
 	 */
 	public function test_all_reads_and_normalizes_single_site_settings() {
+		$this->expect_default_settings_filter( array( 'is_apache' => true ) );
+
 		\WP_Mock::userFunction(
 			'get_option',
 			array(
@@ -50,6 +52,8 @@ class SettingsRepository_Tests extends TestCase {
 	 * It reads network settings when network mode is requested.
 	 */
 	public function test_all_reads_network_settings_when_requested() {
+		$this->expect_default_settings_filter( array( 'is_apache' => false ) );
+
 		\WP_Mock::userFunction(
 			'get_site_option',
 			array(
@@ -65,6 +69,41 @@ class SettingsRepository_Tests extends TestCase {
 
 		$this->assertTrue( $settings['enable_cdn'] );
 		$this->assertFalse( $settings['auto_configure_htaccess'] );
+	}
+
+	/**
+	 * It keeps the public default settings filter in the read path.
+	 */
+	public function test_all_applies_default_settings_filter() {
+		$defaults = SettingsSchema::defaults( array( 'is_apache' => false ) );
+		$filtered = array_merge(
+			$defaults,
+			array(
+				'enable_cdn'         => true,
+				'custom_extension'   => 'default-value',
+				'rejected_referrers' => 'example.test',
+			)
+		);
+
+		\WP_Mock::onFilter( 'powered_cache_default_settings' )->with( $defaults )->reply( $filtered );
+
+		\WP_Mock::userFunction(
+			'get_option',
+			array(
+				'times'  => 1,
+				'args'   => array( \PoweredCache\Constants\SETTING_OPTION, array() ),
+				'return' => array(
+					'enable_cdn'         => false,
+					'rejected_referrers' => 'stored.test',
+				),
+			)
+		);
+
+		$settings = SettingsRepository::factory( false, array( 'is_apache' => false ) )->all();
+
+		$this->assertFalse( $settings['enable_cdn'] );
+		$this->assertSame( 'default-value', $settings['custom_extension'] );
+		$this->assertSame( 'stored.test', $settings['rejected_referrers'] );
 	}
 
 	/**
@@ -127,6 +166,8 @@ class SettingsRepository_Tests extends TestCase {
 	 * It merges partial updates with current settings before saving.
 	 */
 	public function test_update_merges_partial_settings_with_current_values() {
+		$this->expect_default_settings_filter( array( 'is_apache' => false ) );
+
 		\WP_Mock::userFunction(
 			'get_option',
 			array(
@@ -176,5 +217,16 @@ class SettingsRepository_Tests extends TestCase {
 		);
 
 		$this->assertTrue( SettingsRepository::factory( true )->delete() );
+	}
+
+	/**
+	 * Expect the default settings filter to keep legacy read parity.
+	 *
+	 * @param array $context Runtime context.
+	 */
+	private function expect_default_settings_filter( array $context ) {
+		$defaults = SettingsSchema::defaults( $context );
+
+		\WP_Mock::onFilter( 'powered_cache_default_settings' )->with( $defaults )->reply( $defaults );
 	}
 }

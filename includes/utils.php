@@ -8,7 +8,7 @@
 namespace PoweredCache\Utils;
 
 use PoweredCache\Encryption;
-use const PoweredCache\Constants\SETTING_OPTION;
+use PoweredCache\SettingsRepository;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
@@ -44,147 +44,9 @@ function is_network_wide( $plugin_file ) {
  * @since  2.0
  */
 function get_settings( $force_network_wide = false ) {
-	global $is_apache;
+	$network_wide = $force_network_wide ? true : null;
 
-	$settings = [
-		// basic options
-		'enable_page_cache'                => true,
-		'object_cache'                     => 'off',
-		'cache_mobile'                     => true,
-		'cache_mobile_separate_file'       => false,
-		'loggedin_user_cache'              => false,
-		'ssl_cache'                        => true, // deprecated
-		'gzip_compression'                 => false,
-		'cache_timeout'                    => 1440,
-		// advanced options
-		'auto_configure_htaccess'          => $is_apache,
-		'rejected_user_agents'             => '',
-		'rejected_cookies'                 => '',
-		'rejected_referrers'               => '',
-		'vary_cookies'                     => '',
-		'rejected_uri'                     => '',
-		'ignored_query_strings'            => '',
-		'cache_query_strings'              => '',
-		'purge_additional_pages'           => '',
-		// file optimization
-		'minify_html'                      => false,
-		'minify_html_dom_optimization'     => false,
-		'combine_google_fonts'             => false,
-		'swap_google_fonts_display'        => true,
-		'use_bunny_fonts'                  => false,
-		'minify_css'                       => false,
-		'combine_css'                      => false,
-		'critical_css'                     => false,
-		'critical_css_additional_files'    => '',
-		'critical_css_excluded_files'      => '',
-		'critical_css_appended_content'    => '',
-		'critical_css_fallback'            => '',
-		'excluded_css_files'               => '',
-		'remove_unused_css'                => false,
-		'ucss_safelist'                    => '',
-		'ucss_excluded_files'              => '',
-		'minify_js'                        => false,
-		'combine_js'                       => false,
-		'excluded_js_files'                => '',
-		'js_execution_method'              => 'blocking', // deprecated @since 3.2
-		'js_defer'                         => false,
-		'js_defer_exclusions'              => '',
-		'js_delay'                         => false,
-		'js_delay_exclusions'              => '',
-		'js_delay_timeout'                 => 0,
-		'js_execution_optimized_only'      => true,   // deprecated @since 3.2
-		'rewrite_file_optimizer'           => $is_apache,
-		// media optimization
-		'enable_image_optimization'        => false,
-		'image_optimizer_preferred_format' => '',
-		'add_missing_image_dimensions'     => false,
-		// lazyload
-		'enable_lazy_load'                 => false,
-		'lazy_load_post_content'           => true,
-		'lazy_load_images'                 => true,
-		'lazy_load_iframes'                => true,
-		'lazy_load_widgets'                => true,
-		'lazy_load_post_thumbnail'         => true,
-		'lazy_load_avatars'                => true,
-		'lazy_load_youtube'                => false,
-		'lazy_load_skip_first_nth_img'     => 3,
-		'lazy_load_exclusions'             => '',
-		'disable_wp_lazy_load'             => false,
-		'disable_wp_embeds'                => false,
-		'disable_emoji_scripts'            => false,
-		// cdn
-		'enable_cdn'                       => false,
-		'cdn_hostname'                     => array( '' ),
-		'cdn_zone'                         => array( '' ),
-		'cdn_rejected_files'               => '',
-		// preload
-		'enable_cache_preload'             => false,
-		'preload_homepage'                 => true,
-		'preload_public_posts'             => true,
-		'preload_public_tax'               => true,
-		'enable_sitemap_preload'           => false,
-		'preload_request_interval'         => 2, // in seconds
-		'preload_sitemap'                  => '',
-		'prefetch_dns'                     => '',
-		'preconnect_resource'              => '',
-		'prefetch_links'                   => true,
-		'enable_lcp_optimization'          => false,
-		// db options
-		'db_cleanup_post_revisions'        => false,
-		'db_cleanup_auto_drafts'           => false,
-		'db_cleanup_trashed_posts'         => false,
-		'db_cleanup_spam_comments'         => false,
-		'db_cleanup_trashed_comments'      => false,
-		'db_cleanup_expired_transients'    => false,
-		'db_cleanup_all_transients'        => false,
-		'db_cleanup_optimize_tables'       => false,
-		'enable_scheduled_db_cleanup'      => false,
-		'scheduled_db_cleanup_frequency'   => 'daily',
-		// add-ons
-		'enable_cloudflare'                => false,
-		'cloudflare_api_token'             => '',
-		'cloudflare_email'                 => '',
-		'cloudflare_api_key'               => '',
-		'cloudflare_zone'                  => '',
-		'enable_heartbeat'                 => false, // extension status
-		'heartbeat_dashboard_status'       => 'enable', // enable,disable,modify
-		'heartbeat_dashboard_interval'     => 60, // default interval in seconds
-		'heartbeat_editor_status'          => 'enable', // enable,disable,modify
-		'heartbeat_editor_interval'        => 15, // default interval in seconds
-		'heartbeat_frontend_status'        => 'enable', // enable,disable,modify
-		'heartbeat_frontend_interval'      => 60, // default interval in seconds
-		'enable_varnish'                   => false,
-		'varnish_ip'                       => '',
-		// misc
-		'cache_footprint'                  => true,
-		'async_cache_cleaning'             => false,
-		'dev_mode'                         => false,
-		// new options needs to migrate from extensions
-		'enable_google_tracking'           => false,
-		'enable_fb_tracking'               => false,
-	];
-
-	/**
-	 * Filter default settings.
-	 *
-	 * @hook   powered_cache_default_settings
-	 *
-	 * @param  {array} $settings Default settings.
-	 *
-	 * @return {array} New value
-	 * @since  2.0
-	 */
-	$default_settings = apply_filters( 'powered_cache_default_settings', $settings );
-
-	if ( POWERED_CACHE_IS_NETWORK || $force_network_wide ) {
-		$settings = get_site_option( SETTING_OPTION, [] );
-	} else {
-		$settings = get_option( SETTING_OPTION, [] );
-	}
-
-	$settings = wp_parse_args( $settings, $default_settings );
-
-	return $settings;
+	return SettingsRepository::factory( $network_wide )->all();
 }
 
 
