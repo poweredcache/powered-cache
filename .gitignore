@@ -33,3 +33,7 @@ Desktop.ini
 # PHPUnit
 .phpunit.result.cache
 coverage.xml
+
+# Internal planning notes
+/docs/roadmap-*.md
+/docs/internal-*.md

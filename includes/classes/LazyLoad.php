@@ -327,7 +327,7 @@ class LazyLoad {
 		/**
 		 * Filters the content
 		 *
-		 * @hook   powered_cache_lazy_load_filter
+		 * @hook   powered_cache_lazy_load_placeholder_url
 		 *
 		 * @param string $content The HTML string to filter
 		 *
@@ -711,4 +711,3 @@ class LazyLoad {
 	}
 
 }
-
