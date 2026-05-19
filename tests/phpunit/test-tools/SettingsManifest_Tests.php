@@ -44,11 +44,17 @@ class SettingsManifest_Tests extends TestCase {
 		$fields = SettingsManifest::fields( array( 'is_apache' => false ) );
 
 		$this->assertSame( 'enable_page_cache', $fields['enable_page_cache']['key'] );
+		$this->assertSame( 'Page Cache', $fields['enable_page_cache']['label'] );
+		$this->assertSame( 'Core cache', $fields['enable_page_cache']['group'] );
 		$this->assertSame( SettingsSchema::TYPE_BOOLEAN, $fields['enable_page_cache']['type'] );
+		$this->assertSame( 'toggle', $fields['enable_page_cache']['control'] );
 		$this->assertSame( 'cache', $fields['enable_page_cache']['section'] );
+		$this->assertSame( 10, $fields['enable_page_cache']['order'] );
 		$this->assertFalse( $fields['enable_page_cache']['premium'] );
 		$this->assertFalse( $fields['auto_configure_htaccess']['default'] );
 		$this->assertSame( array( 'redis', 'apcu' ), array_slice( $fields['object_cache']['enum'], -2 ) );
+		$this->assertSame( 'Redis', $fields['object_cache']['enum_labels']['redis'] );
+		$this->assertSame( 'select', $fields['object_cache']['control'] );
 	}
 
 	/**
@@ -70,7 +76,20 @@ class SettingsManifest_Tests extends TestCase {
 		foreach ( $premium_keys as $key ) {
 			$this->assertArrayHasKey( $key, $fields );
 			$this->assertTrue( $fields[ $key ]['premium'], $key );
+			$this->assertArrayHasKey( 'upgrade', $fields[ $key ] );
+			$this->assertSame( 'Upgrade to Premium', $fields[ $key ]['upgrade']['label'] );
 		}
+	}
+
+	/**
+	 * It exposes section descriptions for the settings app.
+	 */
+	public function test_sections_include_descriptions_for_settings_app() {
+		$sections = SettingsManifest::sections();
+
+		$this->assertArrayHasKey( 'description', $sections['cache'] );
+		$this->assertNotEmpty( $sections['cache']['description'] );
+		$this->assertSame( 'Tools', $sections['misc']['label'] );
 	}
 
 	/**

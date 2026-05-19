@@ -186,10 +186,28 @@ function admin_scripts( $hook ) {
 		[
 			'jquery',
 			'lodash',
+			'wp-api-fetch',
+			'wp-components',
+			'wp-element',
 			'wp-i18n',
 		],
 		POWERED_CACHE_VERSION,
 		true
+	);
+
+	wp_add_inline_script(
+		'powered-cache-admin',
+		'window.poweredCacheSettingsApp = ' . wp_json_encode(
+			[
+				'namespace'  => SettingsRestController::REST_NAMESPACE,
+				'restRoot'   => esc_url_raw( rest_url() ),
+				'restNonce'  => wp_create_nonce( 'wp_rest' ),
+				'isPremium'  => \PoweredCache\Utils\is_premium(),
+				'upgradeUrl' => 'https://poweredcache.com/?utm_source=poweredcache&utm_medium=plugin&utm_campaign=settings_upgrade',
+				'docsUrl'    => \PoweredCache\Utils\get_doc_url( '/' ),
+			]
+		) . ';',
+		'before'
 	);
 
 	wp_set_script_translations(

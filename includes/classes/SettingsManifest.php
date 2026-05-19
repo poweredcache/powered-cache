@@ -43,40 +43,49 @@ class SettingsManifest {
 	public static function sections() {
 		return array(
 			'cache'             => array(
-				'label' => 'Cache',
-				'order' => 10,
+				'label'       => 'Cache',
+				'description' => 'Control full-page cache, object cache, and browser-facing cache behavior.',
+				'order'       => 10,
 			),
 			'advanced'          => array(
-				'label' => 'Advanced',
-				'order' => 20,
+				'label'       => 'Advanced',
+				'description' => 'Fine tune exclusions, query strings, cookies, and server configuration.',
+				'order'       => 20,
 			),
 			'file_optimization' => array(
-				'label' => 'File Optimization',
-				'order' => 30,
+				'label'       => 'File Optimization',
+				'description' => 'Reduce render-blocking HTML, CSS, JavaScript, and font overhead.',
+				'order'       => 30,
 			),
 			'media'             => array(
-				'label' => 'Media',
-				'order' => 40,
+				'label'       => 'Media',
+				'description' => 'Optimize images, embeds, and lazy loading behavior.',
+				'order'       => 40,
 			),
 			'cdn'               => array(
-				'label' => 'CDN',
-				'order' => 50,
+				'label'       => 'CDN',
+				'description' => 'Route static assets through your CDN hostnames.',
+				'order'       => 50,
 			),
 			'preload'           => array(
-				'label' => 'Preload',
-				'order' => 60,
+				'label'       => 'Preload',
+				'description' => 'Warm important URLs and prepare critical resources before visitors arrive.',
+				'order'       => 60,
 			),
 			'database'          => array(
-				'label' => 'Database',
-				'order' => 70,
+				'label'       => 'Database',
+				'description' => 'Clean up database overhead and schedule recurring maintenance.',
+				'order'       => 70,
 			),
 			'integrations'      => array(
-				'label' => 'Integrations',
-				'order' => 80,
+				'label'       => 'Integrations',
+				'description' => 'Connect external services and WordPress runtime integrations.',
+				'order'       => 80,
 			),
 			'misc'              => array(
-				'label' => 'Misc',
-				'order' => 90,
+				'label'       => 'Tools',
+				'description' => 'Manage cache footprint, async cleanup, tracking, and developer mode.',
+				'order'       => 90,
 			),
 		);
 	}
@@ -91,13 +100,15 @@ class SettingsManifest {
 	 */
 	public static function fields( array $context = array(), $include_deprecated = true ) {
 		$fields = array();
+		$order  = 10;
 
 		foreach ( SettingsSchema::fields( $context ) as $key => $field ) {
 			if ( ! $include_deprecated && ! empty( $field['deprecated'] ) ) {
 				continue;
 			}
 
-			$fields[ $key ] = self::field( $key, $field );
+			$fields[ $key ] = self::field( $key, $field, $order );
+			$order         += 10;
 		}
 
 		return $fields;
@@ -108,20 +119,249 @@ class SettingsManifest {
 	 *
 	 * @param string $key Setting key.
 	 * @param array  $field Schema field.
+	 * @param int    $order Field display order.
 	 *
 	 * @return array
 	 */
-	private static function field( $key, array $field ) {
-		return array(
+	private static function field( $key, array $field, $order ) {
+		$metadata = self::field_metadata( $key, $field );
+		$manifest = array(
 			'key'          => $key,
+			'label'        => $metadata['label'],
+			'description'  => $metadata['description'],
 			'type'         => $field['type'],
+			'control'      => self::control( $field ),
 			'default'      => $field['default'],
 			'section'      => $field['section'],
+			'group'        => $metadata['group'],
+			'order'        => $order,
 			'sanitizer'    => $field['sanitizer'],
 			'premium'      => (bool) $field['premium'],
 			'dependencies' => array_values( $field['dependencies'] ),
 			'enum'         => array_values( $field['enum'] ),
+			'enum_labels'  => self::enum_labels( $field['enum'] ),
 			'deprecated'   => (bool) $field['deprecated'],
 		);
+
+		if ( $manifest['premium'] ) {
+			$manifest['upgrade'] = array(
+				'label'       => 'Upgrade to Premium',
+				'description' => $metadata['upgrade_description'],
+			);
+		}
+
+		return $manifest;
+	}
+
+	/**
+	 * Return UI control type for a schema field.
+	 *
+	 * @param array $field Schema field.
+	 *
+	 * @return string
+	 */
+	private static function control( array $field ) {
+		if ( SettingsSchema::TYPE_BOOLEAN === $field['type'] ) {
+			return 'toggle';
+		}
+
+		if ( SettingsSchema::TYPE_ENUM === $field['type'] ) {
+			return 'select';
+		}
+
+		if ( SettingsSchema::TYPE_INTEGER === $field['type'] ) {
+			return 'number';
+		}
+
+		if ( SettingsSchema::TYPE_ARRAY === $field['type'] ) {
+			return 'list';
+		}
+
+		if ( SettingsSchema::SANITIZE_TEXTAREA === $field['sanitizer'] ) {
+			return 'textarea';
+		}
+
+		return 'text';
+	}
+
+	/**
+	 * Return field labels and descriptions for UI consumers.
+	 *
+	 * @param string $key Setting key.
+	 * @param array  $field Schema field.
+	 *
+	 * @return array
+	 */
+	private static function field_metadata( $key, array $field ) {
+		$metadata = array(
+			'label'               => self::label_from_key( $key ),
+			'description'         => '',
+			'group'               => $field['section'],
+			'upgrade_description' => 'Unlock this optimization in Powered Cache Premium.',
+		);
+
+		$overrides = array(
+			'enable_page_cache'            => array(
+				'label'       => 'Page Cache',
+				'description' => 'Serve cached HTML for faster repeat and anonymous visits.',
+				'group'       => 'Core cache',
+			),
+			'object_cache'                 => array(
+				'label'       => 'Object Cache',
+				'description' => 'Use a persistent object cache backend for dynamic WordPress data.',
+				'group'       => 'Core cache',
+			),
+			'cache_mobile'                 => array(
+				'label'       => 'Mobile Cache',
+				'description' => 'Cache visits from mobile devices.',
+				'group'       => 'Core cache',
+			),
+			'gzip_compression'             => array(
+				'label'       => 'Gzip Compression',
+				'description' => 'Serve compressed cache files when supported by the server.',
+				'group'       => 'Delivery',
+			),
+			'cache_timeout'                => array(
+				'label'       => 'Cache Lifespan',
+				'description' => 'Set how long cached pages stay fresh, in minutes.',
+				'group'       => 'Delivery',
+			),
+			'minify_html'                  => array(
+				'label'       => 'Minify HTML',
+				'description' => 'Remove unnecessary whitespace from generated HTML.',
+				'group'       => 'HTML',
+			),
+			'minify_css'                   => array(
+				'label'       => 'Minify CSS',
+				'description' => 'Reduce CSS file size before delivery.',
+				'group'       => 'CSS',
+			),
+			'combine_css'                  => array(
+				'label'       => 'Combine CSS',
+				'description' => 'Combine CSS files when it improves delivery on the site.',
+				'group'       => 'CSS',
+			),
+			'critical_css'                 => array(
+				'label'               => 'Critical CSS',
+				'description'         => 'Generate and inline above-the-fold CSS for important templates.',
+				'group'               => 'CSS',
+				'upgrade_description' => 'Premium can generate Critical CSS automatically for key templates and posts.',
+			),
+			'remove_unused_css'            => array(
+				'label'               => 'Remove Unused CSS',
+				'description'         => 'Generate lean CSS payloads by removing rules unused on the page.',
+				'group'               => 'CSS',
+				'upgrade_description' => 'Premium can generate used CSS and reduce page weight without manual cleanup.',
+			),
+			'minify_js'                    => array(
+				'label'       => 'Minify JavaScript',
+				'description' => 'Reduce JavaScript file size before delivery.',
+				'group'       => 'JavaScript',
+			),
+			'js_defer'                     => array(
+				'label'       => 'Defer JavaScript',
+				'description' => 'Load JavaScript without blocking initial page rendering.',
+				'group'       => 'JavaScript',
+			),
+			'js_delay'                     => array(
+				'label'       => 'Delay JavaScript',
+				'description' => 'Delay selected scripts until user interaction or timeout.',
+				'group'       => 'JavaScript',
+			),
+			'enable_image_optimization'    => array(
+				'label'               => 'Image Optimization',
+				'description'         => 'Optimize images on demand through the Powered Cache image delivery service.',
+				'group'               => 'Images',
+				'upgrade_description' => 'Premium adds on-the-fly WebP/AVIF image optimization backed by fast CDN delivery.',
+			),
+			'add_missing_image_dimensions' => array(
+				'label'               => 'Automatic Image Dimensions',
+				'description'         => 'Add missing width and height attributes to improve layout stability.',
+				'group'               => 'Images',
+				'upgrade_description' => 'Premium can add missing image dimensions automatically to improve CLS.',
+			),
+			'enable_lazy_load'             => array(
+				'label'       => 'Lazy Load',
+				'description' => 'Delay images and embeds until they are close to the viewport.',
+				'group'       => 'Lazy loading',
+			),
+			'enable_cdn'                   => array(
+				'label'       => 'CDN Delivery',
+				'description' => 'Rewrite static asset URLs to configured CDN hostnames.',
+				'group'       => 'CDN',
+			),
+			'enable_cache_preload'         => array(
+				'label'       => 'Cache Preload',
+				'description' => 'Warm selected URLs before visitors request them.',
+				'group'       => 'Preload',
+			),
+			'enable_lcp_optimization'      => array(
+				'label'               => 'LCP Optimization',
+				'description'         => 'Detect and prioritize the likely Largest Contentful Paint resource.',
+				'group'               => 'Critical resources',
+				'upgrade_description' => 'Premium can prioritize critical LCP images and resources automatically.',
+			),
+			'enable_scheduled_db_cleanup'  => array(
+				'label'       => 'Scheduled Cleanup',
+				'description' => 'Run selected database cleanup tasks on a schedule.',
+				'group'       => 'Scheduling',
+			),
+			'enable_cloudflare'            => array(
+				'label'       => 'Cloudflare',
+				'description' => 'Purge Cloudflare when Powered Cache clears site cache.',
+				'group'       => 'CDN and proxy',
+			),
+			'enable_heartbeat'             => array(
+				'label'       => 'Heartbeat Control',
+				'description' => 'Adjust WordPress Heartbeat behavior in admin, editor, and frontend contexts.',
+				'group'       => 'WordPress runtime',
+			),
+			'enable_varnish'               => array(
+				'label'       => 'Varnish',
+				'description' => 'Purge Varnish when cache is cleared.',
+				'group'       => 'Reverse proxy',
+			),
+			'dev_mode'                     => array(
+				'label'       => 'Development Mode',
+				'description' => 'Temporarily bypass cache behavior while working on the site.',
+				'group'       => 'Developer tools',
+			),
+		);
+
+		if ( isset( $overrides[ $key ] ) ) {
+			$metadata = array_merge( $metadata, $overrides[ $key ] );
+		}
+
+		return $metadata;
+	}
+
+	/**
+	 * Build enum labels keyed by enum value.
+	 *
+	 * @param array $values Enum values.
+	 *
+	 * @return array
+	 */
+	private static function enum_labels( array $values ) {
+		$labels = array();
+
+		foreach ( $values as $value ) {
+			$labels[ $value ] = self::label_from_key( $value );
+		}
+
+		return $labels;
+	}
+
+	/**
+	 * Convert a schema key to a readable label.
+	 *
+	 * @param string $key Schema key.
+	 *
+	 * @return string
+	 */
+	private static function label_from_key( $key ) {
+		$key = str_replace( array( '_', '-' ), ' ', (string) $key );
+
+		return ucwords( $key );
 	}
 }

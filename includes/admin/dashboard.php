@@ -119,7 +119,7 @@ function admin_menu() {
  * Main settings page of the plugin
  */
 function settings_page() {
-	include __DIR__ . '/partials/settings-page.php';
+	include __DIR__ . '/partials/settings-app.php';
 }
 
 /**
