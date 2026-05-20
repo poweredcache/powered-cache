@@ -376,6 +376,13 @@
 	min-height: 96px;
 }
 
+.pc-settings-duration-control {
+	column-gap: 12px;
+	display: grid;
+	grid-template-columns: minmax(120px, 0.65fr) minmax(140px, 0.85fr);
+	row-gap: 12px;
+}
+
 .pc-settings-lock-preview {
 	background: #f6f7f7;
 	border: 1px solid #dcdcde;
@@ -451,6 +458,10 @@
 
 	.pc-settings-section__meta {
 		justify-content: flex-start;
+	}
+
+	.pc-settings-duration-control {
+		grid-template-columns: 1fr;
 	}
 
 	.pc-settings-nav {

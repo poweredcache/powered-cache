@@ -130,7 +130,7 @@ class SettingsManifest {
 			'label'        => $metadata['label'],
 			'description'  => $metadata['description'],
 			'type'         => $field['type'],
-			'control'      => self::control( $field ),
+			'control'      => $metadata['control'] ? $metadata['control'] : self::control( $field ),
 			'default'      => $field['default'],
 			'section'      => $field['section'],
 			'group'        => $metadata['group'],
@@ -195,6 +195,7 @@ class SettingsManifest {
 	private static function field_metadata( $key, array $field ) {
 		$metadata = array(
 			'label'               => self::label_from_key( $key ),
+			'control'             => '',
 			'description'         => '',
 			'group'               => $field['section'],
 			'upgrade_description' => 'Unlock this optimization in Powered Cache Premium.',
@@ -222,8 +223,9 @@ class SettingsManifest {
 				'group'       => 'Delivery',
 			),
 			'cache_timeout'                => array(
+				'control'     => 'duration',
 				'label'       => 'Cache Lifespan',
-				'description' => 'Set how long cached pages stay fresh, in minutes.',
+				'description' => 'Set how long cached pages stay fresh.',
 				'group'       => 'Delivery',
 			),
 			'minify_html'                  => array(

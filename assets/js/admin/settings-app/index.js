@@ -75,6 +75,68 @@ const displayValue = (value, field) => {
 	return undefined === value || value === null ? '' : value;
 };
 
+const durationUnits = [
+	{
+		label: __('Weeks', 'powered-cache'),
+		value: 'week',
+		minutes: 10080,
+	},
+	{
+		label: __('Days', 'powered-cache'),
+		value: 'day',
+		minutes: 1440,
+	},
+	{
+		label: __('Hours', 'powered-cache'),
+		value: 'hour',
+		minutes: 60,
+	},
+	{
+		label: __('Minutes', 'powered-cache'),
+		value: 'minute',
+		minutes: 1,
+	},
+];
+
+/**
+ * Convert stored minutes into the largest clean duration unit.
+ *
+ * @param {*} minutes Stored minutes.
+ *
+ * @returns {object} Duration parts.
+ */
+const getDurationParts = (minutes) => {
+	const totalMinutes = parseInt(minutes, 10);
+	const safeMinutes = Number.isNaN(totalMinutes) || totalMinutes < 0 ? 0 : totalMinutes;
+	const unit =
+		durationUnits.find(
+			(durationUnit) => safeMinutes > 0 && safeMinutes % durationUnit.minutes === 0,
+		) || durationUnits[durationUnits.length - 1];
+
+	return {
+		amount: safeMinutes > 0 ? safeMinutes / unit.minutes : 0,
+		unit: unit.value,
+	};
+};
+
+/**
+ * Convert duration control values back to minutes for storage.
+ *
+ * @param {*}      amount Duration amount.
+ * @param {string} unit   Duration unit.
+ *
+ * @returns {number} Minutes.
+ */
+const durationToMinutes = (amount, unit) => {
+	const durationAmount = parseInt(amount, 10);
+	const safeAmount = Number.isNaN(durationAmount) || durationAmount < 0 ? 0 : durationAmount;
+	const durationUnit =
+		durationUnits.find((availableUnit) => availableUnit.value === unit) ||
+		durationUnits[durationUnits.length - 1];
+
+	return safeAmount * durationUnit.minutes;
+};
+
 const MetricCard = ({ label, value, description, tone = 'neutral' }) => (
 	<div className={`pc-settings-metric pc-settings-metric--${tone}`}>
 		<span>{label}</span>
@@ -177,6 +239,38 @@ const SettingsField = ({ field, settings, onChange }) => {
 				/>
 			);
 			break;
+		case 'duration': {
+			const duration = getDurationParts(value);
+
+			control = (
+				<div className="pc-settings-duration-control">
+					<TextControl
+						{...controlProps}
+						aria-describedby={descriptionId}
+						label={field.label}
+						min="0"
+						onChange={(nextAmount) => {
+							updateValue(durationToMinutes(nextAmount, duration.unit));
+						}}
+						type="number"
+						value={String(duration.amount)}
+					/>
+					<SelectControl
+						{...controlProps}
+						label={__('Unit', 'powered-cache')}
+						onChange={(nextUnit) => {
+							updateValue(durationToMinutes(duration.amount, nextUnit));
+						}}
+						options={durationUnits.map((durationUnit) => ({
+							label: durationUnit.label,
+							value: durationUnit.value,
+						}))}
+						value={duration.unit}
+					/>
+				</div>
+			);
+			break;
+		}
 		case 'number':
 			control = (
 				<TextControl

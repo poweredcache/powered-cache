@@ -55,6 +55,8 @@ class SettingsManifest_Tests extends TestCase {
 		$this->assertSame( array( 'redis', 'apcu' ), array_slice( $fields['object_cache']['enum'], -2 ) );
 		$this->assertSame( 'Redis', $fields['object_cache']['enum_labels']['redis'] );
 		$this->assertSame( 'select', $fields['object_cache']['control'] );
+		$this->assertSame( 'duration', $fields['cache_timeout']['control'] );
+		$this->assertSame( 'Set how long cached pages stay fresh.', $fields['cache_timeout']['description'] );
 	}
 
 	/**
