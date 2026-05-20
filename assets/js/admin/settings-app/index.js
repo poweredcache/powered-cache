@@ -137,6 +137,16 @@ const durationToMinutes = (amount, unit) => {
 	return safeAmount * durationUnit.minutes;
 };
 
+const noop = () => {};
+
+const toggleLabel = (field) =>
+	field.control_label ||
+	sprintf(
+		/* translators: %s: setting label. */
+		__('Enable %s', 'powered-cache'),
+		field.label,
+	);
+
 const MetricCard = ({ label, value, description, tone = 'neutral' }) => (
 	<div className={`pc-settings-metric pc-settings-metric--${tone}`}>
 		<span>{label}</span>
@@ -144,6 +154,119 @@ const MetricCard = ({ label, value, description, tone = 'neutral' }) => (
 		{description && <p>{description}</p>}
 	</div>
 );
+
+const LockedControlPreview = ({ field }) => {
+	const previewValue = displayValue(field.default, field);
+	const controlProps = {
+		disabled: true,
+	};
+	let control;
+
+	switch (field.control) {
+		case 'toggle':
+			control = (
+				<ToggleControl
+					{...controlProps}
+					checked={!!field.default}
+					label={toggleLabel(field)}
+					onChange={noop}
+				/>
+			);
+			break;
+		case 'select':
+			control = (
+				<SelectControl
+					{...controlProps}
+					label={field.label}
+					onChange={noop}
+					options={(field.enum || []).map((option) => ({
+						label:
+							(field.enum_labels && field.enum_labels[option]) ||
+							labelFromKey(option),
+						value: option,
+					}))}
+					value={previewValue}
+				/>
+			);
+			break;
+		case 'textarea':
+		case 'list':
+			control = (
+				<TextareaControl
+					{...controlProps}
+					label={field.label}
+					onChange={noop}
+					value={previewValue}
+				/>
+			);
+			break;
+		case 'duration': {
+			const duration = getDurationParts(field.default);
+
+			control = (
+				<div className="pc-settings-duration-control">
+					<TextControl
+						{...controlProps}
+						label={field.label}
+						min="0"
+						onChange={noop}
+						type="number"
+						value={String(duration.amount)}
+					/>
+					<SelectControl
+						{...controlProps}
+						label={__('Unit', 'powered-cache')}
+						onChange={noop}
+						options={durationUnits.map((durationUnit) => ({
+							label: durationUnit.label,
+							value: durationUnit.value,
+						}))}
+						value={duration.unit}
+					/>
+				</div>
+			);
+			break;
+		}
+		case 'number':
+			control = (
+				<TextControl
+					{...controlProps}
+					label={field.label}
+					onChange={noop}
+					type="number"
+					value={previewValue}
+				/>
+			);
+			break;
+		case 'text':
+		default:
+			control = (
+				<TextControl
+					{...controlProps}
+					label={field.label}
+					onChange={noop}
+					value={previewValue}
+				/>
+			);
+			break;
+	}
+
+	return (
+		<div className="pc-settings-locked-control">
+			<div className="pc-settings-locked-control__preview">{control}</div>
+			<div className="pc-settings-locked-control__overlay">
+				<span>{__('Premium feature', 'powered-cache')}</span>
+				<Button
+					href={appConfig.upgradeUrl || 'https://poweredcache.com/'}
+					target="_blank"
+					variant="primary"
+				>
+					{field.upgrade ? field.upgrade.label : __('Upgrade', 'powered-cache')}
+				</Button>
+			</div>
+		</div>
+	);
+};
 
 const LockedField = ({ field }) => (
 	<div className="pc-settings-field pc-settings-field--locked" aria-label={field.label}>
@@ -160,18 +283,7 @@ const LockedField = ({ field }) => (
 			)}
 		</div>
 		<div className="pc-settings-field__control">
-			<div className="pc-settings-lock-preview" aria-hidden="true">
-				<span />
-				<span />
-				<span />
-			</div>
-			<Button
-				href={appConfig.upgradeUrl || 'https://poweredcache.com/'}
-				target="_blank"
-				variant="primary"
-			>
-				{field.upgrade ? field.upgrade.label : __('Upgrade', 'powered-cache')}
-			</Button>
+			<LockedControlPreview field={field} />
 		</div>
 	</div>
 );
@@ -206,14 +318,7 @@ const SettingsField = ({ field, settings, onChange }) => {
 					{...controlProps}
 					aria-describedby={descriptionId}
 					checked={!!value}
-					label={
-						field.control_label ||
-						sprintf(
-							/* translators: %s: setting label. */
-							__('Enable %s', 'powered-cache'),
-							field.label,
-						)
-					}
+					label={toggleLabel(field)}
 					onChange={updateValue}
 				/>
 			);

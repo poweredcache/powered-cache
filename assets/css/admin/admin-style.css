@@ -383,33 +383,44 @@
 	row-gap: 12px;
 }
 
-.pc-settings-lock-preview {
+.pc-settings-locked-control {
 	background: #f6f7f7;
 	border: 1px solid #dcdcde;
 	border-radius: 6px;
-	margin-bottom: 12px;
-	padding: 10px;
+	overflow: hidden;
+	padding: 14px;
+	position: relative;
 }
 
-.pc-settings-lock-preview span {
-	background: #dcdcde;
+.pc-settings-locked-control__preview {
+	opacity: 0.48;
+	pointer-events: none;
+}
+
+.pc-settings-locked-control__overlay {
+	align-items: center;
+	background: rgba(255, 255, 255, 0.76);
+	bottom: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	justify-content: center;
+	left: 0;
+	padding: 14px;
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+
+.pc-settings-locked-control__overlay span {
+	background: #fff;
+	border: 1px solid #dcdcde;
 	border-radius: 999px;
-	display: block;
-	height: 7px;
-	margin-bottom: 8px;
-}
-
-.pc-settings-lock-preview span:nth-child(1) {
-	width: 70%;
-}
-
-.pc-settings-lock-preview span:nth-child(2) {
-	width: 92%;
-}
-
-.pc-settings-lock-preview span:nth-child(3) {
-	margin-bottom: 0;
-	width: 46%;
+	color: var(--pc-admin-text);
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1;
+	padding: 7px 10px;
 }
 
 .pc-settings-savebar {
