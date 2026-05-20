@@ -121,6 +121,49 @@ const syncSectionUrl = (sectionKey, replace = false) => {
 	);
 };
 
+const syncAdminMenuSection = (sectionKey) => {
+	if (!sectionKey || !document.querySelector) {
+		return;
+	}
+
+	const submenuLinks = Array.from(
+		document.querySelectorAll('#toplevel_page_powered-cache .wp-submenu a'),
+	);
+	const poweredCacheLinks = submenuLinks.length
+		? submenuLinks
+		: Array.from(document.querySelectorAll('#adminmenu a[href*="page=powered-cache"]'));
+	let activeLink = null;
+
+	poweredCacheLinks.forEach((link) => {
+		const listItem = link.closest('li');
+		let linkSection = '';
+
+		try {
+			linkSection = new URL(link.href, window.location.href).searchParams.get(sectionParam);
+		} catch (error) {
+			linkSection = '';
+		}
+
+		link.classList.remove('current');
+
+		if (listItem) {
+			listItem.classList.remove('current');
+		}
+
+		if (linkSection === sectionKey) {
+			activeLink = link;
+		}
+	});
+
+	if (activeLink) {
+		activeLink.classList.add('current');
+
+		if (activeLink.closest('li')) {
+			activeLink.closest('li').classList.add('current');
+		}
+	}
+};
+
 const durationUnits = [
 	{
 		label: __('Weeks', 'powered-cache'),
@@ -612,6 +655,10 @@ const SettingsApp = () => {
 			window.removeEventListener('popstate', handlePopState);
 		};
 	}, [manifest]);
+
+	useEffect(() => {
+		syncAdminMenuSection(activeSection);
+	}, [activeSection]);
 
 	const sections = useMemo(() => {
 		if (!manifest) {
