@@ -103,6 +103,7 @@ class SettingsSchema_Tests extends TestCase {
 
 		$this->assertContains( 'js_delay', $fields['js_delay_timeout']['dependencies'] );
 		$this->assertTrue( $fields['js_execution_method']['deprecated'] );
+		$this->assertContains( 'delayed', $fields['js_execution_method']['enum'] );
 	}
 
 	/**

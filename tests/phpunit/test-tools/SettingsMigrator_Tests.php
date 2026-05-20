@@ -69,9 +69,9 @@ class SettingsMigrator_Tests extends TestCase {
 	}
 
 	/**
-	 * It drops deprecated keys when preparing settings for storage.
+	 * It preserves deprecated keys when preparing settings for storage.
 	 */
-	public function test_for_storage_drops_deprecated_keys() {
+	public function test_for_storage_preserves_deprecated_keys() {
 		$migrator = new SettingsMigrator();
 
 		$settings = $migrator->for_storage(
@@ -84,10 +84,11 @@ class SettingsMigrator_Tests extends TestCase {
 			)
 		);
 
-		$this->assertArrayNotHasKey( 'accepted_query_strings', $settings );
-		$this->assertArrayNotHasKey( 'js_execution_method', $settings );
-		$this->assertArrayNotHasKey( 'js_execution_optimized_only', $settings );
-		$this->assertArrayNotHasKey( 'ssl_cache', $settings );
+		$this->assertSame( 'utm_source', $settings['accepted_query_strings'] );
+		$this->assertSame( 'utm_source', $settings['ignored_query_strings'] );
+		$this->assertSame( 'defer', $settings['js_execution_method'] );
+		$this->assertTrue( $settings['js_execution_optimized_only'] );
+		$this->assertTrue( $settings['ssl_cache'] );
 		$this->assertTrue( $settings['js_defer'] );
 		$this->assertTrue( $settings['enable_page_cache'] );
 	}

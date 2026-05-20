@@ -78,7 +78,7 @@ class SettingsSchema {
 			'minify_js'                        => self::field( self::TYPE_BOOLEAN, false, 'file_optimization', self::SANITIZE_BOOLEAN ),
 			'combine_js'                       => self::field( self::TYPE_BOOLEAN, false, 'file_optimization', self::SANITIZE_BOOLEAN ),
 			'excluded_js_files'                => self::field( self::TYPE_STRING, '', 'file_optimization', self::SANITIZE_TEXTAREA ),
-			'js_execution_method'              => self::field( self::TYPE_ENUM, 'blocking', 'file_optimization', self::SANITIZE_ENUM, false, array(), array( 'blocking', 'defer', 'delay' ), true ),
+			'js_execution_method'              => self::field( self::TYPE_ENUM, 'blocking', 'file_optimization', self::SANITIZE_ENUM, false, array(), array( 'blocking', 'async', 'defer', 'delay', 'delayed' ), true ),
 			'js_defer'                         => self::field( self::TYPE_BOOLEAN, false, 'file_optimization', self::SANITIZE_BOOLEAN ),
 			'js_defer_exclusions'              => self::field( self::TYPE_STRING, '', 'file_optimization', self::SANITIZE_TEXTAREA, false, array( 'js_defer' ) ),
 			'js_delay'                         => self::field( self::TYPE_BOOLEAN, false, 'file_optimization', self::SANITIZE_BOOLEAN ),

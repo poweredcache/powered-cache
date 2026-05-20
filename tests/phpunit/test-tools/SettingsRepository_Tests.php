@@ -163,6 +163,41 @@ class SettingsRepository_Tests extends TestCase {
 	}
 
 	/**
+	 * It keeps legacy and deprecated settings in storage for rollback safety.
+	 */
+	public function test_save_preserves_legacy_storage_keys() {
+		\WP_Mock::userFunction(
+			'update_option',
+			array(
+				'times'  => 1,
+				'return' => function ( $option, $settings ) {
+					$this->assertSame( \PoweredCache\Constants\SETTING_OPTION, $option );
+					$this->assertSame( 'utm_source', $settings['accepted_query_strings'] );
+					$this->assertSame( 'utm_source', $settings['ignored_query_strings'] );
+					$this->assertSame( 'delayed', $settings['js_execution_method'] );
+					$this->assertTrue( $settings['js_delay'] );
+					$this->assertFalse( $settings['combine_js'] );
+					$this->assertFalse( $settings['ssl_cache'] );
+					$this->assertSame( 'keep-me', $settings['custom_legacy_key'] );
+
+					return true;
+				},
+			)
+		);
+
+		$result = SettingsRepository::factory( false, array( 'is_apache' => false ) )->save(
+			array(
+				'accepted_query_strings' => 'utm_source',
+				'js_execution_method'    => 'delayed',
+				'ssl_cache'              => false,
+				'custom_legacy_key'      => 'keep-me',
+			)
+		);
+
+		$this->assertTrue( $result );
+	}
+
+	/**
 	 * It merges partial updates with current settings before saving.
 	 */
 	public function test_update_merges_partial_settings_with_current_values() {

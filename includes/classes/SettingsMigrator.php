@@ -36,12 +36,16 @@ class SettingsMigrator {
 	/**
 	 * Prepare settings for current storage.
 	 *
+	 * Storage migration is intentionally non-destructive so existing 3.x
+	 * installs, rollbacks, and integrations keep legacy keys after saving from
+	 * the 4.0 UI.
+	 *
 	 * @param array $settings Settings payload.
 	 *
 	 * @return array
 	 */
 	public function for_storage( array $settings ) {
-		return $this->migrate( $settings, true );
+		return $this->migrate( $settings );
 	}
 
 	/**
