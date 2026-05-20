@@ -190,6 +190,10 @@
 	row-gap: 20px;
 }
 
+.pc-settings-layout--nav-hidden {
+	grid-template-columns: minmax(0, 1fr);
+}
+
 .pc-settings-nav {
 	background: var(--pc-admin-white);
 	border: 1px solid #dcdcde;

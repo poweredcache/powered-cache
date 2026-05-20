@@ -973,10 +973,11 @@ const SettingsApp = () => {
 				</div>
 			)}
 
-			<div className="pc-settings-layout">
+			<div className="pc-settings-layout pc-settings-layout--nav-hidden">
 				<nav
 					className="pc-settings-nav"
 					aria-label={__('Settings sections', 'powered-cache')}
+					hidden
 				>
 					{sections.map(([sectionKey, section]) => (
 						<button
