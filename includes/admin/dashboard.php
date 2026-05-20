@@ -11,6 +11,7 @@ use PoweredCache\Async\CachePurger;
 use PoweredCache\Async\DatabaseOptimizer;
 use PoweredCache\Config;
 use PoweredCache\Encryption;
+use PoweredCache\SettingsManifest;
 use PoweredCache\SettingsRepository;
 use PoweredCache\SettingsSaveService;
 use PoweredCache\SettingsTransfer;
@@ -64,6 +65,7 @@ function setup() {
 	add_action( 'admin_post_deactivate_plugin', __NAMESPACE__ . '\\deactivate_plugin' );
 	add_filter( 'plugin_action_links_' . plugin_basename( POWERED_CACHE_PLUGIN_FILE ), __NAMESPACE__ . '\\action_links' );
 	add_filter( 'network_admin_plugin_action_links_' . plugin_basename( POWERED_CACHE_PLUGIN_FILE ), __NAMESPACE__ . '\\action_links' );
+	add_filter( 'submenu_file', __NAMESPACE__ . '\\highlight_settings_section_submenu' );
 }
 
 /**
@@ -113,6 +115,56 @@ function admin_menu() {
 		$capability,
 		MENU_SLUG
 	);
+
+	foreach ( settings_submenu_sections() as $section_key => $section ) {
+		add_submenu_page(
+			MENU_SLUG,
+			sprintf( esc_html__( '%s Settings', 'powered-cache' ), esc_html( $section['label'] ) ),
+			esc_html( $section['label'] ),
+			$capability,
+			MENU_SLUG . '&section=' . rawurlencode( $section_key ),
+			__NAMESPACE__ . '\settings_page'
+		);
+	}
+}
+
+/**
+ * Return settings sections exposed as submenu deep links.
+ *
+ * @return array
+ */
+function settings_submenu_sections() {
+	$sections = SettingsManifest::sections();
+
+	uasort(
+		$sections,
+		function ( $first, $second ) {
+			return $first['order'] - $second['order'];
+		}
+	);
+
+	return $sections;
+}
+
+/**
+ * Highlight the submenu item matching the current settings section deep link.
+ *
+ * @param string $submenu_file Current submenu file.
+ *
+ * @return string
+ */
+function highlight_settings_section_submenu( $submenu_file ) {
+	if ( ! isset( $_GET['page'], $_GET['section'] ) || MENU_SLUG !== $_GET['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		return $submenu_file;
+	}
+
+	$section_key = sanitize_key( wp_unslash( $_GET['section'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+	if ( ! isset( settings_submenu_sections()[ $section_key ] ) ) {
+		return $submenu_file;
+	}
+
+	return MENU_SLUG . '&section=' . rawurlencode( $section_key );
 }
 
 /**

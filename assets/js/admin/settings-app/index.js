@@ -19,6 +19,8 @@ if (appConfig.restNonce && apiFetch.createNonceMiddleware) {
  */
 const route = (path) => `/${appConfig.namespace || 'powered-cache/v1'}${path}`;
 
+const sectionParam = 'section';
+
 /**
  * Build a readable fallback label.
  *
@@ -73,6 +75,50 @@ const displayValue = (value, field) => {
 	}
 
 	return undefined === value || value === null ? '' : value;
+};
+
+const orderedSectionKeys = (manifestResponse) =>
+	Object.entries(manifestResponse.sections || {})
+		.sort(([, first], [, second]) => first.order - second.order)
+		.map(([sectionKey]) => sectionKey);
+
+const requestedSection = () => {
+	const url = new URL(window.location.href);
+
+	return url.searchParams.get(sectionParam) || '';
+};
+
+const resolveActiveSection = (manifestResponse) => {
+	const sectionKeys = orderedSectionKeys(manifestResponse);
+	const requested = requestedSection();
+
+	if (sectionKeys.includes(requested)) {
+		return requested;
+	}
+
+	return sectionKeys[0] || '';
+};
+
+const syncSectionUrl = (sectionKey, replace = false) => {
+	if (!sectionKey || !window.history) {
+		return;
+	}
+
+	const url = new URL(window.location.href);
+
+	if (url.searchParams.get(sectionParam) === sectionKey) {
+		return;
+	}
+
+	url.searchParams.set(sectionParam, sectionKey);
+	window.history[replace ? 'replaceState' : 'pushState'](
+		{
+			...(window.history.state || {}),
+			poweredCacheSection: sectionKey,
+		},
+		'',
+		url.toString(),
+	);
 };
 
 const durationUnits = [
@@ -531,7 +577,14 @@ const SettingsApp = () => {
 				setManifest(manifestResponse);
 				setSettings(stateResponse.settings || {});
 				setInitialSettings(stateResponse.settings || {});
-				setActiveSection(Object.keys(manifestResponse.sections || {})[0] || '');
+				setActiveSection(resolveActiveSection(manifestResponse));
+
+				if (
+					requestedSection() &&
+					!orderedSectionKeys(manifestResponse).includes(requestedSection())
+				) {
+					syncSectionUrl(resolveActiveSection(manifestResponse), true);
+				}
 			})
 			.catch(() => {
 				setNotice({
@@ -543,6 +596,22 @@ const SettingsApp = () => {
 				setIsLoading(false);
 			});
 	}, []);
+
+	useEffect(() => {
+		if (!manifest) {
+			return undefined;
+		}
+
+		const handlePopState = () => {
+			setActiveSection(resolveActiveSection(manifest));
+		};
+
+		window.addEventListener('popstate', handlePopState);
+
+		return () => {
+			window.removeEventListener('popstate', handlePopState);
+		};
+	}, [manifest]);
 
 	const sections = useMemo(() => {
 		if (!manifest) {
@@ -578,6 +647,11 @@ const SettingsApp = () => {
 			...currentSettings,
 			[key]: value,
 		}));
+	};
+
+	const updateActiveSection = (sectionKey) => {
+		setActiveSection(sectionKey);
+		syncSectionUrl(sectionKey);
 	};
 
 	const saveSettings = () => {
@@ -792,7 +866,7 @@ const SettingsApp = () => {
 							aria-current={sectionKey === activeSection ? 'page' : undefined}
 							className={sectionKey === activeSection ? 'is-active' : ''}
 							key={sectionKey}
-							onClick={() => setActiveSection(sectionKey)}
+							onClick={() => updateActiveSection(sectionKey)}
 							type="button"
 						>
 							{section.label}
