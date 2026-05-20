@@ -88,12 +88,42 @@ const requestedSection = () => {
 	return url.searchParams.get(sectionParam) || '';
 };
 
+const urlSection = (href) => {
+	try {
+		const url = new URL(href, window.location.href);
+
+		if (url.searchParams.get('page') !== 'powered-cache') {
+			return null;
+		}
+
+		return url.searchParams.get(sectionParam) || '';
+	} catch (error) {
+		return null;
+	}
+};
+
 const resolveActiveSection = (manifestResponse) => {
 	const sectionKeys = orderedSectionKeys(manifestResponse);
 	const requested = requestedSection();
 
 	if (sectionKeys.includes(requested)) {
 		return requested;
+	}
+
+	return sectionKeys[0] || '';
+};
+
+const resolveSectionFromUrl = (manifestResponse, href) => {
+	const section = urlSection(href);
+
+	if (section === null) {
+		return '';
+	}
+
+	const sectionKeys = orderedSectionKeys(manifestResponse);
+
+	if (sectionKeys.includes(section)) {
+		return section;
 	}
 
 	return sectionKeys[0] || '';
@@ -653,6 +683,46 @@ const SettingsApp = () => {
 
 		return () => {
 			window.removeEventListener('popstate', handlePopState);
+		};
+	}, [manifest]);
+
+	useEffect(() => {
+		if (!manifest) {
+			return undefined;
+		}
+
+		const adminMenuLinks = Array.from(
+			document.querySelectorAll('#adminmenu a[href*="page=powered-cache"]'),
+		);
+		const handleAdminMenuClick = (event) => {
+			const link = event.currentTarget;
+			const sectionKey = resolveSectionFromUrl(manifest, link.href);
+
+			if (
+				!sectionKey ||
+				event.defaultPrevented ||
+				event.button !== 0 ||
+				event.metaKey ||
+				event.ctrlKey ||
+				event.shiftKey ||
+				event.altKey
+			) {
+				return;
+			}
+
+			event.preventDefault();
+			setActiveSection(sectionKey);
+			syncSectionUrl(sectionKey);
+		};
+
+		adminMenuLinks.forEach((link) => {
+			link.addEventListener('click', handleAdminMenuClick);
+		});
+
+		return () => {
+			adminMenuLinks.forEach((link) => {
+				link.removeEventListener('click', handleAdminMenuClick);
+			});
 		};
 	}, [manifest]);
 
