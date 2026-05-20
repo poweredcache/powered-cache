@@ -151,8 +151,8 @@ const syncSectionUrl = (sectionKey, replace = false) => {
 	);
 };
 
-const syncAdminMenuSection = (sectionKey) => {
-	if (!sectionKey || !document.querySelector) {
+const syncAdminMenuSection = (sectionKey, manifestResponse) => {
+	if (!sectionKey || !manifestResponse || !document.querySelector) {
 		return;
 	}
 
@@ -168,11 +168,7 @@ const syncAdminMenuSection = (sectionKey) => {
 		const listItem = link.closest('li');
 		let linkSection = '';
 
-		try {
-			linkSection = new URL(link.href, window.location.href).searchParams.get(sectionParam);
-		} catch (error) {
-			linkSection = '';
-		}
+		linkSection = resolveSectionFromUrl(manifestResponse, link.href);
 
 		link.classList.remove('current');
 
@@ -727,8 +723,8 @@ const SettingsApp = () => {
 	}, [manifest]);
 
 	useEffect(() => {
-		syncAdminMenuSection(activeSection);
-	}, [activeSection]);
+		syncAdminMenuSection(activeSection, manifest);
+	}, [activeSection, manifest]);
 
 	const sections = useMemo(() => {
 		if (!manifest) {

@@ -105,18 +105,23 @@ function admin_menu() {
 		ICON_BASE64
 	);
 
-	/**
-	 * Different name submenu item, url point same address with parent.
-	 */
+	$sections            = settings_submenu_sections();
+	$default_section_key = key( $sections );
+	$default_section     = current( $sections );
+
 	add_submenu_page(
 		MENU_SLUG,
 		esc_html__( 'Powered Cache Settings', 'powered-cache' ),
-		esc_html__( 'Settings', 'powered-cache' ),
+		esc_html( $default_section['label'] ),
 		$capability,
 		MENU_SLUG
 	);
 
-	foreach ( settings_submenu_sections() as $section_key => $section ) {
+	foreach ( $sections as $section_key => $section ) {
+		if ( $default_section_key === $section_key ) {
+			continue;
+		}
+
 		add_submenu_page(
 			MENU_SLUG,
 			sprintf( esc_html__( '%s Settings', 'powered-cache' ), esc_html( $section['label'] ) ),
@@ -147,6 +152,17 @@ function settings_submenu_sections() {
 }
 
 /**
+ * Return the default settings section key.
+ *
+ * @return string
+ */
+function default_settings_section_key() {
+	$sections = settings_submenu_sections();
+
+	return (string) key( $sections );
+}
+
+/**
  * Highlight the submenu item matching the current settings section deep link.
  *
  * @param string $submenu_file Current submenu file.
@@ -162,6 +178,10 @@ function highlight_settings_section_submenu( $submenu_file ) {
 
 	if ( ! isset( settings_submenu_sections()[ $section_key ] ) ) {
 		return $submenu_file;
+	}
+
+	if ( default_settings_section_key() === $section_key ) {
+		return MENU_SLUG;
 	}
 
 	return MENU_SLUG . '&section=' . rawurlencode( $section_key );
