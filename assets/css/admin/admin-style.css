@@ -391,6 +391,21 @@
 	width: 100%;
 }
 
+.pc-settings-license-form .pc-settings-field__control {
+	align-items: flex-start;
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+.pc-settings-license-form .components-base-control {
+	width: 100%;
+}
+
+.pc-settings-license-form .components-button {
+	min-height: 40px;
+}
+
 .pc-settings-locked-control {
 	background: linear-gradient(135deg, #f8fafc 0%, #fff 100%);
 	border: 1px solid #cfd7e2;
