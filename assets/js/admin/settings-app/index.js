@@ -878,6 +878,11 @@ const SettingsApp = () => {
 							{__('Upgrade', 'powered-cache')}
 						</Button>
 					)}
+					{appConfig.isPremium && premiumInfo.licenseSettingsUrl && (
+						<Button href={premiumInfo.licenseSettingsUrl} variant="secondary">
+							{__('Manage License', 'powered-cache')}
+						</Button>
+					)}
 				</div>
 			</header>
 
