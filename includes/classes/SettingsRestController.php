@@ -111,12 +111,18 @@ class SettingsRestController {
 				'is_apache' => (bool) $is_apache,
 			)
 		);
+		$settings   = $repository->all();
 
 		return array(
 			'format'         => self::STATE_FORMAT,
 			'format_version' => SettingsManifest::FORMAT_VERSION,
 			'plugin_version' => defined( 'POWERED_CACHE_VERSION' ) ? POWERED_CACHE_VERSION : '',
-			'settings'       => SettingsTransfer::redact_sensitive( $repository->all() ),
+			'settings'       => SettingsTransfer::redact_sensitive( $settings ),
+			'validation'     => SettingsValidator::factory(
+				array(
+					'is_apache' => (bool) $is_apache,
+				)
+			)->report( $settings ),
 		);
 	}
 
@@ -148,6 +154,11 @@ class SettingsRestController {
 			'format_version' => SettingsManifest::FORMAT_VERSION,
 			'plugin_version' => defined( 'POWERED_CACHE_VERSION' ) ? POWERED_CACHE_VERSION : '',
 			'settings'       => SettingsTransfer::redact_sensitive( $settings ),
+			'validation'     => SettingsValidator::factory(
+				array(
+					'is_apache' => (bool) $is_apache,
+				)
+			)->report( $settings ),
 		);
 	}
 

@@ -133,6 +133,8 @@ class SettingsRestController_Tests extends TestCase {
 
 		$this->assertSame( SettingsRestController::STATE_FORMAT, $response['format'] );
 		$this->assertSame( SettingsManifest::FORMAT_VERSION, $response['format_version'] );
+		$this->assertArrayHasKey( 'validation', $response );
+		$this->assertTrue( $response['validation']['valid'] );
 		$this->assertTrue( $response['settings']['critical_css'] );
 		$this->assertTrue( $response['settings']['enable_image_optimization'] );
 		$this->assertSame( '', $response['settings']['cloudflare_email'] );
