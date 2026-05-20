@@ -147,6 +147,13 @@ const toggleLabel = (field) =>
 		field.label,
 	);
 
+const upgradeLabel = (field) =>
+	sprintf(
+		/* translators: %s: setting label. */
+		__('Unlock %s', 'powered-cache'),
+		field.label,
+	);
+
 const MetricCard = ({ label, value, description, tone = 'neutral' }) => (
 	<div className={`pc-settings-metric pc-settings-metric--${tone}`}>
 		<span>{label}</span>
@@ -255,14 +262,23 @@ const LockedControlPreview = ({ field }) => {
 		<div className="pc-settings-locked-control">
 			<div className="pc-settings-locked-control__preview">{control}</div>
 			<div className="pc-settings-locked-control__overlay">
-				<span>{__('Premium feature', 'powered-cache')}</span>
-				<Button
-					href={appConfig.upgradeUrl || 'https://poweredcache.com/'}
-					target="_blank"
-					variant="primary"
-				>
-					{field.upgrade ? field.upgrade.label : __('Upgrade', 'powered-cache')}
-				</Button>
+				<div className="pc-settings-locked-control__panel">
+					<span>{__('Available in Premium', 'powered-cache')}</span>
+					<strong>{upgradeLabel(field)}</strong>
+					<p>
+						{__(
+							'Upgrade to enable this control and the full Premium optimization toolkit.',
+							'powered-cache',
+						)}
+					</p>
+					<Button
+						href={appConfig.upgradeUrl || 'https://poweredcache.com/'}
+						target="_blank"
+						variant="primary"
+					>
+						{field.upgrade ? field.upgrade.label : __('Upgrade', 'powered-cache')}
+					</Button>
+				</div>
 			</div>
 		</div>
 	);
