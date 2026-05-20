@@ -215,8 +215,7 @@ function process_form_submit() {
 		$settings_service    = SettingsSaveService::factory( $settings_repository, POWERED_CACHE_IS_NETWORK );
 		$action              = isset( $_POST['powered_cache_form_action'] ) ? sanitize_text_field( wp_unslash( $_POST['powered_cache_form_action'] ) ) : 'save_settings';
 		$old_options         = $settings_repository->all();
-		$options             = sanitize_options( $_POST );
-		$options             = maybe_process_cloudflare_settings( $options );
+		$options             = $old_options;
 
 		switch ( $action ) {
 			case 'reset_settings':
@@ -258,13 +257,16 @@ function process_form_submit() {
 				$options['dev_mode'] = false;
 				break;
 			case 'save_settings_and_optimize':
+				$options = maybe_process_cloudflare_settings( sanitize_options( $_POST ) );
 				db_optimize( $options );
 				break;
 			case 'save_settings_and_clear_cache':
+				$options = maybe_process_cloudflare_settings( sanitize_options( $_POST ) );
 				purge_all_cache( $options );
 				break;
 			case 'save_settings':
 			default:
+				$options = maybe_process_cloudflare_settings( sanitize_options( $_POST ) );
 				break;
 		}
 

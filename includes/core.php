@@ -196,12 +196,15 @@ function admin_scripts( $hook ) {
 	);
 
 	$settings_app_config = [
-		'namespace'  => SettingsRestController::REST_NAMESPACE,
-		'restRoot'   => esc_url_raw( rest_url() ),
-		'restNonce'  => wp_create_nonce( 'wp_rest' ),
-		'isPremium'  => \PoweredCache\Utils\is_premium(),
-		'upgradeUrl' => 'https://poweredcache.com/?utm_source=poweredcache&utm_medium=plugin&utm_campaign=settings_upgrade',
-		'docsUrl'    => \PoweredCache\Utils\get_doc_url( '/' ),
+		'namespace'       => SettingsRestController::REST_NAMESPACE,
+		'restRoot'        => esc_url_raw( rest_url() ),
+		'restNonce'       => wp_create_nonce( 'wp_rest' ),
+		'settingsFormUrl' => self_admin_url( 'admin.php?page=' . MENU_SLUG . '&section=misc' ),
+		'settingsNonce'   => wp_create_nonce( 'powered_cache_update_settings' ),
+		'purgeAllUrl'     => wp_nonce_url( self_admin_url( 'admin-post.php?action=powered_cache_purge_all_cache' ), 'powered_cache_purge_all_cache' ),
+		'isPremium'       => \PoweredCache\Utils\is_premium(),
+		'upgradeUrl'      => 'https://poweredcache.com/?utm_source=poweredcache&utm_medium=plugin&utm_campaign=settings_upgrade',
+		'docsUrl'         => \PoweredCache\Utils\get_doc_url( '/' ),
 	];
 
 	/**

@@ -714,6 +714,117 @@ const LicenseSection = ({ section, premiumInfo }) => {
 	);
 };
 
+const SettingsToolsActions = () => {
+	const formUrl = appConfig.settingsFormUrl || window.location.href;
+	const nonce = appConfig.settingsNonce || '';
+	const confirmReset = (event) => {
+		if (
+			// eslint-disable-next-line no-alert
+			!window.confirm(
+				__(
+					'Reset Powered Cache settings to their defaults? This cannot be undone.',
+					'powered-cache',
+				),
+			)
+		) {
+			event.preventDefault();
+		}
+	};
+
+	return (
+		<div
+			className="pc-settings-tools-actions"
+			aria-label={__('Settings tools', 'powered-cache')}
+		>
+			<div className="pc-settings-tool-card">
+				<div>
+					<strong>{__('Export Settings', 'powered-cache')}</strong>
+					<p>
+						{__(
+							'Download a portable JSON backup without sensitive credentials.',
+							'powered-cache',
+						)}
+					</p>
+				</div>
+				<form action={formUrl} method="post">
+					<input name="powered_cache_settings_nonce" type="hidden" value={nonce} />
+					<Button
+						name="powered_cache_form_action"
+						type="submit"
+						value="export_settings"
+						variant="secondary"
+					>
+						{__('Export JSON', 'powered-cache')}
+					</Button>
+				</form>
+			</div>
+
+			<div className="pc-settings-tool-card">
+				<div>
+					<strong>{__('Import Settings', 'powered-cache')}</strong>
+					<p>
+						{__(
+							'Restore a Powered Cache JSON export while preserving legacy extension data.',
+							'powered-cache',
+						)}
+					</p>
+				</div>
+				<form action={formUrl} encType="multipart/form-data" method="post">
+					<input name="powered_cache_settings_nonce" type="hidden" value={nonce} />
+					<input accept="application/json,.json" name="import_file" type="file" />
+					<Button
+						name="powered_cache_form_action"
+						type="submit"
+						value="import_settings"
+						variant="secondary"
+					>
+						{__('Import JSON', 'powered-cache')}
+					</Button>
+				</form>
+			</div>
+
+			<div className="pc-settings-tool-card">
+				<div>
+					<strong>{__('Purge Cache', 'powered-cache')}</strong>
+					<p>
+						{__(
+							'Clear generated cache files and object cache entries.',
+							'powered-cache',
+						)}
+					</p>
+				</div>
+				<Button href={appConfig.purgeAllUrl || '#'} variant="secondary">
+					{__('Purge All Cache', 'powered-cache')}
+				</Button>
+			</div>
+
+			<div className="pc-settings-tool-card pc-settings-tool-card--danger">
+				<div>
+					<strong>{__('Reset Settings', 'powered-cache')}</strong>
+					<p>
+						{__(
+							'Restore default settings while keeping the plugin installed.',
+							'powered-cache',
+						)}
+					</p>
+				</div>
+				<form action={formUrl} method="post" onSubmit={confirmReset}>
+					<input name="powered_cache_settings_nonce" type="hidden" value={nonce} />
+					<Button
+						isDestructive
+						name="powered_cache_form_action"
+						type="submit"
+						value="reset_settings"
+						variant="secondary"
+					>
+						{__('Reset Settings', 'powered-cache')}
+					</Button>
+				</form>
+			</div>
+		</div>
+	);
+};
+
 const SettingsApp = () => {
 	const [manifest, setManifest] = useState(null);
 	const [settings, setSettings] = useState({});
@@ -1079,13 +1190,16 @@ const SettingsApp = () => {
 					{isLicenseSection ? (
 						<LicenseSection section={activeSectionData} premiumInfo={premiumInfo} />
 					) : (
-						<SettingsSection
-							fields={activeFields}
-							onChange={updateSetting}
-							section={activeSectionData}
-							sectionKey={activeSection}
-							settings={settings}
-						/>
+						<>
+							<SettingsSection
+								fields={activeFields}
+								onChange={updateSetting}
+								section={activeSectionData}
+								sectionKey={activeSection}
+								settings={settings}
+							/>
+							{activeSection === 'misc' && <SettingsToolsActions />}
+						</>
 					)}
 				</div>
 			</div>
