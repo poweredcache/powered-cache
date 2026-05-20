@@ -10,6 +10,7 @@ namespace PoweredCache\Core;
 use PoweredCache\Async\CachePreloader;
 use PoweredCache\Async\CachePurger;
 use PoweredCache\Async\DatabaseOptimizer;
+use PoweredCache\CompatibilityRules;
 use PoweredCache\Config;
 use PoweredCache\SettingsRestController;
 use const PoweredCache\Constants\DB_CLEANUP_COUNT_CACHE_KEY;
@@ -29,6 +30,7 @@ function setup() {
 	add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\admin_styles' );
 	add_action( 'enqueue_block_editor_assets', __NAMESPACE__ . '\\block_editor_assets' );
 	add_action( 'plugins_loaded', __NAMESPACE__ . '\\register_async_process' );
+	CompatibilityRules::factory()->setup();
 	SettingsRestController::factory();
 
 	// Hook to allow async or defer on asset loading.

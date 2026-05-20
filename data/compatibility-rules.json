@@ -1,0 +1,16 @@
+{
+  "format": "powered-cache-compatibility-rules",
+  "format_version": "1.0",
+  "rules": {
+    "defer_exclusions": [],
+    "delay_exclusions": [
+      "wp-includes/js/dist/interactivity.min.js",
+      "wp-includes/blocks/image/view.min.js"
+    ],
+    "file_optimizer_css_exclusions": [],
+    "file_optimizer_js_exclusions": [],
+    "lazy_load_exclusions": [
+      "selectors.core.image.lightboxObjectFit"
+    ]
+  }
+}
