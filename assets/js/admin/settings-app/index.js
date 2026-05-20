@@ -1,6 +1,6 @@
-const { __ } = wp.i18n;
+const { __, sprintf } = wp.i18n;
 const { render, useEffect, useMemo, useState } = wp.element;
-const { Button, CheckboxControl, Notice, SelectControl, Spinner, TextControl, TextareaControl } =
+const { Button, Notice, SelectControl, Spinner, TextControl, TextareaControl, ToggleControl } =
 	wp.components;
 const { apiFetch } = wp;
 
@@ -202,10 +202,18 @@ const SettingsField = ({ field, settings, onChange }) => {
 	switch (field.control) {
 		case 'toggle':
 			control = (
-				<CheckboxControl
+				<ToggleControl
 					{...controlProps}
+					aria-describedby={descriptionId}
 					checked={!!value}
-					label={field.label}
+					label={
+						field.control_label ||
+						sprintf(
+							/* translators: %s: setting label. */
+							__('Enable %s', 'powered-cache'),
+							field.label,
+						)
+					}
 					onChange={updateValue}
 				/>
 			);

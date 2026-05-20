@@ -45,6 +45,7 @@ class SettingsManifest_Tests extends TestCase {
 
 		$this->assertSame( 'enable_page_cache', $fields['enable_page_cache']['key'] );
 		$this->assertSame( 'Page Cache', $fields['enable_page_cache']['label'] );
+		$this->assertSame( 'Serve cached pages', $fields['enable_page_cache']['control_label'] );
 		$this->assertSame( 'Core cache', $fields['enable_page_cache']['group'] );
 		$this->assertSame( SettingsSchema::TYPE_BOOLEAN, $fields['enable_page_cache']['type'] );
 		$this->assertSame( 'toggle', $fields['enable_page_cache']['control'] );
@@ -57,6 +58,8 @@ class SettingsManifest_Tests extends TestCase {
 		$this->assertSame( 'select', $fields['object_cache']['control'] );
 		$this->assertSame( 'duration', $fields['cache_timeout']['control'] );
 		$this->assertSame( 'Set how long cached pages stay fresh.', $fields['cache_timeout']['description'] );
+		$this->assertSame( 'Include the homepage', $fields['preload_homepage']['control_label'] );
+		$this->assertSame( 'Warm the homepage when cache preloading runs.', $fields['preload_homepage']['description'] );
 	}
 
 	/**
