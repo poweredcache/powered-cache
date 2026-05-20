@@ -38,6 +38,24 @@ class SettingsManifest_Tests extends TestCase {
 	}
 
 	/**
+	 * It allows extensions to add settings sections.
+	 */
+	public function test_sections_can_be_extended() {
+		$sections = SettingsManifest::sections();
+		$expected = $sections;
+
+		$expected['license'] = array(
+			'label'       => 'License',
+			'description' => 'Manage Premium license activation.',
+			'order'       => 1000,
+		);
+
+		\WP_Mock::onFilter( 'powered_cache_settings_sections' )->with( $sections )->reply( $expected );
+
+		$this->assertSame( $expected, SettingsManifest::sections() );
+	}
+
+	/**
 	 * It exposes schema fields in UI/API friendly shape.
 	 */
 	public function test_fields_include_schema_metadata() {

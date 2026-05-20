@@ -41,7 +41,7 @@ class SettingsManifest {
 	 * @return array
 	 */
 	public static function sections() {
-		return array(
+		$sections = array(
 			'cache'             => array(
 				'label'       => 'Cache',
 				'description' => 'Control full-page cache, object cache, and browser-facing cache behavior.',
@@ -88,6 +88,19 @@ class SettingsManifest {
 				'order'       => 90,
 			),
 		);
+
+		/**
+		 * Filter settings sections shown in the admin app and submenu deep links.
+		 *
+		 * @hook powered_cache_settings_sections
+		 *
+		 * @param {array} $sections Settings section metadata.
+		 *
+		 * @return {array} New value.
+		 *
+		 * @since 4.0.0
+		 */
+		return apply_filters( 'powered_cache_settings_sections', $sections );
 	}
 
 	/**

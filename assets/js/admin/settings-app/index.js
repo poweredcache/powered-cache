@@ -628,6 +628,92 @@ const SettingsSection = ({ sectionKey, section, fields, settings, onChange }) =>
 	);
 };
 
+const LicenseSection = ({ section, premiumInfo }) => {
+	const licenseForm = premiumInfo.licenseForm || {};
+	const actionValue = licenseForm.licenseActive ? 'deactivate_license' : 'activate_license';
+
+	return (
+		<section id="pc-settings-section-license" className="pc-settings-section">
+			<div className="pc-settings-section__header">
+				<div>
+					<h2>{section.label || __('License', 'powered-cache')}</h2>
+					<p>
+						{section.description ||
+							__('Manage Premium license activation for this site.', 'powered-cache')}
+					</p>
+				</div>
+				<div
+					className="pc-settings-section__meta"
+					aria-label={__('License summary', 'powered-cache')}
+				>
+					<span>
+						{licenseForm.licenseActive
+							? __('Active', 'powered-cache')
+							: __('Inactive', 'powered-cache')}
+					</span>
+				</div>
+			</div>
+			<div className="pc-settings-section__body">
+				<div className="pc-settings-group">
+					<h3>{__('Activation', 'powered-cache')}</h3>
+					<div className="pc-settings-group__body">
+						<form
+							action={licenseForm.actionUrl || window.location.href}
+							className="pc-settings-license-form"
+							method="post"
+						>
+							<input
+								name="powered_cache_settings_nonce"
+								type="hidden"
+								value={licenseForm.nonce || ''}
+							/>
+							<div className="pc-settings-field">
+								<div className="pc-settings-field__main">
+									<span className="pc-settings-field__label">
+										{__('License Key', 'powered-cache')}
+									</span>
+									<p
+										className="pc-settings-field__description"
+										id="powered-cache-license-description"
+									>
+										{licenseForm.message ||
+											premiumInfo.licenseMessage ||
+											__(
+												'Enter your Premium license key to receive updates and unlock licensed services.',
+												'powered-cache',
+											)}
+									</p>
+								</div>
+								<div className="pc-settings-field__control">
+									<TextControl
+										aria-describedby="powered-cache-license-description"
+										autoComplete="off"
+										defaultValue={licenseForm.key || ''}
+										label={__('License Key', 'powered-cache')}
+										name="license_key"
+									/>
+									<Button
+										name="powered_cache_form_action"
+										type="submit"
+										value={actionValue}
+										variant={
+											licenseForm.licenseActive ? 'secondary' : 'primary'
+										}
+									>
+										{licenseForm.licenseActive
+											? __('Deactivate License', 'powered-cache')
+											: __('Activate License', 'powered-cache')}
+									</Button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</section>
+	);
+};
+
 const SettingsApp = () => {
 	const [manifest, setManifest] = useState(null);
 	const [settings, setSettings] = useState({});
@@ -820,6 +906,7 @@ const SettingsApp = () => {
 	const activeSectionData = manifest.sections[activeSection] || {};
 	const premiumFields = Object.values(manifest.fields || {}).filter((field) => field.premium);
 	const premiumInfo = appConfig.premium || {};
+	const isLicenseSection = activeSection === 'license' && !!premiumInfo.licenseForm;
 	const enabledCoreCount = [
 		settings.enable_page_cache,
 		settings.cache_mobile,
@@ -876,11 +963,6 @@ const SettingsApp = () => {
 							variant="primary"
 						>
 							{__('Upgrade', 'powered-cache')}
-						</Button>
-					)}
-					{appConfig.isPremium && premiumInfo.licenseSettingsUrl && (
-						<Button href={premiumInfo.licenseSettingsUrl} variant="secondary">
-							{__('Manage License', 'powered-cache')}
 						</Button>
 					)}
 				</div>
@@ -994,31 +1076,37 @@ const SettingsApp = () => {
 				</nav>
 
 				<div className="pc-settings-content">
-					<SettingsSection
-						fields={activeFields}
-						onChange={updateSetting}
-						section={activeSectionData}
-						sectionKey={activeSection}
-						settings={settings}
-					/>
+					{isLicenseSection ? (
+						<LicenseSection section={activeSectionData} premiumInfo={premiumInfo} />
+					) : (
+						<SettingsSection
+							fields={activeFields}
+							onChange={updateSetting}
+							section={activeSectionData}
+							sectionKey={activeSection}
+							settings={settings}
+						/>
+					)}
 				</div>
 			</div>
 
-			<footer className="pc-settings-savebar">
-				<span>
-					{isDirty
-						? __('You have unsaved changes.', 'powered-cache')
-						: __('All changes saved.', 'powered-cache')}
-				</span>
-				<Button
-					disabled={!isDirty || isSaving}
-					isBusy={isSaving}
-					onClick={saveSettings}
-					variant="primary"
-				>
-					{__('Save Settings', 'powered-cache')}
-				</Button>
-			</footer>
+			{!isLicenseSection && (
+				<footer className="pc-settings-savebar">
+					<span>
+						{isDirty
+							? __('You have unsaved changes.', 'powered-cache')
+							: __('All changes saved.', 'powered-cache')}
+					</span>
+					<Button
+						disabled={!isDirty || isSaving}
+						isBusy={isSaving}
+						onClick={saveSettings}
+						variant="primary"
+					>
+						{__('Save Settings', 'powered-cache')}
+					</Button>
+				</footer>
+			)}
 		</div>
 	);
 };
