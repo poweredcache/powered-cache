@@ -420,7 +420,7 @@ const LockedField = ({ field }) => (
 );
 
 const SettingsField = ({ field, settings, onChange }) => {
-	const isLocked = field.premium && !appConfig.isPremium;
+	const isLocked = !!field.locked || (field.premium && !appConfig.isPremium);
 	const isDependencyMet = (field.dependencies || []).every(
 		(dependency) => !!settings[dependency],
 	);

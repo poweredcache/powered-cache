@@ -171,6 +171,31 @@ class SettingsRestController_Tests extends TestCase {
 	}
 
 	/**
+	 * It preserves locked Premium values in Free partial update payloads.
+	 */
+	public function test_prepare_update_settings_preserves_locked_premium_values() {
+		$controller = new SettingsRestController();
+		$current    = array(
+			'enable_page_cache'         => true,
+			'enable_image_optimization' => false,
+			'critical_css'              => true,
+		);
+
+		$settings = $controller->prepare_update_settings(
+			array(
+				'enable_page_cache'         => false,
+				'enable_image_optimization' => true,
+				'critical_css'              => false,
+			),
+			$current
+		);
+
+		$this->assertFalse( $settings['enable_page_cache'] );
+		$this->assertFalse( $settings['enable_image_optimization'] );
+		$this->assertTrue( $settings['critical_css'] );
+	}
+
+	/**
 	 * It allows callers to explicitly clear sensitive values with null.
 	 */
 	public function test_prepare_update_settings_clears_sensitive_values_with_null() {

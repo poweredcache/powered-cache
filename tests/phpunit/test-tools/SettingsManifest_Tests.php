@@ -70,6 +70,8 @@ class SettingsManifest_Tests extends TestCase {
 		$this->assertSame( 'cache', $fields['enable_page_cache']['section'] );
 		$this->assertSame( 10, $fields['enable_page_cache']['order'] );
 		$this->assertFalse( $fields['enable_page_cache']['premium'] );
+		$this->assertTrue( $fields['enable_page_cache']['editable'] );
+		$this->assertFalse( $fields['enable_page_cache']['locked'] );
 		$this->assertFalse( $fields['auto_configure_htaccess']['default'] );
 		$this->assertSame( array( 'redis', 'apcu' ), array_slice( $fields['object_cache']['enum'], -2 ) );
 		$this->assertSame( 'Redis', $fields['object_cache']['enum_labels']['redis'] );
@@ -101,6 +103,9 @@ class SettingsManifest_Tests extends TestCase {
 		foreach ( $premium_keys as $key ) {
 			$this->assertArrayHasKey( $key, $fields );
 			$this->assertTrue( $fields[ $key ]['premium'], $key );
+			$this->assertFalse( $fields[ $key ]['editable'], $key );
+			$this->assertTrue( $fields[ $key ]['locked'], $key );
+			$this->assertSame( 'premium', $fields[ $key ]['lock_reason'], $key );
 			$this->assertArrayHasKey( 'upgrade', $fields[ $key ] );
 			$this->assertSame( 'Upgrade to Premium', $fields[ $key ]['upgrade']['label'] );
 		}
