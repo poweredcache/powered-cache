@@ -464,6 +464,7 @@
 	border-radius: 6px;
 	bottom: 16px;
 	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+	box-sizing: border-box;
 	display: flex;
 	gap: 16px;
 	justify-content: space-between;
@@ -472,12 +473,14 @@
 	max-width: 1180px;
 	padding: 12px 16px;
 	position: fixed;
-	right: 24px;
+	right: auto;
+	width: calc(100vw - 208px);
 	z-index: 20;
 }
 
 .folded .pc-settings-savebar {
 	left: 80px;
+	width: calc(100vw - 104px);
 }
 
 @media (max-width: 960px) {
@@ -528,5 +531,6 @@
 	.pc-settings-savebar {
 		left: 12px;
 		right: 12px;
+		width: auto;
 	}
 }
