@@ -14,6 +14,67 @@ namespace PoweredCache;
  */
 class SettingsMigrator {
 
+	const TARGET_VERSION = '4.0.0';
+
+	/**
+	 * Return the migration target version.
+	 *
+	 * @return string
+	 */
+	public function target_version() {
+		return self::TARGET_VERSION;
+	}
+
+	/**
+	 * Return known migration steps.
+	 *
+	 * The steps are descriptive metadata for tooling, tests, and future upgrade
+	 * screens. Runtime migration stays non-destructive unless explicitly asked
+	 * to drop deprecated keys.
+	 *
+	 * @return array
+	 */
+	public function steps() {
+		return array(
+			'accepted_query_strings' => array(
+				'id'              => 'accepted_query_strings',
+				'since'           => '3.0.0',
+				'source_keys'     => array( 'accepted_query_strings' ),
+				'target_keys'     => array( 'ignored_query_strings' ),
+				'preserve_source' => true,
+			),
+			'js_execution_method'    => array(
+				'id'              => 'js_execution_method',
+				'since'           => '3.2.0',
+				'source_keys'     => array( 'js_execution_method' ),
+				'target_keys'     => array( 'js_defer', 'js_delay', 'combine_js' ),
+				'preserve_source' => true,
+			),
+		);
+	}
+
+	/**
+	 * Return migration steps that apply to a settings payload.
+	 *
+	 * @param array $settings Raw settings.
+	 *
+	 * @return array
+	 */
+	public function applicable_steps( array $settings ) {
+		$applicable = array();
+
+		foreach ( $this->steps() as $id => $step ) {
+			foreach ( $step['source_keys'] as $source_key ) {
+				if ( ! empty( $settings[ $source_key ] ) ) {
+					$applicable[ $id ] = $step;
+					break;
+				}
+			}
+		}
+
+		return $applicable;
+	}
+
 	/**
 	 * Migrate known legacy settings.
 	 *

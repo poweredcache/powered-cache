@@ -13,6 +13,40 @@ namespace PoweredCache;
 class SettingsMigrator_Tests extends TestCase {
 
 	/**
+	 * It exposes versioned migration step metadata.
+	 */
+	public function test_exposes_versioned_migration_steps() {
+		$migrator = new SettingsMigrator();
+		$steps    = $migrator->steps();
+
+		$this->assertSame( '4.0.0', $migrator->target_version() );
+		$this->assertArrayHasKey( 'accepted_query_strings', $steps );
+		$this->assertSame( array( 'accepted_query_strings' ), $steps['accepted_query_strings']['source_keys'] );
+		$this->assertSame( array( 'ignored_query_strings' ), $steps['accepted_query_strings']['target_keys'] );
+		$this->assertTrue( $steps['accepted_query_strings']['preserve_source'] );
+		$this->assertArrayHasKey( 'js_execution_method', $steps );
+		$this->assertSame( array( 'js_defer', 'js_delay', 'combine_js' ), $steps['js_execution_method']['target_keys'] );
+		$this->assertTrue( $steps['js_execution_method']['preserve_source'] );
+	}
+
+	/**
+	 * It reports migration steps that apply to a settings payload.
+	 */
+	public function test_applicable_steps_reports_matching_legacy_settings() {
+		$migrator = new SettingsMigrator();
+
+		$steps = $migrator->applicable_steps(
+			array(
+				'accepted_query_strings' => 'utm_source',
+				'js_execution_method'    => '',
+			)
+		);
+
+		$this->assertArrayHasKey( 'accepted_query_strings', $steps );
+		$this->assertArrayNotHasKey( 'js_execution_method', $steps );
+	}
+
+	/**
 	 * It migrates accepted query strings into ignored query strings.
 	 */
 	public function test_migrates_accepted_query_strings() {
