@@ -379,37 +379,34 @@
 .pc-settings-duration-control {
 	column-gap: 12px;
 	display: grid;
-	grid-template-columns: minmax(120px, 0.65fr) minmax(140px, 0.85fr);
+	grid-template-columns: repeat(2, minmax(0, 1fr));
 	row-gap: 12px;
+}
+
+.pc-settings-duration-control .components-base-control {
+	width: 100%;
 }
 
 .pc-settings-locked-control {
 	background: linear-gradient(135deg, #f8fafc 0%, #fff 100%);
 	border: 1px solid #cfd7e2;
 	border-radius: 6px;
-	min-height: 118px;
-	overflow: hidden;
-	padding: 18px;
-	position: relative;
+	column-gap: 18px;
+	display: grid;
+	grid-template-columns: minmax(180px, 0.55fr) minmax(0, 1.45fr);
+	padding: 14px;
+	row-gap: 14px;
 }
 
 .pc-settings-locked-control__preview {
-	max-width: 58%;
 	opacity: 0.38;
 	pointer-events: none;
 }
 
 .pc-settings-locked-control__overlay {
 	align-items: center;
-	background: linear-gradient(90deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.9) 46%, rgba(255, 255, 255, 0.98) 100%);
-	bottom: 0;
 	display: flex;
-	justify-content: flex-end;
-	left: 0;
-	padding: 16px;
-	position: absolute;
-	right: 0;
-	top: 0;
+	min-width: 0;
 }
 
 .pc-settings-locked-control__panel {
@@ -421,9 +418,8 @@
 	display: flex;
 	flex-direction: column;
 	gap: 7px;
-	max-width: 330px;
 	padding: 13px 14px;
-	width: min(100%, 330px);
+	width: 100%;
 }
 
 .pc-settings-locked-control__panel span {
@@ -513,13 +509,8 @@
 		max-width: 100%;
 	}
 
-	.pc-settings-locked-control__overlay {
-		background: rgba(255, 255, 255, 0.9);
-		position: static;
-	}
-
-	.pc-settings-locked-control__panel {
-		max-width: none;
+	.pc-settings-locked-control {
+		grid-template-columns: 1fr;
 	}
 
 	.pc-settings-nav {

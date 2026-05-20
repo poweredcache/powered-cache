@@ -204,162 +204,169 @@ class SettingsManifest {
 		);
 
 		$overrides = array(
-			'enable_page_cache'            => array(
+			'enable_page_cache'              => array(
 				'label'         => 'Page Cache',
 				'control_label' => 'Serve cached pages',
 				'description'   => 'Serve cached HTML for faster repeat and anonymous visits.',
 				'group'         => 'Core cache',
 			),
-			'object_cache'                 => array(
+			'object_cache'                   => array(
 				'label'       => 'Object Cache',
 				'description' => 'Use a persistent object cache backend for dynamic WordPress data.',
 				'group'       => 'Core cache',
 			),
-			'cache_mobile'                 => array(
+			'cache_mobile'                   => array(
 				'label'         => 'Mobile Cache',
 				'control_label' => 'Cache mobile visits',
 				'description'   => 'Cache visits from mobile devices.',
 				'group'         => 'Core cache',
 			),
-			'gzip_compression'             => array(
+			'gzip_compression'               => array(
 				'label'         => 'Gzip Compression',
 				'control_label' => 'Serve compressed files',
 				'description'   => 'Serve compressed cache files when supported by the server.',
 				'group'         => 'Delivery',
 			),
-			'cache_timeout'                => array(
+			'cache_timeout'                  => array(
 				'control'     => 'duration',
 				'label'       => 'Cache Lifespan',
 				'description' => 'Set how long cached pages stay fresh.',
 				'group'       => 'Delivery',
 			),
-			'minify_html'                  => array(
+			'minify_html'                    => array(
 				'label'       => 'Minify HTML',
 				'description' => 'Remove unnecessary whitespace from generated HTML.',
 				'group'       => 'HTML',
 			),
-			'minify_css'                   => array(
+			'minify_css'                     => array(
 				'label'       => 'Minify CSS',
 				'description' => 'Reduce CSS file size before delivery.',
 				'group'       => 'CSS',
 			),
-			'combine_css'                  => array(
+			'combine_css'                    => array(
 				'label'       => 'Combine CSS',
 				'description' => 'Combine CSS files when it improves delivery on the site.',
 				'group'       => 'CSS',
 			),
-			'critical_css'                 => array(
+			'critical_css'                   => array(
 				'label'               => 'Critical CSS',
 				'description'         => 'Generate and inline above-the-fold CSS for important templates.',
 				'group'               => 'CSS',
 				'upgrade_description' => 'Premium can generate Critical CSS automatically for key templates and posts.',
 			),
-			'remove_unused_css'            => array(
+			'remove_unused_css'              => array(
 				'label'               => 'Remove Unused CSS',
 				'description'         => 'Generate lean CSS payloads by removing rules unused on the page.',
 				'group'               => 'CSS',
 				'upgrade_description' => 'Premium can generate used CSS and reduce page weight without manual cleanup.',
 			),
-			'minify_js'                    => array(
+			'minify_js'                      => array(
 				'label'       => 'Minify JavaScript',
 				'description' => 'Reduce JavaScript file size before delivery.',
 				'group'       => 'JavaScript',
 			),
-			'js_defer'                     => array(
+			'js_defer'                       => array(
 				'label'       => 'Defer JavaScript',
 				'description' => 'Load JavaScript without blocking initial page rendering.',
 				'group'       => 'JavaScript',
 			),
-			'js_delay'                     => array(
+			'js_delay'                       => array(
 				'label'       => 'Delay JavaScript',
 				'description' => 'Delay selected scripts until user interaction or timeout.',
 				'group'       => 'JavaScript',
 			),
-			'enable_image_optimization'    => array(
+			'enable_image_optimization'      => array(
 				'label'               => 'Image Optimization',
 				'description'         => 'Optimize images on demand through the Powered Cache image delivery service.',
 				'group'               => 'Images',
 				'upgrade_description' => 'Premium adds on-the-fly WebP/AVIF image optimization backed by fast CDN delivery.',
 			),
-			'add_missing_image_dimensions' => array(
+			'add_missing_image_dimensions'   => array(
 				'label'               => 'Automatic Image Dimensions',
 				'description'         => 'Add missing width and height attributes to improve layout stability.',
 				'group'               => 'Images',
 				'upgrade_description' => 'Premium can add missing image dimensions automatically to improve CLS.',
 			),
-			'enable_lazy_load'             => array(
+			'enable_lazy_load'               => array(
 				'label'         => 'Lazy Load',
 				'control_label' => 'Delay offscreen media',
 				'description'   => 'Delay images and embeds until they are close to the viewport.',
 				'group'         => 'Lazy loading',
 			),
-			'enable_cdn'                   => array(
+			'enable_cdn'                     => array(
 				'label'         => 'CDN Delivery',
 				'control_label' => 'Rewrite asset URLs',
 				'description'   => 'Rewrite static asset URLs to configured CDN hostnames.',
 				'group'         => 'CDN',
 			),
-			'enable_cache_preload'         => array(
+			'enable_cache_preload'           => array(
 				'label'         => 'Cache Preload',
 				'control_label' => 'Warm cache automatically',
 				'description'   => 'Warm selected URLs before visitors request them.',
 				'group'         => 'Preload',
 			),
-			'preload_homepage'             => array(
+			'preload_homepage'               => array(
 				'label'         => 'Preload Homepage',
 				'control_label' => 'Include the homepage',
 				'description'   => 'Warm the homepage when cache preloading runs.',
 				'group'         => 'Preload',
 			),
-			'preload_public_posts'         => array(
+			'preload_public_posts'           => array(
 				'label'         => 'Preload Public Posts',
 				'control_label' => 'Include public posts',
 				'description'   => 'Warm public post, page, and custom post type URLs.',
 				'group'         => 'Preload',
 			),
-			'preload_public_tax'           => array(
+			'preload_public_tax'             => array(
 				'label'         => 'Preload Public Taxonomies',
 				'control_label' => 'Include public archives',
 				'description'   => 'Warm public category, tag, and taxonomy archive URLs.',
 				'group'         => 'Preload',
 			),
-			'enable_sitemap_preload'       => array(
+			'enable_sitemap_preload'         => array(
 				'label'         => 'Sitemap Preload',
 				'control_label' => 'Read URLs from sitemaps',
 				'description'   => 'Use sitemap URLs as an additional preload source.',
 				'group'         => 'Preload',
 			),
-			'enable_lcp_optimization'      => array(
+			'enable_lcp_optimization'        => array(
 				'label'               => 'LCP Optimization',
 				'description'         => 'Detect and prioritize the likely Largest Contentful Paint resource.',
 				'group'               => 'Critical resources',
 				'upgrade_description' => 'Premium can prioritize critical LCP images and resources automatically.',
 			),
-			'enable_scheduled_db_cleanup'  => array(
-				'label'         => 'Scheduled Cleanup',
-				'control_label' => 'Clean database on schedule',
-				'description'   => 'Run selected database cleanup tasks on a schedule.',
-				'group'         => 'Scheduling',
+			'enable_scheduled_db_cleanup'    => array(
+				'label'               => 'Scheduled Cleanups',
+				'control_label'       => 'Clean database on schedule',
+				'description'         => 'Run selected database cleanup tasks on a schedule.',
+				'group'               => 'Scheduling',
+				'upgrade_description' => 'Premium can automatically clean selected database overhead on a recurring schedule.',
 			),
-			'enable_cloudflare'            => array(
+			'scheduled_db_cleanup_frequency' => array(
+				'label'               => 'Cleanup Frequency',
+				'description'         => 'Choose how often scheduled database cleanups should run.',
+				'group'               => 'Scheduling',
+				'upgrade_description' => 'Premium can run automatic database cleanups hourly, daily, weekly, or monthly.',
+			),
+			'enable_cloudflare'              => array(
 				'label'         => 'Cloudflare',
 				'control_label' => 'Purge Cloudflare cache',
 				'description'   => 'Purge Cloudflare when Powered Cache clears site cache.',
 				'group'         => 'CDN and proxy',
 			),
-			'enable_heartbeat'             => array(
+			'enable_heartbeat'               => array(
 				'label'         => 'Heartbeat Control',
 				'control_label' => 'Manage Heartbeat activity',
 				'description'   => 'Adjust WordPress Heartbeat behavior in admin, editor, and frontend contexts.',
 				'group'         => 'WordPress runtime',
 			),
-			'enable_varnish'               => array(
+			'enable_varnish'                 => array(
 				'label'         => 'Varnish',
 				'control_label' => 'Purge Varnish cache',
 				'description'   => 'Purge Varnish when cache is cleared.',
 				'group'         => 'Reverse proxy',
 			),
-			'dev_mode'                     => array(
+			'dev_mode'                       => array(
 				'label'         => 'Development Mode',
 				'control_label' => 'Bypass cache temporarily',
 				'description'   => 'Temporarily bypass cache behavior while working on the site.',

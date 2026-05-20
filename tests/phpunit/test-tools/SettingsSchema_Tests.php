@@ -98,6 +98,8 @@ class SettingsSchema_Tests extends TestCase {
 		$this->assertTrue( $fields['remove_unused_css']['premium'] );
 		$this->assertTrue( $fields['enable_image_optimization']['premium'] );
 		$this->assertTrue( $fields['enable_lcp_optimization']['premium'] );
+		$this->assertTrue( $fields['enable_scheduled_db_cleanup']['premium'] );
+		$this->assertTrue( $fields['scheduled_db_cleanup_frequency']['premium'] );
 
 		$this->assertContains( 'js_delay', $fields['js_delay_timeout']['dependencies'] );
 		$this->assertTrue( $fields['js_execution_method']['deprecated'] );

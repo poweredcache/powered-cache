@@ -24,12 +24,12 @@ class SettingsSchema {
 	const TYPE_ARRAY   = 'array';
 	const TYPE_ENUM    = 'enum';
 
-	const SANITIZE_BOOLEAN = 'boolean';
-	const SANITIZE_INTEGER = 'integer';
-	const SANITIZE_TEXT    = 'text';
+	const SANITIZE_BOOLEAN  = 'boolean';
+	const SANITIZE_INTEGER  = 'integer';
+	const SANITIZE_TEXT     = 'text';
 	const SANITIZE_TEXTAREA = 'textarea';
-	const SANITIZE_ARRAY   = 'array';
-	const SANITIZE_ENUM    = 'enum';
+	const SANITIZE_ARRAY    = 'array';
+	const SANITIZE_ENUM     = 'enum';
 
 	/**
 	 * Return the schema for all current settings.
@@ -125,8 +125,8 @@ class SettingsSchema {
 			'db_cleanup_expired_transients'    => self::field( self::TYPE_BOOLEAN, false, 'database', self::SANITIZE_BOOLEAN ),
 			'db_cleanup_all_transients'        => self::field( self::TYPE_BOOLEAN, false, 'database', self::SANITIZE_BOOLEAN ),
 			'db_cleanup_optimize_tables'       => self::field( self::TYPE_BOOLEAN, false, 'database', self::SANITIZE_BOOLEAN ),
-			'enable_scheduled_db_cleanup'      => self::field( self::TYPE_BOOLEAN, false, 'database', self::SANITIZE_BOOLEAN ),
-			'scheduled_db_cleanup_frequency'   => self::field( self::TYPE_ENUM, 'daily', 'database', self::SANITIZE_ENUM, false, array( 'enable_scheduled_db_cleanup' ), array( 'hourly', 'twicedaily', 'daily', 'weekly', 'monthly' ) ),
+			'enable_scheduled_db_cleanup'      => self::field( self::TYPE_BOOLEAN, false, 'database', self::SANITIZE_BOOLEAN, true ),
+			'scheduled_db_cleanup_frequency'   => self::field( self::TYPE_ENUM, 'daily', 'database', self::SANITIZE_ENUM, true, array( 'enable_scheduled_db_cleanup' ), array( 'hourly', 'twicedaily', 'daily', 'weekly', 'monthly' ) ),
 			'enable_cloudflare'                => self::field( self::TYPE_BOOLEAN, false, 'integrations', self::SANITIZE_BOOLEAN ),
 			'cloudflare_api_token'             => self::field( self::TYPE_STRING, '', 'integrations', self::SANITIZE_TEXT, false, array( 'enable_cloudflare' ) ),
 			'cloudflare_email'                 => self::field( self::TYPE_STRING, '', 'integrations', self::SANITIZE_TEXT, false, array( 'enable_cloudflare' ) ),
