@@ -248,7 +248,7 @@ function process_form_submit() {
 				if ( $_FILES['import_file'] && ! empty( $_FILES['import_file']['tmp_name'] ) ) { // phpcs:ignore
 					$import_data     = file_get_contents( $_FILES['import_file']['tmp_name'] ); // phpcs:ignore
 					$import_settings = SettingsTransfer::unpack( json_decode( $import_data, true ) );
-					$options         = sanitize_options( array_merge( $settings_repository->all(), $import_settings ) );
+					$options         = prepare_import_options( $settings_repository, $import_settings );
 				}
 				break;
 			case 'enable_dev_mode':
@@ -286,6 +286,18 @@ function process_form_submit() {
 		wp_safe_redirect( esc_url_raw( $redirect_url ) );
 		exit;
 	}
+}
+
+/**
+ * Prepare imported settings without dropping legacy or extension-owned keys.
+ *
+ * @param SettingsRepository $settings_repository Settings repository.
+ * @param array              $import_settings Imported settings.
+ *
+ * @return array
+ */
+function prepare_import_options( SettingsRepository $settings_repository, array $import_settings ) {
+	return $settings_repository->sanitize( array_merge( $settings_repository->all(), $import_settings ) );
 }
 
 /**
