@@ -163,6 +163,12 @@ class SettingsManifest {
 			'deprecated'    => (bool) $field['deprecated'],
 		);
 
+		foreach ( array( 'options', 'zone_key', 'zone_options' ) as $metadata_key ) {
+			if ( isset( $metadata[ $metadata_key ] ) ) {
+				$manifest[ $metadata_key ] = $metadata[ $metadata_key ];
+			}
+		}
+
 		if ( $manifest['premium'] ) {
 			$manifest['upgrade'] = array(
 				'label'       => 'Upgrade to Premium',
@@ -318,6 +324,20 @@ class SettingsManifest {
 				'description'   => 'Rewrite static asset URLs to configured CDN hostnames.',
 				'group'         => 'CDN',
 			),
+			'cdn_hostname'                   => array(
+				'label'        => 'CDN Hostnames',
+				'control'      => 'cdn_zones',
+				'description'  => 'Map each CDN hostname to all assets or to a specific file type.',
+				'group'        => 'CDN',
+				'zone_key'     => 'cdn_zone',
+				'zone_options' => self::cdn_zone_options(),
+			),
+			'cdn_zone'                       => array(
+				'label'       => 'CDN Zone',
+				'control'     => 'hidden',
+				'description' => 'CDN zone mappings are managed with hostnames.',
+				'group'       => 'CDN',
+			),
 			'enable_cache_preload'           => array(
 				'label'         => 'Cache Preload',
 				'control_label' => 'Warm cache automatically',
@@ -406,6 +426,24 @@ class SettingsManifest {
 		}
 
 		return $metadata;
+	}
+
+	/**
+	 * Return CDN zone options for the settings app.
+	 *
+	 * @return array
+	 */
+	private static function cdn_zone_options() {
+		if ( function_exists( '\PoweredCache\Utils\cdn_zones' ) ) {
+			return \PoweredCache\Utils\cdn_zones();
+		}
+
+		return array(
+			'all'   => 'All files',
+			'image' => 'Images',
+			'js'    => 'JavaScript',
+			'css'   => 'CSS',
+		);
 	}
 
 	/**

@@ -534,6 +534,56 @@
 	width: 100%;
 }
 
+.pc-settings-cdn-routes {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.pc-settings-cdn-routes__header,
+.pc-settings-cdn-route {
+	align-items: center;
+	display: flex;
+	gap: 10px;
+}
+
+.pc-settings-cdn-routes__header {
+	color: var(--pc-admin-muted);
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1.2;
+	text-transform: uppercase;
+}
+
+.pc-settings-cdn-routes__rows {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.pc-settings-cdn-routes__header span:first-child,
+.pc-settings-cdn-route__hostname {
+	flex: 1 1 220px;
+}
+
+.pc-settings-cdn-routes__header span:nth-child(2),
+.pc-settings-cdn-route__zone {
+	flex: 0 1 220px;
+}
+
+.pc-settings-cdn-route__hostname,
+.pc-settings-cdn-route__zone {
+	max-width: 100%;
+	min-height: 40px;
+	width: 100%;
+}
+
+.pc-settings-cdn-route .components-button {
+	justify-content: center;
+	min-height: 40px;
+	white-space: nowrap;
+}
+
 .pc-settings-license-form .pc-settings-field__control {
 	align-items: flex-start;
 	display: flex;
@@ -733,6 +783,15 @@
 
 	.pc-settings-duration-control {
 		grid-template-columns: 1fr;
+	}
+
+	.pc-settings-cdn-routes__header {
+		display: none;
+	}
+
+	.pc-settings-cdn-route {
+		align-items: stretch;
+		flex-direction: column;
 	}
 
 	.pc-settings-locked-control__preview {

@@ -77,6 +77,18 @@ const displayValue = (value, field) => {
 	return undefined === value || value === null ? '' : value;
 };
 
+const asArray = (value) => {
+	if (Array.isArray(value)) {
+		return value;
+	}
+
+	if (undefined === value || value === null) {
+		return [];
+	}
+
+	return [value];
+};
+
 const orderedSectionKeys = (manifestResponse) =>
 	Object.entries(manifestResponse.sections || {})
 		.sort(([, first], [, second]) => first.order - second.order)
@@ -573,7 +585,114 @@ const LockedField = ({ field, issues = [] }) => (
 	</div>
 );
 
+const CdnHostnamesControl = ({ disabled, field, settings, onChange }) => {
+	const zoneKey = field.zone_key || 'cdn_zone';
+	const hostnames = asArray(settings[field.key]);
+	const zones = asArray(settings[zoneKey]);
+	const zoneOptions = Object.entries(
+		field.zone_options || {
+			all: __('All files', 'powered-cache'),
+			image: __('Images', 'powered-cache'),
+			js: __('JavaScript', 'powered-cache'),
+			css: __('CSS', 'powered-cache'),
+		},
+	);
+	const rowCount = Math.max(hostnames.length, zones.length, 1);
+	const rows = [];
+
+	for (let index = 0; index < rowCount; index++) {
+		rows.push({
+			id: `${field.key}-${index}`,
+			hostname: hostnames[index] || '',
+			zone: zones[index] || 'all',
+		});
+	}
+
+	const updateRows = (nextRows) => {
+		const normalizedRows = nextRows.length ? nextRows : [{ hostname: '', zone: 'all' }];
+
+		onChange(
+			field.key,
+			normalizedRows.map((row) => row.hostname),
+		);
+		onChange(
+			zoneKey,
+			normalizedRows.map((row) => row.zone || 'all'),
+		);
+	};
+
+	const updateRow = (index, key, nextValue) => {
+		updateRows(
+			rows.map((row, rowIndex) => (rowIndex === index ? { ...row, [key]: nextValue } : row)),
+		);
+	};
+
+	return (
+		<div className="pc-settings-cdn-routes">
+			<div className="pc-settings-cdn-routes__header" aria-hidden="true">
+				<span>{__('Hostname', 'powered-cache')}</span>
+				<span>{__('Applies to', 'powered-cache')}</span>
+			</div>
+			<div className="pc-settings-cdn-routes__rows">
+				{rows.map((row, index) => (
+					<div className="pc-settings-cdn-route" key={row.id}>
+						<input
+							aria-label={sprintf(__('CDN hostname %d', 'powered-cache'), index + 1)}
+							className="components-text-control__input pc-settings-cdn-route__hostname"
+							disabled={disabled}
+							onChange={(event) => {
+								updateRow(index, 'hostname', event.target.value);
+							}}
+							placeholder="cdn.example.com"
+							type="text"
+							value={row.hostname}
+						/>
+						<select
+							aria-label={sprintf(__('CDN scope %d', 'powered-cache'), index + 1)}
+							className="components-select-control__input pc-settings-cdn-route__zone"
+							disabled={disabled}
+							onChange={(event) => {
+								updateRow(index, 'zone', event.target.value);
+							}}
+							value={row.zone}
+						>
+							{zoneOptions.map(([value, label]) => (
+								<option key={value} value={value}>
+									{label}
+								</option>
+							))}
+						</select>
+						<Button
+							disabled={disabled || rows.length < 2}
+							isDestructive
+							onClick={() => {
+								updateRows([...rows.slice(0, index), ...rows.slice(index + 1)]);
+							}}
+							variant="secondary"
+						>
+							{__('Remove', 'powered-cache')}
+						</Button>
+					</div>
+				))}
+			</div>
+			<Button
+				disabled={disabled}
+				onClick={() => {
+					updateRows([...rows, { hostname: '', zone: 'all' }]);
+				}}
+				variant="secondary"
+			>
+				{__('Add Hostname', 'powered-cache')}
+			</Button>
+		</div>
+	);
+};
+
 const SettingsField = ({ field, issues = [], settings, onChange }) => {
+	if (field.control === 'hidden') {
+		return null;
+	}
+
 	const isLocked = !!field.locked || (field.premium && !appConfig.isPremium);
 	const isDependencyMet = (field.dependencies || []).every(
 		(dependency) => !!settings[dependency],
@@ -669,6 +788,16 @@ const SettingsField = ({ field, issues = [], settings, onChange }) => {
 			);
 			break;
 		}
+		case 'cdn_zones':
+			control = (
+				<CdnHostnamesControl
+					disabled={!isDependencyMet}
+					field={field}
+					onChange={onChange}
+					settings={settings}
+				/>
+			);
+			break;
 		case 'number':
 			control = (
 				<TextControl
@@ -741,7 +870,8 @@ const SettingsSection = ({
 	settings,
 	onChange,
 }) => {
-	const groups = fields.reduce((fieldGroups, field) => {
+	const visibleFields = fields.filter((field) => field.control !== 'hidden');
+	const groups = visibleFields.reduce((fieldGroups, field) => {
 		const groupName = field.group || section.label;
 
 		if (!fieldGroups[groupName]) {
@@ -753,8 +883,8 @@ const SettingsSection = ({
 		return fieldGroups;
 	}, {});
 
-	const premiumCount = fields.filter((field) => field.premium).length;
-	const issueCount = fields.reduce(
+	const premiumCount = visibleFields.filter((field) => field.premium).length;
+	const issueCount = visibleFields.reduce(
 		(count, field) => count + (issuesBySetting[field.key] || []).length,
 		0,
 	);
@@ -771,7 +901,7 @@ const SettingsSection = ({
 					aria-label={__('Section summary', 'powered-cache')}
 				>
 					<span>
-						{fields.length} {__('settings', 'powered-cache')}
+						{visibleFields.length} {__('settings', 'powered-cache')}
 					</span>
 					{!!premiumCount && (
 						<span>

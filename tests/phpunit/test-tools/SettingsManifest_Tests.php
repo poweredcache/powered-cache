@@ -80,6 +80,18 @@ class SettingsManifest_Tests extends TestCase {
 		$this->assertSame( 'Set how long cached pages stay fresh.', $fields['cache_timeout']['description'] );
 		$this->assertSame( 'Include the homepage', $fields['preload_homepage']['control_label'] );
 		$this->assertSame( 'Warm the homepage when cache preloading runs.', $fields['preload_homepage']['description'] );
+		$this->assertSame( 'cdn_zones', $fields['cdn_hostname']['control'] );
+		$this->assertSame( 'cdn_zone', $fields['cdn_hostname']['zone_key'] );
+		$this->assertSame(
+			array(
+				'all'   => 'All files',
+				'image' => 'Images',
+				'js'    => 'JavaScript',
+				'css'   => 'CSS',
+			),
+			$fields['cdn_hostname']['zone_options']
+		);
+		$this->assertSame( 'hidden', $fields['cdn_zone']['control'] );
 	}
 
 	/**
