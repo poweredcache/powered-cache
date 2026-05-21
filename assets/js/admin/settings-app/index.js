@@ -277,6 +277,81 @@ const MetricCard = ({ label, value, description, tone = 'neutral' }) => (
 	</div>
 );
 
+const validationIssues = (validation) =>
+	validation && Array.isArray(validation.issues) ? validation.issues : [];
+
+const validationIssueCount = (validation) => validationIssues(validation).length;
+
+const issuesByKey = (validation) =>
+	validationIssues(validation).reduce((groups, issue) => {
+		if (!groups[issue.key]) {
+			groups[issue.key] = [];
+		}
+
+		groups[issue.key].push(issue);
+
+		return groups;
+	}, {});
+
+const ValidationIssueList = ({ issues = [] }) => {
+	if (!issues.length) {
+		return null;
+	}
+
+	return (
+		<div className="pc-settings-field__issues">
+			{issues.map((issue) => (
+				<p
+					className={`pc-settings-field__issue pc-settings-field__issue--${issue.severity}`}
+					key={`${issue.key}-${issue.code}`}
+				>
+					{issue.message}
+				</p>
+			))}
+		</div>
+	);
+};
+
+const ValidationSummary = ({ validation }) => {
+	const totalIssues = validationIssueCount(validation);
+
+	if (!totalIssues) {
+		return null;
+	}
+
+	const counts = validation.counts || {};
+	const errors = counts.error || 0;
+	const warnings = counts.warning || 0;
+	let status = 'info';
+
+	if (errors) {
+		status = 'error';
+	} else if (warnings) {
+		status = 'warning';
+	}
+
+	const message = errors
+		? sprintf(
+				/* translators: %d: number of settings. */
+				__('%d settings need attention before they can be used reliably.', 'powered-cache'),
+				errors,
+			)
+		: sprintf(
+				/* translators: %d: number of settings. */
+				__('%d settings have compatibility notes.', 'powered-cache'),
+				totalIssues,
+			);
+
+	return (
+		<div className="pc-settings-validation-summary">
+			<Notice status={status} isDismissible={false}>
+				<strong>{__('Settings check', 'powered-cache')}</strong>
+				<span>{message}</span>
+			</Notice>
+		</div>
+	);
+};
+
 const LockedControlPreview = ({ field }) => {
 	const previewValue = displayValue(field.default, field);
 	const controlProps = {
@@ -399,7 +474,7 @@ const LockedControlPreview = ({ field }) => {
 	);
 };
 
-const LockedField = ({ field }) => (
+const LockedField = ({ field, issues = [] }) => (
 	<div className="pc-settings-field pc-settings-field--locked" aria-label={field.label}>
 		<div className="pc-settings-field__main">
 			<div className="pc-settings-field__heading">
@@ -412,6 +487,7 @@ const LockedField = ({ field }) => (
 			{field.upgrade && field.upgrade.description && (
 				<p className="pc-settings-field__upgrade">{field.upgrade.description}</p>
 			)}
+			<ValidationIssueList issues={issues} />
 		</div>
 		<div className="pc-settings-field__control">
 			<LockedControlPreview field={field} />
@@ -419,7 +495,7 @@ const LockedField = ({ field }) => (
 	</div>
 );
 
-const SettingsField = ({ field, settings, onChange }) => {
+const SettingsField = ({ field, issues = [], settings, onChange }) => {
 	const isLocked = !!field.locked || (field.premium && !appConfig.isPremium);
 	const isDependencyMet = (field.dependencies || []).every(
 		(dependency) => !!settings[dependency],
@@ -429,7 +505,7 @@ const SettingsField = ({ field, settings, onChange }) => {
 	const descriptionId = `${fieldId}-description`;
 
 	if (isLocked) {
-		return <LockedField field={field} />;
+		return <LockedField field={field} issues={issues} />;
 	}
 
 	const updateValue = (nextValue) => {
@@ -555,19 +631,21 @@ const SettingsField = ({ field, settings, onChange }) => {
 						{__('Enable the parent setting to edit this option.', 'powered-cache')}
 					</p>
 				)}
+				<ValidationIssueList issues={issues} />
 			</div>
 			<div className="pc-settings-field__control">{control}</div>
 		</div>
 	);
 };
 
-const SettingsGroup = ({ groupName, fields, settings, onChange }) => (
+const SettingsGroup = ({ groupName, fields, issuesBySetting, settings, onChange }) => (
 	<div className="pc-settings-group">
 		<h3>{groupName}</h3>
 		<div className="pc-settings-group__body">
 			{fields.map((field) => (
 				<SettingsField
 					field={field}
+					issues={issuesBySetting[field.key] || []}
 					key={field.key}
 					onChange={onChange}
 					settings={settings}
@@ -577,7 +655,14 @@ const SettingsGroup = ({ groupName, fields, settings, onChange }) => (
 	</div>
 );
 
-const SettingsSection = ({ sectionKey, section, fields, settings, onChange }) => {
+const SettingsSection = ({
+	sectionKey,
+	section,
+	fields,
+	issuesBySetting = {},
+	settings,
+	onChange,
+}) => {
 	const groups = fields.reduce((fieldGroups, field) => {
 		const groupName = field.group || section.label;
 
@@ -591,6 +676,10 @@ const SettingsSection = ({ sectionKey, section, fields, settings, onChange }) =>
 	}, {});
 
 	const premiumCount = fields.filter((field) => field.premium).length;
+	const issueCount = fields.reduce(
+		(count, field) => count + (issuesBySetting[field.key] || []).length,
+		0,
+	);
 
 	return (
 		<section id={`pc-settings-section-${sectionKey}`} className="pc-settings-section">
@@ -611,6 +700,11 @@ const SettingsSection = ({ sectionKey, section, fields, settings, onChange }) =>
 							{premiumCount} {__('Premium', 'powered-cache')}
 						</span>
 					)}
+					{!!issueCount && (
+						<span>
+							{issueCount} {__('checks', 'powered-cache')}
+						</span>
+					)}
 				</div>
 			</div>
 			<div className="pc-settings-section__body">
@@ -618,6 +712,7 @@ const SettingsSection = ({ sectionKey, section, fields, settings, onChange }) =>
 					<SettingsGroup
 						fields={groupFields}
 						groupName={groupName}
+						issuesBySetting={issuesBySetting}
 						key={groupName}
 						onChange={onChange}
 						settings={settings}
@@ -829,6 +924,7 @@ const SettingsApp = () => {
 	const [manifest, setManifest] = useState(null);
 	const [settings, setSettings] = useState({});
 	const [initialSettings, setInitialSettings] = useState({});
+	const [validation, setValidation] = useState(null);
 	const [activeSection, setActiveSection] = useState('');
 	const [isLoading, setIsLoading] = useState(true);
 	const [isSaving, setIsSaving] = useState(false);
@@ -843,6 +939,7 @@ const SettingsApp = () => {
 				setManifest(manifestResponse);
 				setSettings(stateResponse.settings || {});
 				setInitialSettings(stateResponse.settings || {});
+				setValidation(stateResponse.validation || null);
 				setActiveSection(resolveActiveSection(manifestResponse));
 
 				if (
@@ -957,6 +1054,7 @@ const SettingsApp = () => {
 			...currentSettings,
 			[key]: value,
 		}));
+		setValidation(null);
 	};
 
 	const updateActiveSection = (sectionKey) => {
@@ -980,6 +1078,7 @@ const SettingsApp = () => {
 
 				setSettings(nextSettings);
 				setInitialSettings(nextSettings);
+				setValidation(response.validation || null);
 				setNotice({
 					status: 'success',
 					message: __('Settings saved.', 'powered-cache'),
@@ -1017,6 +1116,7 @@ const SettingsApp = () => {
 	const activeSectionData = manifest.sections[activeSection] || {};
 	const premiumFields = Object.values(manifest.fields || {}).filter((field) => field.premium);
 	const premiumInfo = appConfig.premium || {};
+	const validationIssuesByKey = issuesByKey(validation);
 	const isLicenseSection = activeSection === 'license' && !!premiumInfo.licenseForm;
 	const enabledCoreCount = [
 		settings.enable_page_cache,
@@ -1084,6 +1184,8 @@ const SettingsApp = () => {
 					{notice.message}
 				</Notice>
 			)}
+
+			<ValidationSummary validation={validation} />
 
 			<div
 				className="pc-settings-overview"
@@ -1193,6 +1295,7 @@ const SettingsApp = () => {
 						<>
 							<SettingsSection
 								fields={activeFields}
+								issuesBySetting={validationIssuesByKey}
 								onChange={updateSetting}
 								section={activeSectionData}
 								sectionKey={activeSection}

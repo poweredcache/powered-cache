@@ -183,6 +183,21 @@
 	max-width: 760px;
 }
 
+.pc-settings-validation-summary {
+	margin: 0 0 18px;
+}
+
+.pc-settings-validation-summary .components-notice {
+	margin: 0;
+}
+
+.pc-settings-validation-summary .components-notice__content {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
 .pc-settings-layout {
 	column-gap: 20px;
 	display: grid;
@@ -349,6 +364,41 @@
 
 .pc-settings-field__upgrade {
 	margin-top: 8px;
+}
+
+.pc-settings-field__issues {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	margin-top: 10px;
+}
+
+.pc-settings-field__issue {
+	background: #f6f7f7;
+	border-left: 3px solid #8c8f94;
+	color: var(--pc-admin-muted);
+	font-size: 13px;
+	line-height: 1.45;
+	margin: 0;
+	padding: 7px 10px;
+}
+
+.pc-settings-field__issue--error {
+	background: #fcf0f1;
+	border-left-color: #d63638;
+	color: #8a2424;
+}
+
+.pc-settings-field__issue--warning {
+	background: #fcf9e8;
+	border-left-color: #dba617;
+	color: var(--pc-admin-warning);
+}
+
+.pc-settings-field__issue--info {
+	background: #f0f6fc;
+	border-left-color: var(--pc-admin-primary);
+	color: var(--pc-admin-primary-dark);
 }
 
 .pc-settings-badge {
