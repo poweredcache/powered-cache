@@ -354,6 +354,13 @@ class SettingsManifest {
 				'group'               => 'Critical resources',
 				'upgrade_description' => 'Premium can prioritize critical LCP images and resources automatically.',
 			),
+			'prefetch_links'                 => array(
+				'label'               => 'Link Prefetching',
+				'control_label'       => 'Prefetch in-viewport links',
+				'description'         => 'Speed up likely next page views during browser idle time.',
+				'group'               => 'Critical resources',
+				'upgrade_description' => 'Premium can prefetch likely next pages so repeat navigation feels instant.',
+			),
 			'enable_scheduled_db_cleanup'    => array(
 				'label'               => 'Scheduled Cleanups',
 				'control_label'       => 'Clean database on schedule',
@@ -380,10 +387,11 @@ class SettingsManifest {
 				'group'         => 'WordPress runtime',
 			),
 			'enable_varnish'                 => array(
-				'label'         => 'Varnish',
-				'control_label' => 'Purge Varnish cache',
-				'description'   => 'Purge Varnish when cache is cleared.',
-				'group'         => 'Reverse proxy',
+				'label'               => 'Varnish',
+				'control_label'       => 'Purge Varnish cache',
+				'description'         => 'Purge Varnish when cache is cleared.',
+				'group'               => 'Reverse proxy',
+				'upgrade_description' => 'Premium can purge external Varnish caches whenever Powered Cache clears page cache.',
 			),
 			'dev_mode'                       => array(
 				'label'         => 'Development Mode',

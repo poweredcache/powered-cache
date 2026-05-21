@@ -20,6 +20,8 @@ class SettingsCapabilityPolicy_Tests extends TestCase {
 
 		$this->assertTrue( $policy->can_edit( 'enable_page_cache' ) );
 		$this->assertFalse( $policy->can_edit( 'enable_image_optimization' ) );
+		$this->assertFalse( $policy->can_edit( 'prefetch_links' ) );
+		$this->assertFalse( $policy->can_edit( 'enable_varnish' ) );
 		$this->assertSame( 'premium', $policy->lock_reason( 'enable_image_optimization' ) );
 		$this->assertSame( '', $policy->lock_reason( 'enable_page_cache' ) );
 	}
@@ -45,17 +47,23 @@ class SettingsCapabilityPolicy_Tests extends TestCase {
 				'enable_page_cache'         => false,
 				'enable_image_optimization' => true,
 				'critical_css'              => true,
+				'prefetch_links'            => true,
+				'enable_varnish'            => true,
 			),
 			array(
 				'enable_page_cache'         => true,
 				'enable_image_optimization' => false,
 				'critical_css'              => true,
+				'prefetch_links'            => false,
+				'enable_varnish'            => false,
 			)
 		);
 
 		$this->assertFalse( $settings['enable_page_cache'] );
 		$this->assertFalse( $settings['enable_image_optimization'] );
 		$this->assertTrue( $settings['critical_css'] );
+		$this->assertFalse( $settings['prefetch_links'] );
+		$this->assertFalse( $settings['enable_varnish'] );
 	}
 
 	/**
