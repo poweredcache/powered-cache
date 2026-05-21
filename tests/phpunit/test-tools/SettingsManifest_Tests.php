@@ -114,6 +114,8 @@ class SettingsManifest_Tests extends TestCase {
 			'enable_image_optimization',
 			'add_missing_image_dimensions',
 			'enable_lcp_optimization',
+			'enable_sitemap_preload',
+			'preload_sitemap',
 			'enable_scheduled_db_cleanup',
 			'scheduled_db_cleanup_frequency',
 			'enable_google_tracking',

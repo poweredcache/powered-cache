@@ -374,10 +374,11 @@ class SettingsManifest {
 				'group'         => 'Preload',
 			),
 			'enable_sitemap_preload'         => array(
-				'label'         => 'Sitemap Preload',
-				'control_label' => 'Read URLs from sitemaps',
-				'description'   => 'Use sitemap URLs as an additional preload source.',
-				'group'         => 'Preload',
+				'label'               => 'Sitemap Preload',
+				'control_label'       => 'Read URLs from sitemaps',
+				'description'         => 'Use sitemap URLs as an additional preload source.',
+				'group'               => 'Preload',
+				'upgrade_description' => 'Premium can discover and warm URLs from XML sitemaps automatically.',
 			),
 			'enable_lcp_optimization'        => array(
 				'label'               => 'LCP Optimization',

@@ -20,6 +20,7 @@ class SettingsCapabilityPolicy_Tests extends TestCase {
 
 		$this->assertTrue( $policy->can_edit( 'enable_page_cache' ) );
 		$this->assertFalse( $policy->can_edit( 'enable_image_optimization' ) );
+		$this->assertFalse( $policy->can_edit( 'enable_sitemap_preload' ) );
 		$this->assertFalse( $policy->can_edit( 'prefetch_links' ) );
 		$this->assertFalse( $policy->can_edit( 'enable_varnish' ) );
 		$this->assertSame( 'premium', $policy->lock_reason( 'enable_image_optimization' ) );
