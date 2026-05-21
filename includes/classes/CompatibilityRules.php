@@ -37,7 +37,20 @@ class CompatibilityRules {
 	 * @param string|null $file Registry file path.
 	 */
 	public function __construct( $file = null ) {
-		$this->file = null === $file ? self::default_file() : (string) $file;
+		$file = null === $file ? self::default_file() : (string) $file;
+
+		/**
+		 * Filter the compatibility rules registry file.
+		 *
+		 * @hook powered_cache_compatibility_rules_file
+		 *
+		 * @param {string} $file Registry file path.
+		 *
+		 * @return {string} New value.
+		 *
+		 * @since 4.0.0
+		 */
+		$this->file = (string) apply_filters( 'powered_cache_compatibility_rules_file', $file );
 	}
 
 	/**
@@ -131,7 +144,7 @@ class CompatibilityRules {
 			return array();
 		}
 
-		return array_values( array_filter( array_map( 'strval', $registry['rules'][ $bucket ] ) ) );
+		return $this->normalize_rules( $registry['rules'][ $bucket ] );
 	}
 
 	/**
@@ -153,13 +166,76 @@ class CompatibilityRules {
 		$contents = file_get_contents( $this->file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 		$registry = json_decode( $contents, true );
 
-		if ( ! is_array( $registry ) || self::FORMAT !== ( isset( $registry['format'] ) ? $registry['format'] : '' ) ) {
+		if ( ! $this->is_valid_registry( $registry ) ) {
+			return $this->registry;
+		}
+
+		/**
+		 * Filter the decoded compatibility rules registry.
+		 *
+		 * Use this to replace or extend the bundled registry with a locally cached
+		 * update source while keeping the runtime fail-closed.
+		 *
+		 * @hook powered_cache_compatibility_rules_registry
+		 *
+		 * @param {array}  $registry Registry payload.
+		 * @param {string} $file     Registry file path.
+		 *
+		 * @return {array} New value.
+		 *
+		 * @since 4.0.0
+		 */
+		$registry = apply_filters( 'powered_cache_compatibility_rules_registry', $registry, $this->file );
+
+		if ( ! $this->is_valid_registry( $registry ) ) {
 			return $this->registry;
 		}
 
 		$this->registry = $registry;
 
 		return $this->registry;
+	}
+
+	/**
+	 * Check whether a registry payload can be used.
+	 *
+	 * @param mixed $registry Registry payload.
+	 *
+	 * @return bool
+	 */
+	private function is_valid_registry( $registry ) {
+		return is_array( $registry )
+			&& self::FORMAT === ( isset( $registry['format'] ) ? $registry['format'] : '' )
+			&& self::FORMAT_VERSION === ( isset( $registry['format_version'] ) ? $registry['format_version'] : '' )
+			&& isset( $registry['rules'] )
+			&& is_array( $registry['rules'] );
+	}
+
+	/**
+	 * Return normalized unique rules from a registry bucket.
+	 *
+	 * @param array $rules Rule values.
+	 *
+	 * @return array
+	 */
+	private function normalize_rules( array $rules ) {
+		$normalized = array();
+
+		foreach ( $rules as $rule ) {
+			if ( ! is_scalar( $rule ) ) {
+				continue;
+			}
+
+			$rule = trim( (string) $rule );
+
+			if ( '' === $rule || in_array( $rule, $normalized, true ) ) {
+				continue;
+			}
+
+			$normalized[] = $rule;
+		}
+
+		return $normalized;
 	}
 
 	/**
