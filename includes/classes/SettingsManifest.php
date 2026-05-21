@@ -163,7 +163,7 @@ class SettingsManifest {
 			'deprecated'    => (bool) $field['deprecated'],
 		);
 
-		foreach ( array( 'options', 'zone_key', 'zone_options' ) as $metadata_key ) {
+		foreach ( array( 'max', 'min', 'options', 'visible_when', 'zone_key', 'zone_options' ) as $metadata_key ) {
 			if ( isset( $metadata[ $metadata_key ] ) ) {
 				$manifest[ $metadata_key ] = $metadata[ $metadata_key ];
 			}
@@ -418,6 +418,42 @@ class SettingsManifest {
 				'description'   => 'Adjust WordPress Heartbeat behavior in admin, editor, and frontend contexts.',
 				'group'         => 'WordPress runtime',
 			),
+			'heartbeat_dashboard_status'     => array(
+				'label'       => 'Dashboard Heartbeat',
+				'description' => 'Choose how Heartbeat should behave on WordPress dashboard screens.',
+				'group'       => 'Heartbeat',
+			),
+			'heartbeat_dashboard_interval'   => array_merge(
+				self::heartbeat_interval_metadata( 'heartbeat_dashboard_status' ),
+				array(
+					'label'       => 'Dashboard Interval',
+					'description' => 'Set the dashboard Heartbeat interval in seconds.',
+				)
+			),
+			'heartbeat_editor_status'        => array(
+				'label'       => 'Editor Heartbeat',
+				'description' => 'Choose how Heartbeat should behave in the post editor.',
+				'group'       => 'Heartbeat',
+			),
+			'heartbeat_editor_interval'      => array_merge(
+				self::heartbeat_interval_metadata( 'heartbeat_editor_status' ),
+				array(
+					'label'       => 'Editor Interval',
+					'description' => 'Set the editor Heartbeat interval in seconds.',
+				)
+			),
+			'heartbeat_frontend_status'      => array(
+				'label'       => 'Frontend Heartbeat',
+				'description' => 'Choose how Heartbeat should behave for frontend visits.',
+				'group'       => 'Heartbeat',
+			),
+			'heartbeat_frontend_interval'    => array_merge(
+				self::heartbeat_interval_metadata( 'heartbeat_frontend_status' ),
+				array(
+					'label'       => 'Frontend Interval',
+					'description' => 'Set the frontend Heartbeat interval in seconds.',
+				)
+			),
 			'enable_varnish'                 => array(
 				'label'               => 'Varnish',
 				'control_label'       => 'Purge Varnish cache',
@@ -438,6 +474,27 @@ class SettingsManifest {
 		}
 
 		return $metadata;
+	}
+
+	/**
+	 * Return shared Heartbeat interval field metadata.
+	 *
+	 * @param string $status_key Status setting key.
+	 *
+	 * @return array
+	 */
+	private static function heartbeat_interval_metadata( $status_key ) {
+		return array(
+			'group'        => 'Heartbeat',
+			'min'          => 15,
+			'max'          => 120,
+			'visible_when' => array(
+				array(
+					'key'   => $status_key,
+					'value' => 'modify',
+				),
+			),
+		);
 	}
 
 	/**

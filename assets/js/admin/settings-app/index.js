@@ -288,6 +288,28 @@ const selectOptions = (field) => {
 	}));
 };
 
+const conditionMatches = (condition, settings) => {
+	if (!condition || !condition.key) {
+		return true;
+	}
+
+	const actualValue = settings[condition.key];
+	const expectedValue = condition.value;
+
+	switch (condition.operator || 'equals') {
+		case 'not_equals':
+			return actualValue !== expectedValue;
+		case 'in':
+			return Array.isArray(expectedValue) && expectedValue.includes(actualValue);
+		case 'equals':
+		default:
+			return actualValue === expectedValue;
+	}
+};
+
+const fieldVisible = (field, settings) =>
+	(field.visible_when || []).every((condition) => conditionMatches(condition, settings));
+
 const upgradeLabel = (field) =>
 	sprintf(
 		/* translators: %s: setting label. */
@@ -744,6 +766,10 @@ const SettingsField = ({ field, issues = [], settings, onChange }) => {
 		return null;
 	}
 
+	if (!fieldVisible(field, settings)) {
+		return null;
+	}
+
 	const isLocked = !!field.locked || (field.premium && !appConfig.isPremium);
 	const isDependencyMet = (field.dependencies || []).every(
 		(dependency) => !!settings[dependency],
@@ -850,6 +876,8 @@ const SettingsField = ({ field, issues = [], settings, onChange }) => {
 					{...controlProps}
 					aria-describedby={descriptionId}
 					label={field.label}
+					max={undefined === field.max ? undefined : String(field.max)}
+					min={undefined === field.min ? undefined : String(field.min)}
 					onChange={updateValue}
 					type="number"
 					value={displayValue(value, field)}
@@ -916,7 +944,9 @@ const SettingsSection = ({
 	settings,
 	onChange,
 }) => {
-	const visibleFields = fields.filter((field) => field.control !== 'hidden');
+	const visibleFields = fields.filter(
+		(field) => field.control !== 'hidden' && fieldVisible(field, settings),
+	);
 	const groups = visibleFields.reduce((fieldGroups, field) => {
 		const groupName = field.group || section.label;
 

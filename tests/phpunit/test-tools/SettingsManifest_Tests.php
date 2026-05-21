@@ -78,6 +78,19 @@ class SettingsManifest_Tests extends TestCase {
 		$this->assertSame( 'select', $fields['object_cache']['control'] );
 		$this->assertSame( 'duration', $fields['cache_timeout']['control'] );
 		$this->assertSame( 'Set how long cached pages stay fresh.', $fields['cache_timeout']['description'] );
+		$this->assertSame( 'Heartbeat', $fields['heartbeat_dashboard_status']['group'] );
+		$this->assertSame( 'Dashboard Interval', $fields['heartbeat_dashboard_interval']['label'] );
+		$this->assertSame( 15, $fields['heartbeat_dashboard_interval']['min'] );
+		$this->assertSame( 120, $fields['heartbeat_dashboard_interval']['max'] );
+		$this->assertSame(
+			array(
+				array(
+					'key'   => 'heartbeat_dashboard_status',
+					'value' => 'modify',
+				),
+			),
+			$fields['heartbeat_dashboard_interval']['visible_when']
+		);
 		$this->assertSame( 'Include the homepage', $fields['preload_homepage']['control_label'] );
 		$this->assertSame( 'Warm the homepage when cache preloading runs.', $fields['preload_homepage']['description'] );
 		$this->assertSame( 'select', $fields['image_optimizer_preferred_format']['control'] );
