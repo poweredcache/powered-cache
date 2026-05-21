@@ -99,6 +99,7 @@ class Install {
 			$this->upgrade_32( true );
 			$this->upgrade_33( true );
 			$this->upgrade_34( true );
+			$this->upgrade_40( true );
 
 			\PoweredCache\Utils\log( sprintf( '[Networkwide] Upgrade DB version: %s', POWERED_CACHE_DB_VERSION ) );
 			update_site_option( DB_VERSION_OPTION_NAME, POWERED_CACHE_DB_VERSION );
@@ -116,6 +117,7 @@ class Install {
 			$this->upgrade_32();
 			$this->upgrade_33();
 			$this->upgrade_34();
+			$this->upgrade_40();
 
 			update_option( DB_VERSION_OPTION_NAME, POWERED_CACHE_DB_VERSION );
 		}
@@ -245,6 +247,31 @@ class Install {
 		$settings = $this->save_settings( $settings, $network_wide );
 
 		\PoweredCache\Utils\log( 'Upgraded to version 3.4' );
+	}
+
+	/**
+	 * Upgrade routine for version 4.0.
+	 *
+	 * @param bool $network_wide Whether plugin activated network-wide or not.
+	 *
+	 * @return void
+	 */
+	public function upgrade_40( $network_wide = false ) {
+		$current_version = $network_wide ? get_site_option( DB_VERSION_OPTION_NAME ) : get_option( DB_VERSION_OPTION_NAME );
+		if ( ! version_compare( $current_version, '4.0', '<' ) ) {
+			return;
+		}
+
+		$settings = \PoweredCache\Utils\get_settings( $network_wide );
+		$migrator = new SettingsMigrator();
+
+		if ( empty( $migrator->applicable_steps( $settings ) ) ) {
+			return;
+		}
+
+		$this->save_settings( $migrator->for_storage( $settings ), $network_wide );
+
+		\PoweredCache\Utils\log( 'Upgraded to version 4.0' );
 	}
 
 	/**
@@ -405,7 +432,7 @@ class Install {
 	 *
 	 * @return array Saved settings.
 	 */
-	private function save_settings( array $settings, $network_wide = false ) {
+	protected function save_settings( array $settings, $network_wide = false ) {
 		$settings_repository = SettingsRepository::factory( $network_wide );
 
 		$settings_repository->save( $settings );
