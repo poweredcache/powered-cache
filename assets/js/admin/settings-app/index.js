@@ -306,10 +306,27 @@ const ImageDeliveryPanel = ({ imageDelivery = {} }) => {
 		: __('Auto', 'powered-cache');
 
 	return (
-		<section className="pc-settings-delivery-card">
-			<div className="pc-settings-delivery-card__main">
-				<div className="pc-settings-delivery-card__heading">
-					<span className="pc-settings-badge">{__('Premium CDN', 'powered-cache')}</span>
+		<section
+			className={`pc-settings-delivery-card pc-settings-delivery-card--${
+				imageDelivery.enabled ? 'enabled' : 'idle'
+			}`}
+		>
+			<div className="pc-settings-delivery-card__header">
+				<div>
+					<div className="pc-settings-delivery-card__heading">
+						<span className="pc-settings-badge">
+							{__('Premium delivery', 'powered-cache')}
+						</span>
+					</div>
+					<h3>{__('Image Delivery', 'powered-cache')}</h3>
+					<p>
+						{__(
+							'Serve optimized WebP/AVIF images through the Powered Cache delivery network while keeping the workflow inside your existing media settings.',
+							'powered-cache',
+						)}
+					</p>
+				</div>
+				<div className="pc-settings-delivery-card__actions">
 					<span
 						className={`pc-settings-status-pill pc-settings-status-pill--${
 							imageDelivery.enabled ? 'enabled' : 'idle'
@@ -319,33 +336,50 @@ const ImageDeliveryPanel = ({ imageDelivery = {} }) => {
 							? __('Delivering optimized images', 'powered-cache')
 							: __('Ready to enable', 'powered-cache')}
 					</span>
-				</div>
-				<h3>{__('Image Delivery Service', 'powered-cache')}</h3>
-				<p>
-					{__(
-						'Serve WebP/AVIF images through the Powered Cache delivery network without changing your site URLs or CDN setup.',
-						'powered-cache',
-					)}
-				</p>
-				{imageDelivery.enabled && imageDelivery.purgeUrl && (
-					<div className="pc-settings-delivery-card__actions">
+					{imageDelivery.enabled && imageDelivery.purgeUrl && (
 						<Button href={imageDelivery.purgeUrl} variant="secondary">
 							{__('Purge Image Cache', 'powered-cache')}
 						</Button>
-					</div>
-				)}
+					)}
+				</div>
 			</div>
 			<div className="pc-settings-delivery-card__details">
 				<div>
+					<span>{__('Service', 'powered-cache')}</span>
+					<strong>
+						{imageDelivery.enabled
+							? __('Enabled', 'powered-cache')
+							: __('Disabled', 'powered-cache')}
+					</strong>
+					<p>
+						{imageDelivery.enabled
+							? __(
+									'Image requests are routed through the optimizer.',
+									'powered-cache',
+								)
+							: __(
+									'Enable image optimization below when the site is ready.',
+									'powered-cache',
+								)}
+					</p>
+				</div>
+				<div>
 					<span>{__('Delivery Domain', 'powered-cache')}</span>
 					<strong>{domain.replace(/^https?:\/\//, '')}</strong>
+					<p>{__('Managed delivery endpoint for optimized images.', 'powered-cache')}</p>
 				</div>
 				<div>
 					<span>{__('Preferred Format', 'powered-cache')}</span>
 					<strong>{preferredFormat}</strong>
+					<p>
+						{__(
+							'The best supported output format is selected automatically.',
+							'powered-cache',
+						)}
+					</p>
 				</div>
 				<div>
-					<span>{__('Usage', 'powered-cache')}</span>
+					<span>{__('Optimized Images', 'powered-cache')}</span>
 					<strong>
 						{hasStats
 							? metricValue(stats.optimizedImages)
@@ -358,6 +392,14 @@ const ImageDeliveryPanel = ({ imageDelivery = {} }) => {
 								__('Saved %1$s. CDN hit rate %2$s.', 'powered-cache'),
 								metricValue(stats.bandwidthSaved),
 								metricValue(stats.cacheHitRate),
+							)}
+						</p>
+					)}
+					{!hasStats && (
+						<p>
+							{__(
+								'Usage stats will appear after the delivery backend reports aggregated data.',
+								'powered-cache',
 							)}
 						</p>
 					)}
@@ -1351,25 +1393,24 @@ const SettingsApp = () => {
 							)}
 						</p>
 					</div>
-					<div className="pc-settings-plan-card">
-						<span>{__('Current Plan', 'powered-cache')}</span>
-						<strong>
+					<div
+						className="pc-settings-header__meta"
+						aria-label={__('Plan status', 'powered-cache')}
+					>
+						<span className="pc-settings-status-pill pc-settings-status-pill--plan">
 							{appConfig.isPremium
-								? __('Premium', 'powered-cache')
-								: __('Free', 'powered-cache')}
-						</strong>
-						<p>
+								? __('Premium plan', 'powered-cache')
+								: __('Free plan', 'powered-cache')}
+						</span>
+						<span className="pc-settings-header__license">
 							{appConfig.isPremium
 								? premiumInfo.licenseMessage ||
 									__(
 										'Advanced optimization controls are unlocked.',
 										'powered-cache',
 									)
-								: __(
-										'Premium-only controls stay visible so you can see what to unlock next.',
-										'powered-cache',
-									)}
-						</p>
+								: __('Premium controls stay visible in context.', 'powered-cache')}
+						</span>
 					</div>
 				</div>
 				<div className="pc-settings-header__actions">
