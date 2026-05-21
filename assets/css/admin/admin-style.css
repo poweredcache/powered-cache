@@ -137,25 +137,118 @@
 	border-left: 4px solid var(--pc-admin-premium);
 }
 
-.pc-settings-overview span {
+.pc-settings-metric span {
 	color: var(--pc-admin-muted);
 	display: block;
 	font-size: 12px;
 	margin-bottom: 6px;
 }
 
-.pc-settings-overview strong {
+.pc-settings-metric strong {
 	display: block;
 	font-size: 17px;
 	line-height: 1.3;
 	text-transform: capitalize;
 }
 
-.pc-settings-overview p {
+.pc-settings-metric p {
 	color: var(--pc-admin-muted);
 	font-size: 12px;
 	line-height: 1.4;
 	margin: 8px 0 0;
+}
+
+.pc-settings-delivery-card {
+	background: linear-gradient(135deg, #fff 0%, #f8fbff 100%);
+	border: 1px solid #c5d9ed;
+	border-radius: 6px;
+	column-gap: 20px;
+	display: grid;
+	grid-template-columns: minmax(260px, 0.55fr) minmax(0, 1fr);
+	margin: 0 0 14px;
+	padding: 18px;
+	row-gap: 16px;
+}
+
+.pc-settings-delivery-card__heading {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.pc-settings-delivery-card h3 {
+	font-size: 18px;
+	line-height: 1.3;
+	margin: 10px 0 6px;
+}
+
+.pc-settings-delivery-card p {
+	color: var(--pc-admin-muted);
+	font-size: 13px;
+	line-height: 1.5;
+	margin: 0;
+}
+
+.pc-settings-delivery-card__actions {
+	margin-top: 14px;
+}
+
+.pc-settings-status-pill {
+	border: 1px solid #dcdcde;
+	border-radius: 999px;
+	color: var(--pc-admin-muted);
+	display: inline-flex;
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1.2;
+	padding: 5px 9px;
+}
+
+.pc-settings-status-pill--enabled {
+	background: #edfaef;
+	border-color: #b8e6bf;
+	color: var(--pc-admin-good);
+}
+
+.pc-settings-status-pill--idle {
+	background: #f6f7f7;
+}
+
+.pc-settings-delivery-card__details {
+	background: rgba(255, 255, 255, 0.76);
+	border: 1px solid #dce8f3;
+	border-radius: 6px;
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.pc-settings-delivery-card__details > div {
+	border-left: 1px solid #dce8f3;
+	padding: 14px 16px;
+}
+
+.pc-settings-delivery-card__details > div:first-child {
+	border-left: 0;
+}
+
+.pc-settings-delivery-card__details span {
+	color: var(--pc-admin-muted);
+	display: block;
+	font-size: 12px;
+	margin-bottom: 6px;
+}
+
+.pc-settings-delivery-card__details strong {
+	display: block;
+	font-size: 16px;
+	line-height: 1.35;
+	overflow-wrap: anywhere;
+}
+
+.pc-settings-delivery-card__details p {
+	font-size: 12px;
+	margin-top: 6px;
 }
 
 .pc-settings-upgrade-panel {
@@ -613,8 +706,19 @@
 	.pc-settings-header__content,
 	.pc-settings-overview,
 	.pc-settings-layout,
-	.pc-settings-field {
+	.pc-settings-field,
+	.pc-settings-delivery-card,
+	.pc-settings-delivery-card__details {
 		grid-template-columns: 1fr;
+	}
+
+	.pc-settings-delivery-card__details > div {
+		border-left: 0;
+		border-top: 1px solid #dce8f3;
+	}
+
+	.pc-settings-delivery-card__details > div:first-child {
+		border-top: 0;
 	}
 
 	.pc-settings-section__header,

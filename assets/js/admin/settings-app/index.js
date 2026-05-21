@@ -277,6 +277,84 @@ const MetricCard = ({ label, value, description, tone = 'neutral' }) => (
 	</div>
 );
 
+const metricValue = (value, fallback = __('Not available', 'powered-cache')) => {
+	if (value === null || value === undefined || value === '') {
+		return fallback;
+	}
+
+	return value;
+};
+
+const ImageDeliveryPanel = ({ imageDelivery = {} }) => {
+	const stats = imageDelivery.stats || {};
+	const hasStats = !!stats.available;
+	const domain = imageDelivery.domain || 'https://img.poweredcache.net';
+	const preferredFormat = imageDelivery.preferredFormat
+		? imageDelivery.preferredFormat.toUpperCase()
+		: __('Auto', 'powered-cache');
+
+	return (
+		<section className="pc-settings-delivery-card">
+			<div className="pc-settings-delivery-card__main">
+				<div className="pc-settings-delivery-card__heading">
+					<span className="pc-settings-badge">{__('Premium CDN', 'powered-cache')}</span>
+					<span
+						className={`pc-settings-status-pill pc-settings-status-pill--${
+							imageDelivery.enabled ? 'enabled' : 'idle'
+						}`}
+					>
+						{imageDelivery.enabled
+							? __('Delivering optimized images', 'powered-cache')
+							: __('Ready to enable', 'powered-cache')}
+					</span>
+				</div>
+				<h3>{__('Image Delivery Service', 'powered-cache')}</h3>
+				<p>
+					{__(
+						'Serve WebP/AVIF images through the Powered Cache delivery network without changing your site URLs or CDN setup.',
+						'powered-cache',
+					)}
+				</p>
+				{imageDelivery.enabled && imageDelivery.purgeUrl && (
+					<div className="pc-settings-delivery-card__actions">
+						<Button href={imageDelivery.purgeUrl} variant="secondary">
+							{__('Purge Image Cache', 'powered-cache')}
+						</Button>
+					</div>
+				)}
+			</div>
+			<div className="pc-settings-delivery-card__details">
+				<div>
+					<span>{__('Delivery Domain', 'powered-cache')}</span>
+					<strong>{domain.replace(/^https?:\/\//, '')}</strong>
+				</div>
+				<div>
+					<span>{__('Preferred Format', 'powered-cache')}</span>
+					<strong>{preferredFormat}</strong>
+				</div>
+				<div>
+					<span>{__('Usage', 'powered-cache')}</span>
+					<strong>
+						{hasStats
+							? metricValue(stats.optimizedImages)
+							: __('Collecting data', 'powered-cache')}
+					</strong>
+					{hasStats && (
+						<p>
+							{sprintf(
+								/* translators: 1: bandwidth saved, 2: cache hit rate. */
+								__('Saved %1$s. CDN hit rate %2$s.', 'powered-cache'),
+								metricValue(stats.bandwidthSaved),
+								metricValue(stats.cacheHitRate),
+							)}
+						</p>
+					)}
+				</div>
+			</div>
+		</section>
+	);
+};
+
 const validationIssues = (validation) =>
 	validation && Array.isArray(validation.issues) ? validation.issues : [];
 
@@ -1116,6 +1194,7 @@ const SettingsApp = () => {
 	const activeSectionData = manifest.sections[activeSection] || {};
 	const premiumFields = Object.values(manifest.fields || {}).filter((field) => field.premium);
 	const premiumInfo = appConfig.premium || {};
+	const imageDelivery = premiumInfo.imageDelivery || null;
 	const validationIssuesByKey = issuesByKey(validation);
 	const isLicenseSection = activeSection === 'license' && !!premiumInfo.licenseForm;
 	const enabledCoreCount = [
@@ -1187,69 +1266,81 @@ const SettingsApp = () => {
 
 			<ValidationSummary validation={validation} />
 
-			<div
-				className="pc-settings-overview"
-				aria-label={__('Settings overview', 'powered-cache')}
-			>
-				<MetricCard
-					description={__('HTML cache delivery for anonymous visits.', 'powered-cache')}
-					label={__('Page Cache', 'powered-cache')}
-					tone={settings.enable_page_cache ? 'good' : 'warning'}
-					value={
-						settings.enable_page_cache
-							? __('Enabled', 'powered-cache')
-							: __('Disabled', 'powered-cache')
-					}
-				/>
-				<MetricCard
-					description={__(
-						'Persistent backend for dynamic WordPress data.',
-						'powered-cache',
-					)}
-					label={__('Object Cache', 'powered-cache')}
-					tone={
-						settings.object_cache && settings.object_cache !== 'off'
-							? 'good'
-							: 'neutral'
-					}
-					value={
-						settings.object_cache && settings.object_cache !== 'off'
-							? settings.object_cache
-							: __('Off', 'powered-cache')
-					}
-				/>
-				<MetricCard
-					description={__('Core optimizations currently switched on.', 'powered-cache')}
-					label={__('Active Controls', 'powered-cache')}
-					tone="good"
-					value={`${enabledCoreCount}/5`}
-				/>
-				<MetricCard
-					description={
-						appConfig.isPremium
-							? premiumInfo.licenseMessage ||
-								__(
-									'Premium optimizations are available on this site.',
-									'powered-cache',
-								)
-							: __(
-									'Locked controls are shown in context across the settings.',
-									'powered-cache',
-								)
-					}
-					label={
-						appConfig.isPremium
-							? __('License', 'powered-cache')
-							: __('Premium Features', 'powered-cache')
-					}
-					tone={appConfig.isPremium && !premiumInfo.licenseActive ? 'warning' : 'premium'}
-					value={
-						appConfig.isPremium
-							? labelFromKey(premiumInfo.licenseStatus || 'unknown')
-							: premiumFields.length
-					}
-				/>
-			</div>
+			{activeSection === 'cache' && (
+				<div
+					className="pc-settings-overview"
+					aria-label={__('Settings overview', 'powered-cache')}
+				>
+					<MetricCard
+						description={__(
+							'HTML cache delivery for anonymous visits.',
+							'powered-cache',
+						)}
+						label={__('Page Cache', 'powered-cache')}
+						tone={settings.enable_page_cache ? 'good' : 'warning'}
+						value={
+							settings.enable_page_cache
+								? __('Enabled', 'powered-cache')
+								: __('Disabled', 'powered-cache')
+						}
+					/>
+					<MetricCard
+						description={__(
+							'Persistent backend for dynamic WordPress data.',
+							'powered-cache',
+						)}
+						label={__('Object Cache', 'powered-cache')}
+						tone={
+							settings.object_cache && settings.object_cache !== 'off'
+								? 'good'
+								: 'neutral'
+						}
+						value={
+							settings.object_cache && settings.object_cache !== 'off'
+								? settings.object_cache
+								: __('Off', 'powered-cache')
+						}
+					/>
+					<MetricCard
+						description={__(
+							'Core optimizations currently switched on.',
+							'powered-cache',
+						)}
+						label={__('Active Controls', 'powered-cache')}
+						tone="good"
+						value={`${enabledCoreCount}/5`}
+					/>
+					<MetricCard
+						description={
+							appConfig.isPremium
+								? premiumInfo.licenseMessage ||
+									__(
+										'Premium optimizations are available on this site.',
+										'powered-cache',
+									)
+								: __(
+										'Locked controls are shown in context across the settings.',
+										'powered-cache',
+									)
+						}
+						label={
+							appConfig.isPremium
+								? __('License', 'powered-cache')
+								: __('Premium Features', 'powered-cache')
+						}
+						tone={
+							appConfig.isPremium && !premiumInfo.licenseActive
+								? 'warning'
+								: 'premium'
+						}
+						value={
+							appConfig.isPremium
+								? labelFromKey(premiumInfo.licenseStatus || 'unknown')
+								: premiumFields.length
+						}
+					/>
+				</div>
+			)}
 
 			{!appConfig.isPremium && (
 				<div className="pc-settings-upgrade-panel">
@@ -1289,6 +1380,9 @@ const SettingsApp = () => {
 				</nav>
 
 				<div className="pc-settings-content">
+					{appConfig.isPremium && imageDelivery && activeSection === 'media' && (
+						<ImageDeliveryPanel imageDelivery={imageDelivery} />
+					)}
 					{isLicenseSection ? (
 						<LicenseSection section={activeSectionData} premiumInfo={premiumInfo} />
 					) : (
