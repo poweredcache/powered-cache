@@ -274,6 +274,20 @@ const toggleLabel = (field) =>
 		field.label,
 	);
 
+const selectOptions = (field) => {
+	if (field.options) {
+		return Object.entries(field.options).map(([value, label]) => ({
+			label,
+			value,
+		}));
+	}
+
+	return (field.enum || []).map((option) => ({
+		label: (field.enum_labels && field.enum_labels[option]) || labelFromKey(option),
+		value: option,
+	}));
+};
+
 const upgradeLabel = (field) =>
 	sprintf(
 		/* translators: %s: setting label. */
@@ -508,12 +522,7 @@ const LockedControlPreview = ({ field }) => {
 					{...controlProps}
 					label={field.label}
 					onChange={noop}
-					options={(field.enum || []).map((option) => ({
-						label:
-							(field.enum_labels && field.enum_labels[option]) ||
-							labelFromKey(option),
-						value: option,
-					}))}
+					options={selectOptions(field)}
 					value={previewValue}
 				/>
 			);
@@ -776,12 +785,7 @@ const SettingsField = ({ field, issues = [], settings, onChange }) => {
 					aria-describedby={descriptionId}
 					label={field.label}
 					onChange={updateValue}
-					options={(field.enum || []).map((option) => ({
-						label:
-							(field.enum_labels && field.enum_labels[option]) ||
-							labelFromKey(option),
-						value: option,
-					}))}
+					options={selectOptions(field)}
 					value={displayValue(value, field)}
 				/>
 			);

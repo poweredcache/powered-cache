@@ -306,6 +306,17 @@ class SettingsManifest {
 				'group'               => 'Images',
 				'upgrade_description' => 'Premium adds on-the-fly WebP/AVIF image optimization backed by fast CDN delivery.',
 			),
+			'image_optimizer_preferred_format' => array(
+				'label'               => 'Image Format Preference',
+				'control'             => 'select',
+				'description'         => 'Choose whether optimized images should prefer the automatic AVIF-first flow or WebP.',
+				'group'               => 'Images',
+				'options'             => array(
+					''     => 'Automatic (AVIF when supported)',
+					'webp' => 'Prefer WebP',
+				),
+				'upgrade_description' => 'Premium can serve optimized images in modern formats through the delivery network.',
+			),
 			'add_missing_image_dimensions'   => array(
 				'label'               => 'Automatic Image Dimensions',
 				'description'         => 'Add missing width and height attributes to improve layout stability.',
