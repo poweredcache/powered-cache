@@ -12,5 +12,8 @@
     "lazy_load_exclusions": [
       "selectors.core.image.lightboxObjectFit"
     ]
+  },
+  "conditional_rules": {
+    "plugins": {}
   }
 }

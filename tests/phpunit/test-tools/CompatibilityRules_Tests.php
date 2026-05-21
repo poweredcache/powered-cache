@@ -124,6 +124,51 @@ class CompatibilityRules_Tests extends TestCase {
 	}
 
 	/**
+	 * It applies plugin conditional rules only for active plugins.
+	 */
+	public function test_plugin_conditional_rules_apply_for_active_plugins() {
+		$file = tempnam( sys_get_temp_dir(), 'pc-rules-' );
+		file_put_contents(
+			$file,
+			json_encode(
+				array(
+					'format'            => CompatibilityRules::FORMAT,
+					'format_version'    => CompatibilityRules::FORMAT_VERSION,
+					'rules'             => array(
+						'delay_exclusions' => array( 'bundled-script' ),
+					),
+					'conditional_rules' => array(
+						'plugins' => array(
+							'active-plugin/active-plugin.php'     => array(
+								'delay_exclusions' => array( ' active-script ', 'active-script' ),
+							),
+							'inactive-plugin/inactive-plugin.php' => array(
+								'delay_exclusions' => array( 'inactive-script' ),
+							),
+						),
+					),
+				)
+			)
+		); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+
+		\WP_Mock::onFilter( 'powered_cache_compatibility_rules_active_plugins' )
+			->with( array() )
+			->reply( array( 'active-plugin/active-plugin.php' ) );
+
+		$rules = new CompatibilityRules( $file );
+
+		$this->assertSame(
+			array(
+				'bundled-script',
+				'active-script',
+			),
+			$rules->rules( 'delay_exclusions' )
+		);
+
+		unlink( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+	}
+
+	/**
 	 * It fails closed when the registry payload is invalid.
 	 */
 	public function test_invalid_registry_payload_returns_no_rules() {

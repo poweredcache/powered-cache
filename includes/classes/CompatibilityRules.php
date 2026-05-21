@@ -140,11 +140,13 @@ class CompatibilityRules {
 	public function rules( $bucket ) {
 		$registry = $this->registry();
 
-		if ( empty( $registry['rules'][ $bucket ] ) || ! is_array( $registry['rules'][ $bucket ] ) ) {
-			return array();
+		$rules = array();
+
+		if ( ! empty( $registry['rules'][ $bucket ] ) && is_array( $registry['rules'][ $bucket ] ) ) {
+			$rules = $this->normalize_rules( $registry['rules'][ $bucket ] );
 		}
 
-		return $this->normalize_rules( $registry['rules'][ $bucket ] );
+		return $this->append_unique( $rules, $this->conditional_rules( $registry, $bucket ) );
 	}
 
 	/**
@@ -236,6 +238,75 @@ class CompatibilityRules {
 		}
 
 		return $normalized;
+	}
+
+	/**
+	 * Return conditional rules that match the current environment.
+	 *
+	 * @param array  $registry Registry payload.
+	 * @param string $bucket   Rule bucket.
+	 *
+	 * @return array
+	 */
+	private function conditional_rules( array $registry, $bucket ) {
+		if ( empty( $registry['conditional_rules']['plugins'] ) || ! is_array( $registry['conditional_rules']['plugins'] ) ) {
+			return array();
+		}
+
+		$active_plugins = $this->active_plugins();
+		$rules          = array();
+
+		foreach ( $registry['conditional_rules']['plugins'] as $plugin => $plugin_rules ) {
+			if ( ! is_string( $plugin ) || ! in_array( $plugin, $active_plugins, true ) || empty( $plugin_rules[ $bucket ] ) || ! is_array( $plugin_rules[ $bucket ] ) ) {
+				continue;
+			}
+
+			$rules = $this->append_unique( $rules, $this->normalize_rules( $plugin_rules[ $bucket ] ) );
+		}
+
+		return $rules;
+	}
+
+	/**
+	 * Return active plugin basenames.
+	 *
+	 * @return array
+	 */
+	private function active_plugins() {
+		$plugins = array();
+
+		if ( function_exists( 'get_option' ) ) {
+			$option_plugins = get_option( 'active_plugins', array() );
+
+			if ( is_array( $option_plugins ) ) {
+				$plugins = array_merge( $plugins, $option_plugins );
+			}
+		}
+
+		if ( function_exists( 'get_site_option' ) ) {
+			$network_plugins = get_site_option( 'active_sitewide_plugins', array() );
+
+			if ( is_array( $network_plugins ) ) {
+				$plugins = array_merge( $plugins, array_keys( $network_plugins ) );
+			}
+		}
+
+		$plugins = $this->normalize_rules( $plugins );
+
+		/**
+		 * Filter active plugin basenames used by compatibility rules.
+		 *
+		 * @hook powered_cache_compatibility_rules_active_plugins
+		 *
+		 * @param {array} $plugins Active plugin basenames.
+		 *
+		 * @return {array} New value.
+		 *
+		 * @since 4.0.0
+		 */
+		$plugins = apply_filters( 'powered_cache_compatibility_rules_active_plugins', $plugins );
+
+		return is_array( $plugins ) ? $this->normalize_rules( $plugins ) : array();
 	}
 
 	/**
