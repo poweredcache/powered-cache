@@ -227,7 +227,22 @@ class SettingsManifest {
 			'upgrade_description' => 'Unlock this optimization in Powered Cache Premium.',
 		);
 
-		$overrides = array(
+		$overrides = self::metadata_overrides();
+
+		if ( isset( $overrides[ $key ] ) ) {
+			$metadata = array_merge( $metadata, $overrides[ $key ] );
+		}
+
+		return $metadata;
+	}
+
+	/**
+	 * Return field metadata overrides keyed by setting key.
+	 *
+	 * @return array
+	 */
+	private static function metadata_overrides() {
+		return array(
 			'enable_page_cache'              => array(
 				'label'         => 'Page Cache',
 				'control_label' => 'Serve cached pages',
@@ -467,12 +482,6 @@ class SettingsManifest {
 				'group'         => 'Developer tools',
 			),
 		);
-
-		if ( isset( $overrides[ $key ] ) ) {
-			$metadata = array_merge( $metadata, $overrides[ $key ] );
-		}
-
-		return $metadata;
 	}
 
 	/**
