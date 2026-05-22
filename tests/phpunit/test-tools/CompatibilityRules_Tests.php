@@ -355,6 +355,63 @@ class CompatibilityRules_Tests extends TestCase {
 	}
 
 	/**
+	 * It reuses the active plugin list within one registry instance.
+	 */
+	public function test_active_plugins_are_resolved_once_per_registry_instance() {
+		$file = tempnam( sys_get_temp_dir(), 'pc-rules-' );
+		file_put_contents(
+			$file,
+			json_encode(
+				array(
+					'format'            => CompatibilityRules::FORMAT,
+					'format_version'    => CompatibilityRules::FORMAT_VERSION,
+					'rules'             => array(),
+					'conditional_rules' => array(
+						'plugins' => array(
+							'active-plugin/active-plugin.php' => array(
+								'delay_exclusions' => array( 'active-delay-script' ),
+								'settings_issues'  => array(
+									array(
+										'key'      => 'js_delay',
+										'severity' => 'info',
+										'code'     => 'active_plugin_guard',
+										'message'  => 'Active plugin guard.',
+										'when'     => array(
+											'setting' => 'js_delay',
+											'value'   => true,
+										),
+									),
+								),
+							),
+						),
+					),
+				)
+			)
+		); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+
+		\WP_Mock::onFilter( 'powered_cache_compatibility_rules_active_plugins' )
+			->with( array() )
+			->reply( array( 'active-plugin/active-plugin.php' ) );
+
+		$rules = new CompatibilityRules( $file );
+
+		$this->assertSame( array( 'active-delay-script' ), $rules->rules( 'delay_exclusions' ) );
+		$this->assertSame(
+			array(
+				array(
+					'key'      => 'js_delay',
+					'severity' => 'info',
+					'code'     => 'active_plugin_guard',
+					'message'  => 'Active plugin guard.',
+				),
+			),
+			$rules->settings_issues( array( 'js_delay' => true ) )
+		);
+
+		unlink( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+	}
+
+	/**
 	 * It fails closed when the registry payload is invalid.
 	 */
 	public function test_invalid_registry_payload_returns_no_rules() {

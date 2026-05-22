@@ -32,6 +32,13 @@ class CompatibilityRules {
 	private $registry;
 
 	/**
+	 * Active plugin basenames.
+	 *
+	 * @var array|null
+	 */
+	private $active_plugins;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param string|null $file Registry file path.
@@ -318,6 +325,10 @@ class CompatibilityRules {
 	 * @return array
 	 */
 	private function active_plugins() {
+		if ( null !== $this->active_plugins ) {
+			return $this->active_plugins;
+		}
+
 		$plugins = array();
 
 		if ( function_exists( 'get_option' ) ) {
@@ -351,7 +362,9 @@ class CompatibilityRules {
 		 */
 		$plugins = apply_filters( 'powered_cache_compatibility_rules_active_plugins', $plugins );
 
-		return is_array( $plugins ) ? $this->normalize_rules( $plugins ) : array();
+		$this->active_plugins = is_array( $plugins ) ? $this->normalize_rules( $plugins ) : array();
+
+		return $this->active_plugins;
 	}
 
 	/**
