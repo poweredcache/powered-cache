@@ -14,7 +14,6 @@ use PoweredCache\Encryption;
 use PoweredCache\SettingsManifest;
 use PoweredCache\SettingsRepository;
 use PoweredCache\SettingsSaveService;
-use PoweredCache\SettingsTransfer;
 use function PoweredCache\Utils\is_dev_mode_active;
 use function PoweredCache\Utils\mask_string;
 use const PoweredCache\Constants\ALLOPTIONS_CRITICAL_THRESHOLD;
@@ -230,7 +229,7 @@ function process_form_submit() {
 				break;
 			case 'export_settings':
 				$filename = sprintf( 'powered-cache-settings-%s-%s.json', gmdate( 'Y-m-d' ), uniqid() );
-				$options  = SettingsTransfer::pack( SettingsTransfer::redact_sensitive( $settings_repository->all() ) );
+				$options  = SettingsRepository::export_payload( SettingsRepository::redact_sensitive( $settings_repository->all() ) );
 				$options  = wp_json_encode( $options, JSON_PRETTY_PRINT );
 
 				nocache_headers();
@@ -246,7 +245,7 @@ function process_form_submit() {
 			case 'import_settings':
 				if ( $_FILES['import_file'] && ! empty( $_FILES['import_file']['tmp_name'] ) ) { // phpcs:ignore
 					$import_data     = file_get_contents( $_FILES['import_file']['tmp_name'] ); // phpcs:ignore
-					$import_settings = SettingsTransfer::unpack( json_decode( $import_data, true ) );
+					$import_settings = SettingsRepository::settings_from_payload( json_decode( $import_data, true ) );
 					$options         = prepare_import_options( $settings_repository, $import_settings );
 				}
 				break;

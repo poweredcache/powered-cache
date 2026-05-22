@@ -117,7 +117,7 @@ class SettingsRestController {
 			'format'         => self::STATE_FORMAT,
 			'format_version' => SettingsManifest::FORMAT_VERSION,
 			'plugin_version' => defined( 'POWERED_CACHE_VERSION' ) ? POWERED_CACHE_VERSION : '',
-			'settings'       => SettingsTransfer::redact_sensitive( $settings ),
+			'settings'       => SettingsRepository::redact_sensitive( $settings ),
 			'validation'     => SettingsValidator::factory(
 				array(
 					'is_apache' => (bool) $is_apache,
@@ -144,7 +144,7 @@ class SettingsRestController {
 		);
 
 		$old_settings = $repository->all();
-		$changes      = SettingsTransfer::unpack( $this->get_request_payload( $request ) );
+		$changes      = SettingsRepository::settings_from_payload( $this->get_request_payload( $request ) );
 		$settings     = $this->prepare_update_settings( $changes, $old_settings );
 		$save_service = SettingsSaveService::factory( $repository, POWERED_CACHE_IS_NETWORK );
 		$settings     = $save_service->save( $settings, $old_settings );
@@ -153,7 +153,7 @@ class SettingsRestController {
 			'format'         => self::STATE_FORMAT,
 			'format_version' => SettingsManifest::FORMAT_VERSION,
 			'plugin_version' => defined( 'POWERED_CACHE_VERSION' ) ? POWERED_CACHE_VERSION : '',
-			'settings'       => SettingsTransfer::redact_sensitive( $settings ),
+			'settings'       => SettingsRepository::redact_sensitive( $settings ),
 			'validation'     => SettingsValidator::factory(
 				array(
 					'is_apache' => (bool) $is_apache,
@@ -173,7 +173,7 @@ class SettingsRestController {
 	public function prepare_update_settings( array $changes, array $current ) {
 		$settings = array_merge( $current, $changes );
 
-		foreach ( SettingsTransfer::sensitive_keys() as $key ) {
+		foreach ( SettingsRepository::sensitive_keys() as $key ) {
 			if ( ! array_key_exists( $key, $changes ) ) {
 				continue;
 			}

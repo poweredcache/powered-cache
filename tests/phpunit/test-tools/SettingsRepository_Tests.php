@@ -266,6 +266,108 @@ class SettingsRepository_Tests extends TestCase {
 	}
 
 	/**
+	 * It builds a versioned export payload.
+	 */
+	public function test_export_payload_builds_versioned_payload() {
+		$payload = SettingsRepository::export_payload(
+			array(
+				'enable_page_cache' => true,
+				'cache_timeout'     => 60,
+			)
+		);
+
+		$this->assertSame( SettingsRepository::EXPORT_FORMAT, $payload['format'] );
+		$this->assertSame( SettingsRepository::EXPORT_FORMAT_VERSION, $payload['format_version'] );
+		$this->assertSame( POWERED_CACHE_VERSION, $payload['plugin_version'] );
+		$this->assertNotEmpty( $payload['generated_at'] );
+		$this->assertSame( 60, $payload['settings']['cache_timeout'] );
+	}
+
+	/**
+	 * It extracts settings from versioned payloads.
+	 */
+	public function test_settings_from_payload_reads_versioned_payload_settings() {
+		$payload = array(
+			'format'         => SettingsRepository::EXPORT_FORMAT,
+			'format_version' => SettingsRepository::EXPORT_FORMAT_VERSION,
+			'settings'       => array(
+				'enable_page_cache' => false,
+				'cache_timeout'     => 120,
+			),
+		);
+
+		$this->assertSame( $payload['settings'], SettingsRepository::settings_from_payload( $payload ) );
+	}
+
+	/**
+	 * It keeps legacy flat exports importable.
+	 */
+	public function test_settings_from_payload_accepts_legacy_flat_settings_payload() {
+		$payload = array(
+			'enable_page_cache' => true,
+			'cache_timeout'     => 30,
+		);
+
+		$this->assertSame( $payload, SettingsRepository::settings_from_payload( $payload ) );
+	}
+
+	/**
+	 * It preserves Premium settings in portable payloads.
+	 */
+	public function test_premium_settings_survive_export_and_import_payloads() {
+		$settings = array(
+			'critical_css'                     => true,
+			'critical_css_additional_files'    => '/theme.css',
+			'remove_unused_css'                => true,
+			'ucss_safelist'                    => '.is-active',
+			'ucss_excluded_files'              => '/dynamic.css',
+			'enable_image_optimization'        => true,
+			'image_optimizer_preferred_format' => 'webp',
+			'add_missing_image_dimensions'     => true,
+			'enable_lcp_optimization'          => true,
+			'enable_google_tracking'           => true,
+			'enable_fb_tracking'               => true,
+		);
+
+		$payload = SettingsRepository::export_payload( $settings );
+
+		$this->assertSame( $settings, SettingsRepository::settings_from_payload( $payload ) );
+	}
+
+	/**
+	 * It removes sensitive values before export.
+	 */
+	public function test_redact_sensitive_clears_secret_values() {
+		$settings = SettingsRepository::redact_sensitive(
+			array(
+				'cloudflare_email'     => 'admin@example.test',
+				'cloudflare_api_key'   => 'secret-key',
+				'cloudflare_api_token' => 'secret-token',
+				'enable_page_cache'    => true,
+			)
+		);
+
+		$this->assertSame( '', $settings['cloudflare_email'] );
+		$this->assertSame( '', $settings['cloudflare_api_key'] );
+		$this->assertSame( '', $settings['cloudflare_api_token'] );
+		$this->assertTrue( $settings['enable_page_cache'] );
+	}
+
+	/**
+	 * It exposes the sensitive key list for REST and export payloads.
+	 */
+	public function test_sensitive_keys_are_shared_by_settings_consumers() {
+		$this->assertSame(
+			array(
+				'cloudflare_email',
+				'cloudflare_api_key',
+				'cloudflare_api_token',
+			),
+			SettingsRepository::sensitive_keys()
+		);
+	}
+
+	/**
 	 * It merges partial updates with current settings before saving.
 	 */
 	public function test_update_merges_partial_settings_with_current_values() {

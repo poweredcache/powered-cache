@@ -18,6 +18,8 @@ use const PoweredCache\Constants\SETTING_OPTION;
  * @since 4.0.0
  */
 class SettingsRepository {
+	const EXPORT_FORMAT         = 'powered-cache-settings';
+	const EXPORT_FORMAT_VERSION = '1.0';
 
 	/**
 	 * Whether settings should be read from network options.
@@ -176,6 +178,72 @@ class SettingsRepository {
 		}
 
 		return $deprecated;
+	}
+
+	/**
+	 * Build a versioned settings export payload.
+	 *
+	 * @param array $settings Settings payload.
+	 *
+	 * @return array
+	 */
+	public static function export_payload( array $settings ) {
+		return array(
+			'format'         => self::EXPORT_FORMAT,
+			'format_version' => self::EXPORT_FORMAT_VERSION,
+			'plugin_version' => defined( 'POWERED_CACHE_VERSION' ) ? POWERED_CACHE_VERSION : '',
+			'generated_at'   => gmdate( 'c' ),
+			'settings'       => $settings,
+		);
+	}
+
+	/**
+	 * Extract settings from a versioned or legacy import payload.
+	 *
+	 * @param mixed $payload Decoded JSON payload.
+	 *
+	 * @return array
+	 */
+	public static function settings_from_payload( $payload ) {
+		if ( ! is_array( $payload ) ) {
+			return array();
+		}
+
+		if ( isset( $payload['settings'] ) && is_array( $payload['settings'] ) ) {
+			return $payload['settings'];
+		}
+
+		return $payload;
+	}
+
+	/**
+	 * Remove sensitive values from settings before export or REST output.
+	 *
+	 * @param array $settings Settings payload.
+	 *
+	 * @return array
+	 */
+	public static function redact_sensitive( array $settings ) {
+		foreach ( self::sensitive_keys() as $key ) {
+			if ( isset( $settings[ $key ] ) ) {
+				$settings[ $key ] = '';
+			}
+		}
+
+		return $settings;
+	}
+
+	/**
+	 * Return settings keys that should not be exported with values.
+	 *
+	 * @return array
+	 */
+	public static function sensitive_keys() {
+		return array(
+			'cloudflare_email',
+			'cloudflare_api_key',
+			'cloudflare_api_token',
+		);
 	}
 
 	/**
