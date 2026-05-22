@@ -267,7 +267,7 @@ class CompatibilityRules_Tests extends TestCase {
 
 		\WP_Mock::onFilter( 'powered_cache_compatibility_rules_remote_url' )
 			->with( '' )
-			->reply( 'https://example.test/compatibility-rules.json' );
+			->reply( 'https://poweredcache.com/compatibility-rules.json' );
 
 		\WP_Mock::userFunction(
 			'get_site_transient',
@@ -283,7 +283,7 @@ class CompatibilityRules_Tests extends TestCase {
 			array(
 				'times'  => 1,
 				'args'   => array(
-					'https://example.test/compatibility-rules.json',
+					'https://poweredcache.com/compatibility-rules.json',
 					array(
 						'timeout'     => 3,
 						'redirection' => 2,
@@ -350,7 +350,7 @@ class CompatibilityRules_Tests extends TestCase {
 
 		\WP_Mock::onFilter( 'powered_cache_compatibility_rules_remote_url' )
 			->with( '' )
-			->reply( 'https://example.test/compatibility-rules.json' );
+			->reply( 'https://poweredcache.com/compatibility-rules.json' );
 
 		\WP_Mock::userFunction(
 			'get_site_transient',
@@ -366,6 +366,35 @@ class CompatibilityRules_Tests extends TestCase {
 		$rules = new CompatibilityRules( $file );
 
 		$this->assertSame( array( 'bundled-script', 'cached-script' ), $rules->rules( 'delay_exclusions' ) );
+
+		unlink( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+	}
+
+	/**
+	 * It ignores remote registries from untrusted hosts.
+	 */
+	public function test_remote_registry_requires_allowed_https_host() {
+		$file = tempnam( sys_get_temp_dir(), 'pc-rules-' );
+		$base = array(
+			'format'         => CompatibilityRules::FORMAT,
+			'format_version' => CompatibilityRules::FORMAT_VERSION,
+			'rules'          => array(
+				'delay_exclusions' => array( 'bundled-script' ),
+			),
+		);
+
+		file_put_contents( $file, json_encode( $base ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+
+		\WP_Mock::onFilter( 'powered_cache_compatibility_rules_remote_url' )
+			->with( '' )
+			->reply( 'http://attacker.test/compatibility-rules.json' );
+
+		\WP_Mock::userFunction( 'wp_remote_get', array( 'times' => 0 ) );
+		\WP_Mock::userFunction( 'get_site_transient', array( 'times' => 0 ) );
+
+		$rules = new CompatibilityRules( $file );
+
+		$this->assertSame( array( 'bundled-script' ), $rules->rules( 'delay_exclusions' ) );
 
 		unlink( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
 	}

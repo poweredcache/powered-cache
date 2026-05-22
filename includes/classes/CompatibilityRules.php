@@ -17,6 +17,7 @@ class CompatibilityRules {
 	const FORMAT           = 'powered-cache-compatibility-rules';
 	const FORMAT_VERSION   = '1.0';
 	const REMOTE_CACHE_KEY = 'powered_cache_compatibility_rules_remote';
+	const REMOTE_MAX_BYTES = 200000;
 
 	/**
 	 * Registry file path.
@@ -247,7 +248,7 @@ class CompatibilityRules {
 		 */
 		$url = (string) apply_filters( 'powered_cache_compatibility_rules_remote_url', '' );
 
-		if ( '' === $url || ! function_exists( 'wp_remote_get' ) || ! function_exists( 'get_site_transient' ) || ! function_exists( 'set_site_transient' ) ) {
+		if ( '' === $url || ! $this->is_allowed_remote_url( $url ) || ! function_exists( 'wp_remote_get' ) || ! function_exists( 'get_site_transient' ) || ! function_exists( 'set_site_transient' ) ) {
 			return array();
 		}
 
@@ -280,7 +281,14 @@ class CompatibilityRules {
 			return array();
 		}
 
-		$registry = json_decode( wp_remote_retrieve_body( $response ), true );
+		$body = wp_remote_retrieve_body( $response );
+
+		if ( ! is_string( $body ) || strlen( $body ) > self::REMOTE_MAX_BYTES ) {
+			set_site_transient( self::REMOTE_CACHE_KEY, array(), 6 * 3600 );
+			return array();
+		}
+
+		$registry = json_decode( $body, true );
 
 		if ( ! $this->is_valid_registry( $registry ) ) {
 			set_site_transient( self::REMOTE_CACHE_KEY, array(), 6 * 3600 );
@@ -290,6 +298,36 @@ class CompatibilityRules {
 		set_site_transient( self::REMOTE_CACHE_KEY, $registry, 86400 );
 
 		return $registry;
+	}
+
+	/**
+	 * Determine whether a remote registry URL is allowed.
+	 *
+	 * @param string $url Remote registry URL.
+	 *
+	 * @return bool
+	 */
+	private function is_allowed_remote_url( $url ) {
+		$parts = parse_url( $url ); // phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url
+
+		if ( empty( $parts['scheme'] ) || empty( $parts['host'] ) || 'https' !== strtolower( $parts['scheme'] ) ) {
+			return false;
+		}
+
+		/**
+		 * Filter allowed remote compatibility registry hosts.
+		 *
+		 * @hook powered_cache_compatibility_rules_remote_hosts
+		 *
+		 * @param {array} $hosts Allowed hostnames.
+		 *
+		 * @return {array} New value.
+		 * @since 4.0.0
+		 */
+		$hosts = apply_filters( 'powered_cache_compatibility_rules_remote_hosts', array( 'poweredcache.com', 'www.poweredcache.com' ) );
+		$hosts = is_array( $hosts ) ? array_map( 'strtolower', array_filter( $hosts, 'is_string' ) ) : array();
+
+		return in_array( strtolower( $parts['host'] ), $hosts, true );
 	}
 
 	/**
