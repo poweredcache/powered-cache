@@ -13,6 +13,7 @@
     "start": "composer install && npm install --production=false && npm run build",
     "watch": "10up-toolkit watch",
     "build": "10up-toolkit build && npm run copy-defer",
+    "quality": "npm run lint-js && npm run lint-style && npm run build",
     "format-js": "10up-toolkit format-js",
     "lint-js": "10up-toolkit lint-js",
     "lint-style": "10up-toolkit lint-style",
