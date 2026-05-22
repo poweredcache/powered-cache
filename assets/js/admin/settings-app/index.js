@@ -480,7 +480,7 @@ const ValidationIssueList = ({ issues = [] }) => {
 	);
 };
 
-const ValidationSummary = ({ fields = {}, validation }) => {
+const ValidationSummary = ({ fields = {}, onSelectSection = () => {}, validation }) => {
 	const totalIssues = validationIssueCount(validation);
 
 	if (!totalIssues) {
@@ -519,19 +519,30 @@ const ValidationSummary = ({ fields = {}, validation }) => {
 				<strong>{__('Settings check', 'powered-cache')}</strong>
 				<span>{message}</span>
 				<ul className="pc-settings-validation-summary__issues">
-					{visibleIssues.map((issue) => (
-						<li
-							className={`pc-settings-validation-summary__issue pc-settings-validation-summary__issue--${issue.severity}`}
-							key={`${issue.key}-${issue.code}`}
-						>
-							<strong>
-								{fields[issue.key] && fields[issue.key].label
-									? fields[issue.key].label
-									: labelFromKey(issue.key || issue.code)}
-							</strong>
-							<span>{issue.message}</span>
-						</li>
-					))}
+					{visibleIssues.map((issue) => {
+						const field = fields[issue.key] || {};
+						const label = field.label || labelFromKey(issue.key || issue.code);
+
+						return (
+							<li
+								className={`pc-settings-validation-summary__issue pc-settings-validation-summary__issue--${issue.severity}`}
+								key={`${issue.key}-${issue.code}`}
+							>
+								{field.section ? (
+									<button
+										className="pc-settings-validation-summary__action"
+										onClick={() => onSelectSection(field.section)}
+										type="button"
+									>
+										{label}
+									</button>
+								) : (
+									<strong>{label}</strong>
+								)}
+								<span>{issue.message}</span>
+							</li>
+						);
+					})}
 					{!!remainingIssues && (
 						<li className="pc-settings-validation-summary__more">
 							{sprintf(
@@ -1499,7 +1510,11 @@ const SettingsApp = () => {
 				</Notice>
 			)}
 
-			<ValidationSummary fields={manifest.fields || {}} validation={validation} />
+			<ValidationSummary
+				fields={manifest.fields || {}}
+				onSelectSection={updateActiveSection}
+				validation={validation}
+			/>
 
 			{activeSection === 'cache' && (
 				<div

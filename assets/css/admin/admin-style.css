@@ -317,9 +317,25 @@
 	margin: 6px 0 0;
 }
 
-.pc-settings-validation-summary__issue strong {
+.pc-settings-validation-summary__issue strong,
+.pc-settings-validation-summary__action {
 	color: var(--pc-admin-text);
 	flex: 0 0 min(220px, 28%);
+}
+
+.pc-settings-validation-summary__action {
+	background: none;
+	border: 0;
+	cursor: pointer;
+	font-weight: 600;
+	padding: 0;
+	text-align: left;
+	text-decoration: underline;
+}
+
+.pc-settings-validation-summary__action:hover,
+.pc-settings-validation-summary__action:focus {
+	color: var(--pc-admin-primary-dark);
 }
 
 .pc-settings-validation-summary__issue span,
@@ -841,6 +857,11 @@
 	.pc-settings-validation-summary__issue {
 		flex-direction: column;
 		gap: 2px;
+	}
+
+	.pc-settings-validation-summary__issue strong,
+	.pc-settings-validation-summary__action {
+		flex: none;
 	}
 
 	.pc-settings-cdn-routes__header {
