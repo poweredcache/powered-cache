@@ -156,6 +156,34 @@ function style_url( $stylesheet, $context ) {
 }
 
 /**
+ * Return generated asset metadata for a dist file.
+ *
+ * @param string $asset Asset file name without extension.
+ * @param string $type  Asset type, either js or css.
+ *
+ * @return array
+ */
+function asset_metadata( $asset, $type ) {
+	$path = POWERED_CACHE_PATH . "dist/{$type}/{$asset}.asset.php";
+
+	if ( file_exists( $path ) ) {
+		$metadata = require $path;
+
+		if ( is_array( $metadata ) ) {
+			return array(
+				'dependencies' => isset( $metadata['dependencies'] ) && is_array( $metadata['dependencies'] ) ? $metadata['dependencies'] : array(),
+				'version'      => ! empty( $metadata['version'] ) ? $metadata['version'] : POWERED_CACHE_VERSION,
+			);
+		}
+	}
+
+	return array(
+		'dependencies' => array(),
+		'version'      => POWERED_CACHE_VERSION,
+	);
+}
+
+/**
  * Enqueue scripts for admin.
  *
  * @param string $hook Current hook.
@@ -167,13 +195,13 @@ function admin_scripts( $hook ) {
 	$classic_editor_hooks = [ 'post-new.php', 'post.php' ];
 
 	if ( in_array( $hook, $classic_editor_hooks, true ) ) {
+		$classic_editor_asset = asset_metadata( 'classic-editor', 'js' );
+
 		wp_enqueue_script(
 			'powered-cache-classic-editor',
 			script_url( 'classic-editor', 'classic-editor' ),
-			[
-				'jquery',
-			],
-			POWERED_CACHE_VERSION,
+			array_values( array_unique( array_merge( [ 'jquery' ], $classic_editor_asset['dependencies'] ) ) ),
+			$classic_editor_asset['version'],
 			true
 		);
 	}
@@ -182,18 +210,27 @@ function admin_scripts( $hook ) {
 		return;
 	}
 
+	$admin_asset = asset_metadata( 'admin', 'js' );
+
 	wp_enqueue_script(
 		'powered-cache-admin',
 		script_url( 'admin', 'admin' ),
-		[
-			'jquery',
-			'lodash',
-			'wp-api-fetch',
-			'wp-components',
-			'wp-element',
-			'wp-i18n',
-		],
-		POWERED_CACHE_VERSION,
+		array_values(
+			array_unique(
+				array_merge(
+					[
+						'jquery',
+						'lodash',
+						'wp-api-fetch',
+						'wp-components',
+						'wp-element',
+						'wp-i18n',
+					],
+					$admin_asset['dependencies']
+				)
+			)
+		),
+		$admin_asset['version'],
 		true
 	);
 
@@ -253,22 +290,31 @@ function block_editor_assets() {
 	 * The post meta-box works with compat mode vice-versa...
 	 */
 	if ( version_compare( get_bloginfo( 'version' ), '5.3', '>=' ) ) {
+		$editor_asset = asset_metadata( 'editor', 'js' );
+
 		wp_register_script(
 			'powered-cache-editor',
 			script_url( 'editor', 'admin' ),
-			[
-				'jquery',
-				'lodash',
-				'wp-i18n',
-				'wp-edit-post',
-				'wp-components',
-				'wp-compose',
-				'wp-data',
-				'wp-edit-post',
-				'wp-element',
-				'wp-plugins',
-			],
-			POWERED_CACHE_VERSION,
+			array_values(
+				array_unique(
+					array_merge(
+						[
+							'jquery',
+							'lodash',
+							'wp-i18n',
+							'wp-edit-post',
+							'wp-components',
+							'wp-compose',
+							'wp-data',
+							'wp-edit-post',
+							'wp-element',
+							'wp-plugins',
+						],
+						$editor_asset['dependencies']
+					)
+				)
+			),
+			$editor_asset['version'],
 			true
 		);
 
@@ -294,11 +340,13 @@ function admin_styles() {
 		return;
 	}
 
+	$admin_style_asset = asset_metadata( 'admin-style', 'css' );
+
 	wp_enqueue_style(
 		'powered-cache-admin',
 		style_url( 'admin-style', 'admin' ),
-		[],
-		POWERED_CACHE_VERSION
+		$admin_style_asset['dependencies'],
+		$admin_style_asset['version']
 	);
 
 }
