@@ -215,7 +215,7 @@ class CachePurger extends Powered_Cache_WP_Background_Process {
 	private function use_action_scheduler() {
 		$available = function_exists( 'as_enqueue_async_action' ) && function_exists( 'as_unschedule_all_actions' );
 
-		if ( $available && class_exists( '\Action_Scheduler' ) && method_exists( '\Action_Scheduler', 'is_initialized' ) && ! \Action_Scheduler::is_initialized() ) {
+		if ( $available && class_exists( '\ActionScheduler' ) && method_exists( '\ActionScheduler', 'is_initialized' ) && ! \ActionScheduler::is_initialized() ) {
 			$available = false;
 		}
 

@@ -49,6 +49,7 @@ if ( file_exists( POWERED_CACHE_PATH . 'vendor/autoload.php' ) ) {
 }
 
 // load packages
+require_once POWERED_CACHE_PACKAGE_DIR . 'woocommerce/action-scheduler/action-scheduler.php';
 require_once POWERED_CACHE_PACKAGE_DIR . 'deliciousbrains/wp-background-processing/classes/wp-async-request.php';
 require_once POWERED_CACHE_PACKAGE_DIR . 'deliciousbrains/wp-background-processing/classes/wp-background-process.php';
 
