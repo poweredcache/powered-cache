@@ -158,12 +158,13 @@ class CompatibilityRules {
 	 */
 	public function settings_issues( array $settings ) {
 		$registry = $this->registry();
+		$issues   = array();
 
-		if ( empty( $registry['settings_issues'] ) || ! is_array( $registry['settings_issues'] ) ) {
-			return array();
+		if ( ! empty( $registry['settings_issues'] ) && is_array( $registry['settings_issues'] ) ) {
+			$issues = $this->setting_issues_from_items( $registry['settings_issues'], $settings );
 		}
 
-		return $this->setting_issues_from_items( $registry['settings_issues'], $settings );
+		return $this->append_unique_issues( $issues, $this->conditional_setting_issues( $registry, $settings ) );
 	}
 
 	/**
@@ -282,6 +283,33 @@ class CompatibilityRules {
 		}
 
 		return $rules;
+	}
+
+	/**
+	 * Return conditional setting issues that match the current environment.
+	 *
+	 * @param array $registry Registry payload.
+	 * @param array $settings Current settings.
+	 *
+	 * @return array
+	 */
+	private function conditional_setting_issues( array $registry, array $settings ) {
+		if ( empty( $registry['conditional_rules']['plugins'] ) || ! is_array( $registry['conditional_rules']['plugins'] ) ) {
+			return array();
+		}
+
+		$active_plugins = $this->active_plugins();
+		$issues         = array();
+
+		foreach ( $registry['conditional_rules']['plugins'] as $plugin => $plugin_rules ) {
+			if ( ! is_string( $plugin ) || ! in_array( $plugin, $active_plugins, true ) || empty( $plugin_rules['settings_issues'] ) || ! is_array( $plugin_rules['settings_issues'] ) ) {
+				continue;
+			}
+
+			$issues = $this->append_unique_issues( $issues, $this->setting_issues_from_items( $plugin_rules['settings_issues'], $settings ) );
+		}
+
+		return $issues;
 	}
 
 	/**
@@ -429,6 +457,41 @@ class CompatibilityRules {
 			}
 
 			$current[] = $addition;
+		}
+
+		return $current;
+	}
+
+	/**
+	 * Append validation issues while preserving order and avoiding duplicates.
+	 *
+	 * @param array $current   Current issues.
+	 * @param array $additions Additional issues.
+	 *
+	 * @return array
+	 */
+	private function append_unique_issues( array $current, array $additions ) {
+		$seen = array();
+
+		foreach ( $current as $issue ) {
+			if ( isset( $issue['key'], $issue['code'] ) ) {
+				$seen[ $issue['key'] . ':' . $issue['code'] ] = true;
+			}
+		}
+
+		foreach ( $additions as $issue ) {
+			if ( ! isset( $issue['key'], $issue['code'] ) ) {
+				continue;
+			}
+
+			$id = $issue['key'] . ':' . $issue['code'];
+
+			if ( isset( $seen[ $id ] ) ) {
+				continue;
+			}
+
+			$current[]   = $issue;
+			$seen[ $id ] = true;
 		}
 
 		return $current;
