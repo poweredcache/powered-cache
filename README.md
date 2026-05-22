@@ -106,7 +106,7 @@ __Developer Docs :__ [https://poweredcache.github.io/docs/](https://poweredcache
 We have used code or ideas from the following projects:
 
 * [Simple Cache](https://github.com/tlovett1/simple-cache) for page cache drop-in.
-* [WP Background Processing](https://github.com/deliciousbrains/wp-background-processing) for performing async tasks.
+* [Action Scheduler](https://actionscheduler.org/) for performing async tasks.
 * [bj-lazy-load](https://github.com/Angrycreative/bj-lazy-load) for lazy load feature.
 * [minify](https://github.com/matthiasmullie/minify) for concatenation and minification
 * [nginx-http-concat](https://github.com/Automattic/nginx-http-concat) for concatenation.
@@ -121,4 +121,3 @@ We have used code or ideas from the following projects:
 * [CDN Enabler](https://github.com/keycdn/cdn-enabler) for some CDN functionalities.
 * [HtmlMin](https://github.com/voku/HtmlMin) for HTML minification.
 * [Defer.js](https://github.com/shinsenter/defer.js) for Delayed JS execution.
-

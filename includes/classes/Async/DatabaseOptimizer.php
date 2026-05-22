@@ -8,7 +8,6 @@
 namespace PoweredCache\Async;
 
 use const PoweredCache\Constants\DB_CLEANUP_COUNT_CACHE_KEY;
-use \Powered_Cache_WP_Background_Process as Powered_Cache_WP_Background_Process;
 
 // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery
 // phpcs:disable WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -17,7 +16,7 @@ use \Powered_Cache_WP_Background_Process as Powered_Cache_WP_Background_Process;
 /**
  * Class DatabaseOptimizer
  */
-class DatabaseOptimizer extends Powered_Cache_WP_Background_Process {
+class DatabaseOptimizer extends ActionSchedulerProcess {
 
 	/**
 	 * string
@@ -222,22 +221,6 @@ class DatabaseOptimizer extends Powered_Cache_WP_Background_Process {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Sometimes canceling a process is glitchy
-	 * Try to cancel all items in the queue up to $max_attempt
-	 */
-	public function cancel_process() {
-		$max_attempt = 5;
-		$cancelled   = 0;
-		while ( ! parent::is_queue_empty() ) {
-			if ( $cancelled >= $max_attempt ) {
-				break;
-			}
-			parent::cancel();
-			$cancelled ++;
-		}
 	}
 
 	/**

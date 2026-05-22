@@ -18,8 +18,7 @@ class CachePurger_Tests extends TestCase {
 	 * @var array
 	 */
 	protected $testFiles = array( // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
-		'package/deliciousbrains/wp-background-processing/classes/wp-async-request.php',
-		'package/deliciousbrains/wp-background-processing/classes/wp-background-process.php',
+		'classes/Async/ActionSchedulerProcess.php',
 		'classes/Async/CachePurger.php',
 	);
 
@@ -41,16 +40,10 @@ class CachePurger_Tests extends TestCase {
 		\WP_Mock::userFunction(
 			'as_enqueue_async_action',
 			array(
-				'times' => 1,
-				'args'  => array(
-					\PoweredCache\Async\CachePurger::ACTION_SCHEDULER_HOOK,
-					array( $item ),
-					\PoweredCache\Async\CachePurger::ACTION_SCHEDULER_GROUP,
-				),
+				'times'  => 2,
+				'return' => 1,
 			)
 		);
-
-		\WP_Mock::onFilter( 'powered_cache_cache_purger_use_action_scheduler' )->with( true )->reply( true );
 
 		$purger = new Async\CachePurger();
 		$result = $purger->push_to_queue( $item )->save()->dispatch();
@@ -73,16 +66,10 @@ class CachePurger_Tests extends TestCase {
 		\WP_Mock::userFunction(
 			'as_unschedule_all_actions',
 			array(
-				'times' => 1,
-				'args'  => array(
-					\PoweredCache\Async\CachePurger::ACTION_SCHEDULER_HOOK,
-					null,
-					\PoweredCache\Async\CachePurger::ACTION_SCHEDULER_GROUP,
-				),
+				'times'  => 2,
+				'return' => null,
 			)
 		);
-
-		\WP_Mock::onFilter( 'powered_cache_cache_purger_use_action_scheduler' )->with( true )->reply( true );
 
 		$purger = new Async\CachePurger();
 		$purger->cancel_process();

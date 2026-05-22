@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5f6583ad8433222b7a962a37b928ddae",
+    "content-hash": "c4b1cafe61cece03877ea9110ca45270",
     "packages": [],
     "packages-dev": [
         {
@@ -355,57 +355,6 @@
                 }
             ],
             "time": "2025-11-11T04:32:07+00:00"
-        },
-        {
-            "name": "deliciousbrains/wp-background-processing",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/deliciousbrains/wp-background-processing.git",
-                "reference": "be0a5e62f2c1e7603ebe3dea75f91102f1a2c1cb"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/deliciousbrains/wp-background-processing/zipball/be0a5e62f2c1e7603ebe3dea75f91102f1a2c1cb",
-                "reference": "be0a5e62f2c1e7603ebe3dea75f91102f1a2c1cb",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.0"
-            },
-            "require-dev": {
-                "phpcompatibility/phpcompatibility-wp": "*",
-                "phpunit/phpunit": "^8.0",
-                "spryker/code-sniffer": "^0.17.18",
-                "wp-coding-standards/wpcs": "^2.3",
-                "yoast/phpunit-polyfills": "^1.0"
-            },
-            "suggest": {
-                "coenjacobs/mozart": "Easily wrap this library with your own prefix, to prevent collisions when multiple plugins use this library"
-            },
-            "default-branch": true,
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "classes/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Delicious Brains",
-                    "email": "nom@deliciousbrains.com"
-                }
-            ],
-            "description": "WP Background Processing can be used to fire off non-blocking asynchronous requests or as a background processing tool, allowing you to queue tasks.",
-            "support": {
-                "issues": "https://github.com/deliciousbrains/wp-background-processing/issues",
-                "source": "https://github.com/deliciousbrains/wp-background-processing/tree/master"
-            },
-            "time": "2025-11-04T10:53:18+00:00"
         },
         {
             "name": "doctrine/instantiator",
@@ -4208,8 +4157,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "10up/phpcs-composer": 20,
-        "10up/wp_mock": 20,
-        "deliciousbrains/wp-background-processing": 20
+        "10up/wp_mock": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

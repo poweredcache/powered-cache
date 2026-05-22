@@ -10,12 +10,11 @@ namespace PoweredCache\Async;
 use PoweredCache\Preloader;
 use function PoweredCache\Utils\detect_cpu_cores;
 use function PoweredCache\Utils\is_url_cached;
-use \Powered_Cache_WP_Background_Process as Powered_Cache_WP_Background_Process;
 
 /**
  * Class CachePreloader
  */
-class CachePreloader extends Powered_Cache_WP_Background_Process {
+class CachePreloader extends ActionSchedulerProcess {
 
 	/**
 	 * Plugin settings
@@ -96,31 +95,6 @@ class CachePreloader extends Powered_Cache_WP_Background_Process {
 	 */
 	protected function complete() { // phpcs:ignore Generic.CodeAnalysis.UselessOverridingMethod.Found
 		parent::complete();
-	}
-
-	/**
-	 * Sometimes canceling a process is glitchy
-	 * Try to cancel all items in the queue up to $max_attempt
-	 */
-	public function cancel_process() {
-		$max_attempt = 5;
-		$cancelled   = 0;
-		while ( ! parent::is_queue_empty() ) {
-			if ( $cancelled >= $max_attempt ) {
-				break;
-			}
-			parent::cancel();
-			$cancelled ++;
-		}
-	}
-
-	/**
-	 * Whether the process running or not
-	 *
-	 * @return bool
-	 */
-	public function is_process_running() { // phpcs:ignore Generic.CodeAnalysis.UselessOverridingMethod.Found
-		return parent::is_processing();
 	}
 
 	/**
