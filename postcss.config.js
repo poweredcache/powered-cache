@@ -1,4 +1,19 @@
 /**
+ * Strip charset declarations from imported CSS files.
+ *
+ * Bundled CSS is emitted as UTF-8, and some vendor CSS ships a banner before
+ * the charset at-rule, which makes postcss-import warn before bundling.
+ *
+ * @returns {object} A PostCSS plugin.
+ */
+const stripImportedCharset = () => ({
+	postcssPlugin: 'strip-imported-charset',
+	AtRule: {
+		charset: (atRule) => atRule.remove(),
+	},
+});
+
+/**
  * Exports the PostCSS configuration.
  *
  * @param {object} context The PostCSS loader context.
@@ -8,7 +23,9 @@
  */
 module.exports = ({ env }) => ({
 	plugins: {
-		'postcss-import': {},
+		'postcss-import': {
+			plugins: [stripImportedCharset],
+		},
 		'postcss-preset-env': {
 			stage: 0,
 			autoprefixer: {
@@ -38,3 +55,5 @@ module.exports = ({ env }) => ({
 				: false,
 	},
 });
+
+stripImportedCharset.postcss = true;
