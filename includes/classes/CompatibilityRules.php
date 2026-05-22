@@ -434,8 +434,12 @@ class CompatibilityRules {
 			return true;
 		}
 
-		if ( ! is_array( $item['when'] ) || empty( $item['when']['setting'] ) || ! is_scalar( $item['when']['setting'] ) ) {
+		if ( ! is_array( $item['when'] ) ) {
 			return false;
+		}
+
+		if ( empty( $item['when']['setting'] ) || ! is_scalar( $item['when']['setting'] ) ) {
+			return ! empty( $item['when']['options'] ) && $this->setting_issue_options_match( $item['when'] );
 		}
 
 		$setting = (string) $item['when']['setting'];
@@ -446,13 +450,48 @@ class CompatibilityRules {
 
 		if ( array_key_exists( 'value', $item['when'] ) ) {
 			if ( is_bool( $item['when']['value'] ) ) {
-				return (bool) $settings[ $setting ] === $item['when']['value'];
+				return (bool) $settings[ $setting ] === $item['when']['value'] && $this->setting_issue_options_match( $item['when'] );
 			}
 
-			return $settings[ $setting ] === $item['when']['value'];
+			return $settings[ $setting ] === $item['when']['value'] && $this->setting_issue_options_match( $item['when'] );
 		}
 
-		return ! empty( $settings[ $setting ] );
+		return ! empty( $settings[ $setting ] ) && $this->setting_issue_options_match( $item['when'] );
+	}
+
+	/**
+	 * Determine whether option checks for a registry issue match.
+	 *
+	 * @param array $condition Issue condition.
+	 *
+	 * @return bool
+	 */
+	private function setting_issue_options_match( array $condition ) {
+		if ( empty( $condition['options'] ) ) {
+			return true;
+		}
+
+		if ( ! is_array( $condition['options'] ) || ! function_exists( 'get_option' ) ) {
+			return false;
+		}
+
+		foreach ( $condition['options'] as $option_condition ) {
+			if ( ! is_array( $option_condition ) || empty( $option_condition['name'] ) || ! is_scalar( $option_condition['name'] ) ) {
+				return false;
+			}
+
+			$value = get_option( (string) $option_condition['name'] );
+
+			if ( array_key_exists( 'value', $option_condition ) && $value !== $option_condition['value'] ) {
+				return false;
+			}
+
+			if ( ! array_key_exists( 'value', $option_condition ) && empty( $value ) ) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**

@@ -67,6 +67,47 @@ class CompatibilityRules_Tests extends TestCase {
 	}
 
 	/**
+	 * It exposes bundled option-aware compatibility notes.
+	 */
+	public function test_bundled_registry_reports_autoptimize_option_conflicts() {
+		\WP_Mock::onFilter( 'powered_cache_compatibility_rules_active_plugins' )
+			->with( array() )
+			->reply( array( 'autoptimize/autoptimize.php' ) );
+
+		\WP_Mock::userFunction(
+			'get_option',
+			array(
+				'times'  => 4,
+				'return' => function ( $option ) {
+					if ( 'active_plugins' === $option ) {
+						return array();
+					}
+
+					if ( in_array( $option, array( 'autoptimize_html', 'autoptimize_css', 'autoptimize_js' ), true ) ) {
+						return 'on';
+					}
+
+					return '';
+				},
+			)
+		);
+
+		$rules  = CompatibilityRules::factory();
+		$issues = $rules->settings_issues(
+			array(
+				'minify_html' => true,
+				'minify_css'  => true,
+				'minify_js'   => true,
+			)
+		);
+
+		$this->assertSame( 3, count( $issues ) );
+		$this->assertSame( 'autoptimize_html_active', $issues[0]['code'] );
+		$this->assertSame( 'autoptimize_css_active', $issues[1]['code'] );
+		$this->assertSame( 'autoptimize_js_active', $issues[2]['code'] );
+	}
+
+	/**
 	 * It ignores unknown registry buckets.
 	 */
 	public function test_unknown_rule_bucket_returns_empty_list() {
@@ -349,6 +390,110 @@ class CompatibilityRules_Tests extends TestCase {
 				),
 			),
 			$rules->settings_issues( array( 'js_delay' => true ) )
+		);
+
+		unlink( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+	}
+
+	/**
+	 * It matches settings issues with option-backed conditions.
+	 */
+	public function test_settings_issues_can_match_option_conditions() {
+		$file = tempnam( sys_get_temp_dir(), 'pc-rules-' );
+		file_put_contents(
+			$file,
+			json_encode(
+				array(
+					'format'            => CompatibilityRules::FORMAT,
+					'format_version'    => CompatibilityRules::FORMAT_VERSION,
+					'rules'             => array(),
+					'conditional_rules' => array(
+						'plugins' => array(
+							'active-plugin/active-plugin.php' => array(
+								'settings_issues' => array(
+									array(
+										'key'      => 'minify_css',
+										'severity' => 'warning',
+										'code'     => 'external_optimizer_active',
+										'message'  => 'External optimizer controls CSS minification.',
+										'when'     => array(
+											'setting' => 'minify_css',
+											'value'   => true,
+											'options' => array(
+												array(
+													'name'  => 'external_css_optimizer',
+													'value' => 'on',
+												),
+											),
+										),
+									),
+									array(
+										'key'      => 'minify_js',
+										'severity' => 'warning',
+										'code'     => 'external_optimizer_inactive',
+										'message'  => 'Should not show.',
+										'when'     => array(
+											'setting' => 'minify_js',
+											'value'   => true,
+											'options' => array(
+												array(
+													'name'  => 'external_js_optimizer',
+													'value' => 'on',
+												),
+											),
+										),
+									),
+								),
+							),
+						),
+					),
+				)
+			)
+		); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+
+		\WP_Mock::onFilter( 'powered_cache_compatibility_rules_active_plugins' )
+			->with( array() )
+			->reply( array( 'active-plugin/active-plugin.php' ) );
+
+		\WP_Mock::userFunction(
+			'get_option',
+			array(
+				'times'  => 3,
+				'return' => function ( $option ) {
+					if ( 'active_plugins' === $option ) {
+						return array();
+					}
+
+					if ( 'external_css_optimizer' === $option ) {
+						return 'on';
+					}
+
+					if ( 'external_js_optimizer' === $option ) {
+						return 'off';
+					}
+
+					return '';
+				},
+			)
+		);
+
+		$rules = new CompatibilityRules( $file );
+
+		$this->assertSame(
+			array(
+				array(
+					'key'      => 'minify_css',
+					'severity' => 'warning',
+					'code'     => 'external_optimizer_active',
+					'message'  => 'External optimizer controls CSS minification.',
+				),
+			),
+			$rules->settings_issues(
+				array(
+					'minify_css' => true,
+					'minify_js'  => true,
+				)
+			)
 		);
 
 		unlink( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink

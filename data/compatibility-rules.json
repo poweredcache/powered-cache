@@ -102,6 +102,90 @@
           }
         ]
       },
+      "autoptimize/autoptimize.php": {
+        "settings_issues": [
+          {
+            "key": "minify_html",
+            "severity": "warning",
+            "code": "autoptimize_html_active",
+            "message": "Autoptimize HTML optimization is active. Powered Cache HTML minification may be ignored until Autoptimize HTML optimization is disabled.",
+            "when": {
+              "setting": "minify_html",
+              "value": true,
+              "options": [
+                {
+                  "name": "autoptimize_html",
+                  "value": "on"
+                }
+              ]
+            }
+          },
+          {
+            "key": "minify_css",
+            "severity": "warning",
+            "code": "autoptimize_css_active",
+            "message": "Autoptimize CSS optimization is active. Powered Cache CSS minification may be ignored until Autoptimize CSS optimization is disabled.",
+            "when": {
+              "setting": "minify_css",
+              "value": true,
+              "options": [
+                {
+                  "name": "autoptimize_css",
+                  "value": "on"
+                }
+              ]
+            }
+          },
+          {
+            "key": "combine_css",
+            "severity": "warning",
+            "code": "autoptimize_css_active",
+            "message": "Autoptimize CSS optimization is active. Powered Cache CSS combining may be ignored until Autoptimize CSS optimization is disabled.",
+            "when": {
+              "setting": "combine_css",
+              "value": true,
+              "options": [
+                {
+                  "name": "autoptimize_css",
+                  "value": "on"
+                }
+              ]
+            }
+          },
+          {
+            "key": "minify_js",
+            "severity": "warning",
+            "code": "autoptimize_js_active",
+            "message": "Autoptimize JavaScript optimization is active. Powered Cache JavaScript minification may be ignored until Autoptimize JavaScript optimization is disabled.",
+            "when": {
+              "setting": "minify_js",
+              "value": true,
+              "options": [
+                {
+                  "name": "autoptimize_js",
+                  "value": "on"
+                }
+              ]
+            }
+          },
+          {
+            "key": "combine_js",
+            "severity": "warning",
+            "code": "autoptimize_js_active",
+            "message": "Autoptimize JavaScript optimization is active. Powered Cache JavaScript combining may be ignored until Autoptimize JavaScript optimization is disabled.",
+            "when": {
+              "setting": "combine_js",
+              "value": true,
+              "options": [
+                {
+                  "name": "autoptimize_js",
+                  "value": "on"
+                }
+              ]
+            }
+          }
+        ]
+      },
       "a3-lazy-load/a3-lazy-load.php": {
         "settings_issues": [
           {
