@@ -14,8 +14,9 @@ namespace PoweredCache;
  */
 class CompatibilityRules {
 
-	const FORMAT         = 'powered-cache-compatibility-rules';
-	const FORMAT_VERSION = '1.0';
+	const FORMAT           = 'powered-cache-compatibility-rules';
+	const FORMAT_VERSION   = '1.0';
+	const REMOTE_CACHE_KEY = 'powered_cache_compatibility_rules_remote';
 
 	/**
 	 * Registry file path.
@@ -218,9 +219,129 @@ class CompatibilityRules {
 			return $this->registry;
 		}
 
+		$registry = $this->merge_registry( $registry, $this->remote_registry() );
+
 		$this->registry = $registry;
 
 		return $this->registry;
+	}
+
+	/**
+	 * Return a cached remote registry payload.
+	 *
+	 * Remote rules are optional and fail closed: bundled rules stay active when
+	 * the endpoint is disabled, unavailable, or returns an invalid payload.
+	 *
+	 * @return array
+	 */
+	private function remote_registry() {
+		/**
+		 * Filter the remote compatibility rules registry URL.
+		 *
+		 * @hook powered_cache_compatibility_rules_remote_url
+		 *
+		 * @param {string} $url Remote registry URL.
+		 *
+		 * @return {string} New value.
+		 * @since 4.0.0
+		 */
+		$url = (string) apply_filters( 'powered_cache_compatibility_rules_remote_url', '' );
+
+		if ( '' === $url || ! function_exists( 'wp_remote_get' ) || ! function_exists( 'get_site_transient' ) || ! function_exists( 'set_site_transient' ) ) {
+			return array();
+		}
+
+		$cached = get_site_transient( self::REMOTE_CACHE_KEY );
+
+		if ( is_array( $cached ) ) {
+			return $cached;
+		}
+
+		$response = wp_remote_get(
+			$url,
+			array(
+				'timeout'     => 3,
+				'redirection' => 2,
+				'headers'     => array(
+					'Accept' => 'application/json',
+				),
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			set_site_transient( self::REMOTE_CACHE_KEY, array(), 6 * 3600 );
+			return array();
+		}
+
+		$response_code = wp_remote_retrieve_response_code( $response );
+
+		if ( 200 > $response_code || 300 <= $response_code ) {
+			set_site_transient( self::REMOTE_CACHE_KEY, array(), 6 * 3600 );
+			return array();
+		}
+
+		$registry = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		if ( ! $this->is_valid_registry( $registry ) ) {
+			set_site_transient( self::REMOTE_CACHE_KEY, array(), 6 * 3600 );
+			return array();
+		}
+
+		set_site_transient( self::REMOTE_CACHE_KEY, $registry, 86400 );
+
+		return $registry;
+	}
+
+	/**
+	 * Merge two valid registry payloads.
+	 *
+	 * @param array $base     Bundled registry.
+	 * @param array $addition Remote registry.
+	 *
+	 * @return array
+	 */
+	private function merge_registry( array $base, array $addition ) {
+		if ( ! $this->is_valid_registry( $addition ) ) {
+			return $base;
+		}
+
+		foreach ( array( 'rules', 'conditional_rules' ) as $key ) {
+			if ( ! empty( $addition[ $key ] ) && is_array( $addition[ $key ] ) ) {
+				$base[ $key ] = $this->merge_recursive_distinct( isset( $base[ $key ] ) && is_array( $base[ $key ] ) ? $base[ $key ] : array(), $addition[ $key ] );
+			}
+		}
+
+		if ( ! empty( $addition['settings_issues'] ) && is_array( $addition['settings_issues'] ) ) {
+			$base['settings_issues'] = array_merge( isset( $base['settings_issues'] ) && is_array( $base['settings_issues'] ) ? $base['settings_issues'] : array(), $addition['settings_issues'] );
+		}
+
+		return $base;
+	}
+
+	/**
+	 * Recursively merge registry arrays while appending numeric lists.
+	 *
+	 * @param array $base     Base array.
+	 * @param array $addition Additional array.
+	 *
+	 * @return array
+	 */
+	private function merge_recursive_distinct( array $base, array $addition ) {
+		foreach ( $addition as $key => $value ) {
+			if ( is_int( $key ) ) {
+				$base[] = $value;
+				continue;
+			}
+
+			if ( isset( $base[ $key ] ) && is_array( $base[ $key ] ) && is_array( $value ) ) {
+				$base[ $key ] = $this->merge_recursive_distinct( $base[ $key ], $value );
+				continue;
+			}
+
+			$base[ $key ] = $value;
+		}
+
+		return $base;
 	}
 
 	/**

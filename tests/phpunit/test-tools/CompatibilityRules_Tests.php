@@ -232,6 +232,145 @@ class CompatibilityRules_Tests extends TestCase {
 	}
 
 	/**
+	 * It merges a valid remote registry into the bundled registry.
+	 */
+	public function test_remote_registry_is_merged_when_available() {
+		$file   = tempnam( sys_get_temp_dir(), 'pc-rules-' );
+		$base   = array(
+			'format'         => CompatibilityRules::FORMAT,
+			'format_version' => CompatibilityRules::FORMAT_VERSION,
+			'rules'          => array(
+				'delay_exclusions' => array( 'bundled-script' ),
+			),
+		);
+		$remote = array(
+			'format'          => CompatibilityRules::FORMAT,
+			'format_version'  => CompatibilityRules::FORMAT_VERSION,
+			'rules'           => array(
+				'delay_exclusions' => array( 'remote-script' ),
+			),
+			'settings_issues' => array(
+				array(
+					'key'      => 'js_delay',
+					'severity' => 'info',
+					'code'     => 'remote_guard',
+					'message'  => 'Remote compatibility guard.',
+					'when'     => array(
+						'setting' => 'js_delay',
+						'value'   => true,
+					),
+				),
+			),
+		);
+
+		file_put_contents( $file, json_encode( $base ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+
+		\WP_Mock::onFilter( 'powered_cache_compatibility_rules_remote_url' )
+			->with( '' )
+			->reply( 'https://example.test/compatibility-rules.json' );
+
+		\WP_Mock::userFunction(
+			'get_site_transient',
+			array(
+				'times'  => 1,
+				'args'   => array( CompatibilityRules::REMOTE_CACHE_KEY ),
+				'return' => false,
+			)
+		);
+
+		\WP_Mock::userFunction(
+			'wp_remote_get',
+			array(
+				'times'  => 1,
+				'args'   => array(
+					'https://example.test/compatibility-rules.json',
+					array(
+						'timeout'     => 3,
+						'redirection' => 2,
+						'headers'     => array(
+							'Accept' => 'application/json',
+						),
+					),
+				),
+				'return' => array( 'body' => json_encode( $remote ) ),
+			)
+		);
+
+		\WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+		\WP_Mock::userFunction( 'wp_remote_retrieve_response_code', array( 'return' => 200 ) );
+		\WP_Mock::userFunction( 'wp_remote_retrieve_body', array( 'return' => json_encode( $remote ) ) );
+		\WP_Mock::userFunction(
+			'set_site_transient',
+			array(
+				'times'  => 1,
+				'args'   => array( CompatibilityRules::REMOTE_CACHE_KEY, $remote, 86400 ),
+				'return' => true,
+			)
+		);
+
+		$rules = new CompatibilityRules( $file );
+
+		$this->assertSame( array( 'bundled-script', 'remote-script' ), $rules->rules( 'delay_exclusions' ) );
+		$this->assertSame(
+			array(
+				array(
+					'key'      => 'js_delay',
+					'severity' => 'info',
+					'code'     => 'remote_guard',
+					'message'  => 'Remote compatibility guard.',
+				),
+			),
+			$rules->settings_issues( array( 'js_delay' => true ) )
+		);
+
+		unlink( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+	}
+
+	/**
+	 * It uses a cached remote registry without making an HTTP request.
+	 */
+	public function test_cached_remote_registry_is_used_without_http_request() {
+		$file   = tempnam( sys_get_temp_dir(), 'pc-rules-' );
+		$base   = array(
+			'format'         => CompatibilityRules::FORMAT,
+			'format_version' => CompatibilityRules::FORMAT_VERSION,
+			'rules'          => array(
+				'delay_exclusions' => array( 'bundled-script' ),
+			),
+		);
+		$cached = array(
+			'format'         => CompatibilityRules::FORMAT,
+			'format_version' => CompatibilityRules::FORMAT_VERSION,
+			'rules'          => array(
+				'delay_exclusions' => array( 'cached-script' ),
+			),
+		);
+
+		file_put_contents( $file, json_encode( $base ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+
+		\WP_Mock::onFilter( 'powered_cache_compatibility_rules_remote_url' )
+			->with( '' )
+			->reply( 'https://example.test/compatibility-rules.json' );
+
+		\WP_Mock::userFunction(
+			'get_site_transient',
+			array(
+				'times'  => 1,
+				'args'   => array( CompatibilityRules::REMOTE_CACHE_KEY ),
+				'return' => $cached,
+			)
+		);
+
+		\WP_Mock::userFunction( 'wp_remote_get', array( 'times' => 0 ) );
+
+		$rules = new CompatibilityRules( $file );
+
+		$this->assertSame( array( 'bundled-script', 'cached-script' ), $rules->rules( 'delay_exclusions' ) );
+
+		unlink( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+	}
+
+	/**
 	 * It applies plugin conditional rules only for active plugins.
 	 */
 	public function test_plugin_conditional_rules_apply_for_active_plugins() {
