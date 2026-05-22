@@ -82,6 +82,7 @@ class SettingsValidator {
 		}
 
 		$issues = array_merge( $issues, CompatibilityRules::factory()->settings_issues( $settings ) );
+		$issues = array_merge( $issues, $this->validate_environment( $settings ) );
 
 		/**
 		 * Filter settings validation issues.
@@ -187,6 +188,100 @@ class SettingsValidator {
 		}
 
 		return $issues;
+	}
+
+	/**
+	 * Validate runtime environment signals that can keep settings from working.
+	 *
+	 * @param array $settings Settings payload.
+	 *
+	 * @return array
+	 */
+	private function validate_environment( array $settings ) {
+		$issues = array();
+
+		if ( ! empty( $settings['enable_page_cache'] ) ) {
+			if ( $this->context_flag_is( 'wp_cache_enabled', false ) ) {
+				$issues[] = $this->issue(
+					'enable_page_cache',
+					self::SEVERITY_WARNING,
+					'wp_cache_disabled',
+					'Page cache needs WP_CACHE enabled in wp-config.php before cached pages can be served.'
+				);
+			}
+
+			if ( $this->context_flag_is( 'page_cache_loaded', false ) && $this->context_flag_is( 'wp_cache_enabled', true ) ) {
+				$issues[] = $this->issue(
+					'enable_page_cache',
+					self::SEVERITY_WARNING,
+					'advanced_cache_dropin_inactive',
+					'The advanced-cache.php drop-in is not loading Powered Cache page caching. Save settings to recreate the configuration files.'
+				);
+			}
+
+			if ( $this->context_flag_is( 'page_cache_has_problem', true ) ) {
+				$issues[] = $this->issue(
+					'enable_page_cache',
+					self::SEVERITY_WARNING,
+					'page_cache_dropin_unavailable',
+					'Powered Cache could not load the page cache drop-in from this hosting environment.'
+				);
+			}
+		}
+
+		if ( ! empty( $settings['object_cache'] ) && 'off' !== $settings['object_cache'] ) {
+			if ( $this->context_flag_is( 'object_cache_dropin_exists', false ) ) {
+				$issues[] = $this->issue(
+					'object_cache',
+					self::SEVERITY_WARNING,
+					'object_cache_dropin_missing',
+					'Object cache is enabled, but wp-content/object-cache.php is missing or not accessible.'
+				);
+			}
+
+			if ( $this->context_flag_is( 'object_cache_has_problem', true ) ) {
+				$issues[] = $this->issue(
+					'object_cache',
+					self::SEVERITY_WARNING,
+					'object_cache_dropin_unavailable',
+					'Powered Cache could not load the selected object cache drop-in from this hosting environment.'
+				);
+			}
+		}
+
+		if ( ! empty( $settings['auto_configure_htaccess'] ) && $this->context_flag_is( 'is_apache', true ) ) {
+			if ( $this->context_flag_is( 'htaccess_exists', false ) ) {
+				$issues[] = $this->issue(
+					'auto_configure_htaccess',
+					self::SEVERITY_WARNING,
+					'htaccess_missing',
+					'Automatic .htaccess configuration is enabled, but the .htaccess file could not be found.'
+				);
+			} elseif ( $this->context_flag_is( 'htaccess_writable', false ) ) {
+				$issues[] = $this->issue(
+					'auto_configure_htaccess',
+					self::SEVERITY_WARNING,
+					'htaccess_not_writable',
+					'Automatic .htaccess configuration is enabled, but the .htaccess file is not writable.'
+				);
+			}
+		}
+
+		return $issues;
+	}
+
+	/**
+	 * Determine whether a known runtime context flag matches an expected value.
+	 *
+	 * Missing flags are ignored so validators can run safely in older contexts.
+	 *
+	 * @param string $flag     Context flag.
+	 * @param bool   $expected Expected value.
+	 *
+	 * @return bool
+	 */
+	private function context_flag_is( $flag, $expected ) {
+		return array_key_exists( $flag, $this->context ) && (bool) $this->context[ $flag ] === (bool) $expected;
 	}
 
 	/**

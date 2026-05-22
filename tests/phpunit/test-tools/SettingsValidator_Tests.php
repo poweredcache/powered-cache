@@ -101,6 +101,98 @@ class SettingsValidator_Tests extends TestCase {
 	}
 
 	/**
+	 * It reports page cache runtime readiness issues.
+	 */
+	public function test_reports_page_cache_runtime_readiness_issues() {
+		$validator = new SettingsValidator(
+			array(
+				'wp_cache_enabled'       => true,
+				'page_cache_loaded'      => false,
+				'page_cache_has_problem' => true,
+			),
+			true
+		);
+		$report    = $validator->report(
+			array(
+				'enable_page_cache' => true,
+			)
+		);
+
+		$this->assertTrue( $report['valid'] );
+		$this->assertSame( 2, $report['counts'][ SettingsValidator::SEVERITY_WARNING ] );
+		$this->assertIssueExists( 'enable_page_cache', 'advanced_cache_dropin_inactive', $report['issues'] );
+		$this->assertIssueExists( 'enable_page_cache', 'page_cache_dropin_unavailable', $report['issues'] );
+	}
+
+	/**
+	 * It reports missing WP_CACHE as a page cache readiness issue.
+	 */
+	public function test_reports_missing_wp_cache_runtime_readiness_issue() {
+		$validator = new SettingsValidator(
+			array(
+				'wp_cache_enabled'  => false,
+				'page_cache_loaded' => false,
+			),
+			true
+		);
+		$report    = $validator->report(
+			array(
+				'enable_page_cache' => true,
+			)
+		);
+
+		$this->assertTrue( $report['valid'] );
+		$this->assertSame( 1, $report['counts'][ SettingsValidator::SEVERITY_WARNING ] );
+		$this->assertIssueExists( 'enable_page_cache', 'wp_cache_disabled', $report['issues'] );
+	}
+
+	/**
+	 * It reports object cache runtime readiness issues.
+	 */
+	public function test_reports_object_cache_runtime_readiness_issues() {
+		$validator = new SettingsValidator(
+			array(
+				'object_cache_dropin_exists' => false,
+				'object_cache_has_problem'   => true,
+			),
+			true
+		);
+		$report    = $validator->report(
+			array(
+				'object_cache' => 'redis',
+			)
+		);
+
+		$this->assertTrue( $report['valid'] );
+		$this->assertSame( 2, $report['counts'][ SettingsValidator::SEVERITY_WARNING ] );
+		$this->assertIssueExists( 'object_cache', 'object_cache_dropin_missing', $report['issues'] );
+		$this->assertIssueExists( 'object_cache', 'object_cache_dropin_unavailable', $report['issues'] );
+	}
+
+	/**
+	 * It reports Apache runtime readiness issues.
+	 */
+	public function test_reports_apache_runtime_readiness_issues() {
+		$validator = new SettingsValidator(
+			array(
+				'is_apache'         => true,
+				'htaccess_exists'   => true,
+				'htaccess_writable' => false,
+			),
+			true
+		);
+		$report    = $validator->report(
+			array(
+				'auto_configure_htaccess' => true,
+			)
+		);
+
+		$this->assertTrue( $report['valid'] );
+		$this->assertSame( 1, $report['counts'][ SettingsValidator::SEVERITY_WARNING ] );
+		$this->assertIssueExists( 'auto_configure_htaccess', 'htaccess_not_writable', $report['issues'] );
+	}
+
+	/**
 	 * Assert that a validation issue exists.
 	 *
 	 * @param string $key Setting key.

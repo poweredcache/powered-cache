@@ -87,14 +87,7 @@ class SettingsRestController {
 	 * @return array
 	 */
 	public function get_manifest() {
-		global $is_apache;
-
-		return SettingsManifest::build(
-			array(
-				'is_apache' => (bool) $is_apache,
-			),
-			false
-		);
+		return SettingsManifest::build( $this->settings_context(), false );
 	}
 
 	/**
@@ -103,13 +96,11 @@ class SettingsRestController {
 	 * @return array
 	 */
 	public function get_settings() {
-		global $is_apache;
+		$context = $this->settings_context();
 
 		$repository = SettingsRepository::factory(
 			POWERED_CACHE_IS_NETWORK,
-			array(
-				'is_apache' => (bool) $is_apache,
-			)
+			$context
 		);
 		$settings   = $repository->all();
 
@@ -118,11 +109,7 @@ class SettingsRestController {
 			'format_version' => SettingsManifest::FORMAT_VERSION,
 			'plugin_version' => defined( 'POWERED_CACHE_VERSION' ) ? POWERED_CACHE_VERSION : '',
 			'settings'       => SettingsRepository::redact_sensitive( $settings ),
-			'validation'     => SettingsValidator::factory(
-				array(
-					'is_apache' => (bool) $is_apache,
-				)
-			)->report( $settings ),
+			'validation'     => SettingsValidator::factory( $context )->report( $settings ),
 		);
 	}
 
@@ -134,13 +121,11 @@ class SettingsRestController {
 	 * @return array
 	 */
 	public function update_settings( $request ) {
-		global $is_apache;
+		$context = $this->settings_context();
 
 		$repository = SettingsRepository::factory(
 			POWERED_CACHE_IS_NETWORK,
-			array(
-				'is_apache' => (bool) $is_apache,
-			)
+			$context
 		);
 
 		$old_settings = $repository->all();
@@ -154,11 +139,7 @@ class SettingsRestController {
 			'format_version' => SettingsManifest::FORMAT_VERSION,
 			'plugin_version' => defined( 'POWERED_CACHE_VERSION' ) ? POWERED_CACHE_VERSION : '',
 			'settings'       => SettingsRepository::redact_sensitive( $settings ),
-			'validation'     => SettingsValidator::factory(
-				array(
-					'is_apache' => (bool) $is_apache,
-				)
-			)->report( $settings ),
+			'validation'     => SettingsValidator::factory( $context )->report( $settings ),
 		);
 	}
 
@@ -223,5 +204,46 @@ class SettingsRestController {
 		}
 
 		return array();
+	}
+
+	/**
+	 * Build runtime context for schema defaults and settings validation.
+	 *
+	 * @return array
+	 */
+	private function settings_context() {
+		global $is_apache;
+
+		$context = array(
+			'is_apache'                => (bool) $is_apache,
+			'wp_cache_enabled'         => defined( 'WP_CACHE' ) && true === WP_CACHE,
+			'page_cache_loaded'        => defined( 'POWERED_CACHE_PAGE_CACHING' ) && true === POWERED_CACHE_PAGE_CACHING,
+			'page_cache_has_problem'   => defined( 'POWERED_CACHE_PAGE_CACHING_HAS_PROBLEM' ) && POWERED_CACHE_PAGE_CACHING_HAS_PROBLEM,
+			'object_cache_has_problem' => defined( 'POWERED_OBJECT_CACHE_HAS_PROBLEM' ) && POWERED_OBJECT_CACHE_HAS_PROBLEM,
+		);
+
+		if ( defined( 'WP_CONTENT_DIR' ) ) {
+			$context['object_cache_dropin_exists'] = file_exists( rtrim( WP_CONTENT_DIR, '/\\' ) . '/object-cache.php' );
+		}
+
+		if ( $context['is_apache'] && function_exists( 'get_home_path' ) ) {
+			$htaccess_file                = rtrim( get_home_path(), '/\\' ) . '/.htaccess';
+			$context['htaccess_exists']   = file_exists( $htaccess_file );
+			$context['htaccess_writable'] = is_writable( $htaccess_file );
+		}
+
+		/**
+		 * Filter settings validation runtime context.
+		 *
+		 * @hook powered_cache_settings_validation_context
+		 *
+		 * @param {array} $context Runtime context.
+		 *
+		 * @return {array} New value.
+		 * @since 4.0.0
+		 */
+		$context = apply_filters( 'powered_cache_settings_validation_context', $context );
+
+		return is_array( $context ) ? $context : array();
 	}
 }
