@@ -4,7 +4,7 @@
  * Plugin URI:        https://poweredcache.com
  * Description:       Powered Cache is the most powerful caching and performance suite for WordPress, designed to easily improve your PageSpeed and Web Vitals Score.
  * Version:           3.7.3
- * Requires at least: 5.7
+ * Requires at least: 6.5
  * Requires PHP:      7.4
  * Author:            Powered Cache
  * Author URI:        https://poweredcache.com
