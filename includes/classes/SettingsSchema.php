@@ -198,6 +198,91 @@ class SettingsSchema {
 	}
 
 	/**
+	 * Determine whether a setting key can be edited.
+	 *
+	 * Unknown keys stay editable for backward compatibility with extensions.
+	 *
+	 * @param string    $key Setting key.
+	 * @param array     $context Runtime context used by dynamic defaults.
+	 * @param bool|null $premium_available Whether Premium fields can be edited.
+	 *
+	 * @return bool
+	 */
+	public static function can_edit( $key, array $context = array(), $premium_available = null ) {
+		$field = self::get( $key, $context );
+
+		if ( ! $field || empty( $field['premium'] ) ) {
+			return true;
+		}
+
+		return self::premium_available( $premium_available );
+	}
+
+	/**
+	 * Return why a setting is locked.
+	 *
+	 * @param string    $key Setting key.
+	 * @param array     $context Runtime context used by dynamic defaults.
+	 * @param bool|null $premium_available Whether Premium fields can be edited.
+	 *
+	 * @return string
+	 */
+	public static function lock_reason( $key, array $context = array(), $premium_available = null ) {
+		if ( self::can_edit( $key, $context, $premium_available ) ) {
+			return '';
+		}
+
+		$field = self::get( $key, $context );
+
+		return $field && ! empty( $field['premium'] ) ? 'premium' : '';
+	}
+
+	/**
+	 * Preserve locked settings while applying an incoming settings payload.
+	 *
+	 * @param array     $settings Incoming settings payload.
+	 * @param array     $current Current stored settings.
+	 * @param array     $context Runtime context used by dynamic defaults.
+	 * @param bool|null $premium_available Whether Premium fields can be edited.
+	 *
+	 * @return array
+	 */
+	public static function enforce_editable( array $settings, array $current = array(), array $context = array(), $premium_available = null ) {
+		if ( self::premium_available( $premium_available ) ) {
+			return $settings;
+		}
+
+		foreach ( self::fields( $context ) as $key => $field ) {
+			if ( empty( $field['premium'] ) || ! array_key_exists( $key, $settings ) ) {
+				continue;
+			}
+
+			$settings[ $key ] = array_key_exists( $key, $current ) ? $current[ $key ] : $field['default'];
+		}
+
+		return $settings;
+	}
+
+	/**
+	 * Determine whether the current runtime has Premium available.
+	 *
+	 * @param bool|null $premium_available Whether Premium fields can be edited.
+	 *
+	 * @return bool
+	 */
+	private static function premium_available( $premium_available = null ) {
+		if ( null !== $premium_available ) {
+			return (bool) $premium_available;
+		}
+
+		if ( function_exists( '\PoweredCache\Utils\is_premium' ) ) {
+			return (bool) \PoweredCache\Utils\is_premium();
+		}
+
+		return false;
+	}
+
+	/**
 	 * Return schema metadata for one field.
 	 *
 	 * @param string $type Setting value type.

@@ -134,4 +134,92 @@ class SettingsSchema_Tests extends TestCase {
 		$this->assertFalse( $non_apache_defaults['auto_configure_htaccess'] );
 		$this->assertFalse( $non_apache_defaults['rewrite_file_optimizer'] );
 	}
+
+	/**
+	 * It keeps Premium fields locked when Premium is unavailable.
+	 */
+	public function test_premium_fields_are_locked_without_premium() {
+		$this->assertTrue( SettingsSchema::can_edit( 'enable_page_cache', array(), false ) );
+		$this->assertFalse( SettingsSchema::can_edit( 'enable_image_optimization', array(), false ) );
+		$this->assertFalse( SettingsSchema::can_edit( 'enable_sitemap_preload', array(), false ) );
+		$this->assertFalse( SettingsSchema::can_edit( 'prefetch_links', array(), false ) );
+		$this->assertFalse( SettingsSchema::can_edit( 'enable_varnish', array(), false ) );
+		$this->assertSame( 'premium', SettingsSchema::lock_reason( 'enable_image_optimization', array(), false ) );
+		$this->assertSame( '', SettingsSchema::lock_reason( 'enable_page_cache', array(), false ) );
+	}
+
+	/**
+	 * It allows Premium fields when Premium is available.
+	 */
+	public function test_premium_fields_are_editable_with_premium() {
+		$this->assertTrue( SettingsSchema::can_edit( 'enable_image_optimization', array(), true ) );
+		$this->assertSame( '', SettingsSchema::lock_reason( 'enable_image_optimization', array(), true ) );
+	}
+
+	/**
+	 * It preserves existing Premium values while applying Free changes.
+	 */
+	public function test_enforce_editable_preserves_existing_premium_values_in_free() {
+		$settings = SettingsSchema::enforce_editable(
+			array(
+				'enable_page_cache'         => false,
+				'enable_image_optimization' => true,
+				'critical_css'              => true,
+				'prefetch_links'            => true,
+				'enable_varnish'            => true,
+			),
+			array(
+				'enable_page_cache'         => true,
+				'enable_image_optimization' => false,
+				'critical_css'              => true,
+				'prefetch_links'            => false,
+				'enable_varnish'            => false,
+			),
+			array(),
+			false
+		);
+
+		$this->assertFalse( $settings['enable_page_cache'] );
+		$this->assertFalse( $settings['enable_image_optimization'] );
+		$this->assertTrue( $settings['critical_css'] );
+		$this->assertFalse( $settings['prefetch_links'] );
+		$this->assertFalse( $settings['enable_varnish'] );
+	}
+
+	/**
+	 * It allows Premium changes when Premium is available.
+	 */
+	public function test_enforce_editable_allows_premium_changes_with_premium() {
+		$settings = SettingsSchema::enforce_editable(
+			array(
+				'enable_image_optimization' => true,
+			),
+			array(
+				'enable_image_optimization' => false,
+			),
+			array(),
+			true
+		);
+
+		$this->assertTrue( $settings['enable_image_optimization'] );
+	}
+
+	/**
+	 * It keeps unknown extension settings editable.
+	 */
+	public function test_unknown_settings_remain_editable() {
+		$settings = SettingsSchema::enforce_editable(
+			array(
+				'custom_extension_key' => 'changed',
+			),
+			array(
+				'custom_extension_key' => 'current',
+			),
+			array(),
+			false
+		);
+
+		$this->assertTrue( SettingsSchema::can_edit( 'custom_extension_key', array(), false ) );
+		$this->assertSame( 'changed', $settings['custom_extension_key'] );
+	}
 }

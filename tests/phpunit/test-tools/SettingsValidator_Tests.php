@@ -16,7 +16,7 @@ class SettingsValidator_Tests extends TestCase {
 	 * It reports invalid schema values.
 	 */
 	public function test_reports_invalid_schema_values() {
-		$validator = new SettingsValidator( array(), new SettingsCapabilityPolicy( true ) );
+		$validator = new SettingsValidator( array(), true );
 		$report    = $validator->report(
 			array(
 				'object_cache'              => 'bad-cache',
@@ -37,7 +37,7 @@ class SettingsValidator_Tests extends TestCase {
 	 * It reports inactive dependency values.
 	 */
 	public function test_reports_inactive_dependency_values() {
-		$validator = new SettingsValidator( array(), new SettingsCapabilityPolicy( true ) );
+		$validator = new SettingsValidator( array(), true );
 		$report    = $validator->report(
 			array(
 				'enable_lazy_load'     => false,
@@ -56,7 +56,7 @@ class SettingsValidator_Tests extends TestCase {
 	 * It reports locked Premium values without making the report invalid.
 	 */
 	public function test_reports_locked_premium_values() {
-		$validator = new SettingsValidator( array(), new SettingsCapabilityPolicy( false ) );
+		$validator = new SettingsValidator( array(), false );
 		$report    = $validator->report(
 			array(
 				'critical_css' => true,
@@ -72,7 +72,7 @@ class SettingsValidator_Tests extends TestCase {
 	 * It reports unknown settings as compatibility info.
 	 */
 	public function test_reports_unknown_settings_as_info() {
-		$validator = new SettingsValidator( array(), new SettingsCapabilityPolicy( true ) );
+		$validator = new SettingsValidator( array(), true );
 		$report    = $validator->report(
 			array(
 				'custom_extension_key' => 'keep',
@@ -88,7 +88,7 @@ class SettingsValidator_Tests extends TestCase {
 	 * It includes compatibility registry notes.
 	 */
 	public function test_reports_compatibility_registry_notes() {
-		$validator = new SettingsValidator( array(), new SettingsCapabilityPolicy( true ) );
+		$validator = new SettingsValidator( array(), true );
 		$report    = $validator->report(
 			array(
 				'js_delay' => true,

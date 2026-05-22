@@ -114,14 +114,13 @@ class SettingsManifest {
 	public static function fields( array $context = array(), $include_deprecated = true ) {
 		$fields = array();
 		$order  = 10;
-		$policy = SettingsCapabilityPolicy::factory( null, $context );
 
 		foreach ( SettingsSchema::fields( $context ) as $key => $field ) {
 			if ( ! $include_deprecated && ! empty( $field['deprecated'] ) ) {
 				continue;
 			}
 
-			$fields[ $key ] = self::field( $key, $field, $order, $policy );
+			$fields[ $key ] = self::field( $key, $field, $order, $context );
 			$order         += 10;
 		}
 
@@ -131,16 +130,16 @@ class SettingsManifest {
 	/**
 	 * Return one manifest field.
 	 *
-	 * @param string                   $key Setting key.
-	 * @param array                    $field Schema field.
-	 * @param int                      $order Field display order.
-	 * @param SettingsCapabilityPolicy $policy Settings capability policy.
+	 * @param string $key Setting key.
+	 * @param array  $field Schema field.
+	 * @param int    $order Field display order.
+	 * @param array  $context Runtime context used by dynamic defaults.
 	 *
 	 * @return array
 	 */
-	private static function field( $key, array $field, $order, SettingsCapabilityPolicy $policy ) {
+	private static function field( $key, array $field, $order, array $context ) {
 		$metadata = self::field_metadata( $key, $field );
-		$editable = $policy->can_edit( $key );
+		$editable = SettingsSchema::can_edit( $key, $context );
 		$manifest = array(
 			'key'           => $key,
 			'label'         => $metadata['label'],
@@ -156,7 +155,7 @@ class SettingsManifest {
 			'premium'       => (bool) $field['premium'],
 			'editable'      => $editable,
 			'locked'        => ! $editable,
-			'lock_reason'   => $policy->lock_reason( $key ),
+			'lock_reason'   => SettingsSchema::lock_reason( $key, $context ),
 			'dependencies'  => array_values( $field['dependencies'] ),
 			'enum'          => array_values( $field['enum'] ),
 			'enum_labels'   => self::enum_labels( $field['enum'] ),

@@ -26,33 +26,33 @@ class SettingsValidator {
 	private $context;
 
 	/**
-	 * Settings capability policy.
+	 * Whether Premium fields can be edited.
 	 *
-	 * @var SettingsCapabilityPolicy
+	 * @var bool|null
 	 */
-	private $policy;
+	private $premium_available;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param array                         $context Runtime context.
-	 * @param SettingsCapabilityPolicy|null $policy Settings capability policy.
+	 * @param array     $context Runtime context.
+	 * @param bool|null $premium_available Whether Premium fields can be edited.
 	 */
-	public function __construct( array $context = array(), SettingsCapabilityPolicy $policy = null ) {
-		$this->context = $context;
-		$this->policy  = null === $policy ? SettingsCapabilityPolicy::factory( null, $context ) : $policy;
+	public function __construct( array $context = array(), $premium_available = null ) {
+		$this->context           = $context;
+		$this->premium_available = null === $premium_available ? null : (bool) $premium_available;
 	}
 
 	/**
 	 * Create a validator instance.
 	 *
-	 * @param array                         $context Runtime context.
-	 * @param SettingsCapabilityPolicy|null $policy Settings capability policy.
+	 * @param array     $context Runtime context.
+	 * @param bool|null $premium_available Whether Premium fields can be edited.
 	 *
 	 * @return SettingsValidator
 	 */
-	public static function factory( array $context = array(), SettingsCapabilityPolicy $policy = null ) {
-		return new self( $context, $policy );
+	public static function factory( array $context = array(), $premium_available = null ) {
+		return new self( $context, $premium_available );
 	}
 
 	/**
@@ -139,7 +139,7 @@ class SettingsValidator {
 	private function validate_field( $key, $value, array $field, array $settings ) {
 		$issues = array();
 
-		if ( ! $this->policy->can_edit( $key ) && $this->has_value( $value, $field ) ) {
+		if ( ! SettingsSchema::can_edit( $key, $this->context, $this->premium_available ) && $this->has_value( $value, $field ) ) {
 			$issues[] = $this->issue(
 				$key,
 				self::SEVERITY_INFO,

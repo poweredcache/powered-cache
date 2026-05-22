@@ -68,7 +68,7 @@ class SettingsSaveService {
 			$old_settings = $this->repository->all();
 		}
 
-		$settings = SettingsCapabilityPolicy::factory()->enforce( $settings, $old_settings );
+		$settings = SettingsSchema::enforce_editable( $settings, $old_settings );
 
 		$this->repository->save( $settings );
 		$settings = $this->repository->all();

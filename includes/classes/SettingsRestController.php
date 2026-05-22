@@ -193,7 +193,7 @@ class SettingsRestController {
 			}
 		}
 
-		return SettingsCapabilityPolicy::factory()->enforce( $settings, $current );
+		return SettingsSchema::enforce_editable( $settings, $current );
 	}
 
 	/**
