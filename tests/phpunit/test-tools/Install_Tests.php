@@ -25,28 +25,27 @@ class Install_Tests extends TestCase {
 	);
 
 	/**
-	 * It runs the 4.0 settings migrator during upgrades without dropping legacy keys.
+	 * It runs the 4.0 settings migration during upgrades without dropping legacy keys.
 	 */
 	public function test_upgrade_40_persists_compatible_settings_shape() {
 		\WP_Mock::userFunction(
 			'get_option',
 			array(
-				'times'  => 1,
-				'args'   => array( \PoweredCache\Constants\DB_VERSION_OPTION_NAME ),
-				'return' => '3.7.3',
-			)
-		);
+				'times'  => 2,
+				'return' => function ( $option, $default = false ) {
+					if ( \PoweredCache\Constants\DB_VERSION_OPTION_NAME === $option ) {
+						return '3.7.3';
+					}
 
-		\WP_Mock::userFunction(
-			'PoweredCache\Utils\get_settings',
-			array(
-				'times'  => 1,
-				'args'   => array( false ),
-				'return' => array(
-					'accepted_query_strings' => 'utm_source',
-					'js_execution_method'    => 'delayed',
-					'combine_js'             => true,
-				),
+					$this->assertSame( \PoweredCache\Constants\SETTING_OPTION, $option );
+					$this->assertSame( array(), $default );
+
+					return array(
+						'accepted_query_strings' => 'utm_source',
+						'js_execution_method'    => 'delayed',
+						'combine_js'             => true,
+					);
+				},
 			)
 		);
 
@@ -96,20 +95,19 @@ class Install_Tests extends TestCase {
 		\WP_Mock::userFunction(
 			'get_site_option',
 			array(
-				'times'  => 1,
-				'args'   => array( \PoweredCache\Constants\DB_VERSION_OPTION_NAME ),
-				'return' => '3.7.3',
-			)
-		);
+				'times'  => 2,
+				'return' => function ( $option, $default = false ) {
+					if ( \PoweredCache\Constants\DB_VERSION_OPTION_NAME === $option ) {
+						return '3.7.3';
+					}
 
-		\WP_Mock::userFunction(
-			'PoweredCache\Utils\get_settings',
-			array(
-				'times'  => 1,
-				'args'   => array( true ),
-				'return' => array(
-					'accepted_query_strings' => 'utm_campaign',
-				),
+					$this->assertSame( \PoweredCache\Constants\SETTING_OPTION, $option );
+					$this->assertSame( array(), $default );
+
+					return array(
+						'accepted_query_strings' => 'utm_campaign',
+					);
+				},
 			)
 		);
 

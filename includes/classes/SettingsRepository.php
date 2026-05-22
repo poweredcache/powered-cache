@@ -34,36 +34,26 @@ class SettingsRepository {
 	private $context;
 
 	/**
-	 * Settings migrator.
-	 *
-	 * @var SettingsMigrator
-	 */
-	private $migrator;
-
-	/**
 	 * Constructor.
 	 *
-	 * @param bool|null             $network_wide Whether to use network option storage.
-	 * @param array                 $context Runtime context for dynamic defaults.
-	 * @param SettingsMigrator|null $migrator Settings migrator.
+	 * @param bool|null $network_wide Whether to use network option storage.
+	 * @param array     $context Runtime context for dynamic defaults.
 	 */
-	public function __construct( $network_wide = null, array $context = array(), SettingsMigrator $migrator = null ) {
+	public function __construct( $network_wide = null, array $context = array() ) {
 		$this->network_wide = null === $network_wide ? $this->detect_network_mode() : (bool) $network_wide;
 		$this->context      = empty( $context ) ? $this->default_context() : $context;
-		$this->migrator     = null === $migrator ? new SettingsMigrator() : $migrator;
 	}
 
 	/**
 	 * Create a repository instance.
 	 *
-	 * @param bool|null             $network_wide Whether to use network option storage.
-	 * @param array                 $context Runtime context for dynamic defaults.
-	 * @param SettingsMigrator|null $migrator Settings migrator.
+	 * @param bool|null $network_wide Whether to use network option storage.
+	 * @param array     $context Runtime context for dynamic defaults.
 	 *
 	 * @return SettingsRepository
 	 */
-	public static function factory( $network_wide = null, array $context = array(), SettingsMigrator $migrator = null ) {
-		return new self( $network_wide, $context, $migrator );
+	public static function factory( $network_wide = null, array $context = array() ) {
+		return new self( $network_wide, $context );
 	}
 
 	/**
@@ -72,7 +62,7 @@ class SettingsRepository {
 	 * @return array
 	 */
 	public function all() {
-		return $this->normalize( $this->migrator->migrate( $this->read_raw() ), $this->defaults() );
+		return $this->normalize( self::migrate_legacy_settings( $this->read_raw() ), $this->defaults() );
 	}
 
 	/**
@@ -97,7 +87,7 @@ class SettingsRepository {
 	 * @return bool
 	 */
 	public function save( array $settings ) {
-		$settings = $this->sanitize( $this->migrator->for_storage( $this->normalize( $settings ) ) );
+		$settings = $this->sanitize( self::migrate_legacy_settings( $this->normalize( $settings ) ) );
 
 		if ( $this->network_wide ) {
 			return (bool) update_site_option( SETTING_OPTION, $settings );
@@ -128,6 +118,64 @@ class SettingsRepository {
 		}
 
 		return (bool) delete_option( SETTING_OPTION );
+	}
+
+	/**
+	 * Determine whether a raw settings payload needs 4.0 compatibility migration.
+	 *
+	 * @param array $settings Raw settings.
+	 *
+	 * @return bool
+	 */
+	public static function has_legacy_settings( array $settings ) {
+		foreach ( array( 'accepted_query_strings', 'js_execution_method' ) as $key ) {
+			if ( ! empty( $settings[ $key ] ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Migrate known legacy settings without dropping rollback-safe keys.
+	 *
+	 * @param array $settings Raw settings.
+	 *
+	 * @return array
+	 */
+	public static function migrate_legacy_settings( array $settings ) {
+		if ( ! empty( $settings['accepted_query_strings'] ) && empty( $settings['ignored_query_strings'] ) ) {
+			$settings['ignored_query_strings'] = $settings['accepted_query_strings'];
+		}
+
+		if ( ! empty( $settings['js_execution_method'] ) && in_array( $settings['js_execution_method'], array( 'async', 'defer' ), true ) ) {
+			$settings['js_defer'] = true;
+		}
+
+		if ( ! empty( $settings['js_execution_method'] ) && in_array( $settings['js_execution_method'], array( 'delay', 'delayed' ), true ) ) {
+			$settings['js_delay']   = true;
+			$settings['combine_js'] = false;
+		}
+
+		return $settings;
+	}
+
+	/**
+	 * Return deprecated schema keys.
+	 *
+	 * @return array
+	 */
+	public static function deprecated_keys() {
+		$deprecated = array();
+
+		foreach ( SettingsSchema::fields() as $key => $field ) {
+			if ( ! empty( $field['deprecated'] ) ) {
+				$deprecated[] = $key;
+			}
+		}
+
+		return $deprecated;
 	}
 
 	/**

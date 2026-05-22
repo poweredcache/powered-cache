@@ -262,14 +262,13 @@ class Install {
 			return;
 		}
 
-		$settings = \PoweredCache\Utils\get_settings( $network_wide );
-		$migrator = new SettingsMigrator();
+		$settings = $network_wide ? get_site_option( SETTING_OPTION, array() ) : get_option( SETTING_OPTION, array() );
 
-		if ( empty( $migrator->applicable_steps( $settings ) ) ) {
+		if ( ! is_array( $settings ) || ! SettingsRepository::has_legacy_settings( $settings ) ) {
 			return;
 		}
 
-		$this->save_settings( $migrator->for_storage( $settings ), $network_wide );
+		$this->save_settings( SettingsRepository::migrate_legacy_settings( $settings ), $network_wide );
 
 		\PoweredCache\Utils\log( 'Upgraded to version 4.0' );
 	}

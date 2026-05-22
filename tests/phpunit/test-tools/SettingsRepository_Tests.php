@@ -198,6 +198,74 @@ class SettingsRepository_Tests extends TestCase {
 	}
 
 	/**
+	 * It detects legacy settings that need 4.0 migration.
+	 */
+	public function test_has_legacy_settings_detects_migration_inputs() {
+		$this->assertTrue( SettingsRepository::has_legacy_settings( array( 'accepted_query_strings' => 'utm_source' ) ) );
+		$this->assertTrue( SettingsRepository::has_legacy_settings( array( 'js_execution_method' => 'delayed' ) ) );
+		$this->assertFalse( SettingsRepository::has_legacy_settings( array( 'ignored_query_strings' => 'utm_source' ) ) );
+	}
+
+	/**
+	 * It migrates accepted query strings into ignored query strings.
+	 */
+	public function test_migrates_accepted_query_strings() {
+		$settings = SettingsRepository::migrate_legacy_settings(
+			array(
+				'accepted_query_strings' => 'utm_source',
+			)
+		);
+
+		$this->assertSame( 'utm_source', $settings['ignored_query_strings'] );
+		$this->assertSame( 'utm_source', $settings['accepted_query_strings'] );
+	}
+
+	/**
+	 * It does not overwrite an existing ignored query string value.
+	 */
+	public function test_migration_does_not_overwrite_existing_ignored_query_strings() {
+		$settings = SettingsRepository::migrate_legacy_settings(
+			array(
+				'accepted_query_strings' => 'utm_source',
+				'ignored_query_strings'  => 'gclid',
+			)
+		);
+
+		$this->assertSame( 'gclid', $settings['ignored_query_strings'] );
+	}
+
+	/**
+	 * It migrates deprecated JS execution method values.
+	 */
+	public function test_migrates_js_execution_method() {
+		$defer_settings = SettingsRepository::migrate_legacy_settings(
+			array(
+				'js_execution_method' => 'defer',
+			)
+		);
+
+		$delay_settings = SettingsRepository::migrate_legacy_settings(
+			array(
+				'js_execution_method' => 'delayed',
+				'combine_js'          => true,
+			)
+		);
+
+		$this->assertTrue( $defer_settings['js_defer'] );
+		$this->assertTrue( $delay_settings['js_delay'] );
+		$this->assertFalse( $delay_settings['combine_js'] );
+	}
+
+	/**
+	 * It exposes deprecated keys from the schema.
+	 */
+	public function test_deprecated_keys_are_schema_driven() {
+		$this->assertContains( 'ssl_cache', SettingsRepository::deprecated_keys() );
+		$this->assertContains( 'js_execution_method', SettingsRepository::deprecated_keys() );
+		$this->assertContains( 'js_execution_optimized_only', SettingsRepository::deprecated_keys() );
+	}
+
+	/**
 	 * It merges partial updates with current settings before saving.
 	 */
 	public function test_update_merges_partial_settings_with_current_values() {
