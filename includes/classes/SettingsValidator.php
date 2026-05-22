@@ -81,6 +81,8 @@ class SettingsValidator {
 			$issues = array_merge( $issues, $this->validate_field( $key, $value, $fields[ $key ], $settings ) );
 		}
 
+		$issues = array_merge( $issues, CompatibilityRules::factory()->settings_issues( $settings ) );
+
 		/**
 		 * Filter settings validation issues.
 		 *

@@ -169,6 +169,66 @@ class CompatibilityRules_Tests extends TestCase {
 	}
 
 	/**
+	 * It exposes matching settings issues from the registry.
+	 */
+	public function test_settings_issues_match_current_settings() {
+		$file = tempnam( sys_get_temp_dir(), 'pc-rules-' );
+		file_put_contents(
+			$file,
+			json_encode(
+				array(
+					'format'          => CompatibilityRules::FORMAT,
+					'format_version'  => CompatibilityRules::FORMAT_VERSION,
+					'rules'           => array(),
+					'settings_issues' => array(
+						array(
+							'key'      => 'js_delay',
+							'severity' => 'info',
+							'code'     => 'compatibility_rule_applied',
+							'message'  => 'Compatibility guard active.',
+							'when'     => array(
+								'setting' => 'js_delay',
+								'value'   => true,
+							),
+						),
+						array(
+							'key'      => 'enable_lazy_load',
+							'severity' => 'warning',
+							'code'     => 'not_active',
+							'message'  => 'Should not show.',
+							'when'     => array(
+								'setting' => 'enable_lazy_load',
+								'value'   => true,
+							),
+						),
+					),
+				)
+			)
+		); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+
+		$rules = new CompatibilityRules( $file );
+
+		$this->assertSame(
+			array(
+				array(
+					'key'      => 'js_delay',
+					'severity' => 'info',
+					'code'     => 'compatibility_rule_applied',
+					'message'  => 'Compatibility guard active.',
+				),
+			),
+			$rules->settings_issues(
+				array(
+					'js_delay'         => 1,
+					'enable_lazy_load' => false,
+				)
+			)
+		);
+
+		unlink( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+	}
+
+	/**
 	 * It fails closed when the registry payload is invalid.
 	 */
 	public function test_invalid_registry_payload_returns_no_rules() {

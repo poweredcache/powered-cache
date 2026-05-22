@@ -85,6 +85,22 @@ class SettingsValidator_Tests extends TestCase {
 	}
 
 	/**
+	 * It includes compatibility registry notes.
+	 */
+	public function test_reports_compatibility_registry_notes() {
+		$validator = new SettingsValidator( array(), new SettingsCapabilityPolicy( true ) );
+		$report    = $validator->report(
+			array(
+				'js_delay' => true,
+			)
+		);
+
+		$this->assertTrue( $report['valid'] );
+		$this->assertSame( 1, $report['counts'][ SettingsValidator::SEVERITY_INFO ] );
+		$this->assertIssueExists( 'js_delay', 'compatibility_rule_applied', $report['issues'] );
+	}
+
+	/**
 	 * Assert that a validation issue exists.
 	 *
 	 * @param string $key Setting key.

@@ -13,6 +13,18 @@
       "selectors.core.image.lightboxObjectFit"
     ]
   },
+  "settings_issues": [
+    {
+      "key": "js_delay",
+      "severity": "info",
+      "code": "compatibility_rule_applied",
+      "message": "Powered Cache automatically keeps WordPress core interactivity scripts out of delayed JavaScript execution.",
+      "when": {
+        "setting": "js_delay",
+        "value": true
+      }
+    }
+  ],
   "conditional_rules": {
     "plugins": {}
   }

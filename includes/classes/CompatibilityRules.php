@@ -150,6 +150,23 @@ class CompatibilityRules {
 	}
 
 	/**
+	 * Return settings issues from the compatibility registry.
+	 *
+	 * @param array $settings Current settings.
+	 *
+	 * @return array
+	 */
+	public function settings_issues( array $settings ) {
+		$registry = $this->registry();
+
+		if ( empty( $registry['settings_issues'] ) || ! is_array( $registry['settings_issues'] ) ) {
+			return array();
+		}
+
+		return $this->setting_issues_from_items( $registry['settings_issues'], $settings );
+	}
+
+	/**
 	 * Return the decoded registry payload.
 	 *
 	 * @return array
@@ -307,6 +324,94 @@ class CompatibilityRules {
 		$plugins = apply_filters( 'powered_cache_compatibility_rules_active_plugins', $plugins );
 
 		return is_array( $plugins ) ? $this->normalize_rules( $plugins ) : array();
+	}
+
+	/**
+	 * Return normalized setting issues from registry items.
+	 *
+	 * @param array $items    Registry issue items.
+	 * @param array $settings Current settings.
+	 *
+	 * @return array
+	 */
+	private function setting_issues_from_items( array $items, array $settings ) {
+		$issues = array();
+
+		foreach ( $items as $item ) {
+			$issue = $this->normalize_setting_issue( $item, $settings );
+
+			if ( empty( $issue ) ) {
+				continue;
+			}
+
+			$issues[] = $issue;
+		}
+
+		return $issues;
+	}
+
+	/**
+	 * Return a normalized setting issue when it matches the current settings.
+	 *
+	 * @param mixed $item     Registry issue item.
+	 * @param array $settings Current settings.
+	 *
+	 * @return array
+	 */
+	private function normalize_setting_issue( $item, array $settings ) {
+		if ( ! is_array( $item ) || ! $this->setting_issue_matches( $item, $settings ) ) {
+			return array();
+		}
+
+		$key      = isset( $item['key'] ) && is_scalar( $item['key'] ) ? trim( (string) $item['key'] ) : '';
+		$severity = isset( $item['severity'] ) && is_scalar( $item['severity'] ) ? trim( (string) $item['severity'] ) : '';
+		$code     = isset( $item['code'] ) && is_scalar( $item['code'] ) ? trim( (string) $item['code'] ) : '';
+		$message  = isset( $item['message'] ) && is_scalar( $item['message'] ) ? trim( (string) $item['message'] ) : '';
+
+		if ( '' === $key || '' === $code || '' === $message || ! in_array( $severity, array( 'error', 'warning', 'info' ), true ) ) {
+			return array();
+		}
+
+		return array(
+			'key'      => $key,
+			'severity' => $severity,
+			'code'     => $code,
+			'message'  => $message,
+		);
+	}
+
+	/**
+	 * Determine whether a registry issue applies to the current settings.
+	 *
+	 * @param array $item     Registry issue item.
+	 * @param array $settings Current settings.
+	 *
+	 * @return bool
+	 */
+	private function setting_issue_matches( array $item, array $settings ) {
+		if ( empty( $item['when'] ) ) {
+			return true;
+		}
+
+		if ( ! is_array( $item['when'] ) || empty( $item['when']['setting'] ) || ! is_scalar( $item['when']['setting'] ) ) {
+			return false;
+		}
+
+		$setting = (string) $item['when']['setting'];
+
+		if ( ! array_key_exists( $setting, $settings ) ) {
+			return false;
+		}
+
+		if ( array_key_exists( 'value', $item['when'] ) ) {
+			if ( is_bool( $item['when']['value'] ) ) {
+				return (bool) $settings[ $setting ] === $item['when']['value'];
+			}
+
+			return $settings[ $setting ] === $item['when']['value'];
+		}
+
+		return ! empty( $settings[ $setting ] );
 	}
 
 	/**
