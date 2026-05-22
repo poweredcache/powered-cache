@@ -241,6 +241,90 @@
             }
           }
         ]
+      },
+      "litespeed-cache/litespeed-cache.php": {
+        "settings_issues": [
+          {
+            "key": "enable_page_cache",
+            "severity": "warning",
+            "code": "external_page_cache_plugin_active",
+            "message": "LiteSpeed Cache is active. Avoid running two full-page cache layers unless one of them is intentionally disabled.",
+            "when": {
+              "setting": "enable_page_cache",
+              "value": true
+            }
+          }
+        ]
+      },
+      "w3-total-cache/w3-total-cache.php": {
+        "settings_issues": [
+          {
+            "key": "enable_page_cache",
+            "severity": "warning",
+            "code": "external_page_cache_plugin_active",
+            "message": "W3 Total Cache is active. Avoid running two full-page cache layers unless one of them is intentionally disabled.",
+            "when": {
+              "setting": "enable_page_cache",
+              "value": true
+            }
+          }
+        ]
+      },
+      "wp-super-cache/wp-cache.php": {
+        "settings_issues": [
+          {
+            "key": "enable_page_cache",
+            "severity": "warning",
+            "code": "external_page_cache_plugin_active",
+            "message": "WP Super Cache is active. Avoid running two full-page cache layers unless one of them is intentionally disabled.",
+            "when": {
+              "setting": "enable_page_cache",
+              "value": true
+            }
+          }
+        ]
+      },
+      "wp-fastest-cache/wpFastestCache.php": {
+        "settings_issues": [
+          {
+            "key": "enable_page_cache",
+            "severity": "warning",
+            "code": "external_page_cache_plugin_active",
+            "message": "WP Fastest Cache is active. Avoid running two full-page cache layers unless one of them is intentionally disabled.",
+            "when": {
+              "setting": "enable_page_cache",
+              "value": true
+            }
+          }
+        ]
+      },
+      "sg-cachepress/sg-cachepress.php": {
+        "settings_issues": [
+          {
+            "key": "enable_page_cache",
+            "severity": "warning",
+            "code": "external_page_cache_plugin_active",
+            "message": "SiteGround Optimizer cache is active. Avoid running two full-page cache layers unless one of them is intentionally disabled.",
+            "when": {
+              "setting": "enable_page_cache",
+              "value": true
+            }
+          }
+        ]
+      },
+      "breeze/breeze.php": {
+        "settings_issues": [
+          {
+            "key": "enable_page_cache",
+            "severity": "warning",
+            "code": "external_page_cache_plugin_active",
+            "message": "Breeze cache is active. Avoid running two full-page cache layers unless one of them is intentionally disabled.",
+            "when": {
+              "setting": "enable_page_cache",
+              "value": true
+            }
+          }
+        ]
       }
     }
   }

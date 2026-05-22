@@ -108,6 +108,30 @@ class CompatibilityRules_Tests extends TestCase {
 	}
 
 	/**
+	 * It exposes bundled page cache conflict notes for active cache plugins.
+	 */
+	public function test_bundled_registry_reports_external_page_cache_conflicts() {
+		\WP_Mock::onFilter( 'powered_cache_compatibility_rules_active_plugins' )
+			->with( array() )
+			->reply( array( 'litespeed-cache/litespeed-cache.php' ) );
+
+		$rules  = CompatibilityRules::factory();
+		$issues = $rules->settings_issues( array( 'enable_page_cache' => true ) );
+
+		$this->assertSame(
+			array(
+				array(
+					'key'      => 'enable_page_cache',
+					'severity' => 'warning',
+					'code'     => 'external_page_cache_plugin_active',
+					'message'  => 'LiteSpeed Cache is active. Avoid running two full-page cache layers unless one of them is intentionally disabled.',
+				),
+			),
+			$issues
+		);
+	}
+
+	/**
 	 * It ignores unknown registry buckets.
 	 */
 	public function test_unknown_rule_bucket_returns_empty_list() {
