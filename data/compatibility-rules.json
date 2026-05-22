@@ -26,6 +26,138 @@
     }
   ],
   "conditional_rules": {
-    "plugins": {}
+    "plugins": {
+      "woocommerce/woocommerce.php": {
+        "delay_exclusions": [
+          "woocommerce/assets/js/frontend/cart-fragments",
+          "woocommerce/assets/js/frontend/checkout",
+          "woocommerce/assets/js/frontend/add-to-cart",
+          "woocommerce/assets/js/frontend/add-to-cart-variation",
+          "wc-cart-fragments",
+          "wc-checkout",
+          "wc-add-to-cart"
+        ],
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "info",
+            "code": "woocommerce_delay_guard",
+            "message": "WooCommerce cart, checkout, and add-to-cart scripts are protected from delayed JavaScript when WooCommerce is active.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          }
+        ]
+      },
+      "elementor/elementor.php": {
+        "delay_exclusions": [
+          "elementor/assets/js/frontend",
+          "elementorFrontend"
+        ],
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "info",
+            "code": "elementor_delay_guard",
+            "message": "Elementor frontend scripts are protected from delayed JavaScript to keep widgets responsive.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          }
+        ]
+      },
+      "elementor-pro/elementor-pro.php": {
+        "delay_exclusions": [
+          "elementor-pro/assets/js/frontend"
+        ],
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "info",
+            "code": "elementor_pro_delay_guard",
+            "message": "Elementor Pro frontend scripts are protected from delayed JavaScript when Elementor Pro is active.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          }
+        ]
+      },
+      "shortpixel-adaptive-images/short-pixel-ai.php": {
+        "delay_exclusions": [
+          "spai_js"
+        ],
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "info",
+            "code": "shortpixel_ai_delay_guard",
+            "message": "ShortPixel Adaptive Images is protected from delayed JavaScript when both optimizers are active.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          }
+        ]
+      },
+      "a3-lazy-load/a3-lazy-load.php": {
+        "settings_issues": [
+          {
+            "key": "enable_lazy_load",
+            "severity": "warning",
+            "code": "external_lazy_load_plugin_active",
+            "message": "A3 Lazy Load is active. Avoid running two lazy-load layers unless you have tested the front end.",
+            "when": {
+              "setting": "enable_lazy_load",
+              "value": true
+            }
+          }
+        ]
+      },
+      "jetpack-boost/jetpack-boost.php": {
+        "settings_issues": [
+          {
+            "key": "enable_lazy_load",
+            "severity": "warning",
+            "code": "external_lazy_load_plugin_active",
+            "message": "Jetpack Boost is active. Avoid running two lazy-load layers unless you have tested the front end.",
+            "when": {
+              "setting": "enable_lazy_load",
+              "value": true
+            }
+          }
+        ]
+      },
+      "lazy-load/lazy-load.php": {
+        "settings_issues": [
+          {
+            "key": "enable_lazy_load",
+            "severity": "warning",
+            "code": "external_lazy_load_plugin_active",
+            "message": "Another lazy-load plugin is active. Avoid running two lazy-load layers unless you have tested the front end.",
+            "when": {
+              "setting": "enable_lazy_load",
+              "value": true
+            }
+          }
+        ]
+      },
+      "bj-lazy-load/bj-lazy-load.php": {
+        "settings_issues": [
+          {
+            "key": "enable_lazy_load",
+            "severity": "warning",
+            "code": "external_lazy_load_plugin_active",
+            "message": "BJ Lazy Load is active. Avoid running two lazy-load layers unless you have tested the front end.",
+            "when": {
+              "setting": "enable_lazy_load",
+              "value": true
+            }
+          }
+        ]
+      }
+    }
   }
 }

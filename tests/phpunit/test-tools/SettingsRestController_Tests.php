@@ -116,15 +116,32 @@ class SettingsRestController_Tests extends TestCase {
 		\WP_Mock::userFunction(
 			'get_option',
 			array(
+				'times'  => 2,
+				'return' => function ( $option, $default = false ) {
+					if ( 'active_plugins' === $option ) {
+						return array();
+					}
+
+					$this->assertSame( \PoweredCache\Constants\SETTING_OPTION, $option );
+					$this->assertSame( array(), $default );
+
+					return array(
+						'critical_css'              => true,
+						'enable_image_optimization' => true,
+						'cloudflare_email'          => 'admin@example.test',
+						'cloudflare_api_key'        => 'secret-key',
+						'cloudflare_api_token'      => 'secret-token',
+					);
+				},
+			)
+		);
+
+		\WP_Mock::userFunction(
+			'get_site_option',
+			array(
 				'times'  => 1,
-				'args'   => array( \PoweredCache\Constants\SETTING_OPTION, array() ),
-				'return' => array(
-					'critical_css'              => true,
-					'enable_image_optimization' => true,
-					'cloudflare_email'          => 'admin@example.test',
-					'cloudflare_api_key'        => 'secret-key',
-					'cloudflare_api_token'      => 'secret-token',
-				),
+				'args'   => array( 'active_sitewide_plugins', array() ),
+				'return' => array(),
 			)
 		);
 

@@ -24,6 +24,49 @@ class CompatibilityRules_Tests extends TestCase {
 	}
 
 	/**
+	 * It loads bundled plugin compatibility packs.
+	 */
+	public function test_bundled_registry_loads_plugin_compatibility_packs() {
+		\WP_Mock::onFilter( 'powered_cache_compatibility_rules_active_plugins' )
+			->with( array() )
+			->reply( array( 'woocommerce/woocommerce.php' ) );
+
+		$rules = CompatibilityRules::factory();
+
+		$this->assertContains( 'wc-cart-fragments', $rules->rules( 'delay_exclusions' ) );
+		$this->assertContains( 'wc-checkout', $rules->rules( 'delay_exclusions' ) );
+	}
+
+	/**
+	 * It exposes bundled plugin compatibility notes.
+	 */
+	public function test_bundled_registry_loads_plugin_compatibility_notes() {
+		\WP_Mock::onFilter( 'powered_cache_compatibility_rules_active_plugins' )
+			->with( array() )
+			->reply( array( 'elementor/elementor.php' ) );
+
+		$rules = CompatibilityRules::factory();
+
+		$this->assertSame(
+			array(
+				array(
+					'key'      => 'js_delay',
+					'severity' => 'info',
+					'code'     => 'compatibility_rule_applied',
+					'message'  => 'Powered Cache automatically keeps WordPress core interactivity scripts out of delayed JavaScript execution.',
+				),
+				array(
+					'key'      => 'js_delay',
+					'severity' => 'info',
+					'code'     => 'elementor_delay_guard',
+					'message'  => 'Elementor frontend scripts are protected from delayed JavaScript to keep widgets responsive.',
+				),
+			),
+			$rules->settings_issues( array( 'js_delay' => true ) )
+		);
+	}
+
+	/**
 	 * It ignores unknown registry buckets.
 	 */
 	public function test_unknown_rule_bucket_returns_empty_list() {
