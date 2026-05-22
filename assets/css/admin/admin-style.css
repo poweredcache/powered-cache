@@ -296,10 +296,52 @@
 }
 
 .pc-settings-validation-summary .components-notice__content {
-	align-items: center;
 	display: flex;
 	flex-wrap: wrap;
 	gap: 8px;
+}
+
+.pc-settings-validation-summary__issues {
+	flex-basis: 100%;
+	list-style: none;
+	margin: 4px 0 0;
+	padding: 0;
+}
+
+.pc-settings-validation-summary__issue,
+.pc-settings-validation-summary__more {
+	align-items: flex-start;
+	display: flex;
+	gap: 10px;
+	line-height: 1.45;
+	margin: 6px 0 0;
+}
+
+.pc-settings-validation-summary__issue strong {
+	color: var(--pc-admin-text);
+	flex: 0 0 min(220px, 28%);
+}
+
+.pc-settings-validation-summary__issue span,
+.pc-settings-validation-summary__more {
+	color: var(--pc-admin-muted);
+	min-width: 0;
+}
+
+.pc-settings-validation-summary__issue--error span {
+	color: var(--pc-admin-error);
+}
+
+.pc-settings-validation-summary__issue--warning span {
+	color: var(--pc-admin-warning);
+}
+
+.pc-settings-validation-summary__issue--info span {
+	color: var(--pc-admin-primary-dark);
+}
+
+.pc-settings-validation-summary__more {
+	display: block;
 }
 
 .pc-settings-layout {
@@ -794,6 +836,11 @@
 
 	.pc-settings-duration-control {
 		grid-template-columns: 1fr;
+	}
+
+	.pc-settings-validation-summary__issue {
+		flex-direction: column;
+		gap: 2px;
 	}
 
 	.pc-settings-cdn-routes__header {

@@ -480,13 +480,16 @@ const ValidationIssueList = ({ issues = [] }) => {
 	);
 };
 
-const ValidationSummary = ({ validation }) => {
+const ValidationSummary = ({ fields = {}, validation }) => {
 	const totalIssues = validationIssueCount(validation);
 
 	if (!totalIssues) {
 		return null;
 	}
 
+	const issues = validationIssues(validation);
+	const visibleIssues = issues.slice(0, 4);
+	const remainingIssues = totalIssues - visibleIssues.length;
 	const counts = validation.counts || {};
 	const errors = counts.error || 0;
 	const warnings = counts.warning || 0;
@@ -515,6 +518,33 @@ const ValidationSummary = ({ validation }) => {
 			<Notice status={status} isDismissible={false}>
 				<strong>{__('Settings check', 'powered-cache')}</strong>
 				<span>{message}</span>
+				<ul className="pc-settings-validation-summary__issues">
+					{visibleIssues.map((issue) => (
+						<li
+							className={`pc-settings-validation-summary__issue pc-settings-validation-summary__issue--${issue.severity}`}
+							key={`${issue.key}-${issue.code}`}
+						>
+							<strong>
+								{fields[issue.key] && fields[issue.key].label
+									? fields[issue.key].label
+									: labelFromKey(issue.key || issue.code)}
+							</strong>
+							<span>{issue.message}</span>
+						</li>
+					))}
+					{!!remainingIssues && (
+						<li className="pc-settings-validation-summary__more">
+							{sprintf(
+								/* translators: %d: number of settings. */
+								__(
+									'%d more checks are shown next to their settings.',
+									'powered-cache',
+								),
+								remainingIssues,
+							)}
+						</li>
+					)}
+				</ul>
 			</Notice>
 		</div>
 	);
@@ -1469,7 +1499,7 @@ const SettingsApp = () => {
 				</Notice>
 			)}
 
-			<ValidationSummary validation={validation} />
+			<ValidationSummary fields={manifest.fields || {}} validation={validation} />
 
 			{activeSection === 'cache' && (
 				<div
