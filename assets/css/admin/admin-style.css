@@ -15,12 +15,17 @@
 	margin: 24px 24px 88px 4px;
 	max-width: 1180px;
 	--pc-admin-good: #008a20;
+	--pc-admin-good-border: #b8e6bf;
+	--pc-admin-danger-border: #e0b4b4;
+	--pc-admin-error: #8a2424;
+	--pc-admin-error-border: #d63638;
 	--pc-admin-muted: #646970;
 	--pc-admin-primary: #2271b1;
 	--pc-admin-primary-dark: #135e96;
 	--pc-admin-premium: #7b4ab8;
 	--pc-admin-text: #1d2327;
 	--pc-admin-warning: #8a6d1d;
+	--pc-admin-warning-border: #dba617;
 	--pc-admin-white: #fff;
 }
 
@@ -209,7 +214,7 @@
 
 .pc-settings-status-pill--enabled {
 	background: #edfaef;
-	border-color: #b8e6bf;
+	border-color: var(--pc-admin-good-border);
 	color: var(--pc-admin-good);
 }
 
@@ -484,13 +489,13 @@
 
 .pc-settings-field__issue--error {
 	background: #fcf0f1;
-	border-left-color: #d63638;
-	color: #8a2424;
+	border-left-color: var(--pc-admin-error-border);
+	color: var(--pc-admin-error);
 }
 
 .pc-settings-field__issue--warning {
 	background: #fcf9e8;
-	border-left-color: #dba617;
+	border-left-color: var(--pc-admin-warning-border);
 	color: var(--pc-admin-warning);
 }
 
@@ -652,7 +657,7 @@
 }
 
 .pc-settings-tool-card--danger {
-	border-color: #e0b4b4;
+	border-color: var(--pc-admin-danger-border);
 }
 
 .pc-settings-locked-control {

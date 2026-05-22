@@ -1,9 +1,12 @@
 /**
  * Exports the PostCSS configuration.
  *
- * @return {string} PostCSS options.
+ * @param {object} context The PostCSS loader context.
+ * @param {string} context.env The current build environment.
+ *
+ * @returns {object} PostCSS options.
  */
-module.exports = ( { file, options, env } ) => ( { /* eslint-disable-line */
+module.exports = ({ env }) => ({
 	plugins: {
 		'postcss-import': {},
 		'postcss-preset-env': {
@@ -31,7 +34,7 @@ module.exports = ( { file, options, env } ) => ( { /* eslint-disable-line */
 								zindex: false,
 							},
 						],
-				  }
+					}
 				: false,
 	},
 });

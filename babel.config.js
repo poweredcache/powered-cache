@@ -1,8 +1,8 @@
 /**
  * Babel Config.
  *
- * @param {Object} api The bable API
- * @return {{presets: {Object}}} The babel configuration.
+ * @param {object} api The bable API
+ * @returns {{presets: {Object}}} The babel configuration.
  */
 module.exports = (api) => {
 	/**

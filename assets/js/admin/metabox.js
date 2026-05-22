@@ -7,7 +7,7 @@ const { registerPlugin } = wp.plugins;
 /**
  * PoweredCacheMetaBox
  *
- * @returns PluginDocumentSettingPanel
+ * @returns {object|null} The editor settings panel.
  */
 const PoweredCacheMetaBox = () => {
 	const meta = useSelect((select) => select('core/editor').getEditedPostAttribute('meta'));

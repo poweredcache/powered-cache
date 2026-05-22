@@ -7,3 +7,4 @@ webpack.config.babel.js
 gulpfile.babel.js
 dist/
 docs/
+vendor/

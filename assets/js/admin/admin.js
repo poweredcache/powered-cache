@@ -1,4 +1,4 @@
-/* global jQuery  */
+/* global ajaxurl, jQuery  */
 import '@wpmudev/shared-ui/dist/js/_src/modal-dialog';
 import './settings-app';
 import './modules/nav';
@@ -30,6 +30,7 @@ import './modules/modal';
 	$('#cdn-zones').on('click', '.remove_cdn_hostname', function () {
 		const target_node = $(this).parents('.cdn-zone');
 		if (target_node.attr('id') === 'cdn-zone-0') {
+			// eslint-disable-next-line no-alert
 			alert('Nice try :) This zone cannot be removed!');
 			return false;
 		}
@@ -103,8 +104,8 @@ import './modules/modal';
 		$('#powered-cache-import-file-input').val('').trigger('change');
 	});
 
-	$('#js_execution_method').on('change', function (e) {
-		if ('blocking' !== $(this).val()) {
+	$('#js_execution_method').on('change', function () {
+		if ($(this).val() !== 'blocking') {
 			$('#js_execution_exclusions_field').show();
 		} else {
 			$('#js_execution_exclusions_field').hide();
@@ -113,19 +114,17 @@ import './modules/modal';
 
 	$('#js_delay').on('change', function () {
 		if ($(this).is(':checked')) {
-			$('#combine_js').prop("checked", false).prop("disabled", true);
-		}else{
-			if( $('#minify_js').is(':checked') ){
-				$('#combine_js').prop("disabled", false);
-			}
+			$('#combine_js').prop('checked', false).prop('disabled', true);
+		} else if ($('#minify_js').is(':checked')) {
+			$('#combine_js').prop('disabled', false);
 		}
 	});
 
 	$('#minify_js').on('change', function () {
 		if ($(this).is(':checked') && !$('#js_delay').is(':checked')) {
-			$('#combine_js').prop("disabled", false);
-		}else{
-			$('#combine_js').prop("disabled", true);
+			$('#combine_js').prop('disabled', false);
+		} else {
+			$('#combine_js').prop('disabled', true);
 		}
 	});
 
@@ -133,15 +132,15 @@ import './modules/modal';
 		// Check if new selection is memcached or memcache
 		if ($(this).val() === 'memcached' || $(this).val() === 'memcache') {
 			$.ajax({
-				url   : ajaxurl,
+				url: ajaxurl,
 				method: 'post',
-				data  : {
-					nonce : $('#powered_cache_settings_nonce').val(),
+				data: {
+					nonce: $('#powered_cache_settings_nonce').val(),
 					action: 'powered_cache_check_alloptions',
 				},
 				success(response) {
 					if (response.success && response.data.status) {
-						let $alloptionsContainer = $('#object_cache_alloptions_message');
+						const $alloptionsContainer = $('#object_cache_alloptions_message');
 
 						if (response.data.status === 'success') {
 							return;
@@ -155,7 +154,8 @@ import './modules/modal';
 
 						$alloptionsContainer.addClass(statusClass);
 
-						let message = '<span class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></span>';
+						let message =
+							'<span class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></span>';
 						message += response.data.message;
 
 						$alloptionsContainer.find('.sui-notice-message').html(message);
@@ -168,6 +168,4 @@ import './modules/modal';
 			$('#object_cache_alloptions_message').hide();
 		}
 	});
-
-
 })(jQuery);
