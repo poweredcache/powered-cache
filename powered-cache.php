@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // Useful global constants.
 define( 'POWERED_CACHE_VERSION', '3.7.3' );
-define( 'POWERED_CACHE_DB_VERSION', '3.4' );
+define( 'POWERED_CACHE_DB_VERSION', '4.0' );
 define( 'POWERED_CACHE_PLUGIN_FILE', __FILE__ );
 define( 'POWERED_CACHE_URL', plugin_dir_url( __FILE__ ) );
 define( 'POWERED_CACHE_PATH', plugin_dir_path( __FILE__ ) );

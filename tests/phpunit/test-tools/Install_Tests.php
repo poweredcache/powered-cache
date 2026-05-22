@@ -9,6 +9,10 @@ namespace PoweredCache;
 
 // phpcs:disable Generic.Files.OneObjectStructurePerFile.MultipleFound
 
+if ( ! defined( __NAMESPACE__ . '\POWERED_CACHE_DB_VERSION' ) ) {
+	define( __NAMESPACE__ . '\POWERED_CACHE_DB_VERSION', '4.0' );
+}
+
 /**
  * Install test case.
  */
@@ -126,6 +130,56 @@ class Install_Tests extends TestCase {
 		$this->assertTrue( $install->saved_settings[0]['network_wide'] );
 		$this->assertSame( 'utm_campaign', $install->saved_settings[0]['settings']['ignored_query_strings'] );
 	}
+
+	/**
+	 * It runs 4.0 migration from the normal single-site upgrade entrypoint.
+	 */
+	public function test_maybe_upgrade_runs_40_migration_and_updates_db_version() {
+		\WP_Mock::userFunction(
+			'get_option',
+			array(
+				'times'  => 3,
+				'return' => function ( $option, $default = false ) {
+					if ( \PoweredCache\Constants\DB_VERSION_OPTION_NAME === $option ) {
+						return '3.7.3';
+					}
+
+					$this->assertSame( \PoweredCache\Constants\SETTING_OPTION, $option );
+					$this->assertSame( array(), $default );
+
+					return array(
+						'accepted_query_strings' => 'utm_source',
+					);
+				},
+			)
+		);
+
+		\WP_Mock::userFunction(
+			'PoweredCache\Utils\log',
+			array(
+				'times' => 2,
+			)
+		);
+
+		\WP_Mock::userFunction(
+			'update_option',
+			array(
+				'times'  => 1,
+				'return' => function ( $option, $value ) {
+					$this->assertSame( \PoweredCache\Constants\DB_VERSION_OPTION_NAME, $option );
+					$this->assertSame( POWERED_CACHE_DB_VERSION, $value );
+
+					return true;
+				},
+			)
+		);
+
+		$install = new Testable_Install();
+		$install->maybe_upgrade();
+
+		$this->assertCount( 1, $install->saved_settings );
+		$this->assertSame( 'utm_source', $install->saved_settings[0]['settings']['ignored_query_strings'] );
+	}
 }
 
 /**
@@ -139,6 +193,22 @@ class Testable_Install extends Install {
 	 * @var array
 	 */
 	public $saved_settings = array();
+
+	// Skip earlier migration routines so entrypoint coverage can isolate 4.0 behavior.
+	public function maybe_migrate_from_1x() {
+	}
+
+	public function upgrade_30( $network_wide = false ) {
+	}
+
+	public function upgrade_32( $network_wide = false ) {
+	}
+
+	public function upgrade_33( $network_wide = false ) {
+	}
+
+	public function upgrade_34( $network_wide = false ) {
+	}
 
 	/**
 	 * Capture settings saves without touching filesystem-backed configuration.
