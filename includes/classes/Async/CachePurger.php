@@ -18,6 +18,9 @@ use function PoweredCache\Utils\powered_cache_flush;
  */
 class CachePurger extends Powered_Cache_WP_Background_Process {
 
+	const ACTION_SCHEDULER_HOOK  = 'powered_cache_action_scheduler_cache_purge';
+	const ACTION_SCHEDULER_GROUP = 'powered-cache';
+
 	/**
 	 * Plugin settings
 	 *
@@ -31,6 +34,83 @@ class CachePurger extends Powered_Cache_WP_Background_Process {
 	 * @var $action
 	 */
 	protected $action = 'powered_cache_purger';
+
+	/**
+	 * Constructor.
+	 *
+	 * @param bool|array $allowed_batch_data_classes Optional batch data classes.
+	 */
+	public function __construct( $allowed_batch_data_classes = true ) {
+		parent::__construct( $allowed_batch_data_classes );
+
+		add_action( self::ACTION_SCHEDULER_HOOK, array( $this, 'process_scheduled_item' ), 10, 1 );
+	}
+
+	/**
+	 * Push to the queue.
+	 *
+	 * @param mixed $data Data.
+	 *
+	 * @return $this
+	 */
+	public function push_to_queue( $data ) {
+		if ( $this->use_action_scheduler() ) {
+			$this->data[] = $data;
+
+			return $this;
+		}
+
+		return parent::push_to_queue( $data );
+	}
+
+	/**
+	 * Save queued items.
+	 *
+	 * Action Scheduler persists each action during dispatch.
+	 *
+	 * @return $this
+	 */
+	public function save() {
+		if ( $this->use_action_scheduler() ) {
+			return $this;
+		}
+
+		return parent::save();
+	}
+
+	/**
+	 * Dispatch queued cache purge items.
+	 *
+	 * @return mixed
+	 */
+	public function dispatch() {
+		if ( ! $this->use_action_scheduler() ) {
+			return parent::dispatch();
+		}
+
+		foreach ( $this->data as $item ) {
+			as_enqueue_async_action(
+				self::ACTION_SCHEDULER_HOOK,
+				array( $item ),
+				self::ACTION_SCHEDULER_GROUP
+			);
+		}
+
+		$this->data = array();
+
+		return true;
+	}
+
+	/**
+	 * Process one Action Scheduler cache purge item.
+	 *
+	 * @param mixed $item Queue item.
+	 *
+	 * @return void
+	 */
+	public function process_scheduled_item( $item ) {
+		$this->task( $item );
+	}
 
 	/**
 	 * Task
@@ -97,6 +177,12 @@ class CachePurger extends Powered_Cache_WP_Background_Process {
 	 * Try to cancel all items in the queue up to $max_attempt
 	 */
 	public function cancel_process() {
+		if ( $this->use_action_scheduler() ) {
+			as_unschedule_all_actions( self::ACTION_SCHEDULER_HOOK, null, self::ACTION_SCHEDULER_GROUP );
+
+			return;
+		}
+
 		$max_attempt = 5;
 		$cancelled   = 0;
 		while ( ! parent::is_queue_empty() ) {
@@ -113,8 +199,38 @@ class CachePurger extends Powered_Cache_WP_Background_Process {
 	 *
 	 * @return bool
 	 */
-	public function is_process_running() { // phpcs:ignore Generic.CodeAnalysis.UselessOverridingMethod.Found
+	public function is_process_running() {
+		if ( $this->use_action_scheduler() && function_exists( 'as_has_scheduled_action' ) ) {
+			return as_has_scheduled_action( self::ACTION_SCHEDULER_HOOK, null, self::ACTION_SCHEDULER_GROUP );
+		}
+
 		return parent::is_processing();
+	}
+
+	/**
+	 * Determine whether Action Scheduler should process cache purge jobs.
+	 *
+	 * @return bool
+	 */
+	private function use_action_scheduler() {
+		$available = function_exists( 'as_enqueue_async_action' ) && function_exists( 'as_unschedule_all_actions' );
+
+		if ( $available && class_exists( '\Action_Scheduler' ) && method_exists( '\Action_Scheduler', 'is_initialized' ) && ! \Action_Scheduler::is_initialized() ) {
+			$available = false;
+		}
+
+		/**
+		 * Filter whether cache purge jobs should use Action Scheduler.
+		 *
+		 * @hook powered_cache_cache_purger_use_action_scheduler
+		 *
+		 * @param {bool} $available Whether Action Scheduler is available.
+		 *
+		 * @return {bool} New value.
+		 *
+		 * @since 4.0.0
+		 */
+		return (bool) apply_filters( 'powered_cache_cache_purger_use_action_scheduler', $available );
 	}
 
 	/**
