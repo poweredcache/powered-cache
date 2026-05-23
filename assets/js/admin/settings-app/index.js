@@ -1608,6 +1608,38 @@ const SettingsApp = () => {
 		};
 	}, [settings.object_cache]);
 
+	useEffect(() => {
+		const cssOptimization = premiumInfo.cssOptimization || {};
+		const services = Object.values(cssOptimization.services || {});
+		const hasProcessingService = services.some((service) => service.state === 'processing');
+
+		if (!cssOptimization.statusPath || !hasProcessingService) {
+			return undefined;
+		}
+
+		const abortController = new AbortController();
+		const intervalId = window.setInterval(() => {
+			apiFetch({
+				path: route(cssOptimization.statusPath),
+				signal: abortController.signal,
+			})
+				.then((response) => {
+					if (response && response.cssOptimization) {
+						setPremiumInfo((currentPremiumInfo) => ({
+							...currentPremiumInfo,
+							cssOptimization: response.cssOptimization,
+						}));
+					}
+				})
+				.catch(() => {});
+		}, 10000);
+
+		return () => {
+			abortController.abort();
+			window.clearInterval(intervalId);
+		};
+	}, [premiumInfo.cssOptimization]);
+
 	const sections = useMemo(() => {
 		if (!manifest) {
 			return [];
