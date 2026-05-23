@@ -533,7 +533,6 @@ const CssOptimizationPanel = ({
 		return null;
 	}
 
-	const actions = cssOptimization.actions || {};
 	const canGenerate = Boolean(cssOptimization.generatePath && onGenerate);
 	const stateLabel = {
 		good: __('Healthy', 'powered-cache'),
@@ -601,23 +600,23 @@ const CssOptimizationPanel = ({
 						{service.lastUrl && (
 							<p className="pc-settings-service-card__url">{service.lastUrl}</p>
 						)}
-						{(actions[serviceKey] || canGenerate) && (
-							<div className="pc-settings-service-card__actions">
-								<Button
-									disabled={generatingService === serviceKey}
-									href={!canGenerate ? actions[serviceKey] : undefined}
-									isBusy={generatingService === serviceKey}
-									onClick={
-										canGenerate
-											? () => onGenerate(serviceKey, service)
-											: undefined
+						<div className="pc-settings-service-card__actions">
+							<Button
+								disabled={!canGenerate || generatingService === serviceKey}
+								isBusy={generatingService === serviceKey}
+								onClick={(event) => {
+									event.preventDefault();
+
+									if (canGenerate) {
+										onGenerate(serviceKey, service);
 									}
-									variant="secondary"
-								>
-									{__('Regenerate', 'powered-cache')}
-								</Button>
-							</div>
-						)}
+								}}
+								type="button"
+								variant="secondary"
+							>
+								{__('Regenerate', 'powered-cache')}
+							</Button>
+						</div>
 					</div>
 				))}
 			</div>
