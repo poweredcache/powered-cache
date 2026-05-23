@@ -303,6 +303,11 @@
 	margin-top: 6px;
 }
 
+.pc-settings-service-health__sources {
+	font-size: 12px;
+	margin-top: 4px;
+}
+
 .pc-settings-service-health__grid {
 	column-gap: 14px;
 	display: grid;

@@ -405,6 +405,29 @@ const cssCompatibilityRuleCount = (compatibility = {}) =>
 		0,
 	);
 
+const cssCompatibilitySourceSummary = (compatibility = {}) => {
+	const sources = compatibility.sources || [];
+	const labels = sources
+		.map((source) => source.label)
+		.filter(Boolean)
+		.slice(0, 3);
+
+	if (!labels.length) {
+		return '';
+	}
+
+	const remaining = Math.max(0, sources.length - labels.length);
+
+	return remaining
+		? sprintf(
+				/* translators: 1: comma-separated source labels, 2: remaining source count. */
+				__('%1$s, and %2$d more', 'powered-cache'),
+				labels.join(', '),
+				remaining,
+			)
+		: labels.join(', ');
+};
+
 const formatTimestamp = (timestamp) => {
 	const value = parseInt(timestamp, 10);
 
@@ -544,6 +567,7 @@ const CssOptimizationPanel = ({
 	const compatibility = cssOptimization.compatibility || {};
 	const compatibilitySourceCount = (compatibility.sources || []).length;
 	const compatibilityRuleCount = cssCompatibilityRuleCount(compatibility);
+	const compatibilitySources = cssCompatibilitySourceSummary(compatibility);
 	const stateLabel = {
 		good: __('Healthy', 'powered-cache'),
 		processing: __('Processing', 'powered-cache'),
@@ -567,17 +591,28 @@ const CssOptimizationPanel = ({
 						)}
 					</p>
 					{!!compatibilitySourceCount && !!compatibilityRuleCount && (
-						<p className="pc-settings-service-health__compatibility">
-							{sprintf(
-								/* translators: 1: number of compatibility rules, 2: number of active sources. */
-								__(
-									'Applying %1$d compatibility rules from %2$d active source(s).',
-									'powered-cache',
-								),
-								compatibilityRuleCount,
-								compatibilitySourceCount,
+						<>
+							<p className="pc-settings-service-health__compatibility">
+								{sprintf(
+									/* translators: 1: number of compatibility rules, 2: number of active sources. */
+									__(
+										'Applying %1$d compatibility rules from %2$d active source(s).',
+										'powered-cache',
+									),
+									compatibilityRuleCount,
+									compatibilitySourceCount,
+								)}
+							</p>
+							{compatibilitySources && (
+								<p className="pc-settings-service-health__sources">
+									{sprintf(
+										/* translators: %s: compatibility source labels. */
+										__('Active sources: %s', 'powered-cache'),
+										compatibilitySources,
+									)}
+								</p>
 							)}
-						</p>
+						</>
 					)}
 				</div>
 				<Button href={docsUrl} target="_blank" variant="secondary">
