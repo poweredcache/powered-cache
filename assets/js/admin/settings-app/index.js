@@ -521,14 +521,20 @@ const ImageDeliveryPanel = ({ imageDelivery = {} }) => {
 	);
 };
 
-const CssOptimizationPanel = ({ cssOptimization = {}, docsUrl = '#' }) => {
+const CssOptimizationPanel = ({
+	cssOptimization = {},
+	docsUrl = '#',
+	generatingService = '',
+	onGenerate = null,
+}) => {
 	const services = Object.entries(cssOptimization.services || {});
-	const actions = cssOptimization.actions || {};
 
 	if (!services.length) {
 		return null;
 	}
 
+	const actions = cssOptimization.actions || {};
+	const canGenerate = Boolean(cssOptimization.generatePath && onGenerate);
 	const stateLabel = {
 		good: __('Healthy', 'powered-cache'),
 		warning: __('Needs attention', 'powered-cache'),
@@ -594,9 +600,19 @@ const CssOptimizationPanel = ({ cssOptimization = {}, docsUrl = '#' }) => {
 						{service.lastUrl && (
 							<p className="pc-settings-service-card__url">{service.lastUrl}</p>
 						)}
-						{actions[serviceKey] && (
+						{(actions[serviceKey] || canGenerate) && (
 							<div className="pc-settings-service-card__actions">
-								<Button href={actions[serviceKey]} variant="secondary">
+								<Button
+									disabled={generatingService === serviceKey}
+									href={!canGenerate ? actions[serviceKey] : undefined}
+									isBusy={generatingService === serviceKey}
+									onClick={
+										canGenerate
+											? () => onGenerate(serviceKey, service)
+											: undefined
+									}
+									variant="secondary"
+								>
 									{__('Regenerate', 'powered-cache')}
 								</Button>
 							</div>
@@ -1428,6 +1444,7 @@ const SettingsApp = () => {
 	const [isSaving, setIsSaving] = useState(false);
 	const [notice, setNotice] = useState(null);
 	const [objectCacheNotice, setObjectCacheNotice] = useState(null);
+	const [generatingCssService, setGeneratingCssService] = useState('');
 
 	useEffect(() => {
 		Promise.all([
@@ -1656,6 +1673,53 @@ const SettingsApp = () => {
 			})
 			.finally(() => {
 				setIsSaving(false);
+			});
+	};
+
+	const generateCssOptimization = (serviceKey, service = {}) => {
+		const premiumInfo = appConfig.premium || {};
+		const cssOptimization = premiumInfo.cssOptimization || {};
+
+		if (!cssOptimization.generatePath) {
+			return;
+		}
+
+		setGeneratingCssService(serviceKey);
+		setNotice(null);
+
+		apiFetch({
+			path: route(cssOptimization.generatePath),
+			method: 'POST',
+			data: {
+				service: serviceKey,
+			},
+		})
+			.then((response) => {
+				setNotice({
+					status: 'success',
+					message:
+						(response && response.message) ||
+						sprintf(
+							/* translators: %s: CSS optimization service label. */
+							__('%s generation has started.', 'powered-cache'),
+							service.label || labelFromKey(serviceKey),
+						),
+				});
+			})
+			.catch((error) => {
+				setNotice({
+					status: 'error',
+					message:
+						(error && error.message) ||
+						sprintf(
+							/* translators: %s: CSS optimization service label. */
+							__('%s generation could not be started.', 'powered-cache'),
+							service.label || labelFromKey(serviceKey),
+						),
+				});
+			})
+			.finally(() => {
+				setGeneratingCssService('');
 			});
 	};
 
@@ -1890,6 +1954,8 @@ const SettingsApp = () => {
 							<CssOptimizationPanel
 								cssOptimization={cssOptimization}
 								docsUrl={appConfig.docsUrl || '#'}
+								generatingService={generatingCssService}
+								onGenerate={generateCssOptimization}
 							/>
 						)}
 					{isLicenseSection ? (
