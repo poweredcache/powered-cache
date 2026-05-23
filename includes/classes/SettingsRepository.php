@@ -278,7 +278,7 @@ class SettingsRepository {
 	 *
 	 * @return array
 	 */
-	public function normalize( array $settings, array $defaults = null ) {
+	public function normalize( array $settings, ?array $defaults = null ) {
 		if ( null === $defaults ) {
 			$defaults = SettingsSchema::defaults( $this->context );
 		}

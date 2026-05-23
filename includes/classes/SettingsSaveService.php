@@ -38,7 +38,7 @@ class SettingsSaveService {
 	 * @param SettingsRepository|null $repository Settings repository.
 	 * @param bool                    $network_wide Whether settings use network storage.
 	 */
-	public function __construct( SettingsRepository $repository = null, $network_wide = false ) {
+	public function __construct( ?SettingsRepository $repository = null, $network_wide = false ) {
 		$this->network_wide = (bool) $network_wide;
 		$this->repository   = null === $repository ? SettingsRepository::factory( $this->network_wide ) : $repository;
 	}
@@ -51,7 +51,7 @@ class SettingsSaveService {
 	 *
 	 * @return SettingsSaveService
 	 */
-	public static function factory( SettingsRepository $repository = null, $network_wide = false ) {
+	public static function factory( ?SettingsRepository $repository = null, $network_wide = false ) {
 		return new self( $repository, $network_wide );
 	}
 
@@ -63,7 +63,7 @@ class SettingsSaveService {
 	 *
 	 * @return array Saved settings.
 	 */
-	public function save( array $settings, array $old_settings = null ) {
+	public function save( array $settings, ?array $old_settings = null ) {
 		if ( null === $old_settings ) {
 			$old_settings = $this->repository->all();
 		}
