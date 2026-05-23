@@ -399,6 +399,12 @@ const metricValue = (value, fallback = __('Not available', 'powered-cache')) => 
 	return value;
 };
 
+const queueMetricValue = (service) => {
+	const value = metricValue(service.queueCount, 0);
+
+	return service.queueCapped ? `${value}+` : value;
+};
+
 const cssCompatibilityRuleCount = (compatibility = {}) =>
 	Object.values(compatibility.counts || {}).reduce(
 		(total, count) => total + Number(count || 0),
@@ -682,7 +688,7 @@ const CssOptimizationPanel = ({
 								</div>
 								<div>
 									<dt>{__('Queued', 'powered-cache')}</dt>
-									<dd>{metricValue(service.queueCount, 0)}</dd>
+									<dd>{queueMetricValue(service)}</dd>
 								</div>
 							</dl>
 							{serviceMessage && (
