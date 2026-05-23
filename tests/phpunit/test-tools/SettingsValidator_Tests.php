@@ -34,9 +34,9 @@ class SettingsValidator_Tests extends TestCase {
 	}
 
 	/**
-	 * It reports inactive dependency values.
+	 * It ignores values for settings whose parent toggle is disabled.
 	 */
-	public function test_reports_inactive_dependency_values() {
+	public function test_ignores_inactive_dependency_values() {
 		$validator = new SettingsValidator( array(), true );
 		$report    = $validator->report(
 			array(
@@ -47,13 +47,11 @@ class SettingsValidator_Tests extends TestCase {
 		);
 
 		$this->assertTrue( $report['valid'] );
-		$this->assertSame( 2, $report['counts'][ SettingsValidator::SEVERITY_WARNING ] );
-		$this->assertIssueExists( 'lazy_load_exclusions', 'inactive_dependency', $report['issues'] );
-		$this->assertIssueExists( 'lazy_load_youtube', 'inactive_dependency', $report['issues'] );
+		$this->assertSame( 0, $report['counts'][ SettingsValidator::SEVERITY_WARNING ] );
 	}
 
 	/**
-	 * It ignores CDN zone placeholders when no hostname is configured.
+	 * It ignores CDN zone placeholders when CDN delivery is disabled.
 	 */
 	public function test_ignores_empty_cdn_zone_placeholders() {
 		$validator = new SettingsValidator( array(), true );

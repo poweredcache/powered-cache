@@ -176,17 +176,6 @@ class SettingsValidator {
 			);
 		}
 
-		foreach ( $field['dependencies'] as $dependency ) {
-			if ( empty( $settings[ $dependency ] ) && $this->has_inactive_dependency_value( $key, $value, $field ) ) {
-				$issues[] = $this->issue(
-					$key,
-					self::SEVERITY_WARNING,
-					'inactive_dependency',
-					'This setting has a value but its parent setting is disabled.'
-				);
-			}
-		}
-
 		return $issues;
 	}
 
@@ -302,39 +291,6 @@ class SettingsValidator {
 		}
 
 		return '' !== (string) $value;
-	}
-
-	/**
-	 * Determine whether a field differs from its default with a meaningful value.
-	 *
-	 * @param mixed $value Setting value.
-	 * @param array $field Schema field.
-	 *
-	 * @return bool
-	 */
-	private function has_custom_value( $value, array $field ) {
-		if ( $value === $field['default'] ) {
-			return false;
-		}
-
-		return $this->has_value( $value, $field );
-	}
-
-	/**
-	 * Determine whether a dependency-disabled field should be reported.
-	 *
-	 * @param string $key      Setting key.
-	 * @param mixed  $value    Setting value.
-	 * @param array  $field    Schema field.
-	 *
-	 * @return bool
-	 */
-	private function has_inactive_dependency_value( $key, $value, array $field ) {
-		if ( 'cdn_zone' === $key ) {
-			return false;
-		}
-
-		return $this->has_custom_value( $value, $field );
 	}
 
 	/**
