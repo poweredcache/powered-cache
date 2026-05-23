@@ -81,6 +81,7 @@ class SettingsManifest_Tests extends TestCase {
 		$this->assertSame( array( 'redis', 'apcu' ), array_slice( $fields['object_cache']['enum'], -2 ) );
 		$this->assertSame( 'Redis', $fields['object_cache']['enum_labels']['redis'] );
 		$this->assertSame( 'select', $fields['object_cache']['control'] );
+		$this->assertSame( 'object-caching', $fields['object_cache']['docs_path'] );
 		$this->assertSame( 'duration', $fields['cache_timeout']['control'] );
 		$this->assertSame( 'Set how long cached pages stay fresh.', $fields['cache_timeout']['description'] );
 		$this->assertSame( 'Create separate cache variants when these cookies are present.', $fields['vary_cookies']['description'] );
@@ -164,6 +165,24 @@ class SettingsManifest_Tests extends TestCase {
 		$this->assertArrayHasKey( 'description', $sections['cache'] );
 		$this->assertNotEmpty( $sections['cache']['description'] );
 		$this->assertSame( 'Tools', $sections['misc']['label'] );
+	}
+
+	/**
+	 * It explains when no persistent object cache backend is available.
+	 */
+	public function test_object_cache_description_explains_missing_runtime_backends() {
+		$fields = SettingsManifest::fields(
+			array(
+				'is_apache'             => false,
+				'object_cache_backends' => array(),
+			)
+		);
+
+		$this->assertSame( array( 'off' ), $fields['object_cache']['enum'] );
+		$this->assertSame(
+			'No supported persistent object cache PHP extension was detected on this server.',
+			$fields['object_cache']['description']
+		);
 	}
 
 	/**

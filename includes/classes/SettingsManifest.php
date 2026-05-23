@@ -233,6 +233,10 @@ class SettingsManifest {
 			$metadata = array_merge( $metadata, $overrides[ $key ] );
 		}
 
+		if ( 'object_cache' === $key && array( 'off' ) === array_values( $field['enum'] ) ) {
+			$metadata['description'] = 'No supported persistent object cache PHP extension was detected on this server.';
+		}
+
 		return $metadata;
 	}
 
@@ -253,6 +257,7 @@ class SettingsManifest {
 				'label'       => 'Object Cache',
 				'description' => 'Use a persistent object cache backend for dynamic WordPress data.',
 				'group'       => 'Core cache',
+				'docs_path'   => 'object-caching',
 			),
 			'cache_mobile'                   => array(
 				'label'         => 'Mobile Cache',
