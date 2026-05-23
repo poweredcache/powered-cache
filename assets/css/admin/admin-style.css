@@ -718,6 +718,13 @@
 	width: 100%;
 }
 
+.pc-settings-duration-control .components-text-control__input,
+.pc-settings-duration-control .components-select-control__input {
+	box-sizing: border-box;
+	min-height: 40px;
+	width: 100%;
+}
+
 .pc-settings-cdn-routes {
 	display: flex;
 	flex-direction: column;
