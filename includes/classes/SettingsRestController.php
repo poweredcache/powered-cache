@@ -222,6 +222,10 @@ class SettingsRestController {
 			'object_cache_has_problem' => defined( 'POWERED_OBJECT_CACHE_HAS_PROBLEM' ) && POWERED_OBJECT_CACHE_HAS_PROBLEM,
 		);
 
+		if ( function_exists( '\PoweredCache\Utils\get_available_object_caches' ) ) {
+			$context['object_cache_backends'] = \PoweredCache\Utils\get_available_object_caches();
+		}
+
 		if ( defined( 'WP_CONTENT_DIR' ) ) {
 			$context['object_cache_dropin_exists'] = file_exists( rtrim( WP_CONTENT_DIR, '/\\' ) . '/object-cache.php' );
 		}

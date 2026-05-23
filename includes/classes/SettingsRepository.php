@@ -442,8 +442,14 @@ class SettingsRepository {
 	private function default_context() {
 		global $is_apache;
 
-		return array(
+		$context = array(
 			'is_apache' => (bool) $is_apache,
 		);
+
+		if ( function_exists( '\PoweredCache\Utils\get_available_object_caches' ) ) {
+			$context['object_cache_backends'] = \PoweredCache\Utils\get_available_object_caches();
+		}
+
+		return $context;
 	}
 }

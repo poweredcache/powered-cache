@@ -39,11 +39,13 @@ class SettingsSchema {
 	 * @return array<string,array<string,mixed>>
 	 */
 	public static function fields( array $context = array() ) {
-		$is_apache = isset( $context['is_apache'] ) ? (bool) $context['is_apache'] : false;
+		$is_apache                 = isset( $context['is_apache'] ) ? (bool) $context['is_apache'] : false;
+		$object_cache_backends     = self::object_cache_backends( $context );
+		$object_cache_backend_enum = array_merge( array( 'off' ), $object_cache_backends );
 
 		return array(
 			'enable_page_cache'                => self::field( self::TYPE_BOOLEAN, true, 'cache', self::SANITIZE_BOOLEAN ),
-			'object_cache'                     => self::field( self::TYPE_ENUM, 'off', 'cache', self::SANITIZE_ENUM, false, array(), array( 'off', 'memcache', 'memcached', 'redis', 'apcu' ) ),
+			'object_cache'                     => self::field( self::TYPE_ENUM, 'off', 'cache', self::SANITIZE_ENUM, false, array(), $object_cache_backend_enum ),
 			'cache_mobile'                     => self::field( self::TYPE_BOOLEAN, true, 'cache', self::SANITIZE_BOOLEAN ),
 			'cache_mobile_separate_file'       => self::field( self::TYPE_BOOLEAN, false, 'cache', self::SANITIZE_BOOLEAN, false, array( 'cache_mobile' ) ),
 			'loggedin_user_cache'              => self::field( self::TYPE_BOOLEAN, false, 'cache', self::SANITIZE_BOOLEAN ),
@@ -280,6 +282,33 @@ class SettingsSchema {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Return object cache backends supported by the current PHP runtime.
+	 *
+	 * @param array $context Runtime context used by dynamic defaults.
+	 *
+	 * @return array<string>
+	 */
+	private static function object_cache_backends( array $context = array() ) {
+		if ( isset( $context['object_cache_backends'] ) && is_array( $context['object_cache_backends'] ) ) {
+			$backends = $context['object_cache_backends'];
+		} elseif ( function_exists( '\PoweredCache\Utils\get_available_object_caches' ) ) {
+			$backends = \PoweredCache\Utils\get_available_object_caches();
+		} else {
+			$backends = array( 'memcache', 'memcached', 'redis', 'apcu' );
+		}
+
+		$backends = array_map( 'strval', $backends );
+		$backends = array_filter(
+			$backends,
+			static function ( $backend ) {
+				return '' !== $backend && 'off' !== $backend;
+			}
+		);
+
+		return array_values( array_unique( $backends ) );
 	}
 
 	/**

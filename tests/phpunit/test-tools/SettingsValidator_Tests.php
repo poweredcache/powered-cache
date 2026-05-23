@@ -169,6 +169,7 @@ class SettingsValidator_Tests extends TestCase {
 			array(
 				'object_cache_dropin_exists' => false,
 				'object_cache_has_problem'   => true,
+				'object_cache_backends'      => array( 'redis' ),
 			),
 			true
 		);

@@ -110,13 +110,19 @@ class SettingsRepository_Tests extends TestCase {
 	 * It sanitizes schema-known fields without dropping unknown keys.
 	 */
 	public function test_sanitize_uses_schema_metadata_and_preserves_unknown_keys() {
-		$repository = SettingsRepository::factory( false, array( 'is_apache' => false ) );
+		$repository = SettingsRepository::factory(
+			false,
+			array(
+				'is_apache'             => false,
+				'object_cache_backends' => array( 'redis' ),
+			)
+		);
 
 		$settings = $repository->sanitize(
 			array(
 				'enable_page_cache'       => '1',
 				'cache_timeout'           => '-45',
-				'object_cache'            => 'invalid-cache',
+				'object_cache'            => 'memcached',
 				'cdn_hostname'            => array( ' cdn.example.com ', '<b>assets.example.com</b>' ),
 				'rejected_uri'            => "<script>alert('x')</script>\n/cart/",
 				'custom_legacy_key'       => '<b>untouched</b>',

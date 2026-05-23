@@ -59,7 +59,12 @@ class SettingsManifest_Tests extends TestCase {
 	 * It exposes schema fields in UI/API friendly shape.
 	 */
 	public function test_fields_include_schema_metadata() {
-		$fields = SettingsManifest::fields( array( 'is_apache' => false ) );
+		$fields = SettingsManifest::fields(
+			array(
+				'is_apache'             => false,
+				'object_cache_backends' => array( 'memcache', 'memcached', 'redis', 'apcu' ),
+			)
+		);
 
 		$this->assertSame( 'enable_page_cache', $fields['enable_page_cache']['key'] );
 		$this->assertSame( 'Page Cache', $fields['enable_page_cache']['label'] );

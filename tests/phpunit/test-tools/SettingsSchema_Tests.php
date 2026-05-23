@@ -85,7 +85,12 @@ class SettingsSchema_Tests extends TestCase {
 	 * It exposes critical field metadata for consumers.
 	 */
 	public function test_critical_settings_have_expected_metadata() {
-		$fields = SettingsSchema::fields( array( 'is_apache' => false ) );
+		$fields = SettingsSchema::fields(
+			array(
+				'is_apache'             => false,
+				'object_cache_backends' => array( 'memcache', 'memcached', 'redis', 'apcu' ),
+			)
+		);
 
 		$this->assertSame( SettingsSchema::TYPE_BOOLEAN, $fields['enable_page_cache']['type'] );
 		$this->assertSame( 'cache', $fields['enable_page_cache']['section'] );
@@ -109,6 +114,20 @@ class SettingsSchema_Tests extends TestCase {
 		$this->assertContains( 'js_delay', $fields['js_delay_timeout']['dependencies'] );
 		$this->assertTrue( $fields['js_execution_method']['deprecated'] );
 		$this->assertContains( 'delayed', $fields['js_execution_method']['enum'] );
+	}
+
+	/**
+	 * It limits object cache choices to supported PHP drivers.
+	 */
+	public function test_object_cache_enum_uses_supported_runtime_backends() {
+		$fields = SettingsSchema::fields(
+			array(
+				'is_apache'             => false,
+				'object_cache_backends' => array( 'redis' ),
+			)
+		);
+
+		$this->assertSame( array( 'off', 'redis' ), $fields['object_cache']['enum'] );
 	}
 
 	/**
