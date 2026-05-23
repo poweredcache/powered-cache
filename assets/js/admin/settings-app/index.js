@@ -632,6 +632,18 @@ const CssOptimizationPanel = ({
 						service.enabled === false ||
 						!settingEnabled ||
 						generatingService === serviceKey;
+					const queueMessage =
+						service.queueCount > 0
+							? sprintf(
+									/* translators: 1: pending queue count, 2: running queue count. */
+									__(
+										'%1$d queued item(s), %2$d currently running.',
+										'powered-cache',
+									),
+									Number(service.pendingCount || 0),
+									Number(service.runningCount || 0),
+								)
+							: '';
 					const serviceMessage =
 						service.unavailableMessage ||
 						(service.enabled === false || !settingEnabled
@@ -640,7 +652,7 @@ const CssOptimizationPanel = ({
 									'Enable and save the related setting before regenerating.',
 									'powered-cache',
 								)
-							: service.lastMessage);
+							: queueMessage || service.lastMessage);
 
 					return (
 						<div
