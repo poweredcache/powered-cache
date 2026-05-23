@@ -333,6 +333,16 @@ const metricValue = (value, fallback = __('Not available', 'powered-cache')) => 
 	return value;
 };
 
+const formatTimestamp = (timestamp) => {
+	const value = parseInt(timestamp, 10);
+
+	if (!value) {
+		return __('Not run yet', 'powered-cache');
+	}
+
+	return new Date(value * 1000).toLocaleString();
+};
+
 const ImageDeliveryPanel = ({ imageDelivery = {} }) => {
 	const stats = imageDelivery.stats || {};
 	const hasStats = !!stats.available;
@@ -440,6 +450,85 @@ const ImageDeliveryPanel = ({ imageDelivery = {} }) => {
 						</p>
 					)}
 				</div>
+			</div>
+		</section>
+	);
+};
+
+const CssOptimizationPanel = ({ cssOptimization = {}, docsUrl = '#' }) => {
+	const services = Object.entries(cssOptimization.services || {});
+
+	if (!services.length) {
+		return null;
+	}
+
+	const stateLabel = {
+		good: __('Healthy', 'powered-cache'),
+		warning: __('Needs attention', 'powered-cache'),
+		idle: __('Waiting for first run', 'powered-cache'),
+	};
+
+	return (
+		<section className="pc-settings-service-health">
+			<div className="pc-settings-service-health__header">
+				<div>
+					<span className="pc-settings-badge">
+						{__('Optimization services', 'powered-cache')}
+					</span>
+					<h3>{__('CSS Optimization Status', 'powered-cache')}</h3>
+					<p>
+						{__(
+							'Track the latest Critical CSS and Used CSS generation results without storing page HTML or CSS payloads.',
+							'powered-cache',
+						)}
+					</p>
+				</div>
+				<Button href={docsUrl} target="_blank" variant="secondary">
+					{__('Troubleshooting', 'powered-cache')}
+				</Button>
+			</div>
+			<div className="pc-settings-service-health__grid">
+				{services.map(([serviceKey, service]) => (
+					<div
+						className={`pc-settings-service-card pc-settings-service-card--${
+							service.state || 'idle'
+						}`}
+						key={serviceKey}
+					>
+						<div className="pc-settings-service-card__title">
+							<strong>{service.label || labelFromKey(serviceKey)}</strong>
+							<span
+								className={`pc-settings-status-pill pc-settings-status-pill--${
+									service.state || 'idle'
+								}`}
+							>
+								{stateLabel[service.state] || stateLabel.idle}
+							</span>
+						</div>
+						<dl>
+							<div>
+								<dt>{__('Last run', 'powered-cache')}</dt>
+								<dd>{formatTimestamp(service.lastRun)}</dd>
+							</div>
+							<div>
+								<dt>{__('Successful runs', 'powered-cache')}</dt>
+								<dd>{metricValue(service.successCount, 0)}</dd>
+							</div>
+							<div>
+								<dt>{__('Errors', 'powered-cache')}</dt>
+								<dd>{metricValue(service.errorCount, 0)}</dd>
+							</div>
+						</dl>
+						{service.lastMessage && (
+							<p className="pc-settings-service-card__message">
+								{service.lastMessage}
+							</p>
+						)}
+						{service.lastUrl && (
+							<p className="pc-settings-service-card__url">{service.lastUrl}</p>
+						)}
+					</div>
+				))}
 			</div>
 		</section>
 	);
@@ -1442,6 +1531,7 @@ const SettingsApp = () => {
 	const premiumFields = Object.values(manifest.fields || {}).filter((field) => field.premium);
 	const premiumInfo = appConfig.premium || {};
 	const imageDelivery = premiumInfo.imageDelivery || null;
+	const cssOptimization = premiumInfo.cssOptimization || null;
 	const validationIssuesByKey = issuesByKey(validation);
 	const isLicenseSection = activeSection === 'license' && !!premiumInfo.licenseForm;
 	const enabledCoreCount = [
@@ -1633,6 +1723,14 @@ const SettingsApp = () => {
 					{appConfig.isPremium && imageDelivery && activeSection === 'media' && (
 						<ImageDeliveryPanel imageDelivery={imageDelivery} />
 					)}
+					{appConfig.isPremium &&
+						cssOptimization &&
+						activeSection === 'file_optimization' && (
+							<CssOptimizationPanel
+								cssOptimization={cssOptimization}
+								docsUrl={appConfig.docsUrl || '#'}
+							/>
+						)}
 					{isLicenseSection ? (
 						<LicenseSection section={activeSectionData} premiumInfo={premiumInfo} />
 					) : (

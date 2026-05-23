@@ -262,6 +262,110 @@
 	margin-top: 6px;
 }
 
+.pc-settings-service-health {
+	background: var(--pc-admin-white);
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	margin: 0 0 14px;
+	overflow: hidden;
+}
+
+.pc-settings-service-health__header {
+	align-items: center;
+	border-bottom: 1px solid #f0f0f1;
+	display: flex;
+	gap: 18px;
+	justify-content: space-between;
+	padding: 18px 20px;
+}
+
+.pc-settings-service-health h3 {
+	font-size: 20px;
+	line-height: 1.3;
+	margin: 8px 0 6px;
+}
+
+.pc-settings-service-health p {
+	color: var(--pc-admin-muted);
+	font-size: 13px;
+	line-height: 1.5;
+	margin: 0;
+}
+
+.pc-settings-service-health__grid {
+	column-gap: 14px;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	padding: 18px 20px;
+	row-gap: 14px;
+}
+
+.pc-settings-service-card {
+	background: #f6f7f7;
+	border: 1px solid #dcdcde;
+	border-left: 4px solid #8c8f94;
+	border-radius: 6px;
+	padding: 14px;
+}
+
+.pc-settings-service-card--good {
+	border-left-color: var(--pc-admin-good);
+}
+
+.pc-settings-service-card--warning {
+	border-left-color: var(--pc-admin-warning-border);
+}
+
+.pc-settings-service-card--idle {
+	border-left-color: var(--pc-admin-primary);
+}
+
+.pc-settings-service-card__title {
+	align-items: center;
+	display: flex;
+	gap: 10px;
+	justify-content: space-between;
+}
+
+.pc-settings-service-card__title strong {
+	font-size: 15px;
+}
+
+.pc-settings-service-card dl {
+	column-gap: 10px;
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	margin: 14px 0 0;
+	row-gap: 10px;
+}
+
+.pc-settings-service-card dt {
+	color: var(--pc-admin-muted);
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+}
+
+.pc-settings-service-card dd {
+	font-size: 13px;
+	font-weight: 600;
+	margin: 4px 0 0;
+}
+
+.pc-settings-service-card__message {
+	background: #fff8e5;
+	border-left: 3px solid var(--pc-admin-warning-border);
+	color: var(--pc-admin-warning);
+	margin-top: 12px !important;
+	padding: 8px 10px;
+}
+
+.pc-settings-service-card__url {
+	font-family: Consolas, Monaco, monospace;
+	margin-top: 10px !important;
+	overflow-wrap: anywhere;
+}
+
 .pc-settings-upgrade-panel {
 	align-items: center;
 	background: linear-gradient(135deg, #f6f0ff 0%, #fff 70%);
@@ -827,7 +931,17 @@
 	.pc-settings-layout,
 	.pc-settings-field,
 	.pc-settings-delivery-card,
-	.pc-settings-delivery-card__details {
+	.pc-settings-delivery-card__details,
+	.pc-settings-service-health__grid {
+		grid-template-columns: 1fr;
+	}
+
+	.pc-settings-service-health__header {
+		align-items: stretch;
+		flex-direction: column;
+	}
+
+	.pc-settings-service-card dl {
 		grid-template-columns: 1fr;
 	}
 
