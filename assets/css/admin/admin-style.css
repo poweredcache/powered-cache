@@ -222,6 +222,13 @@
 	background: #f6f7f7;
 }
 
+.pc-settings-status-pill--warning,
+.pc-settings-status-pill--unavailable {
+	background: #fcf9e8;
+	border-color: var(--pc-admin-warning-border);
+	color: var(--pc-admin-warning);
+}
+
 .pc-settings-status-pill--plan {
 	background: #f0f6fc;
 	color: var(--pc-admin-primary-dark);
@@ -313,6 +320,10 @@
 }
 
 .pc-settings-service-card--warning {
+	border-left-color: var(--pc-admin-warning-border);
+}
+
+.pc-settings-service-card--unavailable {
 	border-left-color: var(--pc-admin-warning-border);
 }
 

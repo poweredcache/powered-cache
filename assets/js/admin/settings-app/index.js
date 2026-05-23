@@ -538,6 +538,7 @@ const CssOptimizationPanel = ({
 		good: __('Healthy', 'powered-cache'),
 		processing: __('Processing', 'powered-cache'),
 		warning: __('Needs attention', 'powered-cache'),
+		unavailable: __('Unavailable', 'powered-cache'),
 		idle: __('Waiting for first run', 'powered-cache'),
 	};
 
@@ -561,68 +562,69 @@ const CssOptimizationPanel = ({
 				</Button>
 			</div>
 			<div className="pc-settings-service-health__grid">
-				{services.map(([serviceKey, service]) => (
-					<div
-						className={`pc-settings-service-card pc-settings-service-card--${
-							service.state || 'idle'
-						}`}
-						key={serviceKey}
-					>
-						<div className="pc-settings-service-card__title">
-							<strong>{service.label || labelFromKey(serviceKey)}</strong>
-							<span
-								className={`pc-settings-status-pill pc-settings-status-pill--${
-									service.state || 'idle'
-								}`}
-							>
-								{stateLabel[service.state] || stateLabel.idle}
-							</span>
-						</div>
-						<dl>
-							<div>
-								<dt>{__('Last run', 'powered-cache')}</dt>
-								<dd>{formatTimestamp(service.lastRun)}</dd>
-							</div>
-							<div>
-								<dt>{__('Successful runs', 'powered-cache')}</dt>
-								<dd>{metricValue(service.successCount, 0)}</dd>
-							</div>
-							<div>
-								<dt>{__('Errors', 'powered-cache')}</dt>
-								<dd>{metricValue(service.errorCount, 0)}</dd>
-							</div>
-						</dl>
-						{(service.unavailableMessage || service.lastMessage) && (
-							<p className="pc-settings-service-card__message">
-								{service.unavailableMessage || service.lastMessage}
-							</p>
-						)}
-						{service.lastUrl && (
-							<p className="pc-settings-service-card__url">{service.lastUrl}</p>
-						)}
-						<div className="pc-settings-service-card__actions">
-							<Button
-								disabled={
-									!canGenerate ||
-									service.available === false ||
-									generatingService === serviceKey
-								}
-								isBusy={generatingService === serviceKey}
-								onClick={(event) => {
-									event.preventDefault();
+				{services.map(([serviceKey, service]) => {
+					const serviceState =
+						service.available === false ? 'unavailable' : service.state || 'idle';
 
-									if (canGenerate && service.available !== false) {
-										onGenerate(serviceKey, service);
+					return (
+						<div
+							className={`pc-settings-service-card pc-settings-service-card--${serviceState}`}
+							key={serviceKey}
+						>
+							<div className="pc-settings-service-card__title">
+								<strong>{service.label || labelFromKey(serviceKey)}</strong>
+								<span
+									className={`pc-settings-status-pill pc-settings-status-pill--${serviceState}`}
+								>
+									{stateLabel[serviceState] || stateLabel.idle}
+								</span>
+							</div>
+							<dl>
+								<div>
+									<dt>{__('Last run', 'powered-cache')}</dt>
+									<dd>{formatTimestamp(service.lastRun)}</dd>
+								</div>
+								<div>
+									<dt>{__('Successful runs', 'powered-cache')}</dt>
+									<dd>{metricValue(service.successCount, 0)}</dd>
+								</div>
+								<div>
+									<dt>{__('Errors', 'powered-cache')}</dt>
+									<dd>{metricValue(service.errorCount, 0)}</dd>
+								</div>
+							</dl>
+							{(service.unavailableMessage || service.lastMessage) && (
+								<p className="pc-settings-service-card__message">
+									{service.unavailableMessage || service.lastMessage}
+								</p>
+							)}
+							{service.lastUrl && (
+								<p className="pc-settings-service-card__url">{service.lastUrl}</p>
+							)}
+							<div className="pc-settings-service-card__actions">
+								<Button
+									disabled={
+										!canGenerate ||
+										service.available === false ||
+										generatingService === serviceKey
 									}
-								}}
-								type="button"
-								variant="secondary"
-							>
-								{__('Regenerate', 'powered-cache')}
-							</Button>
+									isBusy={generatingService === serviceKey}
+									onClick={(event) => {
+										event.preventDefault();
+
+										if (canGenerate && service.available !== false) {
+											onGenerate(serviceKey, service);
+										}
+									}}
+									type="button"
+									variant="secondary"
+								>
+									{__('Regenerate', 'powered-cache')}
+								</Button>
+							</div>
 						</div>
-					</div>
-				))}
+					);
+				})}
 			</div>
 		</section>
 	);
