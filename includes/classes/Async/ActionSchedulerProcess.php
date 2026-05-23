@@ -64,7 +64,7 @@ abstract class ActionSchedulerProcess {
 	 * @return bool
 	 */
 	public function dispatch() {
-		if ( ! function_exists( 'as_enqueue_async_action' ) ) {
+		if ( ! function_exists( 'as_enqueue_async_action' ) || ! $this->is_action_scheduler_ready() ) {
 			return false;
 		}
 
@@ -107,7 +107,7 @@ abstract class ActionSchedulerProcess {
 	 * @return void
 	 */
 	public function cancel_process() {
-		if ( ! function_exists( 'as_unschedule_all_actions' ) ) {
+		if ( ! function_exists( 'as_unschedule_all_actions' ) || ! $this->is_action_scheduler_ready() ) {
 			return;
 		}
 
@@ -130,7 +130,7 @@ abstract class ActionSchedulerProcess {
 	 * @return bool
 	 */
 	public function is_process_running() {
-		if ( ! function_exists( 'as_has_scheduled_action' ) ) {
+		if ( ! function_exists( 'as_has_scheduled_action' ) || ! $this->is_action_scheduler_ready() ) {
 			return false;
 		}
 
@@ -155,7 +155,7 @@ abstract class ActionSchedulerProcess {
 	 * @return array
 	 */
 	public function get_batches( $limit = 0 ) {
-		if ( ! function_exists( 'as_get_scheduled_actions' ) ) {
+		if ( ! function_exists( 'as_get_scheduled_actions' ) || ! $this->is_action_scheduler_ready() ) {
 			return array();
 		}
 
@@ -188,6 +188,19 @@ abstract class ActionSchedulerProcess {
 	 */
 	public function should_continue() {
 		return true;
+	}
+
+	/**
+	 * Whether Action Scheduler can safely accept API calls.
+	 *
+	 * @return bool
+	 */
+	protected function is_action_scheduler_ready() {
+		if ( ! class_exists( '\ActionScheduler', false ) || ! method_exists( '\ActionScheduler', 'is_initialized' ) ) {
+			return true;
+		}
+
+		return \ActionScheduler::is_initialized();
 	}
 
 	/**
