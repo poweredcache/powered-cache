@@ -592,9 +592,9 @@ const CssOptimizationPanel = ({
 								<dd>{metricValue(service.errorCount, 0)}</dd>
 							</div>
 						</dl>
-						{service.lastMessage && (
+						{(service.unavailableMessage || service.lastMessage) && (
 							<p className="pc-settings-service-card__message">
-								{service.lastMessage}
+								{service.unavailableMessage || service.lastMessage}
 							</p>
 						)}
 						{service.lastUrl && (
@@ -602,12 +602,16 @@ const CssOptimizationPanel = ({
 						)}
 						<div className="pc-settings-service-card__actions">
 							<Button
-								disabled={!canGenerate || generatingService === serviceKey}
+								disabled={
+									!canGenerate ||
+									service.available === false ||
+									generatingService === serviceKey
+								}
 								isBusy={generatingService === serviceKey}
 								onClick={(event) => {
 									event.preventDefault();
 
-									if (canGenerate) {
+									if (canGenerate && service.available !== false) {
 										onGenerate(serviceKey, service);
 									}
 								}}
