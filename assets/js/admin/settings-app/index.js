@@ -457,6 +457,7 @@ const ImageDeliveryPanel = ({ imageDelivery = {} }) => {
 
 const CssOptimizationPanel = ({ cssOptimization = {}, docsUrl = '#' }) => {
 	const services = Object.entries(cssOptimization.services || {});
+	const actions = cssOptimization.actions || {};
 
 	if (!services.length) {
 		return null;
@@ -526,6 +527,13 @@ const CssOptimizationPanel = ({ cssOptimization = {}, docsUrl = '#' }) => {
 						)}
 						{service.lastUrl && (
 							<p className="pc-settings-service-card__url">{service.lastUrl}</p>
+						)}
+						{actions[serviceKey] && (
+							<div className="pc-settings-service-card__actions">
+								<Button href={actions[serviceKey]} variant="secondary">
+									{__('Regenerate', 'powered-cache')}
+								</Button>
+							</div>
 						)}
 					</div>
 				))}

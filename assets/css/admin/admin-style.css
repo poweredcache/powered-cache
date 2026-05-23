@@ -366,6 +366,12 @@
 	overflow-wrap: anywhere;
 }
 
+.pc-settings-service-card__actions {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: 14px;
+}
+
 .pc-settings-upgrade-panel {
 	align-items: center;
 	background: linear-gradient(135deg, #f6f0ff 0%, #fff 70%);
