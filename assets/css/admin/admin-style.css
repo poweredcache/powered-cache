@@ -299,6 +299,10 @@
 	margin: 0;
 }
 
+.pc-settings-service-health__compatibility {
+	margin-top: 6px;
+}
+
 .pc-settings-service-health__grid {
 	column-gap: 14px;
 	display: grid;

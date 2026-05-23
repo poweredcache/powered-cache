@@ -399,6 +399,12 @@ const metricValue = (value, fallback = __('Not available', 'powered-cache')) => 
 	return value;
 };
 
+const cssCompatibilityRuleCount = (compatibility = {}) =>
+	Object.values(compatibility.counts || {}).reduce(
+		(total, count) => total + Number(count || 0),
+		0,
+	);
+
 const formatTimestamp = (timestamp) => {
 	const value = parseInt(timestamp, 10);
 
@@ -535,6 +541,9 @@ const CssOptimizationPanel = ({
 	}
 
 	const canGenerate = Boolean(cssOptimization.generatePath && onGenerate);
+	const compatibility = cssOptimization.compatibility || {};
+	const compatibilitySourceCount = (compatibility.sources || []).length;
+	const compatibilityRuleCount = cssCompatibilityRuleCount(compatibility);
 	const stateLabel = {
 		good: __('Healthy', 'powered-cache'),
 		processing: __('Processing', 'powered-cache'),
@@ -557,6 +566,19 @@ const CssOptimizationPanel = ({
 							'powered-cache',
 						)}
 					</p>
+					{!!compatibilitySourceCount && !!compatibilityRuleCount && (
+						<p className="pc-settings-service-health__compatibility">
+							{sprintf(
+								/* translators: 1: number of compatibility rules, 2: number of active sources. */
+								__(
+									'Applying %1$d compatibility rules from %2$d active source(s).',
+									'powered-cache',
+								),
+								compatibilityRuleCount,
+								compatibilitySourceCount,
+							)}
+						</p>
+					)}
 				</div>
 				<Button href={docsUrl} target="_blank" variant="secondary">
 					{__('Troubleshooting', 'powered-cache')}
