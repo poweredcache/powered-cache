@@ -162,7 +162,7 @@ class SettingsManifest {
 			'deprecated'    => (bool) $field['deprecated'],
 		);
 
-		foreach ( array( 'max', 'min', 'options', 'visible_when', 'zone_key', 'zone_options' ) as $metadata_key ) {
+		foreach ( array( 'docs_fragment', 'docs_path', 'max', 'min', 'options', 'visible_when', 'zone_key', 'zone_options' ) as $metadata_key ) {
 			if ( isset( $metadata[ $metadata_key ] ) ) {
 				$manifest[ $metadata_key ] = $metadata[ $metadata_key ];
 			}
@@ -271,6 +271,69 @@ class SettingsManifest {
 				'label'       => 'Cache Lifespan',
 				'description' => 'Set how long cached pages stay fresh.',
 				'group'       => 'Delivery',
+			),
+			'auto_configure_htaccess'        => array(
+				'label'         => '.htaccess Configuration',
+				'control_label' => 'Automatically configure .htaccess',
+				'description'   => 'Let Powered Cache write recommended Apache rewrite rules when settings change.',
+				'group'         => 'Server configuration',
+				'docs_path'     => 'rewrite-file-optimizer',
+			),
+			'rejected_user_agents'           => array(
+				'label'         => 'Rejected User Agents',
+				'description'   => 'Never serve cached pages to matching browsers, bots, or crawlers.',
+				'group'         => 'Cache exclusions',
+				'docs_path'     => '/advanced-options/',
+				'docs_fragment' => 'rejected-user-agents',
+			),
+			'rejected_cookies'               => array(
+				'label'         => 'Rejected Cookies',
+				'description'   => 'Bypass page cache when a visitor has one of these cookies.',
+				'group'         => 'Cache exclusions',
+				'docs_path'     => '/advanced-options/',
+				'docs_fragment' => 'rejected-cookies',
+			),
+			'rejected_referrers'             => array(
+				'label'         => 'Rejected Referrers',
+				'description'   => 'Bypass page cache when traffic comes from matching referrer URLs.',
+				'group'         => 'Cache exclusions',
+				'docs_path'     => '/advanced-options/',
+				'docs_fragment' => 'rejected-referrers',
+			),
+			'vary_cookies'                   => array(
+				'label'         => 'Vary Cookies',
+				'description'   => 'Create separate cache variants when these cookies are present.',
+				'group'         => 'Cache variants',
+				'docs_path'     => '/advanced-options/',
+				'docs_fragment' => 'vary-cookies',
+			),
+			'rejected_uri'                   => array(
+				'label'         => 'Never Cache URLs',
+				'description'   => 'Exclude matching URLs, paths, or regex patterns from page cache.',
+				'group'         => 'Cache exclusions',
+				'docs_path'     => '/advanced-options/',
+				'docs_fragment' => 'ignored-pages',
+			),
+			'ignored_query_strings'          => array(
+				'label'         => 'Ignored Query Strings',
+				'description'   => 'Ignore matching query parameters and serve the standard cached page.',
+				'group'         => 'Query strings',
+				'docs_path'     => '/advanced-options/',
+				'docs_fragment' => 'ignored-query-strings',
+			),
+			'cache_query_strings'            => array(
+				'label'         => 'Cache Query Strings',
+				'description'   => 'Create separate cache files for the listed query parameters.',
+				'group'         => 'Query strings',
+				'docs_path'     => '/advanced-options/',
+				'docs_fragment' => 'cache-query-strings',
+			),
+			'purge_additional_pages'         => array(
+				'label'         => 'Purge Additional Pages',
+				'description'   => 'Clear extra related URLs when content changes.',
+				'group'         => 'Purge behavior',
+				'docs_path'     => '/advanced-options/',
+				'docs_fragment' => 'purge-additional-pages',
 			),
 			'minify_html'                    => array(
 				'label'       => 'Minify HTML',

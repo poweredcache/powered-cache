@@ -629,6 +629,11 @@
 	margin: 0;
 }
 
+.pc-settings-field__docs-link {
+	font-weight: 600;
+	white-space: nowrap;
+}
+
 .pc-settings-field__dependency {
 	color: var(--pc-admin-warning);
 	margin-top: 8px;

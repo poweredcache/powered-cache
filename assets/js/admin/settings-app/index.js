@@ -288,6 +288,61 @@ const selectOptions = (field) => {
 	}));
 };
 
+const fieldDocsUrl = (field) => {
+	if (field.docs_url) {
+		return field.docs_url;
+	}
+
+	if (!field.docs_path) {
+		return '';
+	}
+
+	const fallbackBase = 'https://docs.poweredcache.com/';
+
+	try {
+		const docsUrl = new URL(appConfig.docsUrl || fallbackBase, fallbackBase);
+		const basePath = docsUrl.pathname.replace(/\/$/, '');
+		const fieldPath = String(field.docs_path).replace(/^\/+/, '');
+
+		docsUrl.pathname = `${basePath}/${fieldPath}`.replace(/\/{2,}/g, '/');
+		docsUrl.hash = field.docs_fragment ? `#${field.docs_fragment}` : '';
+
+		return docsUrl.toString();
+	} catch {
+		const fieldPath = String(field.docs_path).replace(/^\/+/, '');
+		const fragment = field.docs_fragment ? `#${field.docs_fragment}` : '';
+
+		return `${fallbackBase}${fieldPath}${fragment}`;
+	}
+};
+
+const FieldDescription = ({ field, id }) => {
+	const docsUrl = fieldDocsUrl(field);
+
+	if (!field.description && !docsUrl) {
+		return null;
+	}
+
+	return (
+		<p id={id} className="pc-settings-field__description">
+			{field.description}
+			{docsUrl && (
+				<>
+					{' '}
+					<a
+						className="pc-settings-field__docs-link"
+						href={docsUrl}
+						rel="noopener noreferrer"
+						target="_blank"
+					>
+						{__('Learn more', 'powered-cache')}
+					</a>
+				</>
+			)}
+		</p>
+	);
+};
+
 const conditionMatches = (condition, settings) => {
 	if (!condition || !condition.key) {
 		return true;
@@ -782,9 +837,7 @@ const LockedField = ({ field, issues = [] }) => (
 				<span className="pc-settings-field__label">{field.label}</span>
 				<span className="pc-settings-badge">{__('Premium', 'powered-cache')}</span>
 			</div>
-			{field.description && (
-				<p className="pc-settings-field__description">{field.description}</p>
-			)}
+			<FieldDescription field={field} />
 			{field.upgrade && field.upgrade.description && (
 				<p className="pc-settings-field__upgrade">{field.upgrade.description}</p>
 			)}
@@ -1040,11 +1093,7 @@ const SettingsField = ({ field, issues = [], settings, onChange }) => {
 		<div className="pc-settings-field">
 			<div className="pc-settings-field__main">
 				<span className="pc-settings-field__label">{field.label}</span>
-				{field.description && (
-					<p id={descriptionId} className="pc-settings-field__description">
-						{field.description}
-					</p>
-				)}
+				<FieldDescription field={field} id={descriptionId} />
 				{!isDependencyMet && (
 					<p className="pc-settings-field__dependency">
 						{__('Enable the parent setting to edit this option.', 'powered-cache')}

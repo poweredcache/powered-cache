@@ -78,6 +78,10 @@ class SettingsManifest_Tests extends TestCase {
 		$this->assertSame( 'select', $fields['object_cache']['control'] );
 		$this->assertSame( 'duration', $fields['cache_timeout']['control'] );
 		$this->assertSame( 'Set how long cached pages stay fresh.', $fields['cache_timeout']['description'] );
+		$this->assertSame( 'Create separate cache variants when these cookies are present.', $fields['vary_cookies']['description'] );
+		$this->assertSame( '/advanced-options/', $fields['vary_cookies']['docs_path'] );
+		$this->assertSame( 'vary-cookies', $fields['vary_cookies']['docs_fragment'] );
+		$this->assertSame( 'Cache exclusions', $fields['rejected_user_agents']['group'] );
 		$this->assertSame( 'Heartbeat', $fields['heartbeat_dashboard_status']['group'] );
 		$this->assertSame( 'Dashboard Interval', $fields['heartbeat_dashboard_interval']['label'] );
 		$this->assertSame( 15, $fields['heartbeat_dashboard_interval']['min'] );
