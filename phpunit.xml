@@ -1,18 +1,19 @@
-<phpunit
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	bootstrap="tests/bootstrap.php"
 	backupGlobals="false"
 	processIsolation="false"
-	colors="false">
+	colors="false"
+	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.6/phpunit.xsd">
 	<testsuites>
 		<testsuite name="Default">
 			<directory suffix="Tests.php">./tests/phpunit</directory>
 		</testsuite>
 	</testsuites>
-	<filter>
-		<whitelist>
+	<coverage>
+		<include>
 			<directory suffix=".php">./includes</directory>
-		</whitelist>
-	</filter>
+		</include>
+	</coverage>
 	<php>
 		<ini name="error_reporting" value="32767" />
 		<ini name="display_errors" value="1" />
