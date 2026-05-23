@@ -1,4 +1,4 @@
-/* global ajaxurl, jQuery  */
+/* global jQuery  */
 import '@wpmudev/shared-ui/dist/js/_src/modal-dialog';
 import './settings-app';
 import './modules/nav';
@@ -125,47 +125,6 @@ import './modules/modal';
 			$('#combine_js').prop('disabled', false);
 		} else {
 			$('#combine_js').prop('disabled', true);
-		}
-	});
-
-	$('#object_cache').on('change', function () {
-		// Check if new selection is memcached or memcache
-		if ($(this).val() === 'memcached' || $(this).val() === 'memcache') {
-			$.ajax({
-				url: ajaxurl,
-				method: 'post',
-				data: {
-					nonce: $('#powered_cache_settings_nonce').val(),
-					action: 'powered_cache_check_alloptions',
-				},
-				success(response) {
-					if (response.success && response.data.status) {
-						const $alloptionsContainer = $('#object_cache_alloptions_message');
-
-						if (response.data.status === 'success') {
-							return;
-						}
-
-						let statusClass = 'sui-notice-warning'; // Default to warning
-
-						if (response.data.status === 'critical') {
-							statusClass = 'sui-notice-error'; // Change to error if critical
-						}
-
-						$alloptionsContainer.addClass(statusClass);
-
-						let message =
-							'<span class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></span>';
-						message += response.data.message;
-
-						$alloptionsContainer.find('.sui-notice-message').html(message);
-						$alloptionsContainer.removeClass('sui-hidden');
-						$alloptionsContainer.show();
-					}
-				},
-			});
-		} else {
-			$('#object_cache_alloptions_message').hide();
 		}
 	});
 })(jQuery);
