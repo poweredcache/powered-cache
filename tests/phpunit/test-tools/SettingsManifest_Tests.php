@@ -70,6 +70,7 @@ class SettingsManifest_Tests extends TestCase {
 		$this->assertSame( 'Page Cache', $fields['enable_page_cache']['label'] );
 		$this->assertSame( 'Serve cached pages', $fields['enable_page_cache']['control_label'] );
 		$this->assertSame( 'Core cache', $fields['enable_page_cache']['group'] );
+		$this->assertSame( 'page-caching', $fields['enable_page_cache']['docs_path'] );
 		$this->assertSame( SettingsSchema::TYPE_BOOLEAN, $fields['enable_page_cache']['type'] );
 		$this->assertSame( 'toggle', $fields['enable_page_cache']['control'] );
 		$this->assertSame( 'cache', $fields['enable_page_cache']['section'] );
@@ -123,6 +124,38 @@ class SettingsManifest_Tests extends TestCase {
 			$fields['cdn_hostname']['zone_options']
 		);
 		$this->assertSame( 'hidden', $fields['cdn_zone']['control'] );
+	}
+
+	/**
+	 * It exposes contextual help for common settings areas.
+	 */
+	public function test_common_settings_include_contextual_help_metadata() {
+		$fields = SettingsManifest::fields();
+
+		$expected_descriptions = array(
+			'cache_mobile_separate_file',
+			'loggedin_user_cache',
+			'combine_google_fonts',
+			'critical_css_additional_files',
+			'ucss_safelist',
+			'lazy_load_exclusions',
+			'cdn_rejected_files',
+			'prefetch_dns',
+			'db_cleanup_post_revisions',
+			'cache_footprint',
+		);
+
+		foreach ( $expected_descriptions as $key ) {
+			$this->assertArrayHasKey( $key, $fields );
+			$this->assertNotEmpty( $fields[ $key ]['description'], $key );
+		}
+
+		$this->assertSame( 'critical-css', $fields['critical_css']['docs_path'] );
+		$this->assertSame( 'remove-unused-css', $fields['remove_unused_css']['docs_path'] );
+		$this->assertSame( 'cdn-integration', $fields['cdn_hostname']['docs_path'] );
+		$this->assertSame( 'prefetch-dns', $fields['prefetch_dns']['docs_path'] );
+		$this->assertSame( 'preconnect-resources', $fields['preconnect_resource']['docs_path'] );
+		$this->assertSame( 'https://dash.cloudflare.com/profile/api-tokens', $fields['cloudflare_api_token']['docs_url'] );
 	}
 
 	/**
