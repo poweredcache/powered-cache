@@ -53,6 +53,23 @@ class SettingsValidator_Tests extends TestCase {
 	}
 
 	/**
+	 * It ignores CDN zone placeholders when no hostname is configured.
+	 */
+	public function test_ignores_empty_cdn_zone_placeholders() {
+		$validator = new SettingsValidator( array(), true );
+		$report    = $validator->report(
+			array(
+				'enable_cdn'   => false,
+				'cdn_hostname' => array( '' ),
+				'cdn_zone'     => array( 'all' ),
+			)
+		);
+
+		$this->assertTrue( $report['valid'] );
+		$this->assertSame( 0, $report['counts'][ SettingsValidator::SEVERITY_WARNING ] );
+	}
+
+	/**
 	 * It reports locked Premium values without making the report invalid.
 	 */
 	public function test_reports_locked_premium_values() {
