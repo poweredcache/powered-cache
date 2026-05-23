@@ -718,10 +718,18 @@
 	width: 100%;
 }
 
-.pc-settings-duration-control .components-text-control__input,
-.pc-settings-duration-control .components-select-control__input {
+.pc-settings-duration-control .components-base-control__field {
+	margin-bottom: 0;
+}
+
+.pc-settings-duration-control input.components-text-control__input,
+.pc-settings-duration-control select.components-select-control__input {
 	box-sizing: border-box;
+	height: 40px;
+	line-height: 38px;
+	max-width: none;
 	min-height: 40px;
+	padding: 0 12px;
 	width: 100%;
 }
 
