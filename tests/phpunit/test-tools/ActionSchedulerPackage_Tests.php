@@ -28,7 +28,7 @@ class ActionSchedulerPackage_Tests extends TestCase {
 	 */
 	public function test_action_scheduler_entrypoint_keeps_upstream_loader_contract() {
 		$entrypoint = PROJECT . 'package/woocommerce/action-scheduler/action-scheduler.php';
-		$contents   = file_get_contents( $entrypoint );
+		$contents   = file_get_contents( $entrypoint ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 
 		$this->assertStringContainsString( 'Plugin Name: Action Scheduler', $contents );
 		$this->assertMatchesRegularExpression( '/Version:\s*\d+\.\d+\.\d+/', $contents );
@@ -41,7 +41,7 @@ class ActionSchedulerPackage_Tests extends TestCase {
 	 */
 	public function test_action_scheduler_is_loaded_before_plugin_bootstrap() {
 		$main_plugin_file = PROJECT . '../powered-cache.php';
-		$contents         = file_get_contents( $main_plugin_file );
+		$contents         = file_get_contents( $main_plugin_file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 
 		$package_position   = strpos( $contents, "require_once POWERED_CACHE_PACKAGE_DIR . 'woocommerce/action-scheduler/action-scheduler.php';" );
 		$bootstrap_position = strpos( $contents, 'Core\\setup();' );

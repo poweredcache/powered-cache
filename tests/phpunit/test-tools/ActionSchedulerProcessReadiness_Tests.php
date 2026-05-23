@@ -6,6 +6,8 @@
  */
 
 namespace {
+	// phpcs:disable Generic.Files.OneObjectStructurePerFile.MultipleFound
+
 	if ( ! class_exists( 'ActionScheduler', false ) ) {
 		/**
 		 * Minimal Action Scheduler stub.

@@ -2,6 +2,9 @@
 <ruleset name="10up PHPCS">
     <description>10up PHPCS extended.</description>
 
+    <arg name="warning-severity" value="8"/>
+    <ini name="error_reporting" value="8191"/>
+
     <rule ref="10up-Default"/>
     <exclude-pattern>/dropins/</exclude-pattern>
     <exclude-pattern>/includes/package/</exclude-pattern>
