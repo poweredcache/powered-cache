@@ -236,6 +236,7 @@ function admin_scripts( $hook ) {
 
 	$settings_app_config = [
 		'namespace'       => SettingsRestController::REST_NAMESPACE,
+		'ajaxUrl'         => admin_url( 'admin-ajax.php' ),
 		'restRoot'        => esc_url_raw( rest_url() ),
 		'restNonce'       => wp_create_nonce( 'wp_rest' ),
 		'settingsFormUrl' => self_admin_url( 'admin.php?page=' . MENU_SLUG . '&section=misc' ),

@@ -372,6 +372,17 @@ const upgradeLabel = (field) =>
 		field.label,
 	);
 
+const objectCacheNeedsAlloptionsCheck = (backend) =>
+	['memcache', 'memcached'].includes(String(backend || ''));
+
+const textFromHtml = (html) => {
+	const element = document.createElement('div');
+
+	element.innerHTML = html || '';
+
+	return element.textContent || element.innerText || '';
+};
+
 const MetricCard = ({ label, value, description, tone = 'neutral' }) => (
 	<div className={`pc-settings-metric pc-settings-metric--${tone}`}>
 		<span>{label}</span>
@@ -1416,6 +1427,7 @@ const SettingsApp = () => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [isSaving, setIsSaving] = useState(false);
 	const [notice, setNotice] = useState(null);
+	const [objectCacheNotice, setObjectCacheNotice] = useState(null);
 
 	useEffect(() => {
 		Promise.all([
@@ -1506,6 +1518,71 @@ const SettingsApp = () => {
 	useEffect(() => {
 		syncAdminMenuSection(activeSection, manifest);
 	}, [activeSection, manifest]);
+
+	useEffect(() => {
+		if (!objectCacheNeedsAlloptionsCheck(settings.object_cache)) {
+			setObjectCacheNotice(null);
+
+			return undefined;
+		}
+
+		const abortController = new AbortController();
+		const formData = new window.FormData();
+
+		formData.append('action', 'powered_cache_check_alloptions');
+		formData.append('nonce', appConfig.settingsNonce || '');
+
+		window
+			.fetch(appConfig.ajaxUrl || window.ajaxurl || 'admin-ajax.php', {
+				body: formData,
+				credentials: 'same-origin',
+				method: 'POST',
+				signal: abortController.signal,
+			})
+			.then((response) => response.json())
+			.then((response) => {
+				if (abortController.signal.aborted) {
+					return;
+				}
+
+				if (!response.success || !response.data || response.data.status === 'good') {
+					setObjectCacheNotice(null);
+
+					return;
+				}
+
+				setObjectCacheNotice({
+					code: `alloptions_${response.data.status}`,
+					key: 'object_cache',
+					message:
+						textFromHtml(response.data.message) ||
+						__(
+							'Autoloaded options could affect persistent object cache performance.',
+							'powered-cache',
+						),
+					severity: response.data.status === 'critical' ? 'error' : 'warning',
+				});
+			})
+			.catch((error) => {
+				if (error.name === 'AbortError') {
+					return;
+				}
+
+				setObjectCacheNotice({
+					code: 'alloptions_check_failed',
+					key: 'object_cache',
+					message: __(
+						'Autoloaded options could not be checked before enabling this object cache backend.',
+						'powered-cache',
+					),
+					severity: 'warning',
+				});
+			});
+
+		return () => {
+			abortController.abort();
+		};
+	}, [settings.object_cache]);
 
 	const sections = useMemo(() => {
 		if (!manifest) {
@@ -1606,6 +1683,17 @@ const SettingsApp = () => {
 	const imageDelivery = premiumInfo.imageDelivery || null;
 	const cssOptimization = premiumInfo.cssOptimization || null;
 	const validationIssuesByKey = issuesByKey(validation);
+	const fieldIssuesByKey = {
+		...validationIssuesByKey,
+		...(objectCacheNotice
+			? {
+					object_cache: [
+						...(validationIssuesByKey.object_cache || []),
+						objectCacheNotice,
+					],
+				}
+			: {}),
+	};
 	const isLicenseSection = activeSection === 'license' && !!premiumInfo.licenseForm;
 	const enabledCoreCount = [
 		settings.enable_page_cache,
@@ -1810,7 +1898,7 @@ const SettingsApp = () => {
 						<>
 							<SettingsSection
 								fields={activeFields}
-								issuesBySetting={validationIssuesByKey}
+								issuesBySetting={fieldIssuesByKey}
 								onChange={updateSetting}
 								section={activeSectionData}
 								sectionKey={activeSection}
