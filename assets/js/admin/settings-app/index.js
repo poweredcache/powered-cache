@@ -537,6 +537,7 @@ const CssOptimizationPanel = ({
 	const canGenerate = Boolean(cssOptimization.generatePath && onGenerate);
 	const stateLabel = {
 		good: __('Healthy', 'powered-cache'),
+		processing: __('Processing', 'powered-cache'),
 		warning: __('Needs attention', 'powered-cache'),
 		idle: __('Waiting for first run', 'powered-cache'),
 	};
@@ -1444,6 +1445,7 @@ const SettingsApp = () => {
 	const [isSaving, setIsSaving] = useState(false);
 	const [notice, setNotice] = useState(null);
 	const [objectCacheNotice, setObjectCacheNotice] = useState(null);
+	const [premiumInfo, setPremiumInfo] = useState(appConfig.premium || {});
 	const [generatingCssService, setGeneratingCssService] = useState('');
 
 	useEffect(() => {
@@ -1677,7 +1679,6 @@ const SettingsApp = () => {
 	};
 
 	const generateCssOptimization = (serviceKey, service = {}) => {
-		const premiumInfo = appConfig.premium || {};
 		const cssOptimization = premiumInfo.cssOptimization || {};
 
 		if (!cssOptimization.generatePath) {
@@ -1695,6 +1696,13 @@ const SettingsApp = () => {
 			},
 		})
 			.then((response) => {
+				if (response && response.cssOptimization) {
+					setPremiumInfo((currentPremiumInfo) => ({
+						...currentPremiumInfo,
+						cssOptimization: response.cssOptimization,
+					}));
+				}
+
 				setNotice({
 					status: 'success',
 					message:
@@ -1743,7 +1751,6 @@ const SettingsApp = () => {
 	const activeFields = fieldsBySection[activeSection] || [];
 	const activeSectionData = manifest.sections[activeSection] || {};
 	const premiumFields = Object.values(manifest.fields || {}).filter((field) => field.premium);
-	const premiumInfo = appConfig.premium || {};
 	const imageDelivery = premiumInfo.imageDelivery || null;
 	const cssOptimization = premiumInfo.cssOptimization || null;
 	const validationIssuesByKey = issuesByKey(validation);

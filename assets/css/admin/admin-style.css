@@ -316,6 +316,10 @@
 	border-left-color: var(--pc-admin-warning-border);
 }
 
+.pc-settings-service-card--processing {
+	border-left-color: var(--pc-admin-primary);
+}
+
 .pc-settings-service-card--idle {
 	border-left-color: var(--pc-admin-primary);
 }
