@@ -394,4 +394,5 @@ function script_loader_tag( $tag, $handle ) {
 function register_async_process() {
 	DatabaseOptimizer::factory();
 	CachePurger::factory();
+	CachePreloader::factory();
 }
