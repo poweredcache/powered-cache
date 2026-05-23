@@ -399,6 +399,36 @@ const metricValue = (value, fallback = __('Not available', 'powered-cache')) => 
 	return value;
 };
 
+const formatBytes = (value, fallback = __('Not available', 'powered-cache')) => {
+	const bytes = Number(value || 0);
+
+	if (!bytes) {
+		return fallback;
+	}
+
+	if (bytes < 1024) {
+		return sprintf(
+			/* translators: %d: byte count. */
+			__('%d B', 'powered-cache'),
+			bytes,
+		);
+	}
+
+	if (bytes < 1024 * 1024) {
+		return sprintf(
+			/* translators: %s: kilobyte count. */
+			__('%s KB', 'powered-cache'),
+			(bytes / 1024).toFixed(1),
+		);
+	}
+
+	return sprintf(
+		/* translators: %s: megabyte count. */
+		__('%s MB', 'powered-cache'),
+		(bytes / 1024 / 1024).toFixed(1),
+	);
+};
+
 const queueMetricValue = (service) => {
 	const value = metricValue(service.queueCount, 0);
 
@@ -689,6 +719,20 @@ const CssOptimizationPanel = ({
 								<div>
 									<dt>{__('Queued', 'powered-cache')}</dt>
 									<dd>{queueMetricValue(service)}</dd>
+								</div>
+								<div>
+									<dt>{__('HTTP', 'powered-cache')}</dt>
+									<dd>
+										{metricValue(
+											Number(service.lastHttpStatus || 0)
+												? service.lastHttpStatus
+												: '',
+										)}
+									</dd>
+								</div>
+								<div>
+									<dt>{__('CSS size', 'powered-cache')}</dt>
+									<dd>{formatBytes(service.lastOutputBytes)}</dd>
 								</div>
 							</dl>
 							{serviceMessage && (
