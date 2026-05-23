@@ -714,19 +714,30 @@
 	row-gap: 12px;
 }
 
-.pc-settings-duration-control .components-base-control {
-	width: 100%;
+.pc-settings-duration-control__field {
+	min-width: 0;
 }
 
-.pc-settings-duration-control .components-base-control__field {
-	margin-bottom: 0;
+.pc-settings-duration-control__label {
+	display: block;
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1.4;
+	margin: 0 0 8px;
+	text-transform: uppercase;
 }
 
-.pc-settings-duration-control input.components-text-control__input,
-.pc-settings-duration-control select.components-select-control__input {
+.pc-settings-duration-control__input {
+	appearance: auto;
+	background: var(--pc-admin-white);
+	border: 1px solid #8c8f94;
 	box-sizing: border-box;
+	color: var(--pc-admin-text);
+	display: block;
+	font-size: 14px;
 	height: 40px;
-	line-height: 38px;
+	line-height: 1.4;
+	margin: 0;
 	max-width: none;
 	min-height: 40px;
 	padding: 0 12px;

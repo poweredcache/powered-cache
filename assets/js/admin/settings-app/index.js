@@ -1021,32 +1021,48 @@ const SettingsField = ({ field, issues = [], settings, onChange }) => {
 			break;
 		case 'duration': {
 			const duration = getDurationParts(value);
+			const amountId = `${fieldId}-amount`;
+			const unitId = `${fieldId}-unit`;
 
 			control = (
 				<div className="pc-settings-duration-control">
-					<TextControl
-						{...controlProps}
-						aria-describedby={descriptionId}
-						label={field.label}
-						min="0"
-						onChange={(nextAmount) => {
-							updateValue(durationToMinutes(nextAmount, duration.unit));
-						}}
-						type="number"
-						value={String(duration.amount)}
-					/>
-					<SelectControl
-						{...controlProps}
-						label={__('Unit', 'powered-cache')}
-						onChange={(nextUnit) => {
-							updateValue(durationToMinutes(duration.amount, nextUnit));
-						}}
-						options={durationUnits.map((durationUnit) => ({
-							label: durationUnit.label,
-							value: durationUnit.value,
-						}))}
-						value={duration.unit}
-					/>
+					<div className="pc-settings-duration-control__field">
+						<label className="pc-settings-duration-control__label" htmlFor={amountId}>
+							{field.label}
+						</label>
+						<input
+							{...controlProps}
+							aria-describedby={descriptionId}
+							className="pc-settings-duration-control__input"
+							id={amountId}
+							min="0"
+							onChange={(event) => {
+								updateValue(durationToMinutes(event.target.value, duration.unit));
+							}}
+							type="number"
+							value={String(duration.amount)}
+						/>
+					</div>
+					<div className="pc-settings-duration-control__field">
+						<label className="pc-settings-duration-control__label" htmlFor={unitId}>
+							{__('Unit', 'powered-cache')}
+						</label>
+						<select
+							{...controlProps}
+							className="pc-settings-duration-control__input"
+							id={unitId}
+							onChange={(event) => {
+								updateValue(durationToMinutes(duration.amount, event.target.value));
+							}}
+							value={duration.unit}
+						>
+							{durationUnits.map((durationUnit) => (
+								<option key={durationUnit.value} value={durationUnit.value}>
+									{durationUnit.label}
+								</option>
+							))}
+						</select>
+					</div>
 				</div>
 			);
 			break;
