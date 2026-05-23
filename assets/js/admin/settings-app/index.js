@@ -526,6 +526,7 @@ const CssOptimizationPanel = ({
 	docsUrl = '#',
 	generatingService = '',
 	onGenerate = null,
+	settings = {},
 }) => {
 	const services = Object.entries(cssOptimization.services || {});
 
@@ -565,6 +566,24 @@ const CssOptimizationPanel = ({
 				{services.map(([serviceKey, service]) => {
 					const serviceState =
 						service.available === false ? 'unavailable' : service.state || 'idle';
+					const settingEnabled = service.setting
+						? Boolean(settings[service.setting])
+						: true;
+					const isGenerateDisabled =
+						!canGenerate ||
+						service.available === false ||
+						service.enabled === false ||
+						!settingEnabled ||
+						generatingService === serviceKey;
+					const serviceMessage =
+						service.unavailableMessage ||
+						(service.enabled === false || !settingEnabled
+							? service.disabledMessage ||
+								__(
+									'Enable and save the related setting before regenerating.',
+									'powered-cache',
+								)
+							: service.lastMessage);
 
 					return (
 						<div
@@ -593,9 +612,9 @@ const CssOptimizationPanel = ({
 									<dd>{metricValue(service.errorCount, 0)}</dd>
 								</div>
 							</dl>
-							{(service.unavailableMessage || service.lastMessage) && (
+							{serviceMessage && (
 								<p className="pc-settings-service-card__message">
-									{service.unavailableMessage || service.lastMessage}
+									{serviceMessage}
 								</p>
 							)}
 							{service.lastUrl && (
@@ -603,16 +622,12 @@ const CssOptimizationPanel = ({
 							)}
 							<div className="pc-settings-service-card__actions">
 								<Button
-									disabled={
-										!canGenerate ||
-										service.available === false ||
-										generatingService === serviceKey
-									}
+									disabled={isGenerateDisabled}
 									isBusy={generatingService === serviceKey}
 									onClick={(event) => {
 										event.preventDefault();
 
-										if (canGenerate && service.available !== false) {
+										if (!isGenerateDisabled) {
 											onGenerate(serviceKey, service);
 										}
 									}}
@@ -1682,6 +1697,27 @@ const SettingsApp = () => {
 		syncSectionUrl(sectionKey);
 	};
 
+	const refreshCssOptimizationStatus = () => {
+		const cssOptimization = premiumInfo.cssOptimization || {};
+
+		if (!cssOptimization.statusPath) {
+			return Promise.resolve();
+		}
+
+		return apiFetch({
+			path: route(cssOptimization.statusPath),
+		})
+			.then((response) => {
+				if (response && response.cssOptimization) {
+					setPremiumInfo((currentPremiumInfo) => ({
+						...currentPremiumInfo,
+						cssOptimization: response.cssOptimization,
+					}));
+				}
+			})
+			.catch(() => {});
+	};
+
 	const saveSettings = () => {
 		setIsSaving(true);
 		setNotice(null);
@@ -1703,6 +1739,8 @@ const SettingsApp = () => {
 					status: 'success',
 					message: __('Settings saved.', 'powered-cache'),
 				});
+
+				refreshCssOptimizationStatus();
 			})
 			.catch(() => {
 				setNotice({
@@ -2000,6 +2038,7 @@ const SettingsApp = () => {
 								docsUrl={appConfig.docsUrl || '#'}
 								generatingService={generatingCssService}
 								onGenerate={generateCssOptimization}
+								settings={settings}
 							/>
 						)}
 					{isLicenseSection ? (
