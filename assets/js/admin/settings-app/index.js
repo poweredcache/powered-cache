@@ -668,6 +668,10 @@ const CssOptimizationPanel = ({
 									<dt>{__('Errors', 'powered-cache')}</dt>
 									<dd>{metricValue(service.errorCount, 0)}</dd>
 								</div>
+								<div>
+									<dt>{__('Queued', 'powered-cache')}</dt>
+									<dd>{metricValue(service.queueCount, 0)}</dd>
+								</div>
 							</dl>
 							{serviceMessage && (
 								<p className="pc-settings-service-card__message">
