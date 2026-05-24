@@ -482,6 +482,68 @@ const SystemStatusPanel = ({ onSelectSection = () => {}, systemStatus = {} }) =>
 	);
 };
 
+const SetupGuidePanel = ({ onSelectSection = () => {}, profile = {} }) => {
+	const recommendations = Array.isArray(profile.recommendations) ? profile.recommendations : [];
+	const detected = Array.isArray(profile.detected) ? profile.detected : [];
+
+	if (!recommendations.length) {
+		return null;
+	}
+
+	const detectedLabels = detected
+		.map((item) => item.label)
+		.filter(Boolean)
+		.slice(0, 4);
+
+	return (
+		<section className="pc-settings-setup-guide">
+			<div className="pc-settings-setup-guide__intro">
+				<span className="pc-settings-badge">
+					{__('Recommended setup', 'powered-cache')}
+				</span>
+				<h2>{__('Suggested setup path', 'powered-cache')}</h2>
+				<p>
+					{__(
+						'Powered Cache detected site signals and highlighted the next settings worth reviewing.',
+						'powered-cache',
+					)}
+				</p>
+				{!!detectedLabels.length && (
+					<div
+						className="pc-settings-setup-guide__signals"
+						aria-label={__('Detected site signals', 'powered-cache')}
+					>
+						{detectedLabels.map((label) => (
+							<span key={label}>{label}</span>
+						))}
+					</div>
+				)}
+			</div>
+			<div className="pc-settings-setup-guide__items">
+				{recommendations.map((recommendation) => (
+					<div className="pc-settings-setup-step" key={recommendation.key}>
+						<div>
+							<strong>{recommendation.label}</strong>
+							<p>{recommendation.message}</p>
+						</div>
+						{recommendation.section && (
+							<Button
+								onClick={() => onSelectSection(recommendation.section)}
+								type="button"
+								variant={
+									recommendation.priority === 'high' ? 'primary' : 'secondary'
+								}
+							>
+								{__('Review', 'powered-cache')}
+							</Button>
+						)}
+					</div>
+				))}
+			</div>
+		</section>
+	);
+};
+
 const metricValue = (value, fallback = __('Not available', 'powered-cache')) => {
 	if (value === null || value === undefined || value === '') {
 		return fallback;
@@ -1802,6 +1864,7 @@ const SettingsApp = () => {
 	const [initialSettings, setInitialSettings] = useState({});
 	const [validation, setValidation] = useState(null);
 	const [systemStatus, setSystemStatus] = useState(null);
+	const [setupProfile, setSetupProfile] = useState(null);
 	const [activeSection, setActiveSection] = useState('');
 	const [isLoading, setIsLoading] = useState(true);
 	const [isSaving, setIsSaving] = useState(false);
@@ -1821,6 +1884,7 @@ const SettingsApp = () => {
 				setInitialSettings(stateResponse.settings || {});
 				setValidation(stateResponse.validation || null);
 				setSystemStatus(stateResponse.system_status || null);
+				setSetupProfile(stateResponse.setup_profile || null);
 				setActiveSection(resolveActiveSection(manifestResponse));
 
 				if (
@@ -2079,6 +2143,7 @@ const SettingsApp = () => {
 				setInitialSettings(nextSettings);
 				setValidation(response.validation || null);
 				setSystemStatus(response.system_status || null);
+				setSetupProfile(response.setup_profile || null);
 				setNotice({
 					status: 'success',
 					message: __('Settings saved.', 'powered-cache'),
@@ -2265,79 +2330,82 @@ const SettingsApp = () => {
 			/>
 
 			{activeSection === 'cache' && (
-				<div
-					className="pc-settings-overview"
-					aria-label={__('Settings overview', 'powered-cache')}
-				>
-					<MetricCard
-						description={__(
-							'HTML cache delivery for anonymous visits.',
-							'powered-cache',
-						)}
-						label={__('Page Cache', 'powered-cache')}
-						tone={settings.enable_page_cache ? 'good' : 'warning'}
-						value={
-							settings.enable_page_cache
-								? __('Enabled', 'powered-cache')
-								: __('Disabled', 'powered-cache')
-						}
-					/>
-					<MetricCard
-						description={__(
-							'Persistent backend for dynamic WordPress data.',
-							'powered-cache',
-						)}
-						label={__('Object Cache', 'powered-cache')}
-						tone={
-							settings.object_cache && settings.object_cache !== 'off'
-								? 'good'
-								: 'neutral'
-						}
-						value={
-							settings.object_cache && settings.object_cache !== 'off'
-								? settings.object_cache
-								: __('Off', 'powered-cache')
-						}
-					/>
-					<MetricCard
-						description={__(
-							'Core optimizations currently switched on.',
-							'powered-cache',
-						)}
-						label={__('Active Controls', 'powered-cache')}
-						tone="good"
-						value={`${enabledCoreCount}/5`}
-					/>
-					<MetricCard
-						description={
-							appConfig.isPremium
-								? premiumInfo.licenseMessage ||
-									__(
-										'Premium optimizations are available on this site.',
-										'powered-cache',
-									)
-								: __(
-										'Locked controls are shown in context across the settings.',
-										'powered-cache',
-									)
-						}
-						label={
-							appConfig.isPremium
-								? __('License', 'powered-cache')
-								: __('Premium Features', 'powered-cache')
-						}
-						tone={
-							appConfig.isPremium && !premiumInfo.licenseActive
-								? 'warning'
-								: 'premium'
-						}
-						value={
-							appConfig.isPremium
-								? labelFromKey(premiumInfo.licenseStatus || 'unknown')
-								: premiumFields.length
-						}
-					/>
-				</div>
+				<>
+					<div
+						className="pc-settings-overview"
+						aria-label={__('Settings overview', 'powered-cache')}
+					>
+						<MetricCard
+							description={__(
+								'HTML cache delivery for anonymous visits.',
+								'powered-cache',
+							)}
+							label={__('Page Cache', 'powered-cache')}
+							tone={settings.enable_page_cache ? 'good' : 'warning'}
+							value={
+								settings.enable_page_cache
+									? __('Enabled', 'powered-cache')
+									: __('Disabled', 'powered-cache')
+							}
+						/>
+						<MetricCard
+							description={__(
+								'Persistent backend for dynamic WordPress data.',
+								'powered-cache',
+							)}
+							label={__('Object Cache', 'powered-cache')}
+							tone={
+								settings.object_cache && settings.object_cache !== 'off'
+									? 'good'
+									: 'neutral'
+							}
+							value={
+								settings.object_cache && settings.object_cache !== 'off'
+									? settings.object_cache
+									: __('Off', 'powered-cache')
+							}
+						/>
+						<MetricCard
+							description={__(
+								'Core optimizations currently switched on.',
+								'powered-cache',
+							)}
+							label={__('Active Controls', 'powered-cache')}
+							tone="good"
+							value={`${enabledCoreCount}/5`}
+						/>
+						<MetricCard
+							description={
+								appConfig.isPremium
+									? premiumInfo.licenseMessage ||
+										__(
+											'Premium optimizations are available on this site.',
+											'powered-cache',
+										)
+									: __(
+											'Locked controls are shown in context across the settings.',
+											'powered-cache',
+										)
+							}
+							label={
+								appConfig.isPremium
+									? __('License', 'powered-cache')
+									: __('Premium Features', 'powered-cache')
+							}
+							tone={
+								appConfig.isPremium && !premiumInfo.licenseActive
+									? 'warning'
+									: 'premium'
+							}
+							value={
+								appConfig.isPremium
+									? labelFromKey(premiumInfo.licenseStatus || 'unknown')
+									: premiumFields.length
+							}
+						/>
+					</div>
+					<SetupGuidePanel onSelectSection={updateActiveSection} profile={setupProfile} />
+				</>
 			)}
 
 			{!appConfig.isPremium && (

@@ -116,7 +116,7 @@ class SettingsRestController_Tests extends TestCase {
 		\WP_Mock::userFunction(
 			'get_option',
 			array(
-				'times'  => 2,
+				'times'  => 3,
 				'return' => function ( $option, $default = false ) {
 					if ( 'active_plugins' === $option ) {
 						return array();
@@ -139,7 +139,7 @@ class SettingsRestController_Tests extends TestCase {
 		\WP_Mock::userFunction(
 			'get_site_option',
 			array(
-				'times'  => 1,
+				'times'  => 2,
 				'args'   => array( 'active_sitewide_plugins', array() ),
 				'return' => array(),
 			)
@@ -157,6 +157,70 @@ class SettingsRestController_Tests extends TestCase {
 		$this->assertSame( '', $response['settings']['cloudflare_email'] );
 		$this->assertSame( '', $response['settings']['cloudflare_api_key'] );
 		$this->assertSame( '', $response['settings']['cloudflare_api_token'] );
+		$this->assertArrayHasKey( 'setup_profile', $response );
+		$this->assertSame( 0, $response['setup_profile']['plugin_count'] );
+
+		unset( $GLOBALS['is_apache'] );
+	}
+
+	/**
+	 * It returns guided setup recommendations from active plugins.
+	 */
+	public function test_get_settings_returns_setup_profile_from_active_plugins() {
+		global $is_apache;
+
+		$is_apache = false;
+
+		$defaults = SettingsSchema::defaults( array( 'is_apache' => false ) );
+
+		\WP_Mock::onFilter( 'powered_cache_default_settings' )->with( $defaults )->reply( $defaults );
+
+		\WP_Mock::userFunction(
+			'get_option',
+			array(
+				'times'  => 3,
+				'return' => function ( $option, $default = false ) {
+					if ( 'active_plugins' === $option ) {
+						return array(
+							'woocommerce/woocommerce.php',
+							'sitepress-multilingual-cms/sitepress.php',
+							'jetformbuilder/jet-form-builder.php',
+						);
+					}
+
+					$this->assertSame( \PoweredCache\Constants\SETTING_OPTION, $option );
+					$this->assertSame( array(), $default );
+
+					return array(
+						'enable_page_cache' => false,
+						'object_cache'       => 'off',
+					);
+				},
+			)
+		);
+
+		\WP_Mock::userFunction(
+			'get_site_option',
+			array(
+				'times'  => 2,
+				'args'   => array( 'active_sitewide_plugins', array() ),
+				'return' => array(),
+			)
+		);
+
+		$controller = new SettingsRestController();
+		$response   = $controller->get_settings();
+
+		$detected_keys       = array_column( $response['setup_profile']['detected'], 'key' );
+		$recommendation_keys = array_column( $response['setup_profile']['recommendations'], 'key' );
+
+		$this->assertSame( 3, $response['setup_profile']['plugin_count'] );
+		$this->assertContains( 'woocommerce', $detected_keys );
+		$this->assertContains( 'multilingual', $detected_keys );
+		$this->assertContains( 'forms', $detected_keys );
+		$this->assertContains( 'page_cache', $recommendation_keys );
+		$this->assertContains( 'woocommerce_safeguards', $recommendation_keys );
+		$this->assertContains( 'multilingual_preload', $recommendation_keys );
 
 		unset( $GLOBALS['is_apache'] );
 	}
