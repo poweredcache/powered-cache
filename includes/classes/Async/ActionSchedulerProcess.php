@@ -107,6 +107,8 @@ abstract class ActionSchedulerProcess {
 	 * @return void
 	 */
 	public function cancel_process() {
+		$this->data = array();
+
 		if ( ! function_exists( 'as_unschedule_all_actions' ) || ! $this->is_action_scheduler_ready() ) {
 			return;
 		}
@@ -121,6 +123,17 @@ abstract class ActionSchedulerProcess {
 	 * @return void
 	 */
 	public function cancel() {
+		$this->cancel_process();
+	}
+
+	/**
+	 * Delete all queued items.
+	 *
+	 * Kept for older callers that used the previous async queue API.
+	 *
+	 * @return void
+	 */
+	public function delete_all() {
 		$this->cancel_process();
 	}
 

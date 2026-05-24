@@ -140,7 +140,6 @@ class SettingsSaveService {
 	private function cancel_preloading() {
 		\PoweredCache\Utils\log( 'Cancel preload process - Settings toggle' );
 		$cache_preloader = CachePreloader::factory();
-		$cache_preloader->cancel_process();
 		$cache_preloader->delete_all();
 	}
 

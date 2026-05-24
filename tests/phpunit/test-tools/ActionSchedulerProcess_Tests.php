@@ -64,6 +64,15 @@ class ActionSchedulerProcess_Test_Process extends ActionSchedulerProcess {
 	protected function task( $item ) {
 		return $item;
 	}
+
+	/**
+	 * Return buffered queue data.
+	 *
+	 * @return array
+	 */
+	public function get_buffered_data() {
+		return $this->data;
+	}
 }
 
 /**
@@ -118,6 +127,26 @@ class ActionSchedulerProcess_Tests extends TestCase {
 		$process = new ActionSchedulerProcess_Test_Process();
 		$process->cancel_process();
 
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * It keeps the previous delete_all cancellation contract.
+	 */
+	public function test_delete_all_cancels_items_and_completion() {
+		\WP_Mock::userFunction(
+			'as_unschedule_all_actions',
+			array(
+				'times'  => 2,
+				'return' => null,
+			)
+		);
+
+		$process = new ActionSchedulerProcess_Test_Process();
+		$process->push_to_queue( 'queued' );
+		$process->delete_all();
+
+		$this->assertSame( array(), $process->get_buffered_data() );
 		$this->assertConditionsMet();
 	}
 
