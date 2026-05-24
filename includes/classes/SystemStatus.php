@@ -64,6 +64,7 @@ class SystemStatus {
 	public function report() {
 		$checks = array(
 			$this->page_cache_check(),
+			$this->managed_host_cache_check(),
 			$this->cache_storage_check(),
 			$this->object_cache_check(),
 			$this->action_scheduler_check(),
@@ -139,6 +140,52 @@ class SystemStatus {
 			'Page cache',
 			'Cached HTML delivery is ready.',
 			'Anonymous visits can be served from the page cache.',
+			'cache'
+		);
+	}
+
+	/**
+	 * Return managed hosting cache guidance.
+	 *
+	 * @return array
+	 */
+	private function managed_host_cache_check() {
+		if ( empty( $this->settings['enable_page_cache'] ) ) {
+			return array();
+		}
+
+		$hosts = array_intersect(
+			$this->active_environments(),
+			array(
+				'host:kinsta',
+				'host:wp-engine',
+				'host:pantheon',
+			)
+		);
+
+		if ( empty( $hosts ) ) {
+			return array();
+		}
+
+		$labels = array(
+			'host:kinsta'    => 'Kinsta',
+			'host:wp-engine' => 'WP Engine',
+			'host:pantheon'  => 'Pantheon',
+		);
+		$names  = array();
+
+		foreach ( $hosts as $host ) {
+			if ( isset( $labels[ $host ] ) ) {
+				$names[] = $labels[ $host ];
+			}
+		}
+
+		return $this->check(
+			'managed_host_cache',
+			self::STATUS_INFO,
+			'Managed host cache',
+			'Hosting cache layer detected.',
+			sprintf( 'Purge %s cache when testing page cache changes so stale platform responses do not hide the result.', implode( ', ', $names ) ),
 			'cache'
 		);
 	}
@@ -427,6 +474,58 @@ class SystemStatus {
 	 */
 	private function context_flag_is( $flag, $expected ) {
 		return array_key_exists( $flag, $this->context ) && (bool) $this->context[ $flag ] === (bool) $expected;
+	}
+
+	/**
+	 * Return active hosting/runtime environment identifiers.
+	 *
+	 * @return array
+	 */
+	private function active_environments() {
+		if ( isset( $this->context['active_environments'] ) && is_array( $this->context['active_environments'] ) ) {
+			return $this->normalize_list( $this->context['active_environments'] );
+		}
+
+		$environments = array();
+
+		if ( defined( 'KINSTAMU_VERSION' ) ) {
+			$environments[] = 'host:kinsta';
+		}
+
+		if ( defined( 'WPE_APIKEY' ) || defined( 'WPE_CLUSTER_ID' ) || defined( 'PWP_NAME' ) ) {
+			$environments[] = 'host:wp-engine';
+		}
+
+		if ( defined( 'PANTHEON_ENVIRONMENT' ) ) {
+			$environments[] = 'host:pantheon';
+		}
+
+		return $this->normalize_list( $environments );
+	}
+
+	/**
+	 * Normalize a scalar list.
+	 *
+	 * @param array $values Values.
+	 *
+	 * @return array
+	 */
+	private function normalize_list( array $values ) {
+		$normalized = array();
+
+		foreach ( $values as $value ) {
+			if ( ! is_scalar( $value ) ) {
+				continue;
+			}
+
+			$value = trim( (string) $value );
+
+			if ( '' !== $value ) {
+				$normalized[] = $value;
+			}
+		}
+
+		return array_values( array_unique( $normalized ) );
 	}
 
 	/**

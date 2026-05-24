@@ -80,6 +80,48 @@
             }
           }
         ]
+      },
+      "host:kinsta": {
+        "settings_issues": [
+          {
+            "key": "enable_page_cache",
+            "severity": "info",
+            "code": "kinsta_cache_detected",
+            "message": "Kinsta hosting cache is detected. Keep the host cache purge flow in mind when testing page cache changes.",
+            "when": {
+              "setting": "enable_page_cache",
+              "value": true
+            }
+          }
+        ]
+      },
+      "host:wp-engine": {
+        "settings_issues": [
+          {
+            "key": "enable_page_cache",
+            "severity": "info",
+            "code": "wp_engine_cache_detected",
+            "message": "WP Engine page cache is detected. Purge the host cache when testing Powered Cache page cache behavior.",
+            "when": {
+              "setting": "enable_page_cache",
+              "value": true
+            }
+          }
+        ]
+      },
+      "host:pantheon": {
+        "settings_issues": [
+          {
+            "key": "enable_page_cache",
+            "severity": "info",
+            "code": "pantheon_cache_detected",
+            "message": "Pantheon edge cache is detected. Purge the platform cache when testing Powered Cache page cache behavior.",
+            "when": {
+              "setting": "enable_page_cache",
+              "value": true
+            }
+          }
+        ]
       }
     },
     "plugins": {

@@ -97,6 +97,25 @@ class SystemStatus_Tests extends TestCase {
 	}
 
 	/**
+	 * It reports managed host cache guidance.
+	 */
+	public function test_reports_managed_host_cache_guidance() {
+		$status = new SystemStatus(
+			array(
+				'enable_page_cache' => true,
+				'object_cache'      => 'off',
+			),
+			array(
+				'action_scheduler_ready' => true,
+				'active_environments'    => array( 'host:kinsta', 'host:pantheon' ),
+			)
+		);
+		$report = $status->report();
+
+		$this->assertCheckExists( 'managed_host_cache', SystemStatus::STATUS_INFO, $report['checks'] );
+	}
+
+	/**
 	 * Assert that a system check exists.
 	 *
 	 * @param string $code Checks code.

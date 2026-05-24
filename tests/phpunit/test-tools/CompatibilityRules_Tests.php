@@ -184,6 +184,49 @@ class CompatibilityRules_Tests extends TestCase {
 	}
 
 	/**
+	 * It exposes managed host cache notes.
+	 */
+	public function test_bundled_registry_reports_managed_host_cache_notes() {
+		\WP_Mock::onFilter( 'powered_cache_compatibility_rules_active_plugins' )
+			->with( array() )
+			->reply( array() );
+		\WP_Mock::onFilter( 'powered_cache_compatibility_rules_active_environments' )
+			->with( array() )
+			->reply( array( 'host:kinsta', 'host:wp-engine', 'host:pantheon' ) );
+
+		$rules  = CompatibilityRules::factory();
+		$issues = $rules->settings_issues( array( 'enable_page_cache' => true ) );
+
+		$this->assertContains(
+			array(
+				'key'      => 'enable_page_cache',
+				'severity' => 'info',
+				'code'     => 'kinsta_cache_detected',
+				'message'  => 'Kinsta hosting cache is detected. Keep the host cache purge flow in mind when testing page cache changes.',
+			),
+			$issues
+		);
+		$this->assertContains(
+			array(
+				'key'      => 'enable_page_cache',
+				'severity' => 'info',
+				'code'     => 'wp_engine_cache_detected',
+				'message'  => 'WP Engine page cache is detected. Purge the host cache when testing Powered Cache page cache behavior.',
+			),
+			$issues
+		);
+		$this->assertContains(
+			array(
+				'key'      => 'enable_page_cache',
+				'severity' => 'info',
+				'code'     => 'pantheon_cache_detected',
+				'message'  => 'Pantheon edge cache is detected. Purge the platform cache when testing Powered Cache page cache behavior.',
+			),
+			$issues
+		);
+	}
+
+	/**
 	 * It exposes bundled option-aware compatibility notes.
 	 */
 	public function test_bundled_registry_reports_autoptimize_option_conflicts() {
