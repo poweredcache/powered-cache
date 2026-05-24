@@ -250,6 +250,12 @@ class SettingsRepository_Tests extends TestCase {
 			)
 		);
 
+		$async_settings = SettingsRepository::migrate_legacy_settings(
+			array(
+				'js_execution_method' => 'async',
+			)
+		);
+
 		$delay_settings = SettingsRepository::migrate_legacy_settings(
 			array(
 				'js_execution_method' => 'delayed',
@@ -257,9 +263,19 @@ class SettingsRepository_Tests extends TestCase {
 			)
 		);
 
+		$delay_alias_settings = SettingsRepository::migrate_legacy_settings(
+			array(
+				'js_execution_method' => 'delay',
+				'combine_js'          => true,
+			)
+		);
+
 		$this->assertTrue( $defer_settings['js_defer'] );
+		$this->assertTrue( $async_settings['js_defer'] );
 		$this->assertTrue( $delay_settings['js_delay'] );
 		$this->assertFalse( $delay_settings['combine_js'] );
+		$this->assertTrue( $delay_alias_settings['js_delay'] );
+		$this->assertFalse( $delay_alias_settings['combine_js'] );
 	}
 
 	/**
@@ -387,6 +403,8 @@ class SettingsRepository_Tests extends TestCase {
 				'return' => array(
 					'enable_page_cache' => false,
 					'cache_timeout'     => 30,
+					'critical_css'      => true,
+					'custom_extension'  => 'keep-me',
 				),
 			)
 		);
@@ -399,6 +417,8 @@ class SettingsRepository_Tests extends TestCase {
 					$this->assertSame( \PoweredCache\Constants\SETTING_OPTION, $option );
 					$this->assertFalse( $settings['enable_page_cache'] );
 					$this->assertSame( 60, $settings['cache_timeout'] );
+					$this->assertTrue( $settings['critical_css'] );
+					$this->assertSame( 'keep-me', $settings['custom_extension'] );
 
 					return true;
 				},
