@@ -99,8 +99,18 @@ class SettingsSaveService {
 			$this->cancel_preloading();
 		}
 
-		if ( empty( $old_settings['enable_cache_preload'] ) && ! empty( $settings['enable_cache_preload'] ) ) {
+		if ( empty( $old_settings['enable_cache_preload'] ) && ! empty( $settings['enable_cache_preload'] ) && ! empty( $settings['enable_page_cache'] ) ) {
 			$this->start_preloading();
+		}
+
+		if (
+			! empty( $old_settings['enable_cache_preload'] )
+			&& ! empty( $settings['enable_cache_preload'] )
+			&& ! empty( $old_settings['enable_page_cache'] )
+			&& ! empty( $settings['enable_page_cache'] )
+			&& $this->preload_source_settings_changed( $old_settings, $settings )
+		) {
+			$this->restart_preloading();
 		}
 
 		if ( ! empty( $old_settings['async_cache_cleaning'] ) && empty( $settings['async_cache_cleaning'] ) ) {
@@ -109,6 +119,19 @@ class SettingsSaveService {
 
 		if ( ! empty( $old_settings['enable_page_cache'] ) && empty( $settings['enable_page_cache'] ) ) {
 			\PoweredCache\Utils\clean_site_cache_dir();
+
+			if ( ! empty( $settings['enable_cache_preload'] ) ) {
+				$this->cancel_preloading();
+			}
+		}
+
+		if (
+			empty( $old_settings['enable_page_cache'] )
+			&& ! empty( $settings['enable_page_cache'] )
+			&& ! empty( $old_settings['enable_cache_preload'] )
+			&& ! empty( $settings['enable_cache_preload'] )
+		) {
+			$this->start_preloading();
 		}
 
 		if ( ! empty( $old_settings['rewrite_file_optimizer'] ) && empty( $settings['rewrite_file_optimizer'] ) ) {
@@ -137,7 +160,7 @@ class SettingsSaveService {
 	/**
 	 * Cancel preloading process when preload is disabled.
 	 */
-	private function cancel_preloading() {
+	protected function cancel_preloading() {
 		\PoweredCache\Utils\log( 'Cancel preload process - Settings toggle' );
 		$cache_preloader = CachePreloader::factory();
 		$cache_preloader->delete_all();
@@ -146,18 +169,55 @@ class SettingsSaveService {
 	/**
 	 * Kick-start preloading process when preload is enabled.
 	 */
-	private function start_preloading() {
+	protected function start_preloading() {
 		\PoweredCache\Utils\log( 'Enable Preloader - Settings toggle' );
 		Preloader::factory()->setup_preload_queue();
 		Preloader::factory()->dispatch_preload_queue();
 	}
 
 	/**
+	 * Rebuild the preload queue after source settings change.
+	 */
+	protected function restart_preloading() {
+		\PoweredCache\Utils\log( 'Refresh Preloader - Source settings changed' );
+		$this->start_preloading();
+	}
+
+	/**
 	 * Cancel async cache purging processes.
 	 */
-	private function cancel_async_cache_cleaning() {
+	protected function cancel_async_cache_cleaning() {
 		\PoweredCache\Utils\log( 'Cancel CachePurger process' );
 		$cache_purger = CachePurger::factory();
 		$cache_purger->cancel_process();
+	}
+
+	/**
+	 * Whether settings that populate the preload queue changed.
+	 *
+	 * @param array $old_settings Previous settings.
+	 * @param array $settings Current settings.
+	 *
+	 * @return bool
+	 */
+	private function preload_source_settings_changed( array $old_settings, array $settings ) {
+		$preload_sources = array(
+			'preload_homepage',
+			'preload_public_posts',
+			'preload_public_tax',
+			'enable_sitemap_preload',
+			'preload_sitemap',
+		);
+
+		foreach ( $preload_sources as $source ) {
+			$old_value = isset( $old_settings[ $source ] ) ? $old_settings[ $source ] : null;
+			$new_value = isset( $settings[ $source ] ) ? $settings[ $source ] : null;
+
+			if ( $old_value !== $new_value ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

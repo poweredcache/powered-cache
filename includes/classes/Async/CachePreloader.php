@@ -54,14 +54,20 @@ class CachePreloader extends ActionSchedulerProcess {
 	 * @return mixed
 	 */
 	protected function task( $item ) {
+		$this->settings = \PoweredCache\Utils\get_settings();
+
+		if ( empty( $this->settings['enable_cache_preload'] ) || empty( $this->settings['enable_page_cache'] ) ) {
+			\PoweredCache\Utils\log( 'Preload task skipped because page cache or cache preload is disabled.' );
+			return false;
+		}
+
 		// Stop early if system load is too high
 		if ( ! $this->should_continue() ) {
 			\PoweredCache\Utils\log( 'Preload task aborted early due to system load' );
 			return $item;
 		}
 
-		$this->settings = \PoweredCache\Utils\get_settings();
-		$delay          = absint( $this->settings['preload_request_interval'] ) * 1000000; // convert to microseconds
+		$delay = absint( $this->settings['preload_request_interval'] ) * 1000000; // convert to microseconds
 
 		\PoweredCache\Utils\log( sprintf( 'Preloading..: %s', $item ) );
 

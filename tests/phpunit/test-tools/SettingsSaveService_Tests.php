@@ -7,6 +7,70 @@
 
 namespace PoweredCache;
 
+// phpcs:disable Generic.Files.OneObjectStructurePerFile.MultipleFound
+
+/**
+ * Testable settings save service.
+ */
+class SettingsSaveService_Testable extends SettingsSaveService {
+
+	/**
+	 * Preload cancel call count.
+	 *
+	 * @var int
+	 */
+	public $preload_cancelled = 0;
+
+	/**
+	 * Preload start call count.
+	 *
+	 * @var int
+	 */
+	public $preload_started = 0;
+
+	/**
+	 * Preload restart call count.
+	 *
+	 * @var int
+	 */
+	public $preload_restarted = 0;
+
+	/**
+	 * Async cache cleaning cancel call count.
+	 *
+	 * @var int
+	 */
+	public $async_cache_cleaning_cancelled = 0;
+
+	/**
+	 * Cancel preloading process.
+	 */
+	protected function cancel_preloading() {
+		++$this->preload_cancelled;
+	}
+
+	/**
+	 * Start preloading process.
+	 */
+	protected function start_preloading() {
+		++$this->preload_started;
+	}
+
+	/**
+	 * Restart preloading process.
+	 */
+	protected function restart_preloading() {
+		++$this->preload_restarted;
+	}
+
+	/**
+	 * Cancel async cache cleaning.
+	 */
+	protected function cancel_async_cache_cleaning() {
+		++$this->async_cache_cleaning_cancelled;
+	}
+}
+
 /**
  * Settings save service test case.
  */
@@ -122,6 +186,95 @@ class SettingsSaveService_Tests extends TestCase {
 		$service = new SettingsSaveService();
 		$service->handle_side_effects( $old_settings, $settings );
 
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * It cancels queued preload jobs when page cache is disabled.
+	 */
+	public function test_handle_side_effects_cancels_preload_queue_when_page_cache_is_disabled() {
+		$old_settings = array(
+			'enable_page_cache'    => true,
+			'enable_cache_preload' => true,
+		);
+
+		$settings = array(
+			'enable_page_cache'    => false,
+			'enable_cache_preload' => true,
+		);
+
+		\WP_Mock::userFunction(
+			'PoweredCache\Utils\clean_site_cache_dir',
+			array(
+				'times'  => 1,
+				'return' => true,
+			)
+		);
+
+		\WP_Mock::expectAction( 'powered_cache_settings_saved', $old_settings, $settings );
+
+		$service = new SettingsSaveService_Testable();
+		$service->handle_side_effects( $old_settings, $settings );
+
+		$this->assertSame( 1, $service->preload_cancelled );
+		$this->assertSame( 0, $service->preload_started );
+		$this->assertSame( 0, $service->preload_restarted );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * It restarts queued preload jobs when source settings change.
+	 */
+	public function test_handle_side_effects_restarts_preload_queue_when_sources_change() {
+		$old_settings = array(
+			'enable_page_cache'    => true,
+			'enable_cache_preload' => true,
+			'preload_homepage'     => true,
+			'preload_public_posts' => true,
+			'preload_public_tax'   => true,
+		);
+
+		$settings = array(
+			'enable_page_cache'    => true,
+			'enable_cache_preload' => true,
+			'preload_homepage'     => true,
+			'preload_public_posts' => false,
+			'preload_public_tax'   => true,
+		);
+
+		\WP_Mock::expectAction( 'powered_cache_settings_saved', $old_settings, $settings );
+
+		$service = new SettingsSaveService_Testable();
+		$service->handle_side_effects( $old_settings, $settings );
+
+		$this->assertSame( 0, $service->preload_cancelled );
+		$this->assertSame( 0, $service->preload_started );
+		$this->assertSame( 1, $service->preload_restarted );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * It starts preload when page cache is re-enabled.
+	 */
+	public function test_handle_side_effects_starts_preload_when_page_cache_is_reenabled() {
+		$old_settings = array(
+			'enable_page_cache'    => false,
+			'enable_cache_preload' => true,
+		);
+
+		$settings = array(
+			'enable_page_cache'    => true,
+			'enable_cache_preload' => true,
+		);
+
+		\WP_Mock::expectAction( 'powered_cache_settings_saved', $old_settings, $settings );
+
+		$service = new SettingsSaveService_Testable();
+		$service->handle_side_effects( $old_settings, $settings );
+
+		$this->assertSame( 0, $service->preload_cancelled );
+		$this->assertSame( 1, $service->preload_started );
+		$this->assertSame( 0, $service->preload_restarted );
 		$this->assertConditionsMet();
 	}
 }
