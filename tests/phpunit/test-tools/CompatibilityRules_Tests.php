@@ -71,6 +71,65 @@ class CompatibilityRules_Tests extends TestCase {
 	}
 
 	/**
+	 * It applies environment compatibility packs.
+	 */
+	public function test_registry_loads_environment_compatibility_packs() {
+		$file = tempnam( sys_get_temp_dir(), 'pc-rules-' );
+		file_put_contents(
+			$file,
+			json_encode(
+				array(
+					'format'            => CompatibilityRules::FORMAT,
+					'format_version'    => CompatibilityRules::FORMAT_VERSION,
+					'rules'             => array(),
+					'conditional_rules' => array(
+						'environments' => array(
+							'cdn:cloudflare' => array(
+								'delay_exclusions' => array( 'cloudflare-challenge-script' ),
+								'settings_issues'  => array(
+									array(
+										'key'      => 'js_delay',
+										'severity' => 'info',
+										'code'     => 'cloudflare_guard',
+										'message'  => 'Cloudflare guard.',
+										'when'     => array(
+											'setting' => 'js_delay',
+											'value'   => true,
+										),
+									),
+								),
+							),
+						),
+					),
+				)
+			)
+		); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+
+		\WP_Mock::onFilter( 'powered_cache_compatibility_rules_active_plugins' )
+			->with( array() )
+			->reply( array() );
+		$_SERVER['HTTP_CF_RAY'] = 'test-ray';
+
+		$rules = new CompatibilityRules( $file );
+
+		$this->assertSame( array( 'cloudflare-challenge-script' ), $rules->rules( 'delay_exclusions' ) );
+		$this->assertSame(
+			array(
+				array(
+					'key'      => 'js_delay',
+					'severity' => 'info',
+					'code'     => 'cloudflare_guard',
+					'message'  => 'Cloudflare guard.',
+				),
+			),
+			$rules->settings_issues( array( 'js_delay' => true ) )
+		);
+
+		unset( $_SERVER['HTTP_CF_RAY'] );
+		unlink( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+	}
+
+	/**
 	 * It exposes bundled option-aware compatibility notes.
 	 */
 	public function test_bundled_registry_reports_autoptimize_option_conflicts() {

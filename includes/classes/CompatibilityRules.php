@@ -41,6 +41,13 @@ class CompatibilityRules {
 	private $active_plugins;
 
 	/**
+	 * Active hosting/runtime environment identifiers.
+	 *
+	 * @var array|null
+	 */
+	private $active_environments;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param string|null $file Registry file path.
@@ -433,20 +440,12 @@ class CompatibilityRules {
 	 * @return array
 	 */
 	private function conditional_rules( array $registry, $bucket ) {
-		if ( empty( $registry['conditional_rules']['plugins'] ) || ! is_array( $registry['conditional_rules']['plugins'] ) ) {
+		if ( empty( $registry['conditional_rules'] ) || ! is_array( $registry['conditional_rules'] ) ) {
 			return array();
 		}
 
-		$active_plugins = $this->active_plugins();
-		$rules          = array();
-
-		foreach ( $registry['conditional_rules']['plugins'] as $plugin => $plugin_rules ) {
-			if ( ! is_string( $plugin ) || ! in_array( $plugin, $active_plugins, true ) || empty( $plugin_rules[ $bucket ] ) || ! is_array( $plugin_rules[ $bucket ] ) ) {
-				continue;
-			}
-
-			$rules = $this->append_unique( $rules, $this->normalize_rules( $plugin_rules[ $bucket ] ) );
-		}
+		$rules = $this->conditional_rules_for_sources( $registry['conditional_rules'], 'plugins', $this->active_plugins(), $bucket );
+		$rules = $this->append_unique( $rules, $this->conditional_rules_for_sources( $registry['conditional_rules'], 'environments', $this->active_environments(), $bucket ) );
 
 		return $rules;
 	}
@@ -460,19 +459,67 @@ class CompatibilityRules {
 	 * @return array
 	 */
 	private function conditional_setting_issues( array $registry, array $settings ) {
-		if ( empty( $registry['conditional_rules']['plugins'] ) || ! is_array( $registry['conditional_rules']['plugins'] ) ) {
+		if ( empty( $registry['conditional_rules'] ) || ! is_array( $registry['conditional_rules'] ) ) {
 			return array();
 		}
 
-		$active_plugins = $this->active_plugins();
-		$issues         = array();
+		$issues = $this->conditional_setting_issues_for_sources( $registry['conditional_rules'], 'plugins', $this->active_plugins(), $settings );
+		$issues = $this->append_unique_issues( $issues, $this->conditional_setting_issues_for_sources( $registry['conditional_rules'], 'environments', $this->active_environments(), $settings ) );
 
-		foreach ( $registry['conditional_rules']['plugins'] as $plugin => $plugin_rules ) {
-			if ( ! is_string( $plugin ) || ! in_array( $plugin, $active_plugins, true ) || empty( $plugin_rules['settings_issues'] ) || ! is_array( $plugin_rules['settings_issues'] ) ) {
+		return $issues;
+	}
+
+	/**
+	 * Return conditional rules for active source identifiers.
+	 *
+	 * @param array  $conditional_rules Conditional registry payload.
+	 * @param string $group             Source group.
+	 * @param array  $active_sources    Active source identifiers.
+	 * @param string $bucket            Rule bucket.
+	 *
+	 * @return array
+	 */
+	private function conditional_rules_for_sources( array $conditional_rules, $group, array $active_sources, $bucket ) {
+		if ( empty( $conditional_rules[ $group ] ) || ! is_array( $conditional_rules[ $group ] ) ) {
+			return array();
+		}
+
+		$rules = array();
+
+		foreach ( $conditional_rules[ $group ] as $source => $source_rules ) {
+			if ( ! is_string( $source ) || ! in_array( $source, $active_sources, true ) || empty( $source_rules[ $bucket ] ) || ! is_array( $source_rules[ $bucket ] ) ) {
 				continue;
 			}
 
-			$issues = $this->append_unique_issues( $issues, $this->setting_issues_from_items( $plugin_rules['settings_issues'], $settings ) );
+			$rules = $this->append_unique( $rules, $this->normalize_rules( $source_rules[ $bucket ] ) );
+		}
+
+		return $rules;
+	}
+
+	/**
+	 * Return conditional setting issues for active source identifiers.
+	 *
+	 * @param array  $conditional_rules Conditional registry payload.
+	 * @param string $group             Source group.
+	 * @param array  $active_sources    Active source identifiers.
+	 * @param array  $settings          Current settings.
+	 *
+	 * @return array
+	 */
+	private function conditional_setting_issues_for_sources( array $conditional_rules, $group, array $active_sources, array $settings ) {
+		if ( empty( $conditional_rules[ $group ] ) || ! is_array( $conditional_rules[ $group ] ) ) {
+			return array();
+		}
+
+		$issues = array();
+
+		foreach ( $conditional_rules[ $group ] as $source => $source_rules ) {
+			if ( ! is_string( $source ) || ! in_array( $source, $active_sources, true ) || empty( $source_rules['settings_issues'] ) || ! is_array( $source_rules['settings_issues'] ) ) {
+				continue;
+			}
+
+			$issues = $this->append_unique_issues( $issues, $this->setting_issues_from_items( $source_rules['settings_issues'], $settings ) );
 		}
 
 		return $issues;
@@ -524,6 +571,97 @@ class CompatibilityRules {
 		$this->active_plugins = is_array( $plugins ) ? $this->normalize_rules( $plugins ) : array();
 
 		return $this->active_plugins;
+	}
+
+	/**
+	 * Return active hosting/runtime environment identifiers.
+	 *
+	 * @return array
+	 */
+	private function active_environments() {
+		if ( null !== $this->active_environments ) {
+			return $this->active_environments;
+		}
+
+		$environments = $this->detect_environments();
+
+		/**
+		 * Filter active hosting/runtime environments used by compatibility rules.
+		 *
+		 * @hook powered_cache_compatibility_rules_active_environments
+		 *
+		 * @param {array} $environments Active environment identifiers.
+		 *
+		 * @return {array} New value.
+		 *
+		 * @since 4.0.0
+		 */
+		$environments = apply_filters( 'powered_cache_compatibility_rules_active_environments', $environments );
+
+		$this->active_environments = is_array( $environments ) ? $this->normalize_rules( $environments ) : array();
+
+		return $this->active_environments;
+	}
+
+	/**
+	 * Detect common hosting/runtime environments.
+	 *
+	 * @return array
+	 */
+	private function detect_environments() {
+		$environments = array();
+		$software     = $this->server_value( 'SERVER_SOFTWARE' );
+
+		if ( false !== stripos( $software, 'litespeed' ) ) {
+			$environments[] = 'server:litespeed';
+		}
+
+		if ( false !== stripos( $software, 'nginx' ) ) {
+			$environments[] = 'server:nginx';
+		}
+
+		if ( false !== stripos( $software, 'apache' ) ) {
+			$environments[] = 'server:apache';
+		}
+
+		if ( '' !== $this->server_value( 'HTTP_CF_RAY' ) || false !== stripos( $this->server_value( 'HTTP_CDN_LOOP' ), 'cloudflare' ) ) {
+			$environments[] = 'cdn:cloudflare';
+		}
+
+		if ( defined( 'KINSTAMU_VERSION' ) ) {
+			$environments[] = 'host:kinsta';
+		}
+
+		if ( defined( 'WPE_APIKEY' ) || defined( 'WPE_CLUSTER_ID' ) || defined( 'PWP_NAME' ) ) {
+			$environments[] = 'host:wp-engine';
+		}
+
+		if ( defined( 'PANTHEON_ENVIRONMENT' ) ) {
+			$environments[] = 'host:pantheon';
+		}
+
+		return $this->normalize_rules( $environments );
+	}
+
+	/**
+	 * Return a sanitized server value.
+	 *
+	 * @param string $key Server key.
+	 *
+	 * @return string
+	 */
+	private function server_value( $key ) {
+		if ( empty( $_SERVER[ $key ] ) || ! is_scalar( $_SERVER[ $key ] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			return '';
+		}
+
+		$value = $_SERVER[ $key ]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+
+		if ( function_exists( 'wp_unslash' ) ) {
+			$value = wp_unslash( $value );
+		}
+
+		return trim( (string) $value );
 	}
 
 	/**

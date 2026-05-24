@@ -37,6 +37,27 @@
     }
   ],
   "conditional_rules": {
+    "environments": {
+      "cdn:cloudflare": {
+        "delay_exclusions": [
+          "cdn-cgi/challenge-platform",
+          "/cdn-cgi/challenge-platform/",
+          "cf-chl-widget"
+        ],
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "info",
+            "code": "cloudflare_challenge_delay_guard",
+            "message": "Cloudflare challenge scripts are protected from delayed JavaScript when Cloudflare is detected.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          }
+        ]
+      }
+    },
     "plugins": {
       "woocommerce/woocommerce.php": {
         "delay_exclusions": [
