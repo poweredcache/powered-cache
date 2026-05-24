@@ -162,7 +162,7 @@ class SettingsManifest {
 			'deprecated'    => (bool) $field['deprecated'],
 		);
 
-		foreach ( array( 'docs_fragment', 'docs_path', 'docs_url', 'max', 'min', 'options', 'visible_when', 'zone_key', 'zone_options' ) as $metadata_key ) {
+		foreach ( array( 'docs_fragment', 'docs_path', 'docs_url', 'max', 'min', 'options', 'placeholder', 'visible_when', 'zone_key', 'zone_options' ) as $metadata_key ) {
 			if ( isset( $metadata[ $metadata_key ] ) ) {
 				$manifest[ $metadata_key ] = $metadata[ $metadata_key ];
 			}
@@ -693,6 +693,7 @@ class SettingsManifest {
 				'description' => 'Load critical font files earlier to reduce late text rendering shifts.',
 				'group'       => 'Resource hints',
 				'docs_path'   => 'preload-fonts',
+				'placeholder' => "https://example.com/wp-content/themes/theme/assets/fonts/inter.woff2\n/wp-content/uploads/fonts/brand.woff",
 			),
 			'enable_lcp_optimization'        => array(
 				'label'               => 'LCP Optimization',

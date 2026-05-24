@@ -156,6 +156,7 @@ class SettingsManifest_Tests extends TestCase {
 		$this->assertSame( 'prefetch-dns', $fields['prefetch_dns']['docs_path'] );
 		$this->assertSame( 'preconnect-resources', $fields['preconnect_resource']['docs_path'] );
 		$this->assertSame( 'preload-fonts', $fields['preload_fonts']['docs_path'] );
+		$this->assertStringContainsString( '.woff2', $fields['preload_fonts']['placeholder'] );
 		$this->assertSame( 'https://dash.cloudflare.com/profile/api-tokens', $fields['cloudflare_api_token']['docs_url'] );
 	}
 

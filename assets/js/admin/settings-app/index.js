@@ -929,6 +929,7 @@ const LockedControlPreview = ({ field }) => {
 					{...controlProps}
 					label={field.label}
 					onChange={noop}
+					placeholder={field.placeholder || ''}
 					value={previewValue}
 				/>
 			);
@@ -1195,6 +1196,7 @@ const SettingsField = ({ field, issues = [], settings, onChange }) => {
 					aria-describedby={descriptionId}
 					label={field.label}
 					onChange={updateValue}
+					placeholder={field.placeholder || ''}
 					value={displayValue(value, field)}
 				/>
 			);
