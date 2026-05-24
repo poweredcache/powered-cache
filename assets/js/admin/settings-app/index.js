@@ -667,6 +667,8 @@ const CssOptimizationPanel = ({
 						service.available === false ||
 						service.enabled === false ||
 						!settingEnabled ||
+						serviceState === 'processing' ||
+						Number(service.queueCount || 0) > 0 ||
 						generatingService === serviceKey;
 					const queueMessage =
 						service.queueCount > 0
@@ -689,10 +691,13 @@ const CssOptimizationPanel = ({
 									'powered-cache',
 								)
 							: queueMessage || service.lastMessage);
-					const generateLabel =
-						serviceState === 'warning' || service.isStale
-							? __('Retry generation', 'powered-cache')
-							: __('Regenerate', 'powered-cache');
+					let generateLabel = __('Regenerate', 'powered-cache');
+
+					if (serviceState === 'processing' || Number(service.queueCount || 0) > 0) {
+						generateLabel = __('Generating', 'powered-cache');
+					} else if (serviceState === 'warning' || service.isStale) {
+						generateLabel = __('Retry generation', 'powered-cache');
+					}
 
 					return (
 						<div
