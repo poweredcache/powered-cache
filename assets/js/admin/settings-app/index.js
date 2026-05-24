@@ -1922,6 +1922,13 @@ const SettingsApp = () => {
 				});
 			})
 			.catch((error) => {
+				if (error && error.data && error.data.cssOptimization) {
+					setPremiumInfo((currentPremiumInfo) => ({
+						...currentPremiumInfo,
+						cssOptimization: error.data.cssOptimization,
+					}));
+				}
+
 				setNotice({
 					status: 'error',
 					message:
