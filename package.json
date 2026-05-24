@@ -17,6 +17,7 @@
     "format-js": "10up-toolkit format-js",
     "lint-js": "10up-toolkit lint-js",
     "lint-style": "10up-toolkit lint-style",
+    "e2e:settings": "node tests/e2e/settings-smoke.mjs",
     "test": "10up-toolkit test-unit-jest",
     "make-pot": "wp i18n make-pot . languages/powered-cache.pot --include='includes'",
     "build-release": "npm install --production=false && composer install && npm run build && npm run make-pot",

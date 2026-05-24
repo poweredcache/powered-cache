@@ -56,6 +56,20 @@
             }
           }
         ]
+      },
+      "server:nginx": {
+        "settings_issues": [
+          {
+            "key": "auto_configure_htaccess",
+            "severity": "warning",
+            "code": "nginx_htaccess_noop",
+            "message": "Nginx does not read .htaccess files. Keep this off unless Apache-compatible rewrite handling is also available.",
+            "when": {
+              "setting": "auto_configure_htaccess",
+              "value": true
+            }
+          }
+        ]
       }
     },
     "plugins": {

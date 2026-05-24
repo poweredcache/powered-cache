@@ -130,6 +130,31 @@ class CompatibilityRules_Tests extends TestCase {
 	}
 
 	/**
+	 * It exposes bundled server compatibility notes.
+	 */
+	public function test_bundled_registry_reports_nginx_htaccess_note() {
+		\WP_Mock::onFilter( 'powered_cache_compatibility_rules_active_plugins' )
+			->with( array() )
+			->reply( array() );
+		$_SERVER['SERVER_SOFTWARE'] = 'nginx/1.25.0';
+
+		$rules  = CompatibilityRules::factory();
+		$issues = $rules->settings_issues( array( 'auto_configure_htaccess' => true ) );
+
+		$this->assertContains(
+			array(
+				'key'      => 'auto_configure_htaccess',
+				'severity' => 'warning',
+				'code'     => 'nginx_htaccess_noop',
+				'message'  => 'Nginx does not read .htaccess files. Keep this off unless Apache-compatible rewrite handling is also available.',
+			),
+			$issues
+		);
+
+		unset( $_SERVER['SERVER_SOFTWARE'] );
+	}
+
+	/**
 	 * It exposes bundled option-aware compatibility notes.
 	 */
 	public function test_bundled_registry_reports_autoptimize_option_conflicts() {
