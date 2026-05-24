@@ -555,6 +555,42 @@ const cssCompatibilitySourceSummary = (compatibility = {}) => {
 		: labels.join(', ');
 };
 
+const compactLabelList = (labels = [], limit = 3) => {
+	const visible = labels.filter(Boolean).slice(0, limit);
+
+	if (!visible.length) {
+		return '';
+	}
+
+	const remaining = Math.max(0, labels.length - visible.length);
+
+	return remaining
+		? sprintf(
+				/* translators: 1: comma-separated labels, 2: remaining label count. */
+				__('%1$s, and %2$d more', 'powered-cache'),
+				visible.join(', '),
+				remaining,
+			)
+		: visible.join(', ');
+};
+
+const cssServiceCompatibilityMessage = (serviceCompatibility = {}) => {
+	const ruleCount = Number(serviceCompatibility.ruleCount || 0);
+	const sources = serviceCompatibility.sources || [];
+	const sourceSummary = compactLabelList(sources);
+
+	if (!ruleCount || !sourceSummary) {
+		return '';
+	}
+
+	return sprintf(
+		/* translators: 1: rule count, 2: source summary. */
+		__('%1$d compatibility rule(s) active from %2$s.', 'powered-cache'),
+		ruleCount,
+		sourceSummary,
+	);
+};
+
 const formatTimestamp = (timestamp) => {
 	const value = parseInt(timestamp, 10);
 
@@ -782,6 +818,14 @@ const CssOptimizationPanel = ({
 									'powered-cache',
 								)
 							: queueMessage || service.lastMessage);
+					const serviceCompatibility =
+						service.compatibility ||
+						(cssOptimization.compatibility &&
+							cssOptimization.compatibility.services &&
+							cssOptimization.compatibility.services[serviceKey]) ||
+						{};
+					const serviceCompatibilityMessage =
+						cssServiceCompatibilityMessage(serviceCompatibility);
 					let generateLabel = __('Regenerate', 'powered-cache');
 
 					if (serviceState === 'processing' || Number(service.queueCount || 0) > 0) {
@@ -838,6 +882,11 @@ const CssOptimizationPanel = ({
 							{serviceMessage && (
 								<p className="pc-settings-service-card__message">
 									{serviceMessage}
+								</p>
+							)}
+							{serviceCompatibilityMessage && (
+								<p className="pc-settings-service-card__compatibility">
+									{serviceCompatibilityMessage}
 								</p>
 							)}
 							{service.lastUrl && (

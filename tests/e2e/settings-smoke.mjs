@@ -31,6 +31,12 @@ if (process.argv.includes('--help') || process.argv.includes('-h')) {
 	process.exit(0);
 }
 
+const assert = (condition, message) => {
+	if (!condition) {
+		throw new Error(message);
+	}
+};
+
 const defaultBaseUrl = process.env.CI ? 'http://localhost:8889' : 'https://plugindevel.test';
 const baseUrl = (process.env.PC_E2E_BASE_URL || defaultBaseUrl).replace(/\/$/, '');
 const profile = process.env.PC_E2E_PROFILE || 'core';
@@ -63,12 +69,6 @@ const loadPlaywright = async () => {
 		throw new Error(
 			'Playwright is not installed. Run `npm install --save-dev @playwright/test` and `npx playwright install chromium` first.',
 		);
-	}
-};
-
-const assert = (condition, message) => {
-	if (!condition) {
-		throw new Error(message);
 	}
 };
 

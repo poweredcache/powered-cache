@@ -16,6 +16,8 @@
 	max-width: 1180px;
 	--pc-admin-good: #008a20;
 	--pc-admin-good-border: #b8e6bf;
+	--pc-admin-info-border: #c5d9ed;
+	--pc-admin-info-text: #1d4f7a;
 	--pc-admin-danger-border: #e0b4b4;
 	--pc-admin-error: #8a2424;
 	--pc-admin-error-border: #d63638;
@@ -237,7 +239,7 @@
 
 .pc-settings-status-pill--info {
 	background: #f0f6fc;
-	border-color: #c5d9ed;
+	border-color: var(--pc-admin-info-border);
 	color: var(--pc-admin-primary-dark);
 }
 
@@ -393,6 +395,14 @@
 	border-left: 3px solid var(--pc-admin-warning-border);
 	color: var(--pc-admin-warning);
 	margin-top: 12px !important;
+	padding: 8px 10px;
+}
+
+.pc-settings-service-card__compatibility {
+	background: #eef6ff;
+	border-left: 3px solid var(--pc-admin-primary);
+	color: var(--pc-admin-info-text);
+	margin-top: 10px !important;
 	padding: 8px 10px;
 }
 
