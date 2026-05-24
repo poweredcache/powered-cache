@@ -178,7 +178,7 @@ Yes, it’s compatible with PHP 8+
 - Tested with WP 7.0
 
 = 3.7.2 (February 02, 2026) =
-- [Fixed] Elementor ajax conflict with background processing.
+- [Fixed] Elementor ajax conflict with async processing.
 - [Updated] Dependencies.
 
 = 3.7.1 (December 17, 2025) =

@@ -116,6 +116,79 @@ class Preloader_Tests extends TestCase {
 	}
 
 	/**
+	 * It schedules the full related URL list when a post purge is deferred.
+	 */
+	public function test_deferred_preload_queue_uses_full_related_urls() {
+		$deleted_urls = array(
+			'https://example.test/post/',
+		);
+
+		$related_urls = array(
+			'https://example.test/post/',
+			'https://example.test/category/news/',
+			'https://example.test/',
+		);
+
+		\WP_Mock::userFunction(
+			'wp_schedule_single_event',
+			array(
+				'times' => 1,
+				'args'  => array(
+					\Mockery::on(
+						function ( $timestamp ) {
+							return is_int( $timestamp ) && $timestamp >= time() && $timestamp <= time() + 20;
+						}
+					),
+					Constants\DEFERRED_PRELOAD_QUEUE_CRON_NAME,
+					array(
+						'post_id' => 123,
+						'urls'    => $related_urls,
+					),
+				),
+			)
+		);
+
+		$preloader = new Preloader();
+		$preloader->deferred_preload_queue( 123, $deleted_urls, $related_urls );
+
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * It keeps the two-argument deferred preload contract for older callers.
+	 */
+	public function test_deferred_preload_queue_keeps_deleted_urls_fallback() {
+		$deleted_urls = array(
+			'https://example.test/post/',
+			'https://example.test/',
+		);
+
+		\WP_Mock::userFunction(
+			'wp_schedule_single_event',
+			array(
+				'times' => 1,
+				'args'  => array(
+					\Mockery::on(
+						function ( $timestamp ) {
+							return is_int( $timestamp ) && $timestamp >= time() && $timestamp <= time() + 20;
+						}
+					),
+					Constants\DEFERRED_PRELOAD_QUEUE_CRON_NAME,
+					array(
+						'post_id' => 123,
+						'urls'    => $deleted_urls,
+					),
+				),
+			)
+		);
+
+		$preloader = new Preloader();
+		$preloader->deferred_preload_queue( 123, $deleted_urls );
+
+		$this->assertConditionsMet();
+	}
+
+	/**
 	 * Mock stored settings with representative font preload values.
 	 */
 	private function mock_preload_font_settings() {

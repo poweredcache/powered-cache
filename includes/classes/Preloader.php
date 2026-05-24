@@ -82,7 +82,7 @@ class Preloader {
 		add_action( 'admin_post_powered_cache_preload_cache', [ $this, 'start_preload' ] );
 		add_action( 'powered_cache_purge_all_cache', [ $this, 'setup_preload_queue' ] );
 		add_action( 'powered_cache_clean_site_cache_dir', [ $this, 'setup_preload_queue' ] );
-		add_action( 'powered_cache_advanced_cache_purge_post', [ $this, 'deferred_preload_queue' ], 10, 2 );
+		add_action( 'powered_cache_advanced_cache_purge_post', [ $this, 'deferred_preload_queue' ], 10, 3 );
 		add_action( 'powered_cache_expired_files_deleted', [ $this, 'add_expired_urls_to_preload_queue' ], 10, 2 );
 		add_action( DEFERRED_PRELOAD_QUEUE_CRON_NAME, [ $this, 'add_purged_urls_to_preload_queue' ], 10, 2 );
 		add_action( 'shutdown', [ $this, 'dispatch_preload_queue' ], 0 );
@@ -244,19 +244,23 @@ class Preloader {
 	/**
 	 * Add URLs to preload queue with a delay
 	 *
-	 * @param int   $post_id Post ID
-	 * @param array $urls    The URL list of the related pages that will be preloaded
+	 * @param int   $post_id      Post ID.
+	 * @param array $deleted_urls The URL list of related pages that were purged.
+	 * @param array $urls         The full URL list of related pages to preload.
 	 *
 	 * @since 3.6
 	 */
-	public function deferred_preload_queue( $post_id, $urls ) {
+	public function deferred_preload_queue( $post_id, $deleted_urls, $urls = [] ) {
 		\PoweredCache\Utils\log( sprintf( 'Post ID %d purged from cache, adding related URLs to preload queue with a delay.', $post_id ) );
+
+		$preload_urls = ! empty( $urls ) ? $urls : $deleted_urls;
+
 		wp_schedule_single_event(
 			time() + 10,
 			DEFERRED_PRELOAD_QUEUE_CRON_NAME,
 			[
 				'post_id' => $post_id,
-				'urls'    => $urls,
+				'urls'    => $preload_urls,
 			]
 		);
 	}
