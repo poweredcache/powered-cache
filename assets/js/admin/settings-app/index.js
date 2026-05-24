@@ -689,6 +689,10 @@ const CssOptimizationPanel = ({
 									'powered-cache',
 								)
 							: queueMessage || service.lastMessage);
+					const generateLabel =
+						serviceState === 'warning' || service.isStale
+							? __('Retry generation', 'powered-cache')
+							: __('Regenerate', 'powered-cache');
 
 					return (
 						<div
@@ -757,7 +761,7 @@ const CssOptimizationPanel = ({
 									type="button"
 									variant="secondary"
 								>
-									{__('Regenerate', 'powered-cache')}
+									{generateLabel}
 								</Button>
 							</div>
 						</div>
