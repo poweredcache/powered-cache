@@ -1,5 +1,5 @@
 const { __, sprintf } = wp.i18n;
-const { render, useEffect, useMemo, useState } = wp.element;
+const { createRoot, render, useEffect, useMemo, useState } = wp.element;
 const { Button, Notice, SelectControl, Spinner, TextControl, TextareaControl, ToggleControl } =
 	wp.components;
 const { apiFetch } = wp;
@@ -2224,5 +2224,9 @@ const SettingsApp = () => {
 const mountNode = document.getElementById('powered-cache-settings-app');
 
 if (mountNode) {
-	render(<SettingsApp />, mountNode);
+	if (createRoot) {
+		createRoot(mountNode).render(<SettingsApp />);
+	} else {
+		render(<SettingsApp />, mountNode);
+	}
 }

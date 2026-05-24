@@ -768,6 +768,10 @@
 	width: 100%;
 }
 
+.wp-core-ui .pc-settings-duration-control select.pc-settings-duration-control__input {
+	max-width: none;
+}
+
 .pc-settings-cdn-routes {
 	display: flex;
 	flex-direction: column;
@@ -1025,10 +1029,6 @@
 		justify-content: flex-start;
 	}
 
-	.pc-settings-duration-control {
-		grid-template-columns: 1fr;
-	}
-
 	.pc-settings-validation-summary__issue {
 		flex-direction: column;
 		gap: 2px;
@@ -1073,5 +1073,12 @@
 		left: 12px;
 		right: 12px;
 		width: auto;
+	}
+}
+
+@media (max-width: 600px) {
+
+	.pc-settings-duration-control {
+		grid-template-columns: 1fr;
 	}
 }
