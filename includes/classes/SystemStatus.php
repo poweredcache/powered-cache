@@ -234,10 +234,14 @@ class SystemStatus {
 	 * @return array
 	 */
 	private function action_scheduler_check() {
-		$ready = function_exists( 'as_enqueue_async_action' )
-			&& class_exists( '\ActionScheduler' )
-			&& is_callable( array( '\ActionScheduler', 'is_initialized' ) )
-			&& \ActionScheduler::is_initialized( __METHOD__ );
+		$ready = isset( $this->context['action_scheduler_ready'] )
+			? (bool) $this->context['action_scheduler_ready']
+			: (
+				function_exists( 'as_enqueue_async_action' )
+				&& class_exists( '\ActionScheduler' )
+				&& is_callable( array( '\ActionScheduler', 'is_initialized' ) )
+				&& \ActionScheduler::is_initialized( __METHOD__ )
+			);
 
 		if ( ! $ready ) {
 			return $this->check(

@@ -60,6 +60,43 @@ class SystemStatus_Tests extends TestCase {
 	}
 
 	/**
+	 * It reports Action Scheduler readiness.
+	 */
+	public function test_reports_action_scheduler_readiness() {
+		$status = new SystemStatus(
+			array(
+				'enable_page_cache' => false,
+				'object_cache'      => 'off',
+			),
+			array(
+				'action_scheduler_ready' => true,
+			)
+		);
+		$report = $status->report();
+
+		$this->assertCheckExists( 'action_scheduler', SystemStatus::STATUS_GOOD, $report['checks'] );
+	}
+
+	/**
+	 * It reports Action Scheduler readiness issues.
+	 */
+	public function test_reports_action_scheduler_readiness_issues() {
+		$status = new SystemStatus(
+			array(
+				'enable_page_cache' => false,
+				'object_cache'      => 'off',
+			),
+			array(
+				'action_scheduler_ready' => false,
+			)
+		);
+		$report = $status->report();
+
+		$this->assertSame( SystemStatus::STATUS_WARNING, $report['status'] );
+		$this->assertCheckExists( 'action_scheduler', SystemStatus::STATUS_WARNING, $report['checks'] );
+	}
+
+	/**
 	 * Assert that a system check exists.
 	 *
 	 * @param string $code Checks code.
