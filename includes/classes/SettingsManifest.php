@@ -84,7 +84,7 @@ class SettingsManifest {
 			),
 			'misc'              => array(
 				'label'       => 'Tools',
-				'description' => 'Manage cache footprint, async cleanup, tracking, and developer mode.',
+				'description' => 'Review diagnostics, cache footprint, async cleanup, tracking, and developer mode.',
 				'order'       => 90,
 			),
 		);

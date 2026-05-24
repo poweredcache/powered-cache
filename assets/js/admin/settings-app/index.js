@@ -2265,85 +2265,79 @@ const SettingsApp = () => {
 			/>
 
 			{activeSection === 'cache' && (
-				<>
-					<div
-						className="pc-settings-overview"
-						aria-label={__('Settings overview', 'powered-cache')}
-					>
-						<MetricCard
-							description={__(
-								'HTML cache delivery for anonymous visits.',
-								'powered-cache',
-							)}
-							label={__('Page Cache', 'powered-cache')}
-							tone={settings.enable_page_cache ? 'good' : 'warning'}
-							value={
-								settings.enable_page_cache
-									? __('Enabled', 'powered-cache')
-									: __('Disabled', 'powered-cache')
-							}
-						/>
-						<MetricCard
-							description={__(
-								'Persistent backend for dynamic WordPress data.',
-								'powered-cache',
-							)}
-							label={__('Object Cache', 'powered-cache')}
-							tone={
-								settings.object_cache && settings.object_cache !== 'off'
-									? 'good'
-									: 'neutral'
-							}
-							value={
-								settings.object_cache && settings.object_cache !== 'off'
-									? settings.object_cache
-									: __('Off', 'powered-cache')
-							}
-						/>
-						<MetricCard
-							description={__(
-								'Core optimizations currently switched on.',
-								'powered-cache',
-							)}
-							label={__('Active Controls', 'powered-cache')}
-							tone="good"
-							value={`${enabledCoreCount}/5`}
-						/>
-						<MetricCard
-							description={
-								appConfig.isPremium
-									? premiumInfo.licenseMessage ||
-										__(
-											'Premium optimizations are available on this site.',
-											'powered-cache',
-										)
-									: __(
-											'Locked controls are shown in context across the settings.',
-											'powered-cache',
-										)
-							}
-							label={
-								appConfig.isPremium
-									? __('License', 'powered-cache')
-									: __('Premium Features', 'powered-cache')
-							}
-							tone={
-								appConfig.isPremium && !premiumInfo.licenseActive
-									? 'warning'
-									: 'premium'
-							}
-							value={
-								appConfig.isPremium
-									? labelFromKey(premiumInfo.licenseStatus || 'unknown')
-									: premiumFields.length
-							}
-						/>
-					</div>
-					<SystemStatusPanel
-						onSelectSection={updateActiveSection}
-						systemStatus={systemStatus}
+				<div
+					className="pc-settings-overview"
+					aria-label={__('Settings overview', 'powered-cache')}
+				>
+					<MetricCard
+						description={__(
+							'HTML cache delivery for anonymous visits.',
+							'powered-cache',
+						)}
+						label={__('Page Cache', 'powered-cache')}
+						tone={settings.enable_page_cache ? 'good' : 'warning'}
+						value={
+							settings.enable_page_cache
+								? __('Enabled', 'powered-cache')
+								: __('Disabled', 'powered-cache')
+						}
 					/>
-				</>
+					<MetricCard
+						description={__(
+							'Persistent backend for dynamic WordPress data.',
+							'powered-cache',
+						)}
+						label={__('Object Cache', 'powered-cache')}
+						tone={
+							settings.object_cache && settings.object_cache !== 'off'
+								? 'good'
+								: 'neutral'
+						}
+						value={
+							settings.object_cache && settings.object_cache !== 'off'
+								? settings.object_cache
+								: __('Off', 'powered-cache')
+						}
+					/>
+					<MetricCard
+						description={__(
+							'Core optimizations currently switched on.',
+							'powered-cache',
+						)}
+						label={__('Active Controls', 'powered-cache')}
+						tone="good"
+						value={`${enabledCoreCount}/5`}
+					/>
+					<MetricCard
+						description={
+							appConfig.isPremium
+								? premiumInfo.licenseMessage ||
+									__(
+										'Premium optimizations are available on this site.',
+										'powered-cache',
+									)
+								: __(
+										'Locked controls are shown in context across the settings.',
+										'powered-cache',
+									)
+						}
+						label={
+							appConfig.isPremium
+								? __('License', 'powered-cache')
+								: __('Premium Features', 'powered-cache')
+						}
+						tone={
+							appConfig.isPremium && !premiumInfo.licenseActive
+								? 'warning'
+								: 'premium'
+						}
+						value={
+							appConfig.isPremium
+								? labelFromKey(premiumInfo.licenseStatus || 'unknown')
+								: premiumFields.length
+						}
+					/>
+				</div>
 			)}
 
 			{!appConfig.isPremium && (
@@ -2410,7 +2404,15 @@ const SettingsApp = () => {
 								sectionKey={activeSection}
 								settings={settings}
 							/>
-							{activeSection === 'misc' && <SettingsToolsActions />}
+							{activeSection === 'misc' && (
+								<>
+									<SystemStatusPanel
+										onSelectSection={updateActiveSection}
+										systemStatus={systemStatus}
+									/>
+									<SettingsToolsActions />
+								</>
+							)}
 						</>
 					)}
 				</div>
