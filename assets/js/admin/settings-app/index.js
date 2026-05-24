@@ -391,6 +391,97 @@ const MetricCard = ({ label, value, description, tone = 'neutral' }) => (
 	</div>
 );
 
+const SystemStatusPanel = ({ onSelectSection = () => {}, systemStatus = {} }) => {
+	const checks = Array.isArray(systemStatus.checks) ? systemStatus.checks : [];
+
+	if (!checks.length) {
+		return null;
+	}
+
+	const counts = systemStatus.counts || {};
+	const summaryStatus = systemStatus.status || 'good';
+	const statusLabel = {
+		good: __('Ready', 'powered-cache'),
+		warning: __('Needs attention', 'powered-cache'),
+		info: __('Review', 'powered-cache'),
+		idle: __('Idle', 'powered-cache'),
+	};
+	const visibleChecks = [...checks].sort((first, second) => {
+		const weight = {
+			warning: 0,
+			info: 1,
+			idle: 2,
+			good: 3,
+		};
+
+		return (weight[first.status] ?? 4) - (weight[second.status] ?? 4);
+	});
+
+	return (
+		<section className={`pc-settings-system pc-settings-system--${summaryStatus}`}>
+			<div className="pc-settings-system__header">
+				<div>
+					<span className="pc-settings-badge">{__('System check', 'powered-cache')}</span>
+					<h2>{__('Optimization Advisor', 'powered-cache')}</h2>
+					<p>
+						{__(
+							'Verify the runtime pieces that keep cache, preload, and background optimization jobs reliable.',
+							'powered-cache',
+						)}
+					</p>
+				</div>
+				<div className="pc-settings-system__summary">
+					<span
+						className={`pc-settings-status-pill pc-settings-status-pill--${summaryStatus}`}
+					>
+						{statusLabel[summaryStatus] || statusLabel.info}
+					</span>
+					<span>
+						{sprintf(
+							/* translators: 1: warning count, 2: ready count. */
+							__('%1$d attention, %2$d ready', 'powered-cache'),
+							Number(counts.warning || 0),
+							Number(counts.good || 0),
+						)}
+					</span>
+				</div>
+			</div>
+			<div className="pc-settings-system__grid">
+				{visibleChecks.map((check) => (
+					<div
+						className={`pc-settings-system-check pc-settings-system-check--${check.status}`}
+						key={check.code}
+					>
+						<div className="pc-settings-system-check__title">
+							<strong>{check.label || labelFromKey(check.code)}</strong>
+							<span
+								className={`pc-settings-status-pill pc-settings-status-pill--${check.status}`}
+							>
+								{statusLabel[check.status] || statusLabel.info}
+							</span>
+						</div>
+						<p className="pc-settings-system-check__message">{check.message}</p>
+						{check.description && <p>{check.description}</p>}
+						{check.detail && (
+							<code className="pc-settings-system-check__detail">{check.detail}</code>
+						)}
+						{check.section && (
+							<Button
+								className="pc-settings-system-check__action"
+								onClick={() => onSelectSection(check.section)}
+								type="button"
+								variant="link"
+							>
+								{__('Review setting', 'powered-cache')}
+							</Button>
+						)}
+					</div>
+				))}
+			</div>
+		</section>
+	);
+};
+
 const metricValue = (value, fallback = __('Not available', 'powered-cache')) => {
 	if (value === null || value === undefined || value === '') {
 		return fallback;
@@ -1594,6 +1685,7 @@ const SettingsApp = () => {
 	const [settings, setSettings] = useState({});
 	const [initialSettings, setInitialSettings] = useState({});
 	const [validation, setValidation] = useState(null);
+	const [systemStatus, setSystemStatus] = useState(null);
 	const [activeSection, setActiveSection] = useState('');
 	const [isLoading, setIsLoading] = useState(true);
 	const [isSaving, setIsSaving] = useState(false);
@@ -1612,6 +1704,7 @@ const SettingsApp = () => {
 				setSettings(stateResponse.settings || {});
 				setInitialSettings(stateResponse.settings || {});
 				setValidation(stateResponse.validation || null);
+				setSystemStatus(stateResponse.system_status || null);
 				setActiveSection(resolveActiveSection(manifestResponse));
 
 				if (
@@ -1869,6 +1962,7 @@ const SettingsApp = () => {
 				setSettings(nextSettings);
 				setInitialSettings(nextSettings);
 				setValidation(response.validation || null);
+				setSystemStatus(response.system_status || null);
 				setNotice({
 					status: 'success',
 					message: __('Settings saved.', 'powered-cache'),
@@ -2055,79 +2149,85 @@ const SettingsApp = () => {
 			/>
 
 			{activeSection === 'cache' && (
-				<div
-					className="pc-settings-overview"
-					aria-label={__('Settings overview', 'powered-cache')}
-				>
-					<MetricCard
-						description={__(
-							'HTML cache delivery for anonymous visits.',
-							'powered-cache',
-						)}
-						label={__('Page Cache', 'powered-cache')}
-						tone={settings.enable_page_cache ? 'good' : 'warning'}
-						value={
-							settings.enable_page_cache
-								? __('Enabled', 'powered-cache')
-								: __('Disabled', 'powered-cache')
-						}
+				<>
+					<div
+						className="pc-settings-overview"
+						aria-label={__('Settings overview', 'powered-cache')}
+					>
+						<MetricCard
+							description={__(
+								'HTML cache delivery for anonymous visits.',
+								'powered-cache',
+							)}
+							label={__('Page Cache', 'powered-cache')}
+							tone={settings.enable_page_cache ? 'good' : 'warning'}
+							value={
+								settings.enable_page_cache
+									? __('Enabled', 'powered-cache')
+									: __('Disabled', 'powered-cache')
+							}
+						/>
+						<MetricCard
+							description={__(
+								'Persistent backend for dynamic WordPress data.',
+								'powered-cache',
+							)}
+							label={__('Object Cache', 'powered-cache')}
+							tone={
+								settings.object_cache && settings.object_cache !== 'off'
+									? 'good'
+									: 'neutral'
+							}
+							value={
+								settings.object_cache && settings.object_cache !== 'off'
+									? settings.object_cache
+									: __('Off', 'powered-cache')
+							}
+						/>
+						<MetricCard
+							description={__(
+								'Core optimizations currently switched on.',
+								'powered-cache',
+							)}
+							label={__('Active Controls', 'powered-cache')}
+							tone="good"
+							value={`${enabledCoreCount}/5`}
+						/>
+						<MetricCard
+							description={
+								appConfig.isPremium
+									? premiumInfo.licenseMessage ||
+										__(
+											'Premium optimizations are available on this site.',
+											'powered-cache',
+										)
+									: __(
+											'Locked controls are shown in context across the settings.',
+											'powered-cache',
+										)
+							}
+							label={
+								appConfig.isPremium
+									? __('License', 'powered-cache')
+									: __('Premium Features', 'powered-cache')
+							}
+							tone={
+								appConfig.isPremium && !premiumInfo.licenseActive
+									? 'warning'
+									: 'premium'
+							}
+							value={
+								appConfig.isPremium
+									? labelFromKey(premiumInfo.licenseStatus || 'unknown')
+									: premiumFields.length
+							}
+						/>
+					</div>
+					<SystemStatusPanel
+						onSelectSection={updateActiveSection}
+						systemStatus={systemStatus}
 					/>
-					<MetricCard
-						description={__(
-							'Persistent backend for dynamic WordPress data.',
-							'powered-cache',
-						)}
-						label={__('Object Cache', 'powered-cache')}
-						tone={
-							settings.object_cache && settings.object_cache !== 'off'
-								? 'good'
-								: 'neutral'
-						}
-						value={
-							settings.object_cache && settings.object_cache !== 'off'
-								? settings.object_cache
-								: __('Off', 'powered-cache')
-						}
-					/>
-					<MetricCard
-						description={__(
-							'Core optimizations currently switched on.',
-							'powered-cache',
-						)}
-						label={__('Active Controls', 'powered-cache')}
-						tone="good"
-						value={`${enabledCoreCount}/5`}
-					/>
-					<MetricCard
-						description={
-							appConfig.isPremium
-								? premiumInfo.licenseMessage ||
-									__(
-										'Premium optimizations are available on this site.',
-										'powered-cache',
-									)
-								: __(
-										'Locked controls are shown in context across the settings.',
-										'powered-cache',
-									)
-						}
-						label={
-							appConfig.isPremium
-								? __('License', 'powered-cache')
-								: __('Premium Features', 'powered-cache')
-						}
-						tone={
-							appConfig.isPremium && !premiumInfo.licenseActive
-								? 'warning'
-								: 'premium'
-						}
-						value={
-							appConfig.isPremium
-								? labelFromKey(premiumInfo.licenseStatus || 'unknown')
-								: premiumFields.length
-						}
-					/>
-				</div>
+				</>
 			)}
 
 			{!appConfig.isPremium && (

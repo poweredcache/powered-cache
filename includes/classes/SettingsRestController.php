@@ -110,6 +110,7 @@ class SettingsRestController {
 			'plugin_version' => defined( 'POWERED_CACHE_VERSION' ) ? POWERED_CACHE_VERSION : '',
 			'settings'       => SettingsRepository::redact_sensitive( $settings ),
 			'validation'     => SettingsValidator::factory( $context )->report( $settings ),
+			'system_status'  => SystemStatus::factory( $settings, $context )->report(),
 		);
 	}
 
@@ -140,6 +141,7 @@ class SettingsRestController {
 			'plugin_version' => defined( 'POWERED_CACHE_VERSION' ) ? POWERED_CACHE_VERSION : '',
 			'settings'       => SettingsRepository::redact_sensitive( $settings ),
 			'validation'     => SettingsValidator::factory( $context )->report( $settings ),
+			'system_status'  => SystemStatus::factory( $settings, $context )->report(),
 		);
 	}
 
