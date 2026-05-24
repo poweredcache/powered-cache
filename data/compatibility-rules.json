@@ -102,6 +102,101 @@
           }
         ]
       },
+      "contact-form-7/wp-contact-form-7.php": {
+        "delay_exclusions": [
+          "contact-form-7/includes/js",
+          "wpcf7",
+          "recaptcha"
+        ],
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "info",
+            "code": "contact_form_delay_guard",
+            "message": "Contact form scripts are protected from delayed JavaScript so validation and anti-spam checks stay responsive.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          }
+        ]
+      },
+      "gravityforms/gravityforms.php": {
+        "delay_exclusions": [
+          "gravityforms/js",
+          "gform",
+          "gform_"
+        ],
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "info",
+            "code": "gravity_forms_delay_guard",
+            "message": "Gravity Forms scripts are protected from delayed JavaScript so forms remain interactive on first load.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          }
+        ]
+      },
+      "wpforms-lite/wpforms.php": {
+        "delay_exclusions": [
+          "wpforms/assets/js",
+          "wpforms_settings",
+          "wpforms"
+        ],
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "info",
+            "code": "wpforms_delay_guard",
+            "message": "WPForms scripts are protected from delayed JavaScript so forms remain interactive on first load.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          }
+        ]
+      },
+      "wpforms/wpforms.php": {
+        "delay_exclusions": [
+          "wpforms/assets/js",
+          "wpforms_settings",
+          "wpforms"
+        ],
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "info",
+            "code": "wpforms_delay_guard",
+            "message": "WPForms scripts are protected from delayed JavaScript so forms remain interactive on first load.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          }
+        ]
+      },
+      "revslider/revslider.php": {
+        "delay_exclusions": [
+          "revslider",
+          "revapi",
+          "rs6"
+        ],
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "info",
+            "code": "slider_delay_guard",
+            "message": "Slider scripts are protected from delayed JavaScript to keep hero sliders visible without extra interaction.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          }
+        ]
+      },
       "autoptimize/autoptimize.php": {
         "settings_issues": [
           {

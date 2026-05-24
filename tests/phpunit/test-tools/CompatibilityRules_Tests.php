@@ -29,12 +29,14 @@ class CompatibilityRules_Tests extends TestCase {
 	public function test_bundled_registry_loads_plugin_compatibility_packs() {
 		\WP_Mock::onFilter( 'powered_cache_compatibility_rules_active_plugins' )
 			->with( array() )
-			->reply( array( 'woocommerce/woocommerce.php' ) );
+			->reply( array( 'woocommerce/woocommerce.php', 'contact-form-7/wp-contact-form-7.php' ) );
 
 		$rules = CompatibilityRules::factory();
 
 		$this->assertContains( 'wc-cart-fragments', $rules->rules( 'delay_exclusions' ) );
 		$this->assertContains( 'wc-checkout', $rules->rules( 'delay_exclusions' ) );
+		$this->assertContains( 'wpcf7', $rules->rules( 'delay_exclusions' ) );
+		$this->assertContains( 'recaptcha', $rules->rules( 'delay_exclusions' ) );
 	}
 
 	/**
