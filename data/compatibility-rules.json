@@ -15,13 +15,23 @@
       "hcaptcha",
       "js.stripe.com",
       "paypal.com/sdk/js",
+      "pay.google.com/gp/p/js/pay",
+      "x.klarnacdn.net/kp/lib",
+      "static-eu.payments-amazon.com/checkout",
+      "accounts.google.com/gsi/client",
+      "appleid.cdn-apple.com",
       "maps.googleapis.com/maps/api/js",
       "maps.google.com/maps-api-v3"
     ],
     "file_optimizer_css_exclusions": [],
     "file_optimizer_js_exclusions": [],
     "lazy_load_exclusions": [
-      "selectors.core.image.lightboxObjectFit"
+      "selectors.core.image.lightboxObjectFit",
+      "data-no-lazy",
+      "skip-lazy",
+      "no-lazy",
+      "woocommerce-product-gallery__image",
+      "wp-post-image"
     ]
   },
   "settings_issues": [
@@ -79,9 +89,19 @@
           "woocommerce/assets/js/frontend/checkout",
           "woocommerce/assets/js/frontend/add-to-cart",
           "woocommerce/assets/js/frontend/add-to-cart-variation",
+          "woocommerce/assets/js/frontend/cart",
+          "woocommerce/assets/js/frontend/country-select",
+          "woocommerce/assets/js/frontend/address-i18n",
+          "woocommerce/assets/js/frontend/password-strength-meter",
+          "woocommerce/assets/js/frontend/single-product",
           "wc-cart-fragments",
           "wc-checkout",
-          "wc-add-to-cart"
+          "wc-add-to-cart",
+          "wc-cart",
+          "wc-country-select",
+          "wc-address-i18n",
+          "wc-password-strength-meter",
+          "wc-single-product"
         ],
         "settings_issues": [
           {
@@ -186,6 +206,63 @@
           }
         ]
       },
+      "forminator/forminator.php": {
+        "delay_exclusions": [
+          "forminator/assets/js",
+          "forminatorFront",
+          "forminator"
+        ],
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "info",
+            "code": "forminator_delay_guard",
+            "message": "Forminator scripts are protected from delayed JavaScript so form validation remains responsive.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          }
+        ]
+      },
+      "fluentform/fluentform.php": {
+        "delay_exclusions": [
+          "fluentform",
+          "fluent-form",
+          "ff-el"
+        ],
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "info",
+            "code": "fluentform_delay_guard",
+            "message": "Fluent Forms scripts are protected from delayed JavaScript so form validation remains responsive.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          }
+        ]
+      },
+      "ninja-forms/ninja-forms.php": {
+        "delay_exclusions": [
+          "ninja-forms",
+          "nf-front-end",
+          "nfForm"
+        ],
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "info",
+            "code": "ninja_forms_delay_guard",
+            "message": "Ninja Forms scripts are protected from delayed JavaScript so form validation remains responsive.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          }
+        ]
+      },
       "wpforms-lite/wpforms.php": {
         "delay_exclusions": [
           "wpforms/assets/js",
@@ -217,6 +294,44 @@
             "severity": "info",
             "code": "wpforms_delay_guard",
             "message": "WPForms scripts are protected from delayed JavaScript so forms remain interactive on first load.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          }
+        ]
+      },
+      "complianz-gdpr/complianz-gdpr.php": {
+        "delay_exclusions": [
+          "complianz",
+          "cmplz-",
+          "cookieblocker"
+        ],
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "info",
+            "code": "consent_delay_guard",
+            "message": "Consent scripts are protected from delayed JavaScript so consent controls are available immediately.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          }
+        ]
+      },
+      "cookiebot/cookiebot.php": {
+        "delay_exclusions": [
+          "cookiebot",
+          "uc.js",
+          "Cookiebot"
+        ],
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "info",
+            "code": "consent_delay_guard",
+            "message": "Consent scripts are protected from delayed JavaScript so consent controls are available immediately.",
             "when": {
               "setting": "js_delay",
               "value": true

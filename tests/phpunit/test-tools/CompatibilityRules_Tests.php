@@ -22,7 +22,10 @@ class CompatibilityRules_Tests extends TestCase {
 		$this->assertContains( 'wp-includes/blocks/image/view.min.js', $rules->rules( 'delay_exclusions' ) );
 		$this->assertContains( 'www.google.com/recaptcha', $rules->rules( 'delay_exclusions' ) );
 		$this->assertContains( 'js.stripe.com', $rules->rules( 'delay_exclusions' ) );
+		$this->assertContains( 'pay.google.com/gp/p/js/pay', $rules->rules( 'delay_exclusions' ) );
+		$this->assertContains( 'accounts.google.com/gsi/client', $rules->rules( 'delay_exclusions' ) );
 		$this->assertContains( 'selectors.core.image.lightboxObjectFit', $rules->rules( 'lazy_load_exclusions' ) );
+		$this->assertContains( 'wp-post-image', $rules->rules( 'lazy_load_exclusions' ) );
 	}
 
 	/**
@@ -37,8 +40,34 @@ class CompatibilityRules_Tests extends TestCase {
 
 		$this->assertContains( 'wc-cart-fragments', $rules->rules( 'delay_exclusions' ) );
 		$this->assertContains( 'wc-checkout', $rules->rules( 'delay_exclusions' ) );
+		$this->assertContains( 'wc-country-select', $rules->rules( 'delay_exclusions' ) );
 		$this->assertContains( 'wpcf7', $rules->rules( 'delay_exclusions' ) );
 		$this->assertContains( 'recaptcha', $rules->rules( 'delay_exclusions' ) );
+	}
+
+	/**
+	 * It loads bundled form and consent compatibility packs.
+	 */
+	public function test_bundled_registry_loads_form_and_consent_compatibility_packs() {
+		\WP_Mock::onFilter( 'powered_cache_compatibility_rules_active_plugins' )
+			->with( array() )
+			->reply(
+				array(
+					'forminator/forminator.php',
+					'fluentform/fluentform.php',
+					'ninja-forms/ninja-forms.php',
+					'complianz-gdpr/complianz-gdpr.php',
+					'cookiebot/cookiebot.php',
+				)
+			);
+
+		$rules = CompatibilityRules::factory();
+
+		$this->assertContains( 'forminatorFront', $rules->rules( 'delay_exclusions' ) );
+		$this->assertContains( 'fluent-form', $rules->rules( 'delay_exclusions' ) );
+		$this->assertContains( 'nf-front-end', $rules->rules( 'delay_exclusions' ) );
+		$this->assertContains( 'cookieblocker', $rules->rules( 'delay_exclusions' ) );
+		$this->assertContains( 'Cookiebot', $rules->rules( 'delay_exclusions' ) );
 	}
 
 	/**
@@ -255,6 +284,11 @@ class CompatibilityRules_Tests extends TestCase {
 				'hcaptcha',
 				'js.stripe.com',
 				'paypal.com/sdk/js',
+				'pay.google.com/gp/p/js/pay',
+				'x.klarnacdn.net/kp/lib',
+				'static-eu.payments-amazon.com/checkout',
+				'accounts.google.com/gsi/client',
+				'appleid.cdn-apple.com',
 				'maps.googleapis.com/maps/api/js',
 				'maps.google.com/maps-api-v3',
 			),
@@ -264,6 +298,11 @@ class CompatibilityRules_Tests extends TestCase {
 		$this->assertSame(
 			array(
 				'selectors.core.image.lightboxObjectFit',
+				'data-no-lazy',
+				'skip-lazy',
+				'no-lazy',
+				'woocommerce-product-gallery__image',
+				'wp-post-image',
 			),
 			$rules->add_lazy_load_exclusions( array() )
 		);
