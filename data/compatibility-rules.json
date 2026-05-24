@@ -158,6 +158,62 @@
           }
         ]
       },
+      "garanti-payment-gateway-for-woocommerce/garantibbva.php": {
+        "delay_exclusions": [
+          "garantibbva",
+          "garanti-payment",
+          "payment_method_garantibbva"
+        ],
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "info",
+            "code": "payment_delay_guard",
+            "message": "Payment gateway scripts are protected from delayed JavaScript so checkout remains responsive.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          }
+        ]
+      },
+      "shopinext-for-woocommerce/shopinext-payment.php": {
+        "delay_exclusions": [
+          "shopinext",
+          "payment_method_shopinext"
+        ],
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "info",
+            "code": "payment_delay_guard",
+            "message": "Payment gateway scripts are protected from delayed JavaScript so checkout remains responsive.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          }
+        ]
+      },
+      "woocommerce-eu-vat-compliance-premium/eu-vat-compliance-premium.php": {
+        "delay_exclusions": [
+          "woocommerce-eu-vat",
+          "woocommerce_eu_vat",
+          "vat-number"
+        ],
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "info",
+            "code": "woocommerce_vat_delay_guard",
+            "message": "WooCommerce VAT validation scripts are protected from delayed JavaScript so checkout fields remain accurate.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          }
+        ]
+      },
       "elementor/elementor.php": {
         "delay_exclusions": [
           "elementor/assets/js/frontend",
@@ -203,6 +259,26 @@
             "severity": "info",
             "code": "shortpixel_ai_delay_guard",
             "message": "ShortPixel Adaptive Images is protected from delayed JavaScript when both optimizers are active.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          }
+        ]
+      },
+      "cloudflare/cloudflare.php": {
+        "delay_exclusions": [
+          "cdn-cgi/challenge-platform",
+          "/cdn-cgi/challenge-platform/",
+          "cf-chl-widget",
+          "challenges.cloudflare.com/turnstile"
+        ],
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "info",
+            "code": "cloudflare_challenge_delay_guard",
+            "message": "Cloudflare challenge scripts are protected from delayed JavaScript when Cloudflare is active.",
             "when": {
               "setting": "js_delay",
               "value": true
@@ -305,6 +381,25 @@
           }
         ]
       },
+      "jetformbuilder/jet-form-builder.php": {
+        "delay_exclusions": [
+          "jet-form-builder",
+          "jetFormBuilder",
+          "jfb-"
+        ],
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "info",
+            "code": "jetformbuilder_delay_guard",
+            "message": "JetFormBuilder scripts are protected from delayed JavaScript so form validation remains responsive.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          }
+        ]
+      },
       "wpforms-lite/wpforms.php": {
         "delay_exclusions": [
           "wpforms/assets/js",
@@ -381,11 +476,103 @@
           }
         ]
       },
+      "cookie-notice/cookie-notice.php": {
+        "delay_exclusions": [
+          "cookie-notice",
+          "cn-",
+          "cookieNotice"
+        ],
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "info",
+            "code": "consent_delay_guard",
+            "message": "Consent scripts are protected from delayed JavaScript so consent controls are available immediately.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          }
+        ]
+      },
+      "eu-cookie-law/eu-cookie-law.php": {
+        "delay_exclusions": [
+          "eu-cookie-law",
+          "pea_cook_wrapper"
+        ],
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "info",
+            "code": "consent_delay_guard",
+            "message": "Consent scripts are protected from delayed JavaScript so consent controls are available immediately.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          }
+        ]
+      },
+      "gdpr/gdpr.php": {
+        "delay_exclusions": [
+          "gdpr",
+          "gdpr-cookie"
+        ],
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "info",
+            "code": "consent_delay_guard",
+            "message": "Consent scripts are protected from delayed JavaScript so consent controls are available immediately.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          }
+        ]
+      },
+      "consent-magic-pro/consent-magic-pro.php": {
+        "delay_exclusions": [
+          "consent-magic",
+          "cs_preview"
+        ],
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "info",
+            "code": "consent_delay_guard",
+            "message": "Consent scripts are protected from delayed JavaScript so consent controls are available immediately.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          }
+        ]
+      },
       "revslider/revslider.php": {
         "delay_exclusions": [
           "revslider",
           "revapi",
           "rs6"
+        ],
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "info",
+            "code": "slider_delay_guard",
+            "message": "Slider scripts are protected from delayed JavaScript to keep hero sliders visible without extra interaction.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          }
+        ]
+      },
+      "smart-slider-3/smart-slider-3.php": {
+        "delay_exclusions": [
+          "smart-slider-3",
+          "n2-ss-",
+          "Nextend"
         ],
         "settings_issues": [
           {

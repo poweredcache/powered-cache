@@ -34,15 +34,30 @@ class CompatibilityRules_Tests extends TestCase {
 	public function test_bundled_registry_loads_plugin_compatibility_packs() {
 		\WP_Mock::onFilter( 'powered_cache_compatibility_rules_active_plugins' )
 			->with( array() )
-			->reply( array( 'woocommerce/woocommerce.php', 'contact-form-7/wp-contact-form-7.php' ) );
+			->reply(
+				array(
+					'woocommerce/woocommerce.php',
+					'garanti-payment-gateway-for-woocommerce/garantibbva.php',
+					'shopinext-for-woocommerce/shopinext-payment.php',
+					'woocommerce-eu-vat-compliance-premium/eu-vat-compliance-premium.php',
+					'contact-form-7/wp-contact-form-7.php',
+					'cloudflare/cloudflare.php',
+					'smart-slider-3/smart-slider-3.php',
+				)
+			);
 
 		$rules = CompatibilityRules::factory();
 
 		$this->assertContains( 'wc-cart-fragments', $rules->rules( 'delay_exclusions' ) );
 		$this->assertContains( 'wc-checkout', $rules->rules( 'delay_exclusions' ) );
 		$this->assertContains( 'wc-country-select', $rules->rules( 'delay_exclusions' ) );
+		$this->assertContains( 'garantibbva', $rules->rules( 'delay_exclusions' ) );
+		$this->assertContains( 'shopinext', $rules->rules( 'delay_exclusions' ) );
+		$this->assertContains( 'woocommerce-eu-vat', $rules->rules( 'delay_exclusions' ) );
 		$this->assertContains( 'wpcf7', $rules->rules( 'delay_exclusions' ) );
 		$this->assertContains( 'recaptcha', $rules->rules( 'delay_exclusions' ) );
+		$this->assertContains( 'cf-chl-widget', $rules->rules( 'delay_exclusions' ) );
+		$this->assertContains( 'n2-ss-', $rules->rules( 'delay_exclusions' ) );
 	}
 
 	/**
@@ -56,8 +71,13 @@ class CompatibilityRules_Tests extends TestCase {
 					'forminator/forminator.php',
 					'fluentform/fluentform.php',
 					'ninja-forms/ninja-forms.php',
+					'jetformbuilder/jet-form-builder.php',
 					'complianz-gdpr/complianz-gdpr.php',
 					'cookiebot/cookiebot.php',
+					'cookie-notice/cookie-notice.php',
+					'eu-cookie-law/eu-cookie-law.php',
+					'gdpr/gdpr.php',
+					'consent-magic-pro/consent-magic-pro.php',
 				)
 			);
 
@@ -66,8 +86,13 @@ class CompatibilityRules_Tests extends TestCase {
 		$this->assertContains( 'forminatorFront', $rules->rules( 'delay_exclusions' ) );
 		$this->assertContains( 'fluent-form', $rules->rules( 'delay_exclusions' ) );
 		$this->assertContains( 'nf-front-end', $rules->rules( 'delay_exclusions' ) );
+		$this->assertContains( 'jetFormBuilder', $rules->rules( 'delay_exclusions' ) );
 		$this->assertContains( 'cookieblocker', $rules->rules( 'delay_exclusions' ) );
 		$this->assertContains( 'Cookiebot', $rules->rules( 'delay_exclusions' ) );
+		$this->assertContains( 'cookie-notice', $rules->rules( 'delay_exclusions' ) );
+		$this->assertContains( 'eu-cookie-law', $rules->rules( 'delay_exclusions' ) );
+		$this->assertContains( 'gdpr-cookie', $rules->rules( 'delay_exclusions' ) );
+		$this->assertContains( 'consent-magic', $rules->rules( 'delay_exclusions' ) );
 	}
 
 	/**
