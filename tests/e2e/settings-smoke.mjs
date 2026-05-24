@@ -14,7 +14,8 @@ Usage:
   npm run e2e:settings
 
 Environment:
-  PC_E2E_BASE_URL       WordPress base URL. Default: https://plugindevel.test
+  PC_E2E_BASE_URL       WordPress base URL. Default: https://plugindevel.test locally, http://localhost:8889 in CI.
+  PC_E2E_PROFILE        Test profile: core, premium, or auto. Default: core
   PC_E2E_USER           WordPress username when the browser is not logged in.
   PC_E2E_PASSWORD       WordPress password when the browser is not logged in.
   PC_E2E_HEADLESS       Set to 0 to show the browser. Default: 1
@@ -30,11 +31,18 @@ if (process.argv.includes('--help') || process.argv.includes('-h')) {
 	process.exit(0);
 }
 
-const baseUrl = (process.env.PC_E2E_BASE_URL || 'https://plugindevel.test').replace(/\/$/, '');
+const defaultBaseUrl = process.env.CI ? 'http://localhost:8889' : 'https://plugindevel.test';
+const baseUrl = (process.env.PC_E2E_BASE_URL || defaultBaseUrl).replace(/\/$/, '');
+const profile = process.env.PC_E2E_PROFILE || 'core';
 const username = process.env.PC_E2E_USER || '';
 const password = process.env.PC_E2E_PASSWORD || '';
 const headless = process.env.PC_E2E_HEADLESS !== '0';
 const screenshotDir = process.env.PC_E2E_SCREENSHOT_DIR || '';
+
+assert(
+	['core', 'premium', 'auto'].includes(profile),
+	'PC_E2E_PROFILE must be one of: core, premium, auto.',
+);
 
 const loadPlaywright = async () => {
 	try {
@@ -97,6 +105,17 @@ const openSection = async (page, section) => {
 	await page.locator(`#pc-settings-section-${section}`).waitFor();
 };
 
+const sectionLinkExists = async (page, section) =>
+	page.evaluate(
+		(sectionKey) =>
+			Boolean(
+				document.querySelector(
+					`#toplevel_page_powered-cache a[href*="section=${sectionKey}"]`,
+				),
+			),
+		section,
+	);
+
 const activeSubmenuText = async (page) =>
 	page.evaluate(() => {
 		const current =
@@ -152,6 +171,26 @@ const assertLicenseSection = async (page) => {
 	assert(brokenLicenseLinks === 0, 'A broken powered-cache-license URL is present.');
 };
 
+const maybeAssertLicenseSection = async (page) => {
+	if ('core' === profile) {
+		return;
+	}
+
+	const hasLicenseSection = await sectionLinkExists(page, 'license');
+
+	if (!hasLicenseSection && 'auto' === profile) {
+		console.log('Skipping Premium license smoke checks; license section is not available.');
+		return;
+	}
+
+	assert(
+		hasLicenseSection,
+		'Premium smoke profile requested, but the License section is not available.',
+	);
+
+	await assertLicenseSection(page);
+};
+
 const run = async () => {
 	const { chromium } = await loadPlaywright();
 	const browser = await chromium.launch({ headless });
@@ -171,7 +210,7 @@ const run = async () => {
 		);
 		await assertNoLegacyCssGenerationLinks(page);
 
-		await assertLicenseSection(page);
+		await maybeAssertLicenseSection(page);
 
 		console.log('Powered Cache settings smoke test passed.');
 	} catch (error) {
