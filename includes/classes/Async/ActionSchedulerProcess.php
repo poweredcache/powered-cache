@@ -148,7 +148,7 @@ abstract class ActionSchedulerProcess {
 	}
 
 	/**
-	 * Return pending batches in the legacy shape used by the admin UI.
+	 * Return pending items in a queue batch shape used by existing callers.
 	 *
 	 * @param int $limit Limit.
 	 *

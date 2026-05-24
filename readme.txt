@@ -338,7 +338,7 @@ Yes, it’s compatible with PHP 8+
 - General enhancements made to the Lazy Load feature.
 - Resolved: Deprecated jQuery functions.
 - Updated: Minify package.
-- Updated: Background processing package.
+- Updated: Async task processing package.
 - Tested with WP 6.3.
 
 = 3.0.5 (May 30, 2023) =
@@ -372,7 +372,7 @@ Yes, it’s compatible with PHP 8+
 - Added: Delayed JS execution.
 - Added: Remove Unused CSS feature.
 - Added: New HTML minification library.
-- Updated: Background processing library.
+- Updated: Async task processing library.
 - Bump required PHP version to 7.2
 - Object cache drop-in updates: supporting *multiple and wp_cache_supports
 - Refactored: Accepted query strings renamed as ignored query strings.

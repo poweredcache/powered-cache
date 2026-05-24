@@ -1,6 +1,6 @@
 <?php
 /**
- * Background process for cache preloading
+ * Action Scheduler process for cache preloading.
  *
  * @package PoweredCache
  */
@@ -98,7 +98,7 @@ class CachePreloader extends ActionSchedulerProcess {
 	}
 
 	/**
-	 * Determine if the background process should continue.
+	 * Determine if the preload queue should continue.
 	 * Stops the process if server load is too high or spikes suddenly.
 	 *
 	 * @return bool

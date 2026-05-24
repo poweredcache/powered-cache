@@ -122,9 +122,9 @@ class ActionSchedulerProcess_Tests extends TestCase {
 	}
 
 	/**
-	 * It exposes pending items in the legacy batch shape.
+	 * It exposes pending Action Scheduler items in a batch shape.
 	 */
-	public function test_get_batches_returns_legacy_batch_shape() {
+	public function test_get_batches_returns_action_scheduler_batch_shape() {
 		\WP_Mock::userFunction(
 			'as_get_scheduled_actions',
 			array(

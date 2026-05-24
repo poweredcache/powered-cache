@@ -1,6 +1,6 @@
 <?php
 /**
- * Background process for cache purging
+ * Action Scheduler process for cache purging.
  *
  * @package PoweredCache
  */
