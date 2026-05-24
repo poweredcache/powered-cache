@@ -20,6 +20,8 @@ class CompatibilityRules_Tests extends TestCase {
 
 		$this->assertContains( 'wp-includes/js/dist/interactivity.min.js', $rules->rules( 'delay_exclusions' ) );
 		$this->assertContains( 'wp-includes/blocks/image/view.min.js', $rules->rules( 'delay_exclusions' ) );
+		$this->assertContains( 'www.google.com/recaptcha', $rules->rules( 'delay_exclusions' ) );
+		$this->assertContains( 'js.stripe.com', $rules->rules( 'delay_exclusions' ) );
 		$this->assertContains( 'selectors.core.image.lightboxObjectFit', $rules->rules( 'lazy_load_exclusions' ) );
 	}
 
@@ -160,6 +162,17 @@ class CompatibilityRules_Tests extends TestCase {
 				'custom-script',
 				'wp-includes/js/dist/interactivity.min.js',
 				'wp-includes/blocks/image/view.min.js',
+				'www.google.com/recaptcha',
+				'www.gstatic.com/recaptcha',
+				'grecaptcha',
+				'challenges.cloudflare.com/turnstile',
+				'cf-turnstile',
+				'hcaptcha.com/1/api.js',
+				'hcaptcha',
+				'js.stripe.com',
+				'paypal.com/sdk/js',
+				'maps.googleapis.com/maps/api/js',
+				'maps.google.com/maps-api-v3',
 			),
 			$delay_exclusions
 		);

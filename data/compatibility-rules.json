@@ -5,7 +5,18 @@
     "defer_exclusions": [],
     "delay_exclusions": [
       "wp-includes/js/dist/interactivity.min.js",
-      "wp-includes/blocks/image/view.min.js"
+      "wp-includes/blocks/image/view.min.js",
+      "www.google.com/recaptcha",
+      "www.gstatic.com/recaptcha",
+      "grecaptcha",
+      "challenges.cloudflare.com/turnstile",
+      "cf-turnstile",
+      "hcaptcha.com/1/api.js",
+      "hcaptcha",
+      "js.stripe.com",
+      "paypal.com/sdk/js",
+      "maps.googleapis.com/maps/api/js",
+      "maps.google.com/maps-api-v3"
     ],
     "file_optimizer_css_exclusions": [],
     "file_optimizer_js_exclusions": [],
