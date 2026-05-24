@@ -100,3 +100,29 @@ jobs:
 
       - name: Run PHPCS
         run: composer run-script lint
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Run JavaScript lint
+        run: npm run lint-js
+
+      - name: Build assets
+        run: npm run build
+
+      - name: Validate settings E2E runner
+        run: npm run e2e:settings -- --help

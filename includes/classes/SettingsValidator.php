@@ -256,7 +256,34 @@ class SettingsValidator {
 			}
 		}
 
+		if ( ! empty( $settings['enable_cloudflare'] ) && empty( $settings['cloudflare_zone'] ) ) {
+			$issues[] = $this->issue(
+				'cloudflare_zone',
+				self::SEVERITY_WARNING,
+				'cloudflare_zone_missing',
+				'Cloudflare purge is enabled, but no Cloudflare Zone ID is configured.'
+			);
+		}
+
+		if ( true === $this->premium_available && ! empty( $settings['enable_varnish'] ) && empty( $settings['varnish_ip'] ) && ! $this->has_varnish_default_target() ) {
+			$issues[] = $this->issue(
+				'varnish_ip',
+				self::SEVERITY_WARNING,
+				'varnish_target_missing',
+				'Varnish purge is enabled, but no Varnish server IP address is configured.'
+			);
+		}
+
 		return $issues;
+	}
+
+	/**
+	 * Determine whether a Varnish purge target is configured through constants.
+	 *
+	 * @return bool
+	 */
+	private function has_varnish_default_target() {
+		return defined( 'VHP_VARNISH_IP' ) && false !== VHP_VARNISH_IP && '' !== trim( (string) VHP_VARNISH_IP );
 	}
 
 	/**

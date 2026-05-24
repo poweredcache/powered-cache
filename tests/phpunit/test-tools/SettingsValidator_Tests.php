@@ -209,6 +209,40 @@ class SettingsValidator_Tests extends TestCase {
 	}
 
 	/**
+	 * It reports Cloudflare purge readiness issues.
+	 */
+	public function test_reports_cloudflare_purge_readiness_issues() {
+		$validator = new SettingsValidator( array(), true );
+		$report    = $validator->report(
+			array(
+				'enable_cloudflare' => true,
+				'cloudflare_zone'   => '',
+			)
+		);
+
+		$this->assertTrue( $report['valid'] );
+		$this->assertSame( 1, $report['counts'][ SettingsValidator::SEVERITY_WARNING ] );
+		$this->assertIssueExists( 'cloudflare_zone', 'cloudflare_zone_missing', $report['issues'] );
+	}
+
+	/**
+	 * It reports Varnish purge readiness issues when Premium can edit the setting.
+	 */
+	public function test_reports_varnish_purge_readiness_issues() {
+		$validator = new SettingsValidator( array(), true );
+		$report    = $validator->report(
+			array(
+				'enable_varnish' => true,
+				'varnish_ip'     => '',
+			)
+		);
+
+		$this->assertTrue( $report['valid'] );
+		$this->assertSame( 1, $report['counts'][ SettingsValidator::SEVERITY_WARNING ] );
+		$this->assertIssueExists( 'varnish_ip', 'varnish_target_missing', $report['issues'] );
+	}
+
+	/**
 	 * Assert that a validation issue exists.
 	 *
 	 * @param string $key Setting key.
