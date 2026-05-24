@@ -591,6 +591,99 @@ const cssServiceCompatibilityMessage = (serviceCompatibility = {}) => {
 	);
 };
 
+const cssCompatibilityServiceItems = (compatibility = {}) =>
+	Object.entries(compatibility.services || {})
+		.map(([serviceKey, service]) => {
+			const ruleCount = Number(service.ruleCount || 0);
+
+			if (!ruleCount && !service.disabled) {
+				return null;
+			}
+
+			const disabledBy = compactLabelList(service.disabledBy || [], 2);
+			let value = sprintf(
+				/* translators: %d: compatibility rule count. */
+				__('%d rules', 'powered-cache'),
+				ruleCount,
+			);
+
+			if (service.disabled) {
+				value = disabledBy
+					? sprintf(
+							/* translators: %s: compatibility source labels. */
+							__('Paused by %s', 'powered-cache'),
+							disabledBy,
+						)
+					: __('Paused automatically', 'powered-cache');
+			}
+
+			return {
+				key: serviceKey,
+				label: service.label || labelFromKey(serviceKey),
+				state: service.disabled ? 'paused' : 'active',
+				value,
+			};
+		})
+		.filter(Boolean);
+
+const AppliedSafeguardsPanel = ({ compatibility = {} }) => {
+	const ruleCount = cssCompatibilityRuleCount(compatibility);
+	const sourceCount = (compatibility.sources || []).length;
+
+	if (!ruleCount || !sourceCount) {
+		return null;
+	}
+
+	const sourceSummary = cssCompatibilitySourceSummary(compatibility);
+	const serviceItems = cssCompatibilityServiceItems(compatibility);
+
+	return (
+		<div
+			className="pc-settings-safeguards"
+			aria-label={__('Applied safeguards', 'powered-cache')}
+		>
+			<div className="pc-settings-safeguards__copy">
+				<span className="pc-settings-badge">
+					{__('Applied safeguards', 'powered-cache')}
+				</span>
+				<strong>
+					{__('Automatic compatibility protections are active', 'powered-cache')}
+				</strong>
+				<p>
+					{__(
+						'Built-in and detected rules are applied in the background to protect dynamic layouts, forms, checkout, and consent UI. No extra setup is required.',
+						'powered-cache',
+					)}
+				</p>
+				{sourceSummary && (
+					<span className="pc-settings-safeguards__sources">
+						{sprintf(
+							/* translators: 1: compatibility rule count, 2: active source count, 3: compatibility source labels. */
+							__('%1$d rules from %2$d source(s): %3$s', 'powered-cache'),
+							ruleCount,
+							sourceCount,
+							sourceSummary,
+						)}
+					</span>
+				)}
+			</div>
+			{!!serviceItems.length && (
+				<div className="pc-settings-safeguards__items">
+					{serviceItems.map((item) => (
+						<span
+							className={`pc-settings-safeguards__item pc-settings-safeguards__item--${item.state}`}
+							key={item.key}
+						>
+							<span>{item.label}</span>
+							<strong>{item.value}</strong>
+						</span>
+					))}
+				</div>
+			)}
+		</div>
+	);
+};
+
 const formatTimestamp = (timestamp) => {
 	const value = parseInt(timestamp, 10);
 
@@ -728,9 +821,6 @@ const CssOptimizationPanel = ({
 
 	const canGenerate = Boolean(cssOptimization.generatePath && onGenerate);
 	const compatibility = cssOptimization.compatibility || {};
-	const compatibilitySourceCount = (compatibility.sources || []).length;
-	const compatibilityRuleCount = cssCompatibilityRuleCount(compatibility);
-	const compatibilitySources = cssCompatibilitySourceSummary(compatibility);
 	const stateLabel = {
 		good: __('Healthy', 'powered-cache'),
 		processing: __('Processing', 'powered-cache'),
@@ -753,35 +843,12 @@ const CssOptimizationPanel = ({
 							'powered-cache',
 						)}
 					</p>
-					{!!compatibilitySourceCount && !!compatibilityRuleCount && (
-						<>
-							<p className="pc-settings-service-health__compatibility">
-								{sprintf(
-									/* translators: 1: number of compatibility rules, 2: number of active sources. */
-									__(
-										'Applying %1$d compatibility rules from %2$d active source(s).',
-										'powered-cache',
-									),
-									compatibilityRuleCount,
-									compatibilitySourceCount,
-								)}
-							</p>
-							{compatibilitySources && (
-								<p className="pc-settings-service-health__sources">
-									{sprintf(
-										/* translators: %s: compatibility source labels. */
-										__('Active sources: %s', 'powered-cache'),
-										compatibilitySources,
-									)}
-								</p>
-							)}
-						</>
-					)}
 				</div>
 				<Button href={docsUrl} target="_blank" variant="secondary">
 					{__('Troubleshooting', 'powered-cache')}
 				</Button>
 			</div>
+			<AppliedSafeguardsPanel compatibility={compatibility} />
 			<div className="pc-settings-service-health__grid">
 				{services.map(([serviceKey, service]) => {
 					const serviceState =
