@@ -110,6 +110,8 @@ class SettingsSchema_Tests extends TestCase {
 		$this->assertTrue( $fields['scheduled_db_cleanup_frequency']['premium'] );
 		$this->assertTrue( $fields['enable_varnish']['premium'] );
 		$this->assertTrue( $fields['varnish_ip']['premium'] );
+		$this->assertFalse( $fields['preload_fonts']['premium'] );
+		$this->assertSame( SettingsSchema::SANITIZE_TEXTAREA, $fields['preload_fonts']['sanitizer'] );
 
 		$this->assertContains( 'js_delay', $fields['js_delay_timeout']['dependencies'] );
 		$this->assertTrue( $fields['js_execution_method']['deprecated'] );

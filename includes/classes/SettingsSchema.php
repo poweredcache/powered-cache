@@ -117,6 +117,7 @@ class SettingsSchema {
 			'preload_sitemap'                  => self::field( self::TYPE_STRING, '', 'preload', self::SANITIZE_TEXTAREA, true, array( 'enable_sitemap_preload' ) ),
 			'prefetch_dns'                     => self::field( self::TYPE_STRING, '', 'preload', self::SANITIZE_TEXTAREA ),
 			'preconnect_resource'              => self::field( self::TYPE_STRING, '', 'preload', self::SANITIZE_TEXTAREA ),
+			'preload_fonts'                    => self::field( self::TYPE_STRING, '', 'preload', self::SANITIZE_TEXTAREA ),
 			'prefetch_links'                   => self::field( self::TYPE_BOOLEAN, false, 'preload', self::SANITIZE_BOOLEAN, true ),
 			'enable_lcp_optimization'          => self::field( self::TYPE_BOOLEAN, false, 'preload', self::SANITIZE_BOOLEAN, true ),
 			'db_cleanup_post_revisions'        => self::field( self::TYPE_BOOLEAN, false, 'database', self::SANITIZE_BOOLEAN ),

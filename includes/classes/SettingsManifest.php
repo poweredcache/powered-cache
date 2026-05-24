@@ -688,6 +688,12 @@ class SettingsManifest {
 				'group'       => 'Resource hints',
 				'docs_path'   => 'preconnect-resources',
 			),
+			'preload_fonts'                  => array(
+				'label'       => 'Preload Fonts',
+				'description' => 'Load critical font files earlier to reduce late text rendering shifts.',
+				'group'       => 'Resource hints',
+				'docs_path'   => 'preload-fonts',
+			),
 			'enable_lcp_optimization'        => array(
 				'label'               => 'LCP Optimization',
 				'description'         => 'Detect and prioritize the likely Largest Contentful Paint resource.',

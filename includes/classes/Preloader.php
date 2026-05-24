@@ -62,6 +62,7 @@ class Preloader {
 		$this->settings = \PoweredCache\Utils\get_settings();
 		add_filter( 'wp_resource_hints', [ $this, 'dns_prefetch' ], 10, 2 );
 		add_filter( 'wp_resource_hints', [ $this, 'preconnect_resources' ], 10, 2 );
+		add_action( 'wp_head', [ $this, 'preload_fonts' ], 1 );
 
 		// bail if the preload not activated
 		if ( ! $this->settings['enable_cache_preload'] ) {
@@ -551,6 +552,19 @@ class Preloader {
 		return $urls;
 	}
 
+	/**
+	 * Print font preload hints.
+	 */
+	public function preload_fonts() {
+		foreach ( $this->get_preload_fonts() as $font_url ) {
+			printf(
+				'<link rel="preload" href="%s" as="font" type="%s" crossorigin>' . "\n",
+				esc_url( $font_url ),
+				esc_attr( $this->get_preload_font_type( $font_url ) )
+			);
+		}
+	}
+
 
 	/**
 	 *
@@ -598,6 +612,83 @@ class Preloader {
 		 * @since  2.2
 		 */
 		return apply_filters( 'powered_cache_preconnect_resource', $preconnect_resources );
+	}
+
+	/**
+	 * Get the list of font files that should be preloaded.
+	 *
+	 * @return array
+	 */
+	public function get_preload_fonts() {
+		$settings = \PoweredCache\Utils\get_settings();
+
+		$preload_fonts = preg_split( '#(\r\n|\r|\n)#', $settings['preload_fonts'], - 1, PREG_SPLIT_NO_EMPTY );
+		$preload_fonts = is_array( $preload_fonts ) ? array_filter( array_map( [ $this, 'normalize_preload_font_url' ], $preload_fonts ) ) : [];
+
+		/**
+		 * Filters font preload URLs.
+		 *
+		 * @hook powered_cache_preload_fonts
+		 *
+		 * @param {array} $preload_fonts The list of font URLs.
+		 *
+		 * @return {array} New value.
+		 * @since 4.0.0
+		 */
+		$preload_fonts = apply_filters( 'powered_cache_preload_fonts', $preload_fonts );
+
+		return is_array( $preload_fonts ) ? array_values( array_unique( array_filter( $preload_fonts, 'is_string' ) ) ) : [];
+	}
+
+	/**
+	 * Normalize one configured font URL.
+	 *
+	 * @param string $font_url Font URL.
+	 *
+	 * @return string
+	 */
+	private function normalize_preload_font_url( $font_url ) {
+		$font_url = trim( (string) $font_url );
+
+		if ( '' === $font_url ) {
+			return '';
+		}
+
+		if ( 0 === strpos( $font_url, '//' ) ) {
+			$font_url = 'https:' . $font_url;
+		} elseif ( 0 === strpos( $font_url, '/' ) ) {
+			$font_url = home_url( $font_url );
+		} elseif ( ! preg_match( '#^https?://#i', $font_url ) ) {
+			return '';
+		}
+
+		return $this->get_preload_font_type( $font_url ) ? $font_url : '';
+	}
+
+	/**
+	 * Return the MIME type for a preloadable font URL.
+	 *
+	 * @param string $font_url Font URL.
+	 *
+	 * @return string
+	 */
+	private function get_preload_font_type( $font_url ) {
+		$parts = function_exists( 'wp_parse_url' ) ? wp_parse_url( $font_url ) : parse_url( $font_url ); // phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url
+		$path  = isset( $parts['path'] ) ? strtolower( $parts['path'] ) : '';
+
+		if ( ! $path ) {
+			return '';
+		}
+
+		$extension = pathinfo( $path, PATHINFO_EXTENSION );
+		$types     = [
+			'woff2' => 'font/woff2',
+			'woff'  => 'font/woff',
+			'ttf'   => 'font/ttf',
+			'otf'   => 'font/otf',
+		];
+
+		return isset( $types[ $extension ] ) ? $types[ $extension ] : '';
 	}
 
 
