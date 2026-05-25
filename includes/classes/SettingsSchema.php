@@ -77,6 +77,7 @@ class SettingsSchema {
 			'remove_unused_css'                => self::field( self::TYPE_BOOLEAN, false, 'file_optimization', self::SANITIZE_BOOLEAN, true ),
 			'ucss_safelist'                    => self::field( self::TYPE_STRING, '', 'file_optimization', self::SANITIZE_TEXTAREA, true, array( 'remove_unused_css' ) ),
 			'ucss_excluded_files'              => self::field( self::TYPE_STRING, '', 'file_optimization', self::SANITIZE_TEXTAREA, true, array( 'remove_unused_css' ) ),
+			'css_optimization_disabled_sources' => self::field( self::TYPE_ARRAY, array(), 'file_optimization', self::SANITIZE_ARRAY, true ),
 			'minify_js'                        => self::field( self::TYPE_BOOLEAN, false, 'file_optimization', self::SANITIZE_BOOLEAN ),
 			'combine_js'                       => self::field( self::TYPE_BOOLEAN, false, 'file_optimization', self::SANITIZE_BOOLEAN ),
 			'excluded_js_files'                => self::field( self::TYPE_STRING, '', 'file_optimization', self::SANITIZE_TEXTAREA ),

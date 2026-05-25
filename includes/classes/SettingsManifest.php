@@ -447,6 +447,11 @@ class SettingsManifest {
 				'group'       => 'CSS',
 				'docs_path'   => 'remove-unused-css',
 			),
+			'css_optimization_disabled_sources' => array(
+				'control' => 'hidden',
+				'label'   => 'Paused CSS Compatibility Sources',
+				'group'   => 'CSS',
+			),
 			'minify_js'                      => array(
 				'label'       => 'Minify JavaScript',
 				'description' => 'Reduce JavaScript file size before delivery.',

@@ -645,7 +645,7 @@ const cssCompatibilityRuleCount = (compatibility = {}) =>
 	);
 
 const cssCompatibilitySourceSummary = (compatibility = {}) => {
-	const sources = compatibility.sources || [];
+	const sources = (compatibility.sources || []).filter((source) => !source.userDisabled);
 	const labels = sources
 		.map((source) => source.label)
 		.filter(Boolean)
@@ -738,11 +738,17 @@ const cssCompatibilityServiceItems = (compatibility = {}) =>
 		})
 		.filter(Boolean);
 
-const AppliedSafeguardsPanel = ({ compatibility = {} }) => {
+const AppliedSafeguardsPanel = ({
+	compatibility = {},
+	onToggleSource = null,
+	updatingSource = '',
+}) => {
 	const ruleCount = cssCompatibilityRuleCount(compatibility);
-	const sourceCount = (compatibility.sources || []).length;
+	const sources = compatibility.sources || [];
+	const activeSources = sources.filter((source) => !source.userDisabled);
+	const sourceCount = activeSources.length;
 
-	if (!ruleCount || !sourceCount) {
+	if (!ruleCount && !sources.length) {
 		return null;
 	}
 
@@ -777,6 +783,45 @@ const AppliedSafeguardsPanel = ({ compatibility = {} }) => {
 							sourceSummary,
 						)}
 					</span>
+				)}
+				{!!sources.length && (
+					<div className="pc-settings-safeguards__source-actions">
+						{sources.map((source) => {
+							const canToggle = source.canDisable && onToggleSource;
+							const isUpdating = updatingSource === source.key;
+
+							return (
+								<span
+									className={`pc-settings-safeguards__source ${
+										source.userDisabled
+											? 'pc-settings-safeguards__source--disabled'
+											: ''
+									}`}
+									key={source.key || `${source.type}-${source.id}`}
+								>
+									<span>{source.label}</span>
+									{source.userDisabled && (
+										<strong>{__('Paused', 'powered-cache')}</strong>
+									)}
+									{canToggle && (
+										<Button
+											disabled={isUpdating}
+											isBusy={isUpdating}
+											onClick={() => {
+												onToggleSource(source, !source.userDisabled);
+											}}
+											type="button"
+											variant="link"
+										>
+											{source.userDisabled
+												? __('Resume', 'powered-cache')
+												: __('Pause', 'powered-cache')}
+										</Button>
+									)}
+								</span>
+							);
+						})}
+					</div>
 				)}
 			</div>
 			{!!serviceItems.length && (
@@ -923,7 +968,9 @@ const CssOptimizationPanel = ({
 	docsUrl = '#',
 	generatingService = '',
 	onGenerate = null,
+	onToggleCompatibilitySource = null,
 	settings = {},
+	updatingCompatibilitySource = '',
 }) => {
 	const services = Object.entries(cssOptimization.services || {});
 
@@ -960,7 +1007,11 @@ const CssOptimizationPanel = ({
 					{__('Troubleshooting', 'powered-cache')}
 				</Button>
 			</div>
-			<AppliedSafeguardsPanel compatibility={compatibility} />
+			<AppliedSafeguardsPanel
+				compatibility={compatibility}
+				onToggleSource={onToggleCompatibilitySource}
+				updatingSource={updatingCompatibilitySource}
+			/>
 			<div className="pc-settings-service-health__grid">
 				{services.map(([serviceKey, service]) => {
 					const serviceState =
@@ -1923,6 +1974,7 @@ const SettingsApp = () => {
 	const [objectCacheNotice, setObjectCacheNotice] = useState(null);
 	const [premiumInfo, setPremiumInfo] = useState(appConfig.premium || {});
 	const [generatingCssService, setGeneratingCssService] = useState('');
+	const [updatingCompatibilitySource, setUpdatingCompatibilitySource] = useState('');
 
 	useEffect(() => {
 		Promise.all([
@@ -2320,6 +2372,50 @@ const SettingsApp = () => {
 			});
 	};
 
+	const toggleCompatibilitySource = (source, disabled) => {
+		const cssOptimization = premiumInfo.cssOptimization || {};
+
+		if (!source || !source.key || !cssOptimization.compatibilitySourcePath) {
+			return;
+		}
+
+		setUpdatingCompatibilitySource(source.key);
+		setNotice(null);
+
+		apiFetch({
+			path: route(cssOptimization.compatibilitySourcePath),
+			method: 'POST',
+			data: {
+				source: source.key,
+				disabled,
+			},
+		})
+			.then((response) => {
+				if (response && response.cssOptimization) {
+					setPremiumInfo((currentPremiumInfo) => ({
+						...currentPremiumInfo,
+						cssOptimization: response.cssOptimization,
+					}));
+				}
+
+				setNotice({
+					status: 'success',
+					message: disabled
+						? __('Compatibility safeguard paused.', 'powered-cache')
+						: __('Compatibility safeguard resumed.', 'powered-cache'),
+				});
+			})
+			.catch(() => {
+				setNotice({
+					status: 'error',
+					message: __('Compatibility safeguard could not be updated.', 'powered-cache'),
+				});
+			})
+			.finally(() => {
+				setUpdatingCompatibilitySource('');
+			});
+	};
+
 	if (isLoading) {
 		return (
 			<div className="pc-settings-loading-state">
@@ -2560,7 +2656,9 @@ const SettingsApp = () => {
 								docsUrl={appConfig.docsUrl || '#'}
 								generatingService={generatingCssService}
 								onGenerate={generateCssOptimization}
+								onToggleCompatibilitySource={toggleCompatibilitySource}
 								settings={settings}
+								updatingCompatibilitySource={updatingCompatibilitySource}
 							/>
 						)}
 					{isLicenseSection ? (

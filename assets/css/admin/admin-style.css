@@ -505,6 +505,49 @@
 	overflow-wrap: anywhere;
 }
 
+.pc-settings-safeguards__source-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-top: 10px;
+}
+
+.pc-settings-safeguards__source {
+	align-items: center;
+	background: var(--pc-admin-white);
+	border: 1px solid #d7e4f1;
+	border-radius: 999px;
+	display: inline-flex;
+	gap: 6px;
+	line-height: 1.2;
+	max-width: 100%;
+	padding: 4px 8px;
+}
+
+.pc-settings-safeguards__source span {
+	font-size: 12px;
+	font-weight: 600;
+	overflow-wrap: anywhere;
+}
+
+.pc-settings-safeguards__source strong {
+	color: var(--pc-admin-warning);
+	font-size: 11px;
+	margin: 0;
+	text-transform: uppercase;
+}
+
+.pc-settings-safeguards__source .components-button {
+	height: auto;
+	min-height: 0;
+	padding: 0 2px;
+}
+
+.pc-settings-safeguards__source--disabled {
+	background: #fffaf0;
+	border-color: var(--pc-admin-warning-border);
+}
+
 .pc-settings-safeguards__items {
 	display: flex;
 	flex-wrap: wrap;
