@@ -106,6 +106,7 @@ class SettingsSchema_Tests extends TestCase {
 		$this->assertTrue( $fields['enable_sitemap_preload']['premium'] );
 		$this->assertTrue( $fields['preload_sitemap']['premium'] );
 		$this->assertTrue( $fields['prefetch_links']['premium'] );
+		$this->assertTrue( $fields['self_host_google_fonts']['premium'] );
 		$this->assertTrue( $fields['enable_scheduled_db_cleanup']['premium'] );
 		$this->assertTrue( $fields['scheduled_db_cleanup_frequency']['premium'] );
 		$this->assertTrue( $fields['enable_varnish']['premium'] );

@@ -66,6 +66,7 @@ class SettingsSchema {
 			'combine_google_fonts'             => self::field( self::TYPE_BOOLEAN, false, 'file_optimization', self::SANITIZE_BOOLEAN ),
 			'swap_google_fonts_display'        => self::field( self::TYPE_BOOLEAN, true, 'file_optimization', self::SANITIZE_BOOLEAN ),
 			'use_bunny_fonts'                  => self::field( self::TYPE_BOOLEAN, false, 'file_optimization', self::SANITIZE_BOOLEAN ),
+			'self_host_google_fonts'           => self::field( self::TYPE_BOOLEAN, false, 'file_optimization', self::SANITIZE_BOOLEAN, true ),
 			'minify_css'                       => self::field( self::TYPE_BOOLEAN, false, 'file_optimization', self::SANITIZE_BOOLEAN ),
 			'combine_css'                      => self::field( self::TYPE_BOOLEAN, false, 'file_optimization', self::SANITIZE_BOOLEAN ),
 			'critical_css'                     => self::field( self::TYPE_BOOLEAN, false, 'file_optimization', self::SANITIZE_BOOLEAN, true ),
@@ -228,6 +229,7 @@ class SettingsSchema {
 		if ( self::premium_available( $premium_available ) ) {
 			$recommended['enable_image_optimization']        = true;
 			$recommended['image_optimizer_preferred_format'] = '';
+			$recommended['self_host_google_fonts']           = true;
 		}
 
 		$recommended = self::apply_recommended_safeguards( $recommended, $context );

@@ -138,6 +138,7 @@ class SettingsManifest_Tests extends TestCase {
 			'cache_mobile_separate_file',
 			'loggedin_user_cache',
 			'combine_google_fonts',
+			'self_host_google_fonts',
 			'critical_css_additional_files',
 			'ucss_safelist',
 			'lazy_load_exclusions',
@@ -153,6 +154,7 @@ class SettingsManifest_Tests extends TestCase {
 		}
 
 		$this->assertSame( 'critical-css', $fields['critical_css']['docs_path'] );
+		$this->assertSame( 'self-host-google-fonts', $fields['self_host_google_fonts']['docs_path'] );
 		$this->assertSame( 'remove-unused-css', $fields['remove_unused_css']['docs_path'] );
 		$this->assertSame( 'cdn-integration', $fields['cdn_hostname']['docs_path'] );
 		$this->assertSame( 'prefetch-dns', $fields['prefetch_dns']['docs_path'] );

@@ -31,6 +31,13 @@ class FileOptimizer {
 	public $settings = [];
 
 	/**
+	 * Google Fonts local cache.
+	 *
+	 * @var GoogleFontsLocalCache|null
+	 */
+	private $google_fonts_cache;
+
+	/**
 	 * Do optimizations for wp-admin?
 	 *
 	 * @var bool
@@ -142,6 +149,10 @@ class FileOptimizer {
 		if ( $this->settings['combine_google_fonts'] ) {
 			add_action( 'wp_enqueue_scripts', [ $this, 'combine_google_fonts' ], 99 );
 		}
+
+		if ( ! empty( $this->settings['self_host_google_fonts'] ) ) {
+			add_filter( 'style_loader_src', [ $this, 'maybe_self_host_google_fonts_src' ], 99 );
+		}
 	}
 
 	/**
@@ -188,9 +199,53 @@ class FileOptimizer {
 		$html = $this->maybe_defer_inline_scripts( $html );
 		$html = $this->maybe_delay_scripts( $html );
 		$html = $this->maybe_replace_google_fonts_with_bunny_fonts( $html );
+		$html = $this->maybe_self_host_google_fonts_html( $html );
 		$html = $this->maybe_minify_html( $html );
 
 		return $html;
+	}
+
+	/**
+	 * Replace Google Fonts stylesheet URLs in HTML with local cached URLs.
+	 *
+	 * @param string $html Output buffer.
+	 *
+	 * @return string
+	 */
+	public function maybe_self_host_google_fonts_html( $html ) {
+		if ( empty( $this->settings['self_host_google_fonts'] ) ) {
+			return $html;
+		}
+
+		return $this->get_google_fonts_cache()->replace_stylesheet_urls( $html );
+	}
+
+	/**
+	 * Replace enqueued Google Fonts stylesheet URLs with local cached URLs.
+	 *
+	 * @param string $src Stylesheet URL.
+	 *
+	 * @return string
+	 */
+	public function maybe_self_host_google_fonts_src( $src ) {
+		if ( empty( $this->settings['self_host_google_fonts'] ) ) {
+			return $src;
+		}
+
+		return $this->get_google_fonts_cache()->get_stylesheet_url( $src );
+	}
+
+	/**
+	 * Return Google Fonts local cache service.
+	 *
+	 * @return GoogleFontsLocalCache
+	 */
+	private function get_google_fonts_cache() {
+		if ( ! $this->google_fonts_cache ) {
+			$this->google_fonts_cache = new GoogleFontsLocalCache();
+		}
+
+		return $this->google_fonts_cache;
 	}
 
 	/**

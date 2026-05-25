@@ -387,6 +387,14 @@ class SettingsManifest {
 				'description'   => 'Use Bunny Fonts as a privacy-friendly drop-in source for Google Fonts.',
 				'group'         => 'Fonts',
 			),
+			'self_host_google_fonts'         => array(
+				'label'               => 'Self-host Google Fonts',
+				'control_label'       => 'Cache Google Fonts locally',
+				'description'         => 'Download Google Fonts stylesheets and font files into the local cache directory and serve them from this site.',
+				'group'               => 'Fonts',
+				'docs_path'           => 'self-host-google-fonts',
+				'upgrade_description' => 'Premium can cache Google Fonts locally to reduce third-party font requests.',
+			),
 			'minify_css'                     => array(
 				'label'       => 'Minify CSS',
 				'description' => 'Reduce CSS file size before delivery.',
