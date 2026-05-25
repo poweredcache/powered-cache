@@ -1,5 +1,5 @@
 const { __, sprintf } = wp.i18n;
-const { createRoot, render, useEffect, useMemo, useState } = wp.element;
+const { createRoot, render, useCallback, useEffect, useMemo, useState } = wp.element;
 const { Button, Notice, SelectControl, Spinner, TextControl, TextareaControl, ToggleControl } =
 	wp.components;
 const { apiFetch } = wp;
@@ -98,6 +98,28 @@ const requestedSection = () => {
 	const url = new URL(window.location.href);
 
 	return url.searchParams.get(sectionParam) || '';
+};
+
+const requestedCssGeneration = () => {
+	const url = new URL(window.location.href);
+	const service = url.searchParams.get('pc_css_generate') || '';
+
+	return ['critical', 'ucss'].includes(service) ? service : '';
+};
+
+const clearCssGenerationRequest = () => {
+	if (!window.history) {
+		return;
+	}
+
+	const url = new URL(window.location.href);
+
+	if (!url.searchParams.has('pc_css_generate')) {
+		return;
+	}
+
+	url.searchParams.delete('pc_css_generate');
+	window.history.replaceState(window.history.state || {}, '', url.toString());
 };
 
 const urlSection = (href) => {
@@ -2362,65 +2384,86 @@ const SettingsApp = () => {
 			});
 	};
 
-	const generateCssOptimization = (serviceKey, service = {}) => {
-		const cssOptimization = premiumInfo.cssOptimization || {};
+	const generateCssOptimization = useCallback(
+		(serviceKey, service = {}) => {
+			const cssOptimization = premiumInfo.cssOptimization || {};
 
-		if (!cssOptimization.generatePath) {
+			if (!cssOptimization.generatePath) {
+				return;
+			}
+
+			setGeneratingCssService(serviceKey);
+			setNotice(null);
+
+			apiFetch({
+				path: route(cssOptimization.generatePath),
+				method: 'POST',
+				data: {
+					service: serviceKey,
+				},
+			})
+				.then((response) => {
+					if (response && response.cssOptimization) {
+						setPremiumInfo((currentPremiumInfo) => ({
+							...currentPremiumInfo,
+							cssOptimization: response.cssOptimization,
+						}));
+					}
+
+					setNotice({
+						status: 'success',
+						message:
+							(response && response.message) ||
+							sprintf(
+								/* translators: %s: CSS optimization service label. */
+								__('%s generation has started.', 'powered-cache'),
+								service.label || labelFromKey(serviceKey),
+							),
+					});
+				})
+				.catch((error) => {
+					if (error && error.data && error.data.cssOptimization) {
+						setPremiumInfo((currentPremiumInfo) => ({
+							...currentPremiumInfo,
+							cssOptimization: error.data.cssOptimization,
+						}));
+					}
+
+					setNotice({
+						status: 'error',
+						message:
+							(error && error.message) ||
+							sprintf(
+								/* translators: %s: CSS optimization service label. */
+								__('%s generation could not be started.', 'powered-cache'),
+								service.label || labelFromKey(serviceKey),
+							),
+					});
+				})
+				.finally(() => {
+					setGeneratingCssService('');
+				});
+		},
+		[premiumInfo.cssOptimization],
+	);
+
+	useEffect(() => {
+		const requestedService = requestedCssGeneration();
+
+		if (!requestedService || activeSection !== 'file_optimization' || generatingCssService) {
 			return;
 		}
 
-		setGeneratingCssService(serviceKey);
-		setNotice(null);
+		const cssOptimization = premiumInfo.cssOptimization || {};
+		const service = (cssOptimization.services || {})[requestedService];
 
-		apiFetch({
-			path: route(cssOptimization.generatePath),
-			method: 'POST',
-			data: {
-				service: serviceKey,
-			},
-		})
-			.then((response) => {
-				if (response && response.cssOptimization) {
-					setPremiumInfo((currentPremiumInfo) => ({
-						...currentPremiumInfo,
-						cssOptimization: response.cssOptimization,
-					}));
-				}
+		if (!cssOptimization.generatePath || !service) {
+			return;
+		}
 
-				setNotice({
-					status: 'success',
-					message:
-						(response && response.message) ||
-						sprintf(
-							/* translators: %s: CSS optimization service label. */
-							__('%s generation has started.', 'powered-cache'),
-							service.label || labelFromKey(serviceKey),
-						),
-				});
-			})
-			.catch((error) => {
-				if (error && error.data && error.data.cssOptimization) {
-					setPremiumInfo((currentPremiumInfo) => ({
-						...currentPremiumInfo,
-						cssOptimization: error.data.cssOptimization,
-					}));
-				}
-
-				setNotice({
-					status: 'error',
-					message:
-						(error && error.message) ||
-						sprintf(
-							/* translators: %s: CSS optimization service label. */
-							__('%s generation could not be started.', 'powered-cache'),
-							service.label || labelFromKey(serviceKey),
-						),
-				});
-			})
-			.finally(() => {
-				setGeneratingCssService('');
-			});
-	};
+		clearCssGenerationRequest();
+		generateCssOptimization(requestedService, service);
+	}, [activeSection, generateCssOptimization, generatingCssService, premiumInfo.cssOptimization]);
 
 	const toggleCompatibilitySource = (source, disabled) => {
 		const cssOptimization = premiumInfo.cssOptimization || {};
