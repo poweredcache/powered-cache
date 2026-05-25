@@ -257,4 +257,35 @@ class SettingsSetupProfile_Tests extends TestCase {
 		$this->assertContains( 'cloudflare', $detected_keys );
 		$this->assertNotContains( 'cloudflare_integration', $recommendation_keys );
 	}
+
+	/**
+	 * It reports recommended setup progress.
+	 */
+	public function test_report_includes_recommended_setup_progress() {
+		\WP_Mock::userFunction(
+			'get_option',
+			array(
+				'times'  => 1,
+				'args'   => array( 'active_plugins', array() ),
+				'return' => array(),
+			)
+		);
+
+		\WP_Mock::userFunction(
+			'get_site_option',
+			array(
+				'times'  => 1,
+				'args'   => array( 'active_sitewide_plugins', array() ),
+				'return' => array(),
+			)
+		);
+
+		$settings = SettingsSchema::recommended( array( 'is_apache' => false ), false );
+		$profile  = SettingsSetupProfile::factory( array( 'is_apache' => false ) )->report( $settings );
+
+		$this->assertArrayHasKey( 'recommended', $profile );
+		$this->assertTrue( $profile['recommended']['applied'] );
+		$this->assertSame( $profile['recommended']['total'], $profile['recommended']['matched'] );
+		$this->assertSame( array(), $profile['recommended']['pending'] );
+	}
 }

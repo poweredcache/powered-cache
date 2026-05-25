@@ -305,6 +305,7 @@ class SettingsSetupProfile {
 				'detected'        => $this->unique_items( $detected ),
 				'plugin_count'    => count( $active_plugins ),
 				'recommendations' => array_slice( $this->prioritize_recommendations( $this->unique_items( $recommendations ) ), 0, 5 ),
+				'recommended'     => $this->recommended_summary( $settings ),
 			),
 			$settings,
 			$this->context
@@ -558,6 +559,56 @@ class SettingsSetupProfile {
 			'priority' => $priority,
 			'section'  => $section,
 		);
+	}
+
+	/**
+	 * Return setup progress against the recommended baseline.
+	 *
+	 * @param array $settings Current settings.
+	 *
+	 * @return array
+	 */
+	private function recommended_summary( array $settings ) {
+		$recommended = SettingsSchema::recommended( $this->context );
+		$total       = count( $recommended );
+		$matched     = 0;
+		$pending     = array();
+
+		foreach ( $recommended as $key => $value ) {
+			if ( array_key_exists( $key, $settings ) && $this->setting_value_matches( $settings[ $key ], $value ) ) {
+				$matched++;
+				continue;
+			}
+
+			$pending[] = $key;
+		}
+
+		return array(
+			'applied' => 0 < $total && $matched === $total,
+			'matched' => $matched,
+			'pending' => array_slice( $pending, 0, 8 ),
+			'total'   => $total,
+		);
+	}
+
+	/**
+	 * Determine whether a setting value matches the recommended value.
+	 *
+	 * @param mixed $current     Current value.
+	 * @param mixed $recommended Recommended value.
+	 *
+	 * @return bool
+	 */
+	private function setting_value_matches( $current, $recommended ) {
+		if ( is_bool( $recommended ) ) {
+			return (bool) $current === $recommended;
+		}
+
+		if ( is_int( $recommended ) ) {
+			return (int) $current === $recommended;
+		}
+
+		return $current === $recommended;
 	}
 
 	/**
