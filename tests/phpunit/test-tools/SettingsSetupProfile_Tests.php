@@ -103,4 +103,83 @@ class SettingsSetupProfile_Tests extends TestCase {
 		$this->assertSame( 'woocommerce_safeguards', $recommendation_keys[1] );
 		$this->assertSame( 'optimizer_overlap', $recommendation_keys[2] );
 	}
+
+	/**
+	 * It recommends connecting Cloudflare when edge signals are detected.
+	 */
+	public function test_report_recommends_cloudflare_integration_when_edge_signals_are_detected() {
+		\WP_Mock::userFunction(
+			'get_option',
+			array(
+				'times'  => 1,
+				'args'   => array( 'active_plugins', array() ),
+				'return' => array(),
+			)
+		);
+
+		\WP_Mock::userFunction(
+			'get_site_option',
+			array(
+				'times'  => 1,
+				'args'   => array( 'active_sitewide_plugins', array() ),
+				'return' => array(),
+			)
+		);
+
+		$profile = SettingsSetupProfile::factory(
+			array(
+				'active_environments' => array( 'cdn:cloudflare' ),
+			)
+		)->report(
+			array(
+				'enable_cloudflare' => false,
+				'enable_page_cache' => true,
+				'object_cache'       => 'off',
+			)
+		);
+
+		$detected_keys       = array_column( $profile['detected'], 'key' );
+		$recommendation_keys = array_column( $profile['recommendations'], 'key' );
+
+		$this->assertContains( 'cloudflare', $detected_keys );
+		$this->assertContains( 'hosting_stack', $detected_keys );
+		$this->assertContains( 'cloudflare_integration', $recommendation_keys );
+	}
+
+	/**
+	 * It skips Cloudflare integration recommendation when already enabled.
+	 */
+	public function test_report_skips_cloudflare_integration_when_enabled() {
+		\WP_Mock::userFunction(
+			'get_option',
+			array(
+				'times'  => 1,
+				'args'   => array( 'active_plugins', array() ),
+				'return' => array( 'cloudflare/cloudflare.php' ),
+			)
+		);
+
+		\WP_Mock::userFunction(
+			'get_site_option',
+			array(
+				'times'  => 1,
+				'args'   => array( 'active_sitewide_plugins', array() ),
+				'return' => array(),
+			)
+		);
+
+		$profile = SettingsSetupProfile::factory()->report(
+			array(
+				'enable_cloudflare' => true,
+				'enable_page_cache' => true,
+				'object_cache'       => 'off',
+			)
+		);
+
+		$detected_keys       = array_column( $profile['detected'], 'key' );
+		$recommendation_keys = array_column( $profile['recommendations'], 'key' );
+
+		$this->assertContains( 'cloudflare', $detected_keys );
+		$this->assertNotContains( 'cloudflare_integration', $recommendation_keys );
+	}
 }

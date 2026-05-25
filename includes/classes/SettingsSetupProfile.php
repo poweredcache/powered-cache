@@ -212,6 +212,19 @@ class SettingsSetupProfile {
 			);
 		}
 
+		if ( $this->cloudflare_detected( $active_plugins ) ) {
+			$detected[] = $this->detection( 'cloudflare', 'Cloudflare edge', 'environment' );
+
+			if ( empty( $settings['enable_cloudflare'] ) ) {
+				$recommendations[] = $this->recommendation(
+					'cloudflare_integration',
+					'Connect Cloudflare purge',
+					'Cloudflare signals are detected. Connect the integration so cache purges can stay coordinated across WordPress and the edge.',
+					'integrations'
+				);
+			}
+		}
+
 		if ( empty( $settings['enable_page_cache'] ) ) {
 			array_unshift(
 				$recommendations,
@@ -236,7 +249,7 @@ class SettingsSetupProfile {
 		}
 
 		if ( ! empty( $this->context['active_environments'] ) && is_array( $this->context['active_environments'] ) ) {
-			$detected[]        = $this->detection( 'hosting_stack', 'Managed hosting signals', 'environment' );
+			$detected[]        = $this->detection( 'hosting_stack', 'Hosting or edge signals', 'environment' );
 			$recommendations[] = $this->recommendation(
 				'hosting_stack',
 				'Review hosting cache coordination',
@@ -378,6 +391,19 @@ class SettingsSetupProfile {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Determine whether Cloudflare is detected by plugin or environment.
+	 *
+	 * @param array $active_plugins Active plugin basenames.
+	 *
+	 * @return bool
+	 */
+	private function cloudflare_detected( array $active_plugins ) {
+		$active_environments = isset( $this->context['active_environments'] ) && is_array( $this->context['active_environments'] ) ? $this->context['active_environments'] : array();
+
+		return in_array( 'cdn:cloudflare', $active_environments, true ) || $this->has_plugin( $active_plugins, array( 'cloudflare/cloudflare.php' ) );
 	}
 
 	/**

@@ -164,6 +164,7 @@
 
 .pc-settings-setup-guide__intro {
 	border-right: 1px solid var(--pc-admin-info-border);
+	min-width: 0;
 	padding: 18px 20px;
 }
 
@@ -201,6 +202,7 @@
 .pc-settings-setup-guide__items {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
+	min-width: 0;
 }
 
 .pc-settings-setup-step {
@@ -213,6 +215,10 @@
 	justify-content: space-between;
 	min-width: 0;
 	padding: 16px 18px;
+}
+
+.pc-settings-setup-step > div {
+	min-width: 0;
 }
 
 .pc-settings-setup-step:nth-child(-n + 2) {
@@ -234,6 +240,7 @@
 	font-size: 12px;
 	line-height: 1.45;
 	margin: 6px 0 0;
+	overflow-wrap: anywhere;
 }
 
 .pc-settings-delivery-card {
