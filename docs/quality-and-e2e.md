@@ -7,7 +7,7 @@ Powered Cache 4.0 keeps the settings app covered by unit checks, linting, build 
 Do not run every check after every small edit. Use the smallest check that covers the surface you changed, then run the fuller suite before a commit, pull request, or release candidate.
 
 - PHP-only change: run the matching PHPUnit file first, then PHPCS for the touched files.
-- Settings schema, validation, or compatibility registry change: run the matching PHPUnit test file and the settings app smoke test when UI behavior can be affected.
+- Settings schema, validation, setup profile, or compatibility registry change: run the matching PHPUnit test file and the settings app smoke test when UI behavior can be affected.
 - JavaScript or CSS change: run `npm run lint-js` and `npm run build`.
 - Release/PR readiness: run the full PHP suite, PHPCS, JS lint, build, and the relevant E2E profile.
 
@@ -62,6 +62,14 @@ Profiles:
 - `auto`: Runs Premium/license checks only when the section is present.
 
 The smoke test verifies that the settings app renders key sections, keeps WordPress admin submenu highlighting in sync, keeps Cache Lifespan controls visually aligned, and avoids legacy CSS generation links. Premium/license URL checks run only in the `premium` or `auto` profiles.
+
+Guided setup and advisor changes should also keep these targeted checks green:
+
+```bash
+/Users/mustafauysal/Library/Application\ Support/Local/lightning-services/php-8.2.30+1/bin/darwin-arm64/bin/php vendor/bin/phpunit --filter 'SettingsSetupProfile|SettingsRestController|CompatibilityRules'
+```
+
+This covers the REST `setup_profile` payload, active plugin recommendations, and the compatibility rules that power the advisor copy.
 
 For GitHub-hosted CI, prefer an explicit fixture URL such as:
 
