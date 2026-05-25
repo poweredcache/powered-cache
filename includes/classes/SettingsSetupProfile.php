@@ -104,6 +104,114 @@ class SettingsSetupProfile {
 			);
 		}
 
+		if ( $this->has_plugin(
+			$active_plugins,
+			array(
+				'elementor/elementor.php',
+				'elementor-pro/elementor-pro.php',
+			)
+		) ) {
+			$detected[]        = $this->detection( 'page_builder', 'Page builder', 'plugin' );
+			$recommendations[] = $this->recommendation(
+				'page_builder_optimization',
+				'Review page builder safeguards',
+				'Detected builder scripts are protected by compatibility rules. Review CSS and JavaScript optimization on key templates before launch.',
+				'file_optimization'
+			);
+		}
+
+		if ( $this->has_plugin(
+			$active_plugins,
+			array(
+				'complianz-gdpr/complianz-gdpr.php',
+				'cookiebot/cookiebot.php',
+				'cookie-notice/cookie-notice.php',
+				'eu-cookie-law/eu-cookie-law.php',
+				'gdpr/gdpr.php',
+				'consent-magic-pro/consent-magic-pro.php',
+			)
+		) ) {
+			$detected[]        = $this->detection( 'consent', 'Consent management', 'plugin' );
+			$recommendations[] = $this->recommendation(
+				'consent_controls',
+				'Confirm consent controls',
+				'Consent scripts are kept out of delayed JavaScript. Verify the banner and preference controls after enabling script optimizations.',
+				'file_optimization'
+			);
+		}
+
+		if ( $this->has_plugin(
+			$active_plugins,
+			array(
+				'revslider/revslider.php',
+				'smart-slider-3/smart-slider-3.php',
+			)
+		) ) {
+			$detected[]        = $this->detection( 'slider', 'Slider or hero media', 'plugin' );
+			$recommendations[] = $this->recommendation(
+				'hero_media',
+				'Check hero media after optimization',
+				'Slider scripts are protected by compatibility rules. Review the first viewport after lazy-load and JavaScript changes.',
+				'media'
+			);
+		}
+
+		if ( $this->has_plugin(
+			$active_plugins,
+			array(
+				'autoptimize/autoptimize.php',
+				'shortpixel-adaptive-images/short-pixel-ai.php',
+			)
+		) ) {
+			$detected[]        = $this->detection( 'optimizer_overlap', 'Optimization plugin overlap', 'plugin' );
+			$recommendations[] = $this->recommendation(
+				'optimizer_overlap',
+				'Review overlapping optimization layers',
+				'Another optimization plugin is active. Keep only one layer responsible for minification, delayed scripts, and image delivery where possible.',
+				'file_optimization',
+				'high'
+			);
+		}
+
+		if ( $this->has_plugin(
+			$active_plugins,
+			array(
+				'litespeed-cache/litespeed-cache.php',
+				'w3-total-cache/w3-total-cache.php',
+				'wp-super-cache/wp-cache.php',
+				'wp-fastest-cache/wpFastestCache.php',
+				'sg-cachepress/sg-cachepress.php',
+				'breeze/breeze.php',
+			)
+		) ) {
+			$detected[]        = $this->detection( 'external_cache', 'Existing cache layer', 'plugin' );
+			$recommendations[] = $this->recommendation(
+				'external_cache',
+				'Review active cache layers',
+				'Another page cache plugin is active. Avoid running two full-page cache layers unless one is intentionally disabled.',
+				'cache',
+				'high'
+			);
+		}
+
+		if ( $this->has_plugin(
+			$active_plugins,
+			array(
+				'a3-lazy-load/a3-lazy-load.php',
+				'jetpack-boost/jetpack-boost.php',
+				'lazy-load/lazy-load.php',
+				'bj-lazy-load/bj-lazy-load.php',
+			)
+		) ) {
+			$detected[]        = $this->detection( 'external_lazy_load', 'Existing lazy-load layer', 'plugin' );
+			$recommendations[] = $this->recommendation(
+				'external_lazy_load',
+				'Review lazy-load ownership',
+				'Another lazy-load layer is active. Keep one plugin responsible for lazy-loading unless the front end has been tested carefully.',
+				'media'
+			);
+		}
+
 		if ( empty( $settings['enable_page_cache'] ) ) {
 			array_unshift(
 				$recommendations,
@@ -154,7 +262,7 @@ class SettingsSetupProfile {
 			array(
 				'detected'        => $this->unique_items( $detected ),
 				'plugin_count'    => count( $active_plugins ),
-				'recommendations' => array_slice( $this->unique_items( $recommendations ), 0, 4 ),
+				'recommendations' => array_slice( $this->prioritize_recommendations( $this->unique_items( $recommendations ) ), 0, 5 ),
 			),
 			$settings,
 			$this->context
@@ -331,6 +439,29 @@ class SettingsSetupProfile {
 		}
 
 		return $unique;
+	}
+
+	/**
+	 * Keep high-impact recommendations first while preserving relative order.
+	 *
+	 * @param array $recommendations Recommendation items.
+	 *
+	 * @return array
+	 */
+	private function prioritize_recommendations( array $recommendations ) {
+		$high   = array();
+		$normal = array();
+
+		foreach ( $recommendations as $recommendation ) {
+			if ( isset( $recommendation['priority'] ) && 'high' === $recommendation['priority'] ) {
+				$high[] = $recommendation;
+				continue;
+			}
+
+			$normal[] = $recommendation;
+		}
+
+		return array_merge( $high, $normal );
 	}
 
 	/**
