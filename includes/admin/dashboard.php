@@ -51,6 +51,8 @@ function setup() {
 	}
 
 	add_action( 'admin_notices', __NAMESPACE__ . '\\maybe_display_message' );
+	add_action( 'admin_head', __NAMESPACE__ . '\\admin_menu_icon_styles' );
+	add_action( 'network_admin_head', __NAMESPACE__ . '\\admin_menu_icon_styles' );
 
 	add_action( 'admin_init', __NAMESPACE__ . '\\process_form_submit' );
 	add_filter( 'admin_body_class', __NAMESPACE__ . '\\add_sui_admin_body_class' );
@@ -99,7 +101,7 @@ function admin_menu() {
 		$capability,
 		MENU_SLUG,
 		__NAMESPACE__ . '\settings_page',
-		ICON_BASE64
+		'none'
 	);
 
 	$sections            = settings_submenu_sections();
@@ -128,6 +130,32 @@ function admin_menu() {
 			__NAMESPACE__ . '\settings_page'
 		);
 	}
+}
+
+/**
+ * Prints admin menu icon styles.
+ *
+ * WordPress can color pseudo-element icons for active, hover, and inactive
+ * menu states. Rendering the SVG as a mask keeps the custom mark aligned with
+ * native admin menu icon behavior.
+ *
+ * @return void
+ */
+function admin_menu_icon_styles() {
+	?>
+	<style id="powered-cache-admin-menu-icon">
+		#adminmenu #toplevel_page_powered-cache .wp-menu-image::before {
+			background-color: currentColor;
+			content: "";
+			display: inline-block;
+			height: 20px;
+			margin-top: 7px;
+			mask: url("<?php echo esc_attr( ICON_BASE64 ); ?>") center / 20px 20px no-repeat;
+			width: 20px;
+			-webkit-mask: url("<?php echo esc_attr( ICON_BASE64 ); ?>") center / 20px 20px no-repeat;
+		}
+	</style>
+	<?php
 }
 
 /**
