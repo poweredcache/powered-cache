@@ -134,6 +134,8 @@ class SettingsRestController_Tests extends TestCase {
 						'cloudflare_email'          => 'admin@example.test',
 						'cloudflare_api_key'        => 'secret-key',
 						'cloudflare_api_token'      => 'secret-token',
+						'sucuri_api_key'            => 'sucuri-key',
+						'sucuri_api_secret'         => 'sucuri-secret',
 					);
 				},
 			)
@@ -160,6 +162,8 @@ class SettingsRestController_Tests extends TestCase {
 		$this->assertSame( '', $response['settings']['cloudflare_email'] );
 		$this->assertSame( '', $response['settings']['cloudflare_api_key'] );
 		$this->assertSame( '', $response['settings']['cloudflare_api_token'] );
+		$this->assertSame( '', $response['settings']['sucuri_api_key'] );
+		$this->assertSame( '', $response['settings']['sucuri_api_secret'] );
 		$this->assertArrayHasKey( 'setup_profile', $response );
 		$this->assertSame( 0, $response['setup_profile']['plugin_count'] );
 

@@ -243,6 +243,8 @@ class SettingsRepository {
 			'cloudflare_email',
 			'cloudflare_api_key',
 			'cloudflare_api_token',
+			'sucuri_api_key',
+			'sucuri_api_secret',
 		);
 	}
 

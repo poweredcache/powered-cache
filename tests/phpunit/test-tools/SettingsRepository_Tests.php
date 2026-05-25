@@ -365,6 +365,8 @@ class SettingsRepository_Tests extends TestCase {
 				'cloudflare_email'     => 'admin@example.test',
 				'cloudflare_api_key'   => 'secret-key',
 				'cloudflare_api_token' => 'secret-token',
+				'sucuri_api_key'       => 'sucuri-key',
+				'sucuri_api_secret'    => 'sucuri-secret',
 				'enable_page_cache'    => true,
 			)
 		);
@@ -372,6 +374,8 @@ class SettingsRepository_Tests extends TestCase {
 		$this->assertSame( '', $settings['cloudflare_email'] );
 		$this->assertSame( '', $settings['cloudflare_api_key'] );
 		$this->assertSame( '', $settings['cloudflare_api_token'] );
+		$this->assertSame( '', $settings['sucuri_api_key'] );
+		$this->assertSame( '', $settings['sucuri_api_secret'] );
 		$this->assertTrue( $settings['enable_page_cache'] );
 	}
 
@@ -384,6 +388,8 @@ class SettingsRepository_Tests extends TestCase {
 				'cloudflare_email',
 				'cloudflare_api_key',
 				'cloudflare_api_token',
+				'sucuri_api_key',
+				'sucuri_api_secret',
 			),
 			SettingsRepository::sensitive_keys()
 		);

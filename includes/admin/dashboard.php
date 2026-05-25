@@ -26,6 +26,7 @@ use function PoweredCache\Utils\can_configure_object_cache;
 use function PoweredCache\Utils\can_control_all_settings;
 use function PoweredCache\Utils\cdn_zones;
 use function PoweredCache\Utils\get_available_object_caches;
+use function PoweredCache\Utils\get_decrypted_setting;
 use function PoweredCache\Utils\get_timeout_with_interval;
 use function PoweredCache\Utils\is_premium;
 use function PoweredCache\Utils\powered_cache_flush;
@@ -282,16 +283,16 @@ function process_form_submit() {
 				$options['dev_mode'] = false;
 				break;
 			case 'save_settings_and_optimize':
-				$options = maybe_process_cloudflare_settings( sanitize_options( $_POST ) );
+				$options = maybe_process_sensitive_settings( sanitize_options( $_POST ) );
 				db_optimize( $options );
 				break;
 			case 'save_settings_and_clear_cache':
-				$options = maybe_process_cloudflare_settings( sanitize_options( $_POST ) );
+				$options = maybe_process_sensitive_settings( sanitize_options( $_POST ) );
 				purge_all_cache( $options );
 				break;
 			case 'save_settings':
 			default:
-				$options = maybe_process_cloudflare_settings( sanitize_options( $_POST ) );
+				$options = maybe_process_sensitive_settings( sanitize_options( $_POST ) );
 				break;
 		}
 
@@ -473,6 +474,9 @@ function sanitize_options( $options ) {
 	$sanitized_options['cloudflare_api_key']             = sanitize_text_field( $options['cloudflare_api_key'] );
 	$sanitized_options['cloudflare_api_token']           = sanitize_text_field( $options['cloudflare_api_token'] );
 	$sanitized_options['cloudflare_zone']                = sanitize_text_field( $options['cloudflare_zone'] );
+	$sanitized_options['enable_sucuri']                  = ! empty( $options['enable_sucuri'] );
+	$sanitized_options['sucuri_api_key']                 = sanitize_text_field( $options['sucuri_api_key'] );
+	$sanitized_options['sucuri_api_secret']              = sanitize_text_field( $options['sucuri_api_secret'] );
 	$sanitized_options['enable_heartbeat']               = ! empty( $options['enable_heartbeat'] );
 	$sanitized_options['heartbeat_dashboard_status']     = sanitize_text_field( $options['heartbeat_dashboard_status'] );
 	$sanitized_options['heartbeat_editor_status']        = sanitize_text_field( $options['heartbeat_editor_status'] );
@@ -879,6 +883,19 @@ function action_links( $actions ) {
  *
  * @param array $options The form options submitted by the user.
  *
+ * @return array Updated options with processed sensitive settings.
+ */
+function maybe_process_sensitive_settings( $options ) {
+	$options = maybe_process_cloudflare_settings( $options );
+
+	return maybe_process_sucuri_settings( $options );
+}
+
+/**
+ * Process Cloudflare settings to handle masked values and encryption.
+ *
+ * @param array $options The form options submitted by the user.
+ *
  * @return array Updated options with processed Cloudflare settings.
  */
 function maybe_process_cloudflare_settings( $options ) {
@@ -912,6 +929,46 @@ function maybe_process_cloudflare_settings( $options ) {
 
 	if ( defined( 'POWERED_CACHE_CF_API_TOKEN' ) && POWERED_CACHE_CF_API_TOKEN ) {
 		$options['cloudflare_api_token'] = '';
+	}
+
+	return $options;
+}
+
+/**
+ * Process Sucuri settings to handle masked values and encryption.
+ *
+ * @param array $options The form options submitted by the user.
+ *
+ * @return array Updated options with processed Sucuri settings.
+ */
+function maybe_process_sucuri_settings( $options ) {
+	$prev_api_key    = get_decrypted_setting( 'sucuri_api_key' );
+	$prev_api_secret = get_decrypted_setting( 'sucuri_api_secret' );
+
+	if ( isset( $options['sucuri_api_key'] ) && mask_string( $prev_api_key, UNMASK_CHARACTER_LENGTH ) === $options['sucuri_api_key'] ) {
+		$options['sucuri_api_key'] = $prev_api_key;
+	}
+
+	if ( isset( $options['sucuri_api_secret'] ) && mask_string( $prev_api_secret, UNMASK_CHARACTER_LENGTH ) === $options['sucuri_api_secret'] ) {
+		$options['sucuri_api_secret'] = $prev_api_secret;
+	}
+
+	$encryption = new Encryption();
+
+	if ( ! empty( $options['sucuri_api_key'] ) ) {
+		$options['sucuri_api_key'] = $encryption->encrypt( $options['sucuri_api_key'] );
+	}
+
+	if ( ! empty( $options['sucuri_api_secret'] ) ) {
+		$options['sucuri_api_secret'] = $encryption->encrypt( $options['sucuri_api_secret'] );
+	}
+
+	if ( defined( 'POWERED_CACHE_SUCURI_API_KEY' ) && POWERED_CACHE_SUCURI_API_KEY ) {
+		$options['sucuri_api_key'] = '';
+	}
+
+	if ( defined( 'POWERED_CACHE_SUCURI_API_SECRET' ) && POWERED_CACHE_SUCURI_API_SECRET ) {
+		$options['sucuri_api_secret'] = '';
 	}
 
 	return $options;

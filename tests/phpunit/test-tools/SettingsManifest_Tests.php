@@ -144,6 +144,7 @@ class SettingsManifest_Tests extends TestCase {
 			'lazy_load_exclusions',
 			'cdn_rejected_files',
 			'prefetch_dns',
+			'enable_sucuri',
 			'db_cleanup_post_revisions',
 			'cache_footprint',
 		);

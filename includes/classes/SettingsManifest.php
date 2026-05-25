@@ -822,6 +822,23 @@ class SettingsManifest {
 				'description' => 'The Cloudflare zone that should be purged when cache is cleared.',
 				'group'       => 'CDN and proxy',
 			),
+			'enable_sucuri'                  => array(
+				'label'               => 'Sucuri',
+				'control_label'       => 'Purge Sucuri cache',
+				'description'         => 'Purge Sucuri Website Firewall cache when Powered Cache clears site cache.',
+				'group'               => 'CDN and proxy',
+				'upgrade_description' => 'Premium can purge Sucuri Website Firewall cache automatically.',
+			),
+			'sucuri_api_key'                 => array(
+				'label'       => 'Sucuri API Key',
+				'description' => 'Enter the Sucuri Website Firewall API key for cache purge requests.',
+				'group'       => 'CDN and proxy',
+			),
+			'sucuri_api_secret'              => array(
+				'label'       => 'Sucuri API Secret',
+				'description' => 'Enter the Sucuri Website Firewall API secret. The value is encrypted and hidden after saving.',
+				'group'       => 'CDN and proxy',
+			),
 			'enable_heartbeat'               => array(
 				'label'         => 'Heartbeat Control',
 				'control_label' => 'Manage Heartbeat activity',

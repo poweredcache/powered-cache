@@ -214,7 +214,7 @@ class SettingsRestController {
 				continue;
 			}
 
-			if ( in_array( $key, array( 'cloudflare_api_key', 'cloudflare_api_token' ), true ) ) {
+			if ( in_array( $key, array( 'cloudflare_api_key', 'cloudflare_api_token', 'sucuri_api_key', 'sucuri_api_secret' ), true ) ) {
 				$settings[ $key ] = ( new Encryption() )->encrypt( $changes[ $key ] );
 			}
 		}

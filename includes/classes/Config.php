@@ -740,7 +740,7 @@ class Config {
 		}
 
 		$this->setup_page_cache( $settings['enable_page_cache'] );
-		$private_settings = [ 'cloudflare_email', 'cloudflare_api_key', 'cloudflare_api_token', 'cloudflare_zone' ];
+		$private_settings = [ 'cloudflare_email', 'cloudflare_api_key', 'cloudflare_api_token', 'cloudflare_zone', 'sucuri_api_key', 'sucuri_api_secret' ];
 
 		foreach ( $private_settings as $setting_key ) {
 			unset( $settings[ $setting_key ] );
