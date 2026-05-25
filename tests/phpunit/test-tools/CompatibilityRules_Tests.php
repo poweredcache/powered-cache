@@ -293,6 +293,30 @@ class CompatibilityRules_Tests extends TestCase {
 	}
 
 	/**
+	 * It exposes bundled overlap notes for Perfmatters.
+	 */
+	public function test_bundled_registry_reports_perfmatters_overlap() {
+		\WP_Mock::onFilter( 'powered_cache_compatibility_rules_active_plugins' )
+			->with( array() )
+			->reply( array( 'perfmatters/perfmatters.php' ) );
+
+		$rules  = CompatibilityRules::factory();
+		$issues = $rules->settings_issues(
+			array(
+				'js_delay'          => true,
+				'enable_lazy_load'  => true,
+				'remove_unused_css' => true,
+			)
+		);
+
+		$issue_codes = array_column( $issues, 'code' );
+
+		$this->assertContains( 'perfmatters_js_delay_overlap', $issue_codes );
+		$this->assertContains( 'perfmatters_lazy_load_overlap', $issue_codes );
+		$this->assertContains( 'perfmatters_unused_css_overlap', $issue_codes );
+	}
+
+	/**
 	 * It exposes bundled page cache conflict notes for active cache plugins.
 	 */
 	public function test_bundled_registry_reports_external_page_cache_conflicts() {

@@ -105,6 +105,39 @@ class SettingsSetupProfile_Tests extends TestCase {
 	}
 
 	/**
+	 * It reports Perfmatters as an overlapping optimization layer.
+	 */
+	public function test_report_detects_perfmatters_optimizer_overlap() {
+		\WP_Mock::userFunction(
+			'get_option',
+			array(
+				'times'  => 1,
+				'args'   => array( 'active_plugins', array() ),
+				'return' => array( 'perfmatters/perfmatters.php' ),
+			)
+		);
+
+		\WP_Mock::userFunction(
+			'get_site_option',
+			array(
+				'times'  => 1,
+				'args'   => array( 'active_sitewide_plugins', array() ),
+				'return' => array(),
+			)
+		);
+
+		$profile = SettingsSetupProfile::factory()->report(
+			array(
+				'enable_page_cache' => true,
+				'object_cache'       => 'off',
+			)
+		);
+
+		$this->assertContains( 'optimizer_overlap', array_column( $profile['detected'], 'key' ) );
+		$this->assertContains( 'optimizer_overlap', array_column( $profile['recommendations'], 'key' ) );
+	}
+
+	/**
 	 * It recommends connecting Cloudflare when edge signals are detected.
 	 */
 	public function test_report_recommends_cloudflare_integration_when_edge_signals_are_detected() {

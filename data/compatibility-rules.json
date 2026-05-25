@@ -671,6 +671,40 @@
           }
         ]
       },
+      "perfmatters/perfmatters.php": {
+        "settings_issues": [
+          {
+            "key": "js_delay",
+            "severity": "warning",
+            "code": "perfmatters_js_delay_overlap",
+            "message": "Perfmatters is active. Keep JavaScript delay in one plugin unless the front end has been tested.",
+            "when": {
+              "setting": "js_delay",
+              "value": true
+            }
+          },
+          {
+            "key": "enable_lazy_load",
+            "severity": "warning",
+            "code": "perfmatters_lazy_load_overlap",
+            "message": "Perfmatters is active. Keep lazy loading in one plugin unless above-the-fold media has been tested.",
+            "when": {
+              "setting": "enable_lazy_load",
+              "value": true
+            }
+          },
+          {
+            "key": "remove_unused_css",
+            "severity": "warning",
+            "code": "perfmatters_unused_css_overlap",
+            "message": "Perfmatters is active. Keep unused CSS generation in one plugin so safelists and cache files stay predictable.",
+            "when": {
+              "setting": "remove_unused_css",
+              "value": true
+            }
+          }
+        ]
+      },
       "a3-lazy-load/a3-lazy-load.php": {
         "settings_issues": [
           {

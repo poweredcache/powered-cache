@@ -160,6 +160,7 @@ class SettingsSetupProfile {
 			$active_plugins,
 			array(
 				'autoptimize/autoptimize.php',
+				'perfmatters/perfmatters.php',
 				'shortpixel-adaptive-images/short-pixel-ai.php',
 			)
 		) ) {
