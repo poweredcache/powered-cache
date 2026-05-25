@@ -558,25 +558,41 @@ const SetupGuidePanel = ({ onSelectSection = () => {}, profile = {} }) => {
 	);
 };
 
-const RecommendedSetupPanel = ({ disabled = false, onApply = () => {} }) => (
-	<section className="pc-settings-recommended-setup">
-		<div>
-			<span className="pc-settings-badge">{__('Recommended mode', 'powered-cache')}</span>
-			<h2>{__('Apply a safe performance baseline', 'powered-cache')}</h2>
-			<p>
-				{__(
-					'Enable page cache, mobile cache, safe minification, font display swap, lazy loading, preload, and supporting cleanup settings in one step.',
-					'powered-cache',
+const RecommendedSetupPanel = ({ disabled = false, onApply = () => {}, profile = {} }) => {
+	const detectedLabels = (Array.isArray(profile.detected) ? profile.detected : [])
+		.map((item) => item.label)
+		.filter(Boolean)
+		.slice(0, 3);
+
+	return (
+		<section className="pc-settings-recommended-setup">
+			<div>
+				<span className="pc-settings-badge">{__('Recommended mode', 'powered-cache')}</span>
+				<h2>{__('Apply a safe performance baseline', 'powered-cache')}</h2>
+				<p>
+					{__(
+						'Enable page cache, mobile cache, safe minification, font display swap, lazy loading, preload, and supporting cleanup settings in one step.',
+						'powered-cache',
+					)}
+				</p>
+				{!!detectedLabels.length && (
+					<p className="pc-settings-recommended-setup__context">
+						{sprintf(
+							/* translators: %s: detected site signals. */
+							__('Adjusted for detected site signals: %s.', 'powered-cache'),
+							detectedLabels.join(', '),
+						)}
+					</p>
 				)}
-			</p>
-		</div>
-		<Button disabled={disabled} onClick={onApply} type="button" variant="primary">
-			{disabled
-				? __('Applying...', 'powered-cache')
-				: __('Apply Recommended Setup', 'powered-cache')}
-		</Button>
-	</section>
-);
+			</div>
+			<Button disabled={disabled} onClick={onApply} type="button" variant="primary">
+				{disabled
+					? __('Applying...', 'powered-cache')
+					: __('Apply Recommended Setup', 'powered-cache')}
+			</Button>
+		</section>
+	);
+};
 
 const metricValue = (value, fallback = __('Not available', 'powered-cache')) => {
 	if (value === null || value === undefined || value === '') {
@@ -2489,6 +2505,7 @@ const SettingsApp = () => {
 					<RecommendedSetupPanel
 						disabled={isApplyingRecommended || isSaving}
 						onApply={applyRecommendedSetup}
+						profile={setupProfile}
 					/>
 					<SetupGuidePanel onSelectSection={updateActiveSection} profile={setupProfile} />
 				</>

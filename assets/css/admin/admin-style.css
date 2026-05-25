@@ -290,6 +290,13 @@
 	max-width: 760px;
 }
 
+.pc-settings-recommended-setup__context {
+	color: var(--pc-admin-info-text) !important;
+	font-size: 12px;
+	font-weight: 600;
+	margin-top: 8px !important;
+}
+
 .pc-settings-recommended-setup .components-button {
 	flex: 0 0 auto;
 	justify-content: center;
