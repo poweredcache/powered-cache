@@ -170,6 +170,85 @@ class SettingsSchema {
 	}
 
 	/**
+	 * Return recommended setup values keyed by legacy option name.
+	 *
+	 * This intentionally keeps the first recommended profile conservative:
+	 * page cache, safe minification, font display behavior, lazy loading, and
+	 * preload are enabled while combining and delayed JavaScript remain manual.
+	 *
+	 * @param array     $context Runtime context used by dynamic defaults.
+	 * @param bool|null $premium_available Whether Premium fields can be edited.
+	 *
+	 * @return array<string,mixed>
+	 */
+	public static function recommended( array $context = array(), $premium_available = null ) {
+		$is_apache   = isset( $context['is_apache'] ) ? (bool) $context['is_apache'] : false;
+		$recommended = array(
+			'enable_page_cache'            => true,
+			'cache_mobile'                 => true,
+			'cache_mobile_separate_file'   => false,
+			'loggedin_user_cache'          => false,
+			'gzip_compression'             => true,
+			'cache_timeout'                => 1440,
+			'auto_configure_htaccess'      => $is_apache,
+			'minify_html'                  => true,
+			'minify_html_dom_optimization' => true,
+			'combine_google_fonts'         => true,
+			'swap_google_fonts_display'    => true,
+			'minify_css'                   => true,
+			'combine_css'                  => false,
+			'minify_js'                    => true,
+			'combine_js'                   => false,
+			'js_defer'                     => false,
+			'js_delay'                     => false,
+			'rewrite_file_optimizer'       => $is_apache,
+			'enable_lazy_load'             => true,
+			'lazy_load_post_content'       => true,
+			'lazy_load_images'             => true,
+			'lazy_load_iframes'            => true,
+			'lazy_load_widgets'            => true,
+			'lazy_load_post_thumbnail'     => true,
+			'lazy_load_avatars'            => true,
+			'lazy_load_youtube'            => true,
+			'lazy_load_skip_first_nth_img' => 3,
+			'disable_wp_embeds'            => true,
+			'disable_emoji_scripts'        => true,
+			'enable_cache_preload'         => true,
+			'preload_homepage'             => true,
+			'preload_public_posts'         => true,
+			'preload_public_tax'           => true,
+			'preload_request_interval'     => 2,
+			'cache_footprint'              => true,
+			'async_cache_cleaning'         => true,
+		);
+
+		if ( self::premium_available( $premium_available ) ) {
+			$recommended['enable_image_optimization']        = true;
+			$recommended['image_optimizer_preferred_format'] = '';
+		}
+
+		/**
+		 * Filter recommended settings before they are applied.
+		 *
+		 * @hook powered_cache_recommended_settings
+		 *
+		 * @param {array} $recommended       Recommended settings.
+		 * @param {array} $context           Runtime context used by dynamic defaults.
+		 * @param {bool}  $premium_available Whether Premium fields can be edited.
+		 *
+		 * @return {array} New value.
+		 * @since 4.0.0
+		 */
+		$recommended = apply_filters( 'powered_cache_recommended_settings', $recommended, $context, self::premium_available( $premium_available ) );
+
+		if ( ! is_array( $recommended ) ) {
+			return array();
+		}
+
+		return array_intersect_key( $recommended, self::fields( $context ) );
+	}
+
+	/**
 	 * Return a single field definition.
 	 *
 	 * @param string $key Setting key.

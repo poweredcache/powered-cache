@@ -32,7 +32,7 @@ class SettingsRestController_Tests extends TestCase {
 		\WP_Mock::userFunction(
 			'register_rest_route',
 			array(
-				'times'  => 2,
+				'times'  => 3,
 				'return' => function ( $namespace, $route, $args ) use ( &$routes ) {
 					$this->assertSame( SettingsRestController::REST_NAMESPACE, $namespace );
 
@@ -50,9 +50,12 @@ class SettingsRestController_Tests extends TestCase {
 		$this->assertSame( array( $controller, 'get_settings' ), $routes['/settings'][0]['callback'] );
 		$this->assertSame( array( $controller, 'update_settings' ), $routes['/settings'][1]['callback'] );
 		$this->assertSame( array( $controller, 'get_manifest' ), $routes['/settings/manifest']['callback'] );
+		$this->assertSame( 'POST', $routes['/settings/recommended']['methods'] );
+		$this->assertSame( array( $controller, 'apply_recommended_settings' ), $routes['/settings/recommended']['callback'] );
 		$this->assertSame( array( $controller, 'can_read_manifest' ), $routes['/settings'][0]['permission_callback'] );
 		$this->assertSame( array( $controller, 'can_read_manifest' ), $routes['/settings'][1]['permission_callback'] );
 		$this->assertSame( array( $controller, 'can_read_manifest' ), $routes['/settings/manifest']['permission_callback'] );
+		$this->assertSame( array( $controller, 'can_read_manifest' ), $routes['/settings/recommended']['permission_callback'] );
 	}
 
 	/**

@@ -558,6 +558,26 @@ const SetupGuidePanel = ({ onSelectSection = () => {}, profile = {} }) => {
 	);
 };
 
+const RecommendedSetupPanel = ({ disabled = false, onApply = () => {} }) => (
+	<section className="pc-settings-recommended-setup">
+		<div>
+			<span className="pc-settings-badge">{__('Recommended mode', 'powered-cache')}</span>
+			<h2>{__('Apply a safe performance baseline', 'powered-cache')}</h2>
+			<p>
+				{__(
+					'Enable page cache, mobile cache, safe minification, font display swap, lazy loading, preload, and supporting cleanup settings in one step.',
+					'powered-cache',
+				)}
+			</p>
+		</div>
+		<Button disabled={disabled} onClick={onApply} type="button" variant="primary">
+			{disabled
+				? __('Applying...', 'powered-cache')
+				: __('Apply Recommended Setup', 'powered-cache')}
+		</Button>
+	</section>
+);
+
 const metricValue = (value, fallback = __('Not available', 'powered-cache')) => {
 	if (value === null || value === undefined || value === '') {
 		return fallback;
@@ -1882,6 +1902,7 @@ const SettingsApp = () => {
 	const [activeSection, setActiveSection] = useState('');
 	const [isLoading, setIsLoading] = useState(true);
 	const [isSaving, setIsSaving] = useState(false);
+	const [isApplyingRecommended, setIsApplyingRecommended] = useState(false);
 	const [notice, setNotice] = useState(null);
 	const [objectCacheNotice, setObjectCacheNotice] = useState(null);
 	const [premiumInfo, setPremiumInfo] = useState(appConfig.premium || {});
@@ -2176,6 +2197,53 @@ const SettingsApp = () => {
 			});
 	};
 
+	const applyRecommendedSetup = () => {
+		if (
+			isDirty &&
+			// eslint-disable-next-line no-alert
+			!window.confirm(
+				__(
+					'Apply recommended setup? Unsaved changes will be replaced by the recommended baseline.',
+					'powered-cache',
+				),
+			)
+		) {
+			return;
+		}
+
+		setIsApplyingRecommended(true);
+		setNotice(null);
+
+		apiFetch({
+			path: route('/settings/recommended'),
+			method: 'POST',
+		})
+			.then((response) => {
+				const nextSettings = response.settings || settings;
+
+				setSettings(nextSettings);
+				setInitialSettings(nextSettings);
+				setValidation(response.validation || null);
+				setSystemStatus(response.system_status || null);
+				setSetupProfile(response.setup_profile || null);
+				setNotice({
+					status: 'success',
+					message: __('Recommended setup applied.', 'powered-cache'),
+				});
+
+				refreshCssOptimizationStatus();
+			})
+			.catch(() => {
+				setNotice({
+					status: 'error',
+					message: __('Recommended setup could not be applied.', 'powered-cache'),
+				});
+			})
+			.finally(() => {
+				setIsApplyingRecommended(false);
+			});
+	};
+
 	const generateCssOptimization = (serviceKey, service = {}) => {
 		const cssOptimization = premiumInfo.cssOptimization || {};
 
@@ -2418,6 +2486,10 @@ const SettingsApp = () => {
 							}
 						/>
 					</div>
+					<RecommendedSetupPanel
+						disabled={isApplyingRecommended || isSaving}
+						onApply={applyRecommendedSetup}
+					/>
 					<SetupGuidePanel onSelectSection={updateActiveSection} profile={setupProfile} />
 				</>
 			)}

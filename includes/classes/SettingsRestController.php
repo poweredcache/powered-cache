@@ -70,6 +70,16 @@ class SettingsRestController {
 				'permission_callback' => array( $this, 'can_read_manifest' ),
 			)
 		);
+
+		register_rest_route(
+			self::REST_NAMESPACE,
+			'/settings/recommended',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'apply_recommended_settings' ),
+				'permission_callback' => array( $this, 'can_read_manifest' ),
+			)
+		);
 	}
 
 	/**
@@ -144,6 +154,37 @@ class SettingsRestController {
 			'validation'     => SettingsValidator::factory( $context )->report( $settings ),
 			'system_status'  => SystemStatus::factory( $settings, $context )->report(),
 			'setup_profile'  => SettingsSetupProfile::factory( $context )->report( $settings ),
+		);
+	}
+
+	/**
+	 * Apply the recommended setup profile.
+	 *
+	 * @return array
+	 */
+	public function apply_recommended_settings() {
+		$context = $this->settings_context();
+
+		$repository = SettingsRepository::factory(
+			POWERED_CACHE_IS_NETWORK,
+			$context
+		);
+
+		$old_settings = $repository->all();
+		$changes      = SettingsSchema::recommended( $context );
+		$settings     = $this->prepare_update_settings( $changes, $old_settings );
+		$save_service = SettingsSaveService::factory( $repository, POWERED_CACHE_IS_NETWORK );
+		$settings     = $save_service->save( $settings, $old_settings );
+
+		return array(
+			'format'         => self::STATE_FORMAT,
+			'format_version' => SettingsManifest::FORMAT_VERSION,
+			'plugin_version' => defined( 'POWERED_CACHE_VERSION' ) ? POWERED_CACHE_VERSION : '',
+			'settings'       => SettingsRepository::redact_sensitive( $settings ),
+			'validation'     => SettingsValidator::factory( $context )->report( $settings ),
+			'system_status'  => SystemStatus::factory( $settings, $context )->report(),
+			'setup_profile'  => SettingsSetupProfile::factory( $context )->report( $settings ),
+			'applied'        => array_keys( $changes ),
 		);
 	}
 

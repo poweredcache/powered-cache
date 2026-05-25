@@ -157,6 +157,40 @@ class SettingsSchema_Tests extends TestCase {
 	}
 
 	/**
+	 * It returns a conservative recommended setup profile.
+	 */
+	public function test_recommended_settings_enable_safe_baseline_controls() {
+		$recommended = SettingsSchema::recommended( array( 'is_apache' => true ), false );
+
+		$this->assertTrue( $recommended['enable_page_cache'] );
+		$this->assertTrue( $recommended['cache_mobile'] );
+		$this->assertTrue( $recommended['gzip_compression'] );
+		$this->assertTrue( $recommended['auto_configure_htaccess'] );
+		$this->assertTrue( $recommended['minify_html'] );
+		$this->assertTrue( $recommended['minify_css'] );
+		$this->assertTrue( $recommended['minify_js'] );
+		$this->assertFalse( $recommended['combine_css'] );
+		$this->assertFalse( $recommended['combine_js'] );
+		$this->assertFalse( $recommended['js_delay'] );
+		$this->assertTrue( $recommended['enable_lazy_load'] );
+		$this->assertTrue( $recommended['enable_cache_preload'] );
+		$this->assertArrayNotHasKey( 'critical_css', $recommended );
+		$this->assertArrayNotHasKey( 'remove_unused_css', $recommended );
+	}
+
+	/**
+	 * It includes image delivery when Premium is available.
+	 */
+	public function test_recommended_settings_include_premium_delivery_when_available() {
+		$recommended = SettingsSchema::recommended( array( 'is_apache' => false ), true );
+
+		$this->assertTrue( $recommended['enable_image_optimization'] );
+		$this->assertSame( '', $recommended['image_optimizer_preferred_format'] );
+		$this->assertFalse( $recommended['auto_configure_htaccess'] );
+		$this->assertFalse( $recommended['rewrite_file_optimizer'] );
+	}
+
+	/**
 	 * It keeps Premium fields locked when Premium is unavailable.
 	 */
 	public function test_premium_fields_are_locked_without_premium() {
