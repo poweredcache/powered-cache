@@ -265,6 +265,7 @@ class SettingsRestController {
 			'page_cache_loaded'        => defined( 'POWERED_CACHE_PAGE_CACHING' ) && true === POWERED_CACHE_PAGE_CACHING,
 			'page_cache_has_problem'   => defined( 'POWERED_CACHE_PAGE_CACHING_HAS_PROBLEM' ) && POWERED_CACHE_PAGE_CACHING_HAS_PROBLEM,
 			'object_cache_has_problem' => defined( 'POWERED_OBJECT_CACHE_HAS_PROBLEM' ) && POWERED_OBJECT_CACHE_HAS_PROBLEM,
+			'active_plugins'           => SettingsSetupProfile::active_plugins(),
 			'active_environments'      => SettingsSetupProfile::active_environments(),
 		);
 

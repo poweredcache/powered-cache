@@ -191,6 +191,47 @@ class SettingsSchema_Tests extends TestCase {
 	}
 
 	/**
+	 * It avoids overlapping optimization layers in the recommended setup profile.
+	 */
+	public function test_recommended_settings_respect_active_optimizer_layers() {
+		$recommended = SettingsSchema::recommended(
+			array(
+				'is_apache'      => true,
+				'active_plugins' => array(
+					'autoptimize/autoptimize.php',
+					'a3-lazy-load/a3-lazy-load.php',
+				),
+			),
+			false
+		);
+
+		$this->assertTrue( $recommended['enable_page_cache'] );
+		$this->assertFalse( $recommended['minify_html'] );
+		$this->assertFalse( $recommended['minify_css'] );
+		$this->assertFalse( $recommended['minify_js'] );
+		$this->assertFalse( $recommended['enable_lazy_load'] );
+		$this->assertTrue( $recommended['enable_cache_preload'] );
+	}
+
+	/**
+	 * It avoids enabling page cache when another page cache layer is active.
+	 */
+	public function test_recommended_settings_respect_active_cache_layers() {
+		$recommended = SettingsSchema::recommended(
+			array(
+				'is_apache'      => true,
+				'active_plugins' => array( 'litespeed-cache/litespeed-cache.php' ),
+			),
+			false
+		);
+
+		$this->assertFalse( $recommended['enable_page_cache'] );
+		$this->assertFalse( $recommended['enable_cache_preload'] );
+		$this->assertTrue( $recommended['cache_mobile'] );
+		$this->assertTrue( $recommended['gzip_compression'] );
+	}
+
+	/**
 	 * It keeps Premium fields locked when Premium is unavailable.
 	 */
 	public function test_premium_fields_are_locked_without_premium() {

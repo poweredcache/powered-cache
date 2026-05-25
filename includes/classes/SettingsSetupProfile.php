@@ -49,7 +49,7 @@ class SettingsSetupProfile {
 	 * @return array
 	 */
 	public function report( array $settings ) {
-		$active_plugins  = $this->active_plugins();
+		$active_plugins  = self::active_plugins();
 		$detected        = array();
 		$recommendations = array();
 
@@ -342,7 +342,7 @@ class SettingsSetupProfile {
 	 *
 	 * @return array
 	 */
-	private function active_plugins() {
+	public static function active_plugins() {
 		$plugins = array();
 
 		if ( function_exists( 'get_option' ) ) {

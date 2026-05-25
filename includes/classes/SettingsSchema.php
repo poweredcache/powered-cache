@@ -227,6 +227,8 @@ class SettingsSchema {
 			$recommended['image_optimizer_preferred_format'] = '';
 		}
 
+		$recommended = self::apply_recommended_safeguards( $recommended, $context );
+
 		/**
 		 * Filter recommended settings before they are applied.
 		 *
@@ -246,6 +248,94 @@ class SettingsSchema {
 		}
 
 		return array_intersect_key( $recommended, self::fields( $context ) );
+	}
+
+	/**
+	 * Keep one-click setup from enabling optimizations that are likely owned by
+	 * another active layer.
+	 *
+	 * @param array $recommended Recommended settings.
+	 * @param array $context     Runtime context.
+	 *
+	 * @return array
+	 */
+	private static function apply_recommended_safeguards( array $recommended, array $context ) {
+		$active_plugins = isset( $context['active_plugins'] ) && is_array( $context['active_plugins'] ) ? $context['active_plugins'] : array();
+
+		if ( self::has_active_plugin(
+			$active_plugins,
+			array(
+				'autoptimize/autoptimize.php',
+				'perfmatters/perfmatters.php',
+				'phastpress/phastpress.php',
+			)
+		) ) {
+			$recommended['minify_html']                  = false;
+			$recommended['minify_html_dom_optimization'] = false;
+			$recommended['combine_google_fonts']         = false;
+			$recommended['minify_css']                   = false;
+			$recommended['minify_js']                    = false;
+			$recommended['disable_wp_embeds']            = false;
+			$recommended['disable_emoji_scripts']        = false;
+		}
+
+		if ( self::has_active_plugin(
+			$active_plugins,
+			array(
+				'a3-lazy-load/a3-lazy-load.php',
+				'bj-lazy-load/bj-lazy-load.php',
+				'jetpack-boost/jetpack-boost.php',
+				'lazy-load/lazy-load.php',
+			)
+		) ) {
+			$recommended['enable_lazy_load']             = false;
+			$recommended['lazy_load_post_content']       = false;
+			$recommended['lazy_load_images']             = false;
+			$recommended['lazy_load_iframes']            = false;
+			$recommended['lazy_load_widgets']            = false;
+			$recommended['lazy_load_post_thumbnail']     = false;
+			$recommended['lazy_load_avatars']            = false;
+			$recommended['lazy_load_youtube']            = false;
+			$recommended['lazy_load_skip_first_nth_img'] = 3;
+		}
+
+		if ( self::has_active_plugin(
+			$active_plugins,
+			array(
+				'breeze/breeze.php',
+				'litespeed-cache/litespeed-cache.php',
+				'sg-cachepress/sg-cachepress.php',
+				'w3-total-cache/w3-total-cache.php',
+				'wp-fastest-cache/wpFastestCache.php',
+				'wp-super-cache/wp-cache.php',
+			)
+		) ) {
+			$recommended['enable_page_cache']    = false;
+			$recommended['enable_cache_preload'] = false;
+			$recommended['preload_homepage']     = false;
+			$recommended['preload_public_posts'] = false;
+			$recommended['preload_public_tax']   = false;
+		}
+
+		return $recommended;
+	}
+
+	/**
+	 * Determine whether one of the given plugin basenames is active.
+	 *
+	 * @param array $active_plugins Active plugin basenames.
+	 * @param array $candidates     Plugin basenames to match.
+	 *
+	 * @return bool
+	 */
+	private static function has_active_plugin( array $active_plugins, array $candidates ) {
+		foreach ( $candidates as $candidate ) {
+			if ( in_array( $candidate, $active_plugins, true ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
