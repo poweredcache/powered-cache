@@ -84,7 +84,7 @@ class SettingsManifest {
 			),
 			'misc'              => array(
 				'label'       => 'Tools',
-				'description' => 'Review diagnostics, cache footprint, async cleanup, tracking, and developer mode.',
+				'description' => 'Review the Optimization Advisor, cache footprint, async cleanup, tracking, and developer mode.',
 				'order'       => 90,
 			),
 		);
