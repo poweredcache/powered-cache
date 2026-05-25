@@ -17,7 +17,7 @@ class SettingsSetupProfile_Tests extends TestCase {
 	 */
 	public function test_report_detects_plugin_families_for_guided_setup() {
 		$active_plugins = array(
-			'elementor/elementor.php',
+			'kadence-blocks/kadence-blocks.php',
 			'complianz-gdpr/complianz-gdpr.php',
 			'smart-slider-3/smart-slider-3.php',
 			'autoptimize/autoptimize.php',

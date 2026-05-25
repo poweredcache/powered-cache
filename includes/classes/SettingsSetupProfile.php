@@ -108,8 +108,18 @@ class SettingsSetupProfile {
 		if ( $this->has_plugin(
 			$active_plugins,
 			array(
+				'bb-plugin/fl-builder.php',
+				'beaver-builder-lite-version/fl-builder.php',
+				'bricks/bricks.php',
+				'breakdance/plugin.php',
 				'elementor/elementor.php',
 				'elementor-pro/elementor-pro.php',
+				'generateblocks/plugin.php',
+				'kadence-blocks/kadence-blocks.php',
+				'kadence-pro/kadence-pro.php',
+				'oxygen/functions.php',
+				'stackable-ultimate-gutenberg-blocks/plugin.php',
+				'ultimate-addons-for-gutenberg/ultimate-addons-for-gutenberg.php',
 			)
 		) ) {
 			$detected[]        = $this->detection( 'page_builder', 'Page builder', 'plugin' );
