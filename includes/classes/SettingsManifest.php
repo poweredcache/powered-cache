@@ -544,6 +544,12 @@ class SettingsManifest {
 				'description'   => 'Delay eligible image loading until images approach the viewport.',
 				'group'         => 'Lazy loading',
 			),
+			'lazy_load_background_images'    => array(
+				'label'         => 'CSS Background Images',
+				'control_label' => 'Lazy load inline background images',
+				'description'   => 'Delay eligible inline background images until their elements approach the viewport.',
+				'group'         => 'Lazy loading',
+			),
 			'lazy_load_iframes'              => array(
 				'label'         => 'Iframes',
 				'control_label' => 'Lazy load iframes',

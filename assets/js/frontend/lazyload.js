@@ -1,6 +1,4 @@
 /* eslint-disable no-unused-vars, radix */
-// eslint-disable-next-line no-use-before-define
-// eslint-disable-next-line camelcase
 
 window.PCLL_options = window.PCLL_options || {};
 
@@ -9,15 +7,76 @@ const PCLL = (function () {
 		_lastCheckTs: 0,
 		_checkDebounceTimeoutRunning: false,
 		_earlyLoadedCount: 0,
+		_observer: null,
 
 		init() {
 			PCLL.threshold = PCLL.getOptionIntValue('threshold', 200);
 			PCLL.recheckDelay = PCLL.getOptionIntValue('recheck_delay', 250);
 			PCLL.debounce = PCLL.getOptionIntValue('debounce', 50);
 			PCLL.immediateLoadCount = PCLL.getOptionIntValue('immediate_load_count', 3);
-			PCLL.checkRecurring();
 			PCLL.lazyLoadYouTube();
+
+			if ('IntersectionObserver' in window) {
+				PCLL.initObserver();
+			} else {
+				PCLL.initFallback();
+			}
+
 			return PCLL;
+		},
+
+		initObserver() {
+			PCLL._observer = new IntersectionObserver(PCLL.onIntersection, {
+				rootMargin: `${PCLL.threshold}px 0px`,
+				threshold: 0,
+			});
+			PCLL.observe();
+
+			window.addEventListener('load', PCLL.observe, false);
+
+			const body = document.getElementsByTagName('body').item(0);
+			if (body) {
+				body.addEventListener('post-load', PCLL.observe, false);
+			}
+		},
+
+		initFallback() {
+			PCLL.checkRecurring();
+			window.addEventListener('load', PCLL.check, false);
+			window.addEventListener('scroll', PCLL.check, false);
+			window.addEventListener('resize', PCLL.check, false);
+
+			const body = document.getElementsByTagName('body').item(0);
+			if (body) {
+				body.addEventListener('post-load', PCLL.check, false);
+			}
+		},
+
+		observe() {
+			const els = document.getElementsByClassName('lazy-hidden');
+
+			[].forEach.call(els, function (el) {
+				if (el.getAttribute('data-lazy-observed') === '1') {
+					return;
+				}
+
+				if (PCLL.shouldLoadEarly(el)) {
+					PCLL.showImmediately(el);
+					return;
+				}
+
+				el.setAttribute('data-lazy-observed', '1');
+				PCLL._observer.observe(el);
+			});
+		},
+
+		onIntersection(entries) {
+			entries.forEach(function (entry) {
+				if (entry.isIntersecting || entry.intersectionRatio > 0) {
+					PCLL._observer.unobserve(entry.target);
+					PCLL.show(entry.target);
+				}
+			});
 		},
 
 		check(fromDebounceTimeout) {
@@ -41,18 +100,17 @@ const PCLL = (function () {
 			const els = document.getElementsByClassName('lazy-hidden');
 			updated = false;
 
-			[].forEach.call(els, function (el, index, array) {
+			[].forEach.call(els, function (el) {
 				const elemRect = el.getBoundingClientRect();
 
-				// do not lazy-load images that are hidden with display:none or have a width/height of 0
 				if (!elemRect.width || !elemRect.height) {
 					return;
 				}
 
-				// directly load the first nth images
-				if (PCLL._earlyLoadedCount <= PCLL.immediateLoadCount) {
-					PCLL._earlyLoadedCount++;
+				if (PCLL.shouldLoadEarly(el)) {
 					PCLL.showImmediately(el);
+					updated = true;
+					return;
 				}
 
 				if (winH - elemRect.top + PCLL.threshold > 0) {
@@ -71,76 +129,90 @@ const PCLL = (function () {
 			setTimeout(PCLL.checkRecurring, PCLL.recheckDelay);
 		},
 
-		show(el) {
-			const type = el.getAttribute('data-lazy-type');
-			let s;
-			let div;
-			let iframe;
-			el.className = el.className.replace(/(?:^|\s)lazy-hidden(?!\S)/g, '');
-			el.addEventListener(
-				'load',
-				function () {
-					el.className += ' lazy-loaded';
-					PCLL.customEvent(el, 'lazyloaded');
-				},
-				false,
-			);
+		shouldLoadEarly(el) {
+			const elemRect = el.getBoundingClientRect();
 
-			if (type === 'image') {
-				if (el.getAttribute('data-lazy-srcset') != null) {
-					el.setAttribute('srcset', el.getAttribute('data-lazy-srcset'));
-				}
-				if (el.getAttribute('data-lazy-sizes') != null) {
-					el.setAttribute('sizes', el.getAttribute('data-lazy-sizes'));
-				}
-				el.setAttribute('src', el.getAttribute('data-lazy-src'));
-			} else if (type === 'iframe') {
-				s = el.getAttribute('data-lazy-src');
-				div = document.createElement('div');
-
-				div.innerHTML = s;
-				iframe = div.firstChild;
-				el.parentNode.replaceChild(iframe, el);
+			if (!elemRect.width || !elemRect.height) {
+				return false;
 			}
+
+			if (PCLL._earlyLoadedCount >= PCLL.immediateLoadCount) {
+				return false;
+			}
+
+			PCLL._earlyLoadedCount++;
+			return true;
+		},
+
+		show(el) {
+			PCLL.reveal(el, 'lazy-loaded');
 		},
 
 		showImmediately(el) {
-			// This function is similar to the "show" function but without lazy loading
-			const type = el.getAttribute('data-lazy-type');
-			let s;
-			let div;
-			let iframe;
-			el.className = el.className.replace(/(?:^|\s)lazy-hidden(?!\S)/g, '');
-			el.addEventListener(
-				'load',
-				function () {
-					el.className += ' lazy-load-direct';
-					PCLL.customEvent(el, 'lazyloaded');
-				},
-				false,
-			);
-
-			// Remove native lazyload if present
 			if (el.hasAttribute('loading')) {
 				el.removeAttribute('loading');
 			}
 
-			if (type === 'image') {
-				if (el.getAttribute('data-lazy-srcset') != null) {
-					el.setAttribute('srcset', el.getAttribute('data-lazy-srcset'));
-				}
-				if (el.getAttribute('data-lazy-sizes') != null) {
-					el.setAttribute('sizes', el.getAttribute('data-lazy-sizes'));
-				}
-				el.setAttribute('src', el.getAttribute('data-lazy-src'));
-			} else if (type === 'iframe') {
-				s = el.getAttribute('data-lazy-src');
-				div = document.createElement('div');
+			PCLL.reveal(el, 'lazy-load-direct');
+		},
 
-				div.innerHTML = s;
-				iframe = div.firstChild;
-				el.parentNode.replaceChild(iframe, el);
+		reveal(el, loadedClass) {
+			if (el.getAttribute('data-lazy-loaded') === '1') {
+				return;
 			}
+
+			const type = el.getAttribute('data-lazy-type');
+			el.setAttribute('data-lazy-loaded', '1');
+			el.className = el.className.replace(/(?:^|\s)lazy-hidden(?!\S)/g, '');
+
+			if (type === 'image') {
+				PCLL.revealImage(el, loadedClass);
+			} else if (type === 'iframe') {
+				PCLL.revealIframe(el);
+			} else if (type === 'background') {
+				PCLL.revealBackground(el, loadedClass);
+			}
+		},
+
+		revealImage(el, loadedClass) {
+			el.addEventListener(
+				'load',
+				function () {
+					el.className += ` ${loadedClass}`;
+					PCLL.customEvent(el, 'lazyloaded');
+				},
+				false,
+			);
+
+			if (el.getAttribute('data-lazy-srcset') != null) {
+				el.setAttribute('srcset', el.getAttribute('data-lazy-srcset'));
+			}
+			if (el.getAttribute('data-lazy-sizes') != null) {
+				el.setAttribute('sizes', el.getAttribute('data-lazy-sizes'));
+			}
+			el.setAttribute('src', el.getAttribute('data-lazy-src'));
+		},
+
+		revealIframe(el) {
+			const source = el.getAttribute('data-lazy-src');
+			const div = document.createElement('div');
+
+			div.innerHTML = source;
+
+			if (div.firstChild) {
+				el.parentNode.replaceChild(div.firstChild, el);
+			}
+		},
+
+		revealBackground(el, loadedClass) {
+			const style = el.getAttribute('data-lazy-style');
+
+			if (style) {
+				el.setAttribute('style', style);
+			}
+
+			el.className += ` ${loadedClass}`;
+			PCLL.customEvent(el, 'lazyloaded');
 		},
 
 		customEvent(el, eventName) {
@@ -163,7 +235,7 @@ const PCLL = (function () {
 			}
 		},
 
-		lazyLoadYouTube(el) {
+		lazyLoadYouTube() {
 			const lazyloadYoutube = document.querySelectorAll('.pcll-youtube-player');
 
 			lazyloadYoutube.forEach(function (div) {
@@ -171,12 +243,11 @@ const PCLL = (function () {
 					const iframe = document.createElement('iframe');
 					iframe.setAttribute('frameborder', '0');
 					iframe.setAttribute('allowfullscreen', '');
-					iframe.setAttribute('allow', 'autoplay'); // Explicitly allow autoplay
+					iframe.setAttribute('allow', 'autoplay');
 
-					// Construct the iframe src with autoplay and feature parameters
 					const baseSrc = this.getAttribute('data-src');
-					const separator = baseSrc.includes('?') ? '&' : '?'; // Determine the correct separator
-					const videoSrc = `${baseSrc}${separator}autoplay=1&feature=oembed`; // Append autoplay=1 and feature=oembed
+					const separator = baseSrc.includes('?') ? '&' : '?';
+					const videoSrc = `${baseSrc}${separator}autoplay=1&feature=oembed`;
 
 					iframe.setAttribute('src', videoSrc);
 					iframe.style.width = '100%';
@@ -188,9 +259,7 @@ const PCLL = (function () {
 		},
 
 		getOptionIntValue(name, defaultValue) {
-			// eslint-disable-next-line camelcase
 			if (typeof window.PCLL_options[name] !== 'undefined') {
-				// eslint-disable-next-line camelcase
 				return parseInt(window.PCLL_options[name]);
 			}
 			return defaultValue;
@@ -198,8 +267,3 @@ const PCLL = (function () {
 	};
 	return PCLL.init();
 })();
-
-window.addEventListener('load', PCLL.check, false);
-window.addEventListener('scroll', PCLL.check, false);
-window.addEventListener('resize', PCLL.check, false);
-document.getElementsByTagName('body').item(0).addEventListener('post-load', PCLL.check, false);

@@ -95,6 +95,7 @@ class SettingsSchema {
 			'enable_lazy_load'                 => self::field( self::TYPE_BOOLEAN, false, 'media', self::SANITIZE_BOOLEAN ),
 			'lazy_load_post_content'           => self::field( self::TYPE_BOOLEAN, true, 'media', self::SANITIZE_BOOLEAN, false, array( 'enable_lazy_load' ) ),
 			'lazy_load_images'                 => self::field( self::TYPE_BOOLEAN, true, 'media', self::SANITIZE_BOOLEAN, false, array( 'enable_lazy_load' ) ),
+			'lazy_load_background_images'      => self::field( self::TYPE_BOOLEAN, false, 'media', self::SANITIZE_BOOLEAN, false, array( 'enable_lazy_load' ) ),
 			'lazy_load_iframes'                => self::field( self::TYPE_BOOLEAN, true, 'media', self::SANITIZE_BOOLEAN, false, array( 'enable_lazy_load' ) ),
 			'lazy_load_widgets'                => self::field( self::TYPE_BOOLEAN, true, 'media', self::SANITIZE_BOOLEAN, false, array( 'enable_lazy_load' ) ),
 			'lazy_load_post_thumbnail'         => self::field( self::TYPE_BOOLEAN, true, 'media', self::SANITIZE_BOOLEAN, false, array( 'enable_lazy_load' ) ),
@@ -206,6 +207,7 @@ class SettingsSchema {
 			'enable_lazy_load'             => true,
 			'lazy_load_post_content'       => true,
 			'lazy_load_images'             => true,
+			'lazy_load_background_images'  => false,
 			'lazy_load_iframes'            => true,
 			'lazy_load_widgets'            => true,
 			'lazy_load_post_thumbnail'     => true,
@@ -292,6 +294,7 @@ class SettingsSchema {
 			$recommended['enable_lazy_load']             = false;
 			$recommended['lazy_load_post_content']       = false;
 			$recommended['lazy_load_images']             = false;
+			$recommended['lazy_load_background_images']  = false;
 			$recommended['lazy_load_iframes']            = false;
 			$recommended['lazy_load_widgets']            = false;
 			$recommended['lazy_load_post_thumbnail']     = false;

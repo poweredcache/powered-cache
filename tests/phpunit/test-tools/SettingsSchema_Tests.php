@@ -173,6 +173,7 @@ class SettingsSchema_Tests extends TestCase {
 		$this->assertFalse( $recommended['combine_js'] );
 		$this->assertFalse( $recommended['js_delay'] );
 		$this->assertTrue( $recommended['enable_lazy_load'] );
+		$this->assertFalse( $recommended['lazy_load_background_images'] );
 		$this->assertTrue( $recommended['enable_cache_preload'] );
 		$this->assertArrayNotHasKey( 'critical_css', $recommended );
 		$this->assertArrayNotHasKey( 'remove_unused_css', $recommended );

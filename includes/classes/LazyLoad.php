@@ -179,6 +179,20 @@ class LazyLoad {
 		}
 
 		/**
+		 * Filters whether apply or not apply lazyload for inline CSS background images.
+		 *
+		 * @hook   powered_cache_lazy_load_background_images
+		 *
+		 * @param  {boolean} true to lazyload inline background images
+		 *
+		 * @return {boolean} New value.
+		 * @since  4.0.0
+		 */
+		if ( true === apply_filters( 'powered_cache_lazy_load_background_images', self::$settings['lazy_load_background_images'] ) ) {
+			add_filter( 'powered_cache_lazy_load_filter', array( __CLASS__, 'filter_background_images' ) );
+		}
+
+		/**
 		 * Filters whether apply or not apply lazyload for iframes.
 		 *
 		 * @hook   powered_cache_lazy_load_iframes
@@ -380,6 +394,49 @@ class LazyLoad {
 	}
 
 	/**
+	 * Replace inline CSS background image URLs with deferred style data.
+	 *
+	 * @param string $content The HTML to do the filtering on.
+	 *
+	 * @return string The filtered HTML.
+	 */
+	public static function filter_background_images( $content ) {
+		$match_content = self::get_content_haystack( $content );
+
+		$matches = array();
+		preg_match_all( '/<([a-z][a-z0-9:-]*)(?=[^>]*\sstyle=)[^>]*>/is', $match_content, $matches );
+
+		$search  = array();
+		$replace = array();
+
+		foreach ( $matches[0] as $tag_html ) {
+			if ( self::is_excluded( $tag_html ) || false !== stripos( $tag_html, 'data-lazy-style=' ) ) {
+				continue;
+			}
+
+			if ( ! preg_match( '/\sstyle=(["\'])(.*?)\1/is', $tag_html, $style_match ) ) {
+				continue;
+			}
+
+			$style             = $style_match[2];
+			$placeholder_style = self::strip_background_urls( $style );
+
+			if ( $style === $placeholder_style ) {
+				continue;
+			}
+
+			$replace_html = preg_replace( '/\sstyle=(["\']).*?\1/is', ' style="' . esc_attr( $placeholder_style ) . '"', $tag_html, 1 );
+			$replace_html = preg_replace( '/^<([a-z][a-z0-9:-]*)/i', '<$1 data-lazy-type="background" data-lazy-style="' . esc_attr( $style ) . '"', $replace_html, 1 );
+			$replace_html = self::add_lazy_classes( $replace_html );
+
+			array_push( $search, $tag_html );
+			array_push( $replace, $replace_html );
+		}
+
+		return str_replace( $search, $replace, $content );
+	}
+
+	/**
 	 * Replace iframes with placeholders in the content
 	 *
 	 * @param string $content The HTML to do the filtering on
@@ -456,6 +513,36 @@ class LazyLoad {
 	 */
 	public static function remove_noscript( $content ) {
 		return preg_replace( '/<noscript.*?(\/noscript>)/i', '', $content );
+	}
+
+	/**
+	 * Replace background URLs in inline style content with a non-loading value.
+	 *
+	 * @param string $style Inline style content.
+	 *
+	 * @return string
+	 */
+	private static function strip_background_urls( $style ) {
+		if ( false === stripos( $style, 'url(' ) ) {
+			return $style;
+		}
+
+		return preg_replace( '#url\(\s*([\'"]?)(?!data:).*?\1\s*\)#i', 'none', $style );
+	}
+
+	/**
+	 * Add frontend lazy-load classes to an HTML tag.
+	 *
+	 * @param string $tag_html HTML tag.
+	 *
+	 * @return string
+	 */
+	private static function add_lazy_classes( $tag_html ) {
+		if ( preg_match( '/class=["\']/i', $tag_html ) ) {
+			return preg_replace( '/class=(["\'])(.*?)["\']/is', 'class=$1lazy lazy-hidden $2$1', $tag_html, 1 );
+		}
+
+		return preg_replace( '/^<([a-z][a-z0-9:-]*)/i', '<$1 class="lazy lazy-hidden"', $tag_html, 1 );
 	}
 
 	/**
