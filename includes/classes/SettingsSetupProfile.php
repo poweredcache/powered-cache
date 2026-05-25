@@ -50,6 +50,7 @@ class SettingsSetupProfile {
 	 */
 	public function report( array $settings ) {
 		$active_plugins  = self::active_plugins();
+		$environments    = isset( $this->context['active_environments'] ) && is_array( $this->context['active_environments'] ) ? $this->context['active_environments'] : array();
 		$detected        = array();
 		$recommendations = array();
 
@@ -214,7 +215,9 @@ class SettingsSetupProfile {
 		}
 
 		if ( $this->cloudflare_detected( $active_plugins ) ) {
-			$detected[] = $this->detection( 'cloudflare', 'Cloudflare edge', 'environment' );
+			if ( ! in_array( 'cdn:cloudflare', $environments, true ) ) {
+				$detected[] = $this->detection( 'cloudflare', 'Cloudflare edge', 'environment' );
+			}
 
 			if ( empty( $settings['enable_cloudflare'] ) ) {
 				$recommendations[] = $this->recommendation(
@@ -224,6 +227,31 @@ class SettingsSetupProfile {
 					'integrations'
 				);
 			}
+		}
+
+		foreach ( $this->environment_detections( $environments ) as $environment ) {
+			$detected[] = $environment;
+		}
+
+		$managed_host_names = $this->managed_host_names( $environments );
+
+		if ( ! empty( $managed_host_names ) && ! empty( $settings['enable_page_cache'] ) ) {
+			$recommendations[] = $this->recommendation(
+				'managed_host_cache',
+				'Coordinate host cache purges',
+				sprintf( 'A managed cache layer was detected on %s. Purge the host cache when testing page cache changes.', implode( ', ', $managed_host_names ) ),
+				'cache'
+			);
+		}
+
+		if ( in_array( 'server:nginx', $environments, true ) && ! empty( $settings['auto_configure_htaccess'] ) ) {
+			$recommendations[] = $this->recommendation(
+				'nginx_htaccess',
+				'Review .htaccess automation',
+				'Nginx does not read .htaccess files. Keep automatic .htaccess edits off unless Apache-compatible rewrite handling is also available.',
+				'advanced',
+				'high'
+			);
 		}
 
 		if ( empty( $settings['enable_page_cache'] ) ) {
@@ -246,16 +274,6 @@ class SettingsSetupProfile {
 				'Consider persistent object cache',
 				'This server has a supported object cache backend available for dynamic WordPress data.',
 				'cache'
-			);
-		}
-
-		if ( ! empty( $this->context['active_environments'] ) && is_array( $this->context['active_environments'] ) ) {
-			$detected[]        = $this->detection( 'hosting_stack', 'Hosting or edge signals', 'environment' );
-			$recommendations[] = $this->recommendation(
-				'hosting_stack',
-				'Review hosting cache coordination',
-				'Detected hosting or edge-cache signals can require coordinated purge behavior.',
-				'misc'
 			);
 		}
 
@@ -405,6 +423,93 @@ class SettingsSetupProfile {
 		$active_environments = isset( $this->context['active_environments'] ) && is_array( $this->context['active_environments'] ) ? $this->context['active_environments'] : array();
 
 		return in_array( 'cdn:cloudflare', $active_environments, true ) || $this->has_plugin( $active_plugins, array( 'cloudflare/cloudflare.php' ) );
+	}
+
+	/**
+	 * Return setup detections for hosting/runtime environments.
+	 *
+	 * @param array $environments Active environment identifiers.
+	 *
+	 * @return array
+	 */
+	private function environment_detections( array $environments ) {
+		$labels     = $this->environment_labels();
+		$detections = array();
+
+		foreach ( $environments as $environment ) {
+			if ( ! isset( $labels[ $environment ] ) ) {
+				continue;
+			}
+
+			$detections[] = $this->detection( $this->environment_key( $environment ), $labels[ $environment ], 'environment' );
+		}
+
+		return $detections;
+	}
+
+	/**
+	 * Return readable managed host names from active environments.
+	 *
+	 * @param array $environments Active environment identifiers.
+	 *
+	 * @return array
+	 */
+	private function managed_host_names( array $environments ) {
+		$labels = $this->managed_host_labels();
+		$names  = array();
+
+		foreach ( $environments as $environment ) {
+			if ( isset( $labels[ $environment ] ) ) {
+				$names[] = $labels[ $environment ];
+			}
+		}
+
+		return $names;
+	}
+
+	/**
+	 * Return environment labels for setup chips.
+	 *
+	 * @return array
+	 */
+	private function environment_labels() {
+		return array(
+			'cdn:cloudflare'   => 'Cloudflare edge',
+			'host:kinsta'      => 'Kinsta',
+			'host:pantheon'    => 'Pantheon',
+			'host:wp-engine'   => 'WP Engine',
+			'server:apache'    => 'Apache',
+			'server:litespeed' => 'LiteSpeed',
+			'server:nginx'     => 'Nginx',
+		);
+	}
+
+	/**
+	 * Return a stable setup key for one environment identifier.
+	 *
+	 * @param string $environment Environment identifier.
+	 *
+	 * @return string
+	 */
+	private function environment_key( $environment ) {
+		if ( 'cdn:cloudflare' === $environment ) {
+			return 'cloudflare';
+		}
+
+		return str_replace( array( ':', '-' ), '_', $environment );
+	}
+
+	/**
+	 * Return managed host labels.
+	 *
+	 * @return array
+	 */
+	private function managed_host_labels() {
+		return array(
+			'host:kinsta'    => 'Kinsta',
+			'host:pantheon'  => 'Pantheon',
+			'host:wp-engine' => 'WP Engine',
+		);
 	}
 
 	/**

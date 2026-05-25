@@ -175,8 +175,50 @@ class SettingsSetupProfile_Tests extends TestCase {
 		$recommendation_keys = array_column( $profile['recommendations'], 'key' );
 
 		$this->assertContains( 'cloudflare', $detected_keys );
-		$this->assertContains( 'hosting_stack', $detected_keys );
 		$this->assertContains( 'cloudflare_integration', $recommendation_keys );
+	}
+
+	/**
+	 * It reports precise hosting and server recommendations.
+	 */
+	public function test_report_recommends_hosting_and_server_actions_from_environment_signals() {
+		\WP_Mock::userFunction(
+			'get_option',
+			array(
+				'times'  => 1,
+				'args'   => array( 'active_plugins', array() ),
+				'return' => array(),
+			)
+		);
+
+		\WP_Mock::userFunction(
+			'get_site_option',
+			array(
+				'times'  => 1,
+				'args'   => array( 'active_sitewide_plugins', array() ),
+				'return' => array(),
+			)
+		);
+
+		$profile = SettingsSetupProfile::factory(
+			array(
+				'active_environments' => array( 'host:kinsta', 'server:nginx' ),
+			)
+		)->report(
+			array(
+				'auto_configure_htaccess' => true,
+				'enable_page_cache'       => true,
+				'object_cache'            => 'off',
+			)
+		);
+
+		$detected_keys       = array_column( $profile['detected'], 'key' );
+		$recommendation_keys = array_column( $profile['recommendations'], 'key' );
+
+		$this->assertContains( 'host_kinsta', $detected_keys );
+		$this->assertContains( 'server_nginx', $detected_keys );
+		$this->assertContains( 'managed_host_cache', $recommendation_keys );
+		$this->assertContains( 'nginx_htaccess', $recommendation_keys );
 	}
 
 	/**

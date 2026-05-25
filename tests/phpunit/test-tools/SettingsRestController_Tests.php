@@ -119,7 +119,7 @@ class SettingsRestController_Tests extends TestCase {
 		\WP_Mock::userFunction(
 			'get_option',
 			array(
-				'times'  => 3,
+				'times'  => 4,
 				'return' => function ( $option, $default = false ) {
 					if ( 'active_plugins' === $option ) {
 						return array();
@@ -142,7 +142,7 @@ class SettingsRestController_Tests extends TestCase {
 		\WP_Mock::userFunction(
 			'get_site_option',
 			array(
-				'times'  => 2,
+				'times'  => 3,
 				'args'   => array( 'active_sitewide_plugins', array() ),
 				'return' => array(),
 			)
@@ -181,7 +181,7 @@ class SettingsRestController_Tests extends TestCase {
 		\WP_Mock::userFunction(
 			'get_option',
 			array(
-				'times'  => 3,
+				'times'  => 4,
 				'return' => function ( $option, $default = false ) {
 					if ( 'active_plugins' === $option ) {
 						return array(
@@ -205,7 +205,7 @@ class SettingsRestController_Tests extends TestCase {
 		\WP_Mock::userFunction(
 			'get_site_option',
 			array(
-				'times'  => 2,
+				'times'  => 3,
 				'args'   => array( 'active_sitewide_plugins', array() ),
 				'return' => array(),
 			)
