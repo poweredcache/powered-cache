@@ -156,6 +156,23 @@ const assertNoLegacyCssGenerationLinks = async (page) => {
 	assert(legacyLinks === 0, 'CSS generation still exposes legacy admin-post links.');
 };
 
+const assertMediaLazyLoadControls = async (page) => {
+	await openSection(page, 'media');
+	assert((await activeSubmenuText(page)) === 'Media', 'Media submenu item is not active.');
+
+	const backgroundControl = page.locator('text=CSS Background Images').first();
+	await backgroundControl.waitFor();
+
+	const inlineBackgroundCopy = await page
+		.locator('text=Lazy load inline background images')
+		.count();
+
+	assert(
+		inlineBackgroundCopy > 0,
+		'Inline background image lazy-load control copy was not found.',
+	);
+};
+
 const assertLicenseSection = async (page) => {
 	await openSection(page, 'license');
 
@@ -209,6 +226,8 @@ const run = async () => {
 			'File Optimization submenu item is not active.',
 		);
 		await assertNoLegacyCssGenerationLinks(page);
+
+		await assertMediaLazyLoadControls(page);
 
 		await maybeAssertLicenseSection(page);
 

@@ -9,6 +9,7 @@ Do not run every check after every small edit. Use the smallest check that cover
 - PHP-only change: run the matching PHPUnit file first, then PHPCS for the touched files.
 - Settings schema, validation, setup profile, or compatibility registry change: run the matching PHPUnit test file and the settings app smoke test when UI behavior can be affected.
 - JavaScript or CSS change: run `npm run lint-js` and `npm run build`.
+- Frontend lazy-load runtime or media settings change: also run `LazyLoad_Tests`, `SettingsSchema_Tests`, and the settings smoke test when browser coverage is available.
 - Release/PR readiness: run the full PHP suite, PHPCS, JS lint, build, and the relevant E2E profile.
 
 ## Local PHP checks
@@ -61,7 +62,7 @@ Profiles:
 - `premium`: Requires Premium/license settings to be available and fails when they are missing.
 - `auto`: Runs Premium/license checks only when the section is present.
 
-The smoke test verifies that the settings app renders key sections, keeps WordPress admin submenu highlighting in sync, keeps Cache Lifespan controls visually aligned, and avoids legacy CSS generation links. Premium/license URL checks run only in the `premium` or `auto` profiles.
+The smoke test verifies that the settings app renders key sections, keeps WordPress admin submenu highlighting in sync, keeps Cache Lifespan controls visually aligned, exposes Media lazy-load controls, and avoids legacy CSS generation links. Premium/license URL checks run only in the `premium` or `auto` profiles.
 
 Guided setup and advisor changes should also keep these targeted checks green:
 
