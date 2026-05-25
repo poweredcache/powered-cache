@@ -221,6 +221,10 @@
 	min-width: 0;
 }
 
+.pc-settings-setup-step--priority {
+	background: #fffaf0;
+}
+
 .pc-settings-setup-step:nth-child(-n + 2) {
 	border-top: 0;
 }
@@ -229,10 +233,28 @@
 	border-left: 0;
 }
 
-.pc-settings-setup-step strong {
-	display: block;
+.pc-settings-setup-step__title {
+	align-items: flex-start;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.pc-settings-setup-step__title strong {
 	font-size: 14px;
 	line-height: 1.35;
+}
+
+.pc-settings-setup-step__priority {
+	background: #fff4ce;
+	border: 1px solid #f0d98a;
+	border-radius: 999px;
+	color: var(--pc-admin-warning);
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1.3;
+	padding: 3px 7px;
+	white-space: nowrap;
 }
 
 .pc-settings-setup-step p {

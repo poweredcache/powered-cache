@@ -521,9 +521,23 @@ const SetupGuidePanel = ({ onSelectSection = () => {}, profile = {} }) => {
 			</div>
 			<div className="pc-settings-setup-guide__items">
 				{recommendations.map((recommendation) => (
-					<div className="pc-settings-setup-step" key={recommendation.key}>
+					<div
+						className={`pc-settings-setup-step ${
+							recommendation.priority === 'high'
+								? 'pc-settings-setup-step--priority'
+								: ''
+						}`}
+						key={recommendation.key}
+					>
 						<div>
-							<strong>{recommendation.label}</strong>
+							<div className="pc-settings-setup-step__title">
+								<strong>{recommendation.label}</strong>
+								{recommendation.priority === 'high' && (
+									<span className="pc-settings-setup-step__priority">
+										{__('Priority', 'powered-cache')}
+									</span>
+								)}
+							</div>
 							<p>{recommendation.message}</p>
 						</div>
 						{recommendation.section && (
