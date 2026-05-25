@@ -638,11 +638,17 @@ const queueMetricValue = (service) => {
 	return service.queueCapped ? `${value}+` : value;
 };
 
-const cssCompatibilityRuleCount = (compatibility = {}) =>
-	Object.values(compatibility.counts || {}).reduce(
-		(total, count) => total + Number(count || 0),
-		0,
-	);
+const cssCompatibilityRuleCount = (compatibility = {}) => {
+	const counts = compatibility.counts || {};
+	const ruleKeys = [
+		'ucssSafelist',
+		'ucssExcludedFiles',
+		'criticalCssExcludedFiles',
+		'disabledServices',
+	];
+
+	return ruleKeys.reduce((total, key) => total + Number(counts[key] || 0), 0);
+};
 
 const cssCompatibilitySourceSummary = (compatibility = {}) => {
 	const sources = (compatibility.sources || []).filter((source) => !source.userDisabled);
