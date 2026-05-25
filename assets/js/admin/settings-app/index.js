@@ -1965,6 +1965,13 @@ const SettingsToolsActions = () => {
 	);
 };
 
+const AdvisorSection = ({ onSelectSection = () => {}, profile = {}, systemStatus = {} }) => (
+	<section id="pc-settings-section-advisor" className="pc-settings-advisor-section">
+		<SystemStatusPanel onSelectSection={onSelectSection} systemStatus={systemStatus} />
+		<SetupGuidePanel onSelectSection={onSelectSection} profile={profile} />
+	</section>
+);
+
 const SettingsApp = () => {
 	const [manifest, setManifest] = useState(null);
 	const [settings, setSettings] = useState({});
@@ -2464,6 +2471,32 @@ const SettingsApp = () => {
 		settings.enable_lazy_load,
 		settings.enable_cache_preload,
 	].filter(Boolean).length;
+	const isAdvisorSection = activeSection === 'advisor';
+	let mainSection = (
+		<>
+			<SettingsSection
+				fields={activeFields}
+				issuesBySetting={fieldIssuesByKey}
+				onChange={updateSetting}
+				section={activeSectionData}
+				sectionKey={activeSection}
+				settings={settings}
+			/>
+			{activeSection === 'misc' && <SettingsToolsActions />}
+		</>
+	);
+
+	if (isLicenseSection) {
+		mainSection = <LicenseSection section={activeSectionData} premiumInfo={premiumInfo} />;
+	} else if (isAdvisorSection) {
+		mainSection = (
+			<AdvisorSection
+				onSelectSection={updateActiveSection}
+				profile={setupProfile}
+				systemStatus={systemStatus}
+			/>
+		);
+	}
 
 	return (
 		<div className="pc-settings-shell">
@@ -2609,7 +2642,6 @@ const SettingsApp = () => {
 						onApply={applyRecommendedSetup}
 						profile={setupProfile}
 					/>
-					<SetupGuidePanel onSelectSection={updateActiveSection} profile={setupProfile} />
 				</>
 			)}
 
@@ -2667,33 +2699,11 @@ const SettingsApp = () => {
 								updatingCompatibilitySource={updatingCompatibilitySource}
 							/>
 						)}
-					{isLicenseSection ? (
-						<LicenseSection section={activeSectionData} premiumInfo={premiumInfo} />
-					) : (
-						<>
-							<SettingsSection
-								fields={activeFields}
-								issuesBySetting={fieldIssuesByKey}
-								onChange={updateSetting}
-								section={activeSectionData}
-								sectionKey={activeSection}
-								settings={settings}
-							/>
-							{activeSection === 'misc' && (
-								<>
-									<SystemStatusPanel
-										onSelectSection={updateActiveSection}
-										systemStatus={systemStatus}
-									/>
-									<SettingsToolsActions />
-								</>
-							)}
-						</>
-					)}
+					{mainSection}
 				</div>
 			</div>
 
-			{!isLicenseSection && (
+			{!isLicenseSection && !isAdvisorSection && (
 				<footer className="pc-settings-savebar">
 					<span>
 						{isDirty

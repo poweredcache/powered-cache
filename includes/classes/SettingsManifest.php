@@ -82,9 +82,14 @@ class SettingsManifest {
 				'description' => 'Connect external services and WordPress runtime integrations.',
 				'order'       => 80,
 			),
+			'advisor'           => array(
+				'label'       => 'Advisor',
+				'description' => 'Review detected site signals, recommended next steps, and runtime health checks.',
+				'order'       => 85,
+			),
 			'misc'              => array(
 				'label'       => 'Tools',
-				'description' => 'Review the Optimization Advisor, cache footprint, async cleanup, tracking, and developer mode.',
+				'description' => 'Manage import/export, cache footprint, async cleanup, tracking, and developer mode.',
 				'order'       => 90,
 			),
 		);

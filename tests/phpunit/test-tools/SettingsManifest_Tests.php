@@ -35,6 +35,8 @@ class SettingsManifest_Tests extends TestCase {
 		$this->assertSame( 10, $sections['cache']['order'] );
 		$this->assertSame( 'File Optimization', $sections['file_optimization']['label'] );
 		$this->assertSame( 'Integrations', $sections['integrations']['label'] );
+		$this->assertSame( 'Advisor', $sections['advisor']['label'] );
+		$this->assertSame( 85, $sections['advisor']['order'] );
 	}
 
 	/**
@@ -199,7 +201,9 @@ class SettingsManifest_Tests extends TestCase {
 
 		$this->assertArrayHasKey( 'description', $sections['cache'] );
 		$this->assertNotEmpty( $sections['cache']['description'] );
+		$this->assertStringContainsString( 'runtime health checks', $sections['advisor']['description'] );
 		$this->assertSame( 'Tools', $sections['misc']['label'] );
+		$this->assertStringNotContainsString( 'Optimization Advisor', $sections['misc']['description'] );
 	}
 
 	/**

@@ -173,6 +173,17 @@ const assertMediaLazyLoadControls = async (page) => {
 	);
 };
 
+const assertAdvisorSection = async (page) => {
+	await openSection(page, 'advisor');
+	assert((await activeSubmenuText(page)) === 'Advisor', 'Advisor submenu item is not active.');
+
+	const advisorHeading = await page.locator('text=Optimization Advisor').count();
+	assert(advisorHeading > 0, 'Optimization Advisor panel was not found.');
+
+	const savebarCount = await page.locator('.pc-settings-savebar').count();
+	assert(savebarCount === 0, 'Advisor section should not show the sticky Save Settings bar.');
+};
+
 const assertLicenseSection = async (page) => {
 	await openSection(page, 'license');
 
@@ -228,6 +239,7 @@ const run = async () => {
 		await assertNoLegacyCssGenerationLinks(page);
 
 		await assertMediaLazyLoadControls(page);
+		await assertAdvisorSection(page);
 
 		await maybeAssertLicenseSection(page);
 

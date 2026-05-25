@@ -62,7 +62,7 @@ Profiles:
 - `premium`: Requires Premium/license settings to be available and fails when they are missing.
 - `auto`: Runs Premium/license checks only when the section is present.
 
-The smoke test verifies that the settings app renders key sections, keeps WordPress admin submenu highlighting in sync, keeps Cache Lifespan controls visually aligned, exposes Media lazy-load controls, and avoids legacy CSS generation links. Premium/license URL checks run only in the `premium` or `auto` profiles.
+The smoke test verifies that the settings app renders key sections, keeps WordPress admin submenu highlighting in sync, keeps Cache Lifespan controls visually aligned, exposes Media lazy-load controls, renders the Advisor without a settings save bar, and avoids legacy CSS generation links. Premium/license URL checks run only in the `premium` or `auto` profiles.
 
 Guided setup and advisor changes should also keep these targeted checks green:
 
