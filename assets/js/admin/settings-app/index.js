@@ -724,7 +724,7 @@ const cssCompatibilitySourceSummary = (compatibility = {}) => {
 
 	return remaining
 		? sprintf(
-				/* translators: 1: comma-separated source labels, 2: remaining source count. */
+				/* translators: 1: comma-separated labels, 2: remaining label count. */
 				__('%1$s, and %2$d more', 'powered-cache'),
 				labels.join(', '),
 				remaining,
@@ -1517,7 +1517,11 @@ const CdnHostnamesControl = ({ disabled, field, settings, onChange }) => {
 				{rows.map((row, index) => (
 					<div className="pc-settings-cdn-route" key={row.id}>
 						<input
-							aria-label={sprintf(__('CDN hostname %d', 'powered-cache'), index + 1)}
+							aria-label={sprintf(
+								/* translators: %d: CDN route number. */
+								__('CDN hostname %d', 'powered-cache'),
+								index + 1,
+							)}
 							className="components-text-control__input pc-settings-cdn-route__hostname"
 							disabled={disabled}
 							onChange={(event) => {
@@ -1528,7 +1532,11 @@ const CdnHostnamesControl = ({ disabled, field, settings, onChange }) => {
 							value={row.hostname}
 						/>
 						<select
-							aria-label={sprintf(__('CDN scope %d', 'powered-cache'), index + 1)}
+							aria-label={sprintf(
+								/* translators: %d: CDN route number. */
+								__('CDN scope %d', 'powered-cache'),
+								index + 1,
+							)}
 							className="components-select-control__input pc-settings-cdn-route__zone"
 							disabled={disabled}
 							onChange={(event) => {

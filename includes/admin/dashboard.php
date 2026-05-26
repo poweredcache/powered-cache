@@ -124,6 +124,7 @@ function admin_menu() {
 
 		add_submenu_page(
 			MENU_SLUG,
+			/* translators: %s: settings section label. */
 			sprintf( esc_html__( '%s Settings', 'powered-cache' ), esc_html( $section['label'] ) ),
 			esc_html( $section['label'] ),
 			$capability,
@@ -584,6 +585,7 @@ function maybe_display_message() {
 	];
 
 	if ( isset( $_GET['language'] ) ) {
+		/* translators: %s: language code. */
 		$success_messages['flush_lang_cache'] = sprintf( esc_html__( 'Page cache for %s language has been deleted!', 'powered-cache' ), esc_attr( urldecode_deep( $_GET['language'] ) ) ); // phpcs:ignore
 	}
 

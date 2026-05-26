@@ -19,7 +19,7 @@
     "lint-style": "10up-toolkit lint-style",
     "e2e:settings": "node tests/e2e/settings-smoke.mjs",
     "test": "10up-toolkit test-unit-jest",
-    "make-pot": "wp i18n make-pot . languages/powered-cache.pot --include='includes'",
+    "make-pot": "wp i18n make-pot . languages/powered-cache.pot --include='powered-cache.php,includes,assets/js'",
     "build-release": "npm install --production=false && composer install && npm run build && npm run make-pot",
     "copy-defer": "cp node_modules/@shinsenter/defer.js/dist/defer_plus.min.js dist/js/script-loader.js"
   },
