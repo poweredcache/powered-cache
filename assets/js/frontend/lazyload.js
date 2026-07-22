@@ -265,5 +265,22 @@ const PCLL = (function () {
 			return defaultValue;
 		},
 	};
-	return PCLL.init();
+	return PCLL;
 })();
+
+let pcllInitialized = false;
+
+function initializePCLL() {
+	if (pcllInitialized) {
+		return;
+	}
+
+	pcllInitialized = true;
+	PCLL.init();
+}
+
+if (document.readyState === 'loading') {
+	document.addEventListener('DOMContentLoaded', initializePCLL, { once: true });
+} else {
+	initializePCLL();
+}
