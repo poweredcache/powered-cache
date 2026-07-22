@@ -168,13 +168,8 @@ class DatabaseOptimizer extends ActionSchedulerProcess {
 				}
 				break;
 			case 'db_cleanup_expired_transients':
-				$query = $wpdb->get_col( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE '\_transient\_timeout\__%%' AND option_value < UNIX_TIMESTAMP()" );
-				if ( $query ) {
-					foreach ( $query as $transient ) {
-						$key = str_replace( '_transient_timeout_', '', $transient );
-						delete_transient( $key );
-					}
-				}
+				// Force database cleanup even when a persistent object cache is active.
+				delete_expired_transients( true );
 				break;
 			case 'db_cleanup_all_transients':
 				$query = $wpdb->get_col( "SELECT option_name FROM $wpdb->options WHERE option_name LIKE '%_transient_%'" );
