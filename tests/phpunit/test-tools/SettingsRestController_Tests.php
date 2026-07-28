@@ -358,7 +358,10 @@ class SettingsRestController_Tests extends TestCase {
 		};
 
 		$method = new \ReflectionMethod( SettingsRestController::class, 'get_request_payload' );
-		$method->setAccessible( true );
+
+		if ( PHP_VERSION_ID < 80100 ) {
+			$method->setAccessible( true );
+		}
 
 		$this->assertSame(
 			array(
