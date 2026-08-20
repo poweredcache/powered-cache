@@ -1,8 +1,8 @@
 === Powered Cache – Caching and Optimization for WordPress – Easily Improve PageSpeed & Web Vitals Score ===
 Contributors:  poweredcache, wphandle, skopco, m_uysl
 Tags: cache, web vitals, performance, page speed, optimize
-Requires at least:  6.5
-Tested up to:  7.0
+Requires at least:  5.7
+Tested up to:  7.1
 Stable tag:  3.7.3
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -178,7 +178,7 @@ Yes, it’s compatible with PHP 8+
 - Tested with WP 7.0
 
 = 3.7.2 (February 02, 2026) =
-- [Fixed] Elementor ajax conflict with async processing.
+- [Fixed] Elementor ajax conflict with background processing.
 - [Updated] Dependencies.
 
 = 3.7.1 (December 17, 2025) =
@@ -338,7 +338,7 @@ Yes, it’s compatible with PHP 8+
 - General enhancements made to the Lazy Load feature.
 - Resolved: Deprecated jQuery functions.
 - Updated: Minify package.
-- Updated: Async task processing package.
+- Updated: Background processing package.
 - Tested with WP 6.3.
 
 = 3.0.5 (May 30, 2023) =
@@ -372,7 +372,7 @@ Yes, it’s compatible with PHP 8+
 - Added: Delayed JS execution.
 - Added: Remove Unused CSS feature.
 - Added: New HTML minification library.
-- Updated: Async task processing library.
+- Updated: Background processing library.
 - Bump required PHP version to 7.2
 - Object cache drop-in updates: supporting *multiple and wp_cache_supports
 - Refactored: Accepted query strings renamed as ignored query strings.
