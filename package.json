@@ -30,7 +30,7 @@
     "@shinsenter/defer.js": "^3.6.0",
     "@wordpress/element": "^4.0",
     "@wpmudev/shared-ui": "2.12.24",
-    "10up-toolkit": "^6.5",
+    "10up-toolkit": "^7.0",
     "jest-environment-jsdom": "^29.7.0"
   },
   "dependencies": {
