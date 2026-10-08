@@ -259,9 +259,9 @@ class SettingsSetupProfile_Tests extends TestCase {
 	}
 
 	/**
-	 * It reports recommended setup progress.
+	 * It does not treat site-aware defaults as an enforced profile.
 	 */
-	public function test_report_includes_recommended_setup_progress() {
+	public function test_report_does_not_include_recommended_setup_progress() {
 		\WP_Mock::userFunction(
 			'get_option',
 			array(
@@ -280,12 +280,9 @@ class SettingsSetupProfile_Tests extends TestCase {
 			)
 		);
 
-		$settings = SettingsSchema::recommended( array( 'is_apache' => false ), false );
-		$profile  = SettingsSetupProfile::factory( array( 'is_apache' => false ) )->report( $settings );
+		$profile = SettingsSetupProfile::factory( array( 'is_apache' => false ) )->report( array() );
 
-		$this->assertArrayHasKey( 'recommended', $profile );
-		$this->assertTrue( $profile['recommended']['applied'] );
-		$this->assertSame( $profile['recommended']['total'], $profile['recommended']['matched'] );
-		$this->assertSame( array(), $profile['recommended']['pending'] );
+		$this->assertArrayNotHasKey( 'recommended', $profile );
 	}
+
 }

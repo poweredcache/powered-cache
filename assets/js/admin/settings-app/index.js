@@ -585,52 +585,21 @@ const RecommendedSetupPanel = ({ disabled = false, onApply = () => {}, profile =
 		.map((item) => item.label)
 		.filter(Boolean)
 		.slice(0, 3);
-	const recommended = profile.recommended || {};
-	const recommendedTotal = Number(recommended.total || 0);
-	const recommendedMatched = Number(recommended.matched || 0);
-	const isApplied = !!recommended.applied;
-	let buttonLabel = __('Apply Recommended Setup', 'powered-cache');
-
-	if (isApplied) {
-		buttonLabel = __('Baseline Active', 'powered-cache');
-	} else if (disabled) {
-		buttonLabel = __('Applying...', 'powered-cache');
-	}
+	const buttonLabel = disabled
+		? __('Applying...', 'powered-cache')
+		: __('Apply Site Defaults', 'powered-cache');
 
 	return (
-		<section
-			className={`pc-settings-recommended-setup ${
-				isApplied ? 'pc-settings-recommended-setup--applied' : ''
-			}`}
-		>
+		<section className="pc-settings-recommended-setup">
 			<div>
-				<span className="pc-settings-badge">{__('Recommended mode', 'powered-cache')}</span>
-				<h2>
-					{isApplied
-						? __('Recommended baseline is active', 'powered-cache')
-						: __('Apply a safe performance baseline', 'powered-cache')}
-				</h2>
+				<span className="pc-settings-badge">{__('Quick setup', 'powered-cache')}</span>
+				<h2>{__('Apply site-aware defaults', 'powered-cache')}</h2>
 				<p>
-					{isApplied
-						? __(
-								'Your current settings match the recommended baseline for this site.',
-								'powered-cache',
-							)
-						: __(
-								'Enable page cache, mobile cache, safe minification, font display swap, lazy loading, preload, and supporting cleanup settings in one step.',
-								'powered-cache',
-							)}
+					{__(
+						'Use a conservative starting point based on this site. You can change any setting afterward.',
+						'powered-cache',
+					)}
 				</p>
-				{!!recommendedTotal && (
-					<p className="pc-settings-recommended-setup__context">
-						{sprintf(
-							/* translators: 1: matched setting count, 2: total recommended setting count. */
-							__('%1$d of %2$d recommended controls are active.', 'powered-cache'),
-							recommendedMatched,
-							recommendedTotal,
-						)}
-					</p>
-				)}
 				{!!detectedLabels.length && (
 					<p className="pc-settings-recommended-setup__context">
 						{sprintf(
@@ -641,12 +610,7 @@ const RecommendedSetupPanel = ({ disabled = false, onApply = () => {}, profile =
 					</p>
 				)}
 			</div>
-			<Button
-				disabled={disabled || isApplied}
-				onClick={onApply}
-				type="button"
-				variant={isApplied ? 'secondary' : 'primary'}
-			>
+			<Button disabled={disabled} onClick={onApply} type="button" variant="primary">
 				{buttonLabel}
 			</Button>
 		</section>
@@ -2351,7 +2315,7 @@ const SettingsApp = () => {
 			// eslint-disable-next-line no-alert
 			!window.confirm(
 				__(
-					'Apply recommended setup? Unsaved changes will be replaced by the recommended baseline.',
+					'Apply site defaults? Unsaved changes will be replaced by the site-aware defaults.',
 					'powered-cache',
 				),
 			)
@@ -2376,7 +2340,10 @@ const SettingsApp = () => {
 				setSetupProfile(response.setup_profile || null);
 				setNotice({
 					status: 'success',
-					message: __('Recommended setup applied.', 'powered-cache'),
+					message: __(
+						'The site defaults were applied. You can customize any setting.',
+						'powered-cache',
+					),
 				});
 
 				refreshCssOptimizationStatus();
@@ -2384,7 +2351,7 @@ const SettingsApp = () => {
 			.catch(() => {
 				setNotice({
 					status: 'error',
-					message: __('Recommended setup could not be applied.', 'powered-cache'),
+					message: __('The site defaults could not be applied.', 'powered-cache'),
 				});
 			})
 			.finally(() => {
