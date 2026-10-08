@@ -881,8 +881,6 @@ const formatTimestamp = (timestamp) => {
 };
 
 const ImageDeliveryPanel = ({ imageDelivery = {} }) => {
-	const stats = imageDelivery.stats || {};
-	const hasStats = !!stats.available;
 	const domain = imageDelivery.domain || 'https://img.poweredcache.net';
 	const preferredFormat = imageDelivery.preferredFormat
 		? imageDelivery.preferredFormat.toUpperCase()
@@ -960,32 +958,6 @@ const ImageDeliveryPanel = ({ imageDelivery = {} }) => {
 							'powered-cache',
 						)}
 					</p>
-				</div>
-				<div>
-					<span>{__('Optimized Images', 'powered-cache')}</span>
-					<strong>
-						{hasStats
-							? metricValue(stats.optimizedImages)
-							: __('Collecting data', 'powered-cache')}
-					</strong>
-					{hasStats && (
-						<p>
-							{sprintf(
-								/* translators: 1: bandwidth saved, 2: cache hit rate. */
-								__('Saved %1$s. CDN hit rate %2$s.', 'powered-cache'),
-								metricValue(stats.bandwidthSaved),
-								metricValue(stats.cacheHitRate),
-							)}
-						</p>
-					)}
-					{!hasStats && (
-						<p>
-							{__(
-								'Usage stats will appear after the delivery backend reports aggregated data.',
-								'powered-cache',
-							)}
-						</p>
-					)}
 				</div>
 			</div>
 		</section>
