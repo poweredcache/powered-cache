@@ -55,6 +55,13 @@ class Cron {
 
 		$interval = $settings['cache_timeout'] * 60; // in seconds
 
+		$display = 'Powered Cache Purge Interval';
+
+		// Other plugins can request cron schedules before translations are ready.
+		if ( did_action( 'init' ) ) {
+			$display = esc_html__( 'Powered Cache Purge Interval', 'powered-cache' );
+		}
+
 		$schedules['powered_cache'] = [
 			/**
 			 * Filters page cache purge interval
@@ -67,7 +74,7 @@ class Cron {
 			 * @since  2.0
 			 */
 			'interval' => apply_filters( 'powered_cache_cache_purge_interval', $interval ),
-			'display'  => esc_html__( 'Powered Cache Purge Interval', 'powered-cache' ),
+			'display'  => $display,
 		];
 
 		return $schedules;
