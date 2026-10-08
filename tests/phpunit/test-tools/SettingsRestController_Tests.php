@@ -119,10 +119,15 @@ class SettingsRestController_Tests extends TestCase {
 		\WP_Mock::userFunction(
 			'get_option',
 			array(
-				'times'  => 4,
+				'times'  => 5,
 				'return' => function ( $option, $default = false ) {
 					if ( 'active_plugins' === $option ) {
 						return array();
+					}
+
+					if ( \PoweredCache\Constants\SITE_DEFAULTS_APPLIED_OPTION === $option ) {
+						$this->assertFalse( $default );
+						return false;
 					}
 
 					$this->assertSame( \PoweredCache\Constants\SETTING_OPTION, $option );
@@ -166,6 +171,7 @@ class SettingsRestController_Tests extends TestCase {
 		$this->assertSame( '', $response['settings']['sucuri_api_secret'] );
 		$this->assertArrayHasKey( 'setup_profile', $response );
 		$this->assertSame( 0, $response['setup_profile']['plugin_count'] );
+		$this->assertFalse( $response['setup_profile']['site_defaults_applied'] );
 
 		unset( $GLOBALS['is_apache'] );
 	}
@@ -185,7 +191,7 @@ class SettingsRestController_Tests extends TestCase {
 		\WP_Mock::userFunction(
 			'get_option',
 			array(
-				'times'  => 4,
+				'times'  => 5,
 				'return' => function ( $option, $default = false ) {
 					if ( 'active_plugins' === $option ) {
 						return array(
@@ -193,6 +199,11 @@ class SettingsRestController_Tests extends TestCase {
 							'sitepress-multilingual-cms/sitepress.php',
 							'jetformbuilder/jet-form-builder.php',
 						);
+					}
+
+					if ( \PoweredCache\Constants\SITE_DEFAULTS_APPLIED_OPTION === $option ) {
+						$this->assertFalse( $default );
+						return true;
 					}
 
 					$this->assertSame( \PoweredCache\Constants\SETTING_OPTION, $option );
@@ -222,6 +233,7 @@ class SettingsRestController_Tests extends TestCase {
 		$recommendation_keys = array_column( $response['setup_profile']['recommendations'], 'key' );
 
 		$this->assertSame( 3, $response['setup_profile']['plugin_count'] );
+		$this->assertTrue( $response['setup_profile']['site_defaults_applied'] );
 		$this->assertContains( 'woocommerce', $detected_keys );
 		$this->assertContains( 'multilingual', $detected_keys );
 		$this->assertContains( 'forms', $detected_keys );
@@ -230,6 +242,29 @@ class SettingsRestController_Tests extends TestCase {
 		$this->assertContains( 'multilingual_preload', $recommendation_keys );
 
 		unset( $GLOBALS['is_apache'] );
+	}
+
+	/**
+	 * It persists completion of the one-time site defaults action.
+	 */
+	public function test_marks_site_defaults_as_applied() {
+		\WP_Mock::userFunction(
+			'update_option',
+			array(
+				'times'  => 1,
+				'args'   => array( \PoweredCache\Constants\SITE_DEFAULTS_APPLIED_OPTION, true, false ),
+				'return' => true,
+			)
+		);
+
+		$method = new \ReflectionMethod( SettingsRestController::class, 'mark_site_defaults_applied' );
+
+		if ( PHP_VERSION_ID < 80100 ) {
+			$method->setAccessible( true );
+		}
+
+		$method->invoke( new SettingsRestController() );
+		$this->assertConditionsMet();
 	}
 
 	/**

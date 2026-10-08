@@ -71,10 +71,12 @@ function powered_cache_uninstall_site() {
 	// delete network settings
 	delete_site_option( \PoweredCache\Constants\SETTING_OPTION );
 	delete_site_option( \PoweredCache\Constants\DB_VERSION_OPTION_NAME );
+	delete_site_option( \PoweredCache\Constants\SITE_DEFAULTS_APPLIED_OPTION );
 
 	// delete site settings
 	delete_option( \PoweredCache\Constants\SETTING_OPTION );
 	delete_option( \PoweredCache\Constants\DB_VERSION_OPTION_NAME );
+	delete_option( \PoweredCache\Constants\SITE_DEFAULTS_APPLIED_OPTION );
 
 	// remove cron tasks
 	wp_clear_scheduled_hook( \PoweredCache\Constants\PURGE_CACHE_CRON_NAME );

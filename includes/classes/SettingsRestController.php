@@ -121,7 +121,7 @@ class SettingsRestController {
 			'settings'       => SettingsRepository::redact_sensitive( $settings ),
 			'validation'     => SettingsValidator::factory( $context )->report( $settings ),
 			'system_status'  => SystemStatus::factory( $settings, $context )->report(),
-			'setup_profile'  => SettingsSetupProfile::factory( $context )->report( $settings ),
+			'setup_profile'  => $this->setup_profile( $settings, $context ),
 		);
 	}
 
@@ -153,7 +153,7 @@ class SettingsRestController {
 			'settings'       => SettingsRepository::redact_sensitive( $settings ),
 			'validation'     => SettingsValidator::factory( $context )->report( $settings ),
 			'system_status'  => SystemStatus::factory( $settings, $context )->report(),
-			'setup_profile'  => SettingsSetupProfile::factory( $context )->report( $settings ),
+			'setup_profile'  => $this->setup_profile( $settings, $context ),
 		);
 	}
 
@@ -175,6 +175,7 @@ class SettingsRestController {
 		$settings     = $this->prepare_update_settings( $changes, $old_settings );
 		$save_service = SettingsSaveService::factory( $repository, POWERED_CACHE_IS_NETWORK );
 		$settings     = $save_service->save( $settings, $old_settings );
+		$this->mark_site_defaults_applied();
 
 		return array(
 			'format'         => self::STATE_FORMAT,
@@ -183,7 +184,7 @@ class SettingsRestController {
 			'settings'       => SettingsRepository::redact_sensitive( $settings ),
 			'validation'     => SettingsValidator::factory( $context )->report( $settings ),
 			'system_status'  => SystemStatus::factory( $settings, $context )->report(),
-			'setup_profile'  => SettingsSetupProfile::factory( $context )->report( $settings ),
+			'setup_profile'  => $this->setup_profile( $settings, $context, true ),
 			'applied'        => array_keys( $changes ),
 		);
 	}
@@ -297,5 +298,51 @@ class SettingsRestController {
 		$context = apply_filters( 'powered_cache_settings_validation_context', $context );
 
 		return is_array( $context ) ? $context : array();
+	}
+
+	/**
+	 * Build setup profile state for the settings app.
+	 *
+	 * @param array     $settings Settings payload.
+	 * @param array     $context Runtime context.
+	 * @param bool|null $site_defaults_applied Optional known completion state.
+	 *
+	 * @return array
+	 */
+	private function setup_profile( array $settings, array $context, $site_defaults_applied = null ) {
+		$profile = SettingsSetupProfile::factory( $context )->report( $settings );
+
+		$profile['site_defaults_applied'] = null === $site_defaults_applied
+			? $this->site_defaults_applied()
+			: (bool) $site_defaults_applied;
+
+		return $profile;
+	}
+
+	/**
+	 * Determine whether site-aware defaults were applied before.
+	 *
+	 * @return bool
+	 */
+	private function site_defaults_applied() {
+		if ( POWERED_CACHE_IS_NETWORK ) {
+			return (bool) get_site_option( \PoweredCache\Constants\SITE_DEFAULTS_APPLIED_OPTION, false );
+		}
+
+		return (bool) get_option( \PoweredCache\Constants\SITE_DEFAULTS_APPLIED_OPTION, false );
+	}
+
+	/**
+	 * Persist completion of the one-time site-aware defaults action.
+	 *
+	 * @return void
+	 */
+	private function mark_site_defaults_applied() {
+		if ( POWERED_CACHE_IS_NETWORK ) {
+			update_site_option( \PoweredCache\Constants\SITE_DEFAULTS_APPLIED_OPTION, true );
+			return;
+		}
+
+		update_option( \PoweredCache\Constants\SITE_DEFAULTS_APPLIED_OPTION, true, false );
 	}
 }

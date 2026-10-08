@@ -2664,11 +2664,13 @@ const SettingsApp = () => {
 							}
 						/>
 					</div>
-					<RecommendedSetupPanel
-						disabled={isApplyingRecommended || isSaving}
-						onApply={applyRecommendedSetup}
-						profile={setupProfile}
-					/>
+					{!(setupProfile && setupProfile.site_defaults_applied) && (
+						<RecommendedSetupPanel
+							disabled={isApplyingRecommended || isSaving}
+							onApply={applyRecommendedSetup}
+							profile={setupProfile}
+						/>
+					)}
 				</>
 			)}
 
