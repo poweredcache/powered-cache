@@ -261,6 +261,7 @@ class SettingsRestController {
 
 		$context = array(
 			'is_apache'                => (bool) $is_apache,
+			'is_local_site'            => function_exists( 'site_url' ) && function_exists( '\PoweredCache\Utils\is_local_site' ) && \PoweredCache\Utils\is_local_site(),
 			'wp_cache_enabled'         => defined( 'WP_CACHE' ) && true === WP_CACHE,
 			'page_cache_loaded'        => defined( 'POWERED_CACHE_PAGE_CACHING' ) && true === POWERED_CACHE_PAGE_CACHING,
 			'page_cache_has_problem'   => defined( 'POWERED_CACHE_PAGE_CACHING_HAS_PROBLEM' ) && POWERED_CACHE_PAGE_CACHING_HAS_PROBLEM,

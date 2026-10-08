@@ -270,6 +270,10 @@ class SettingsSchema {
 	private static function apply_recommended_safeguards( array $recommended, array $context ) {
 		$active_plugins = isset( $context['active_plugins'] ) && is_array( $context['active_plugins'] ) ? $context['active_plugins'] : array();
 
+		if ( ! empty( $context['is_local_site'] ) ) {
+			$recommended['enable_image_optimization'] = false;
+		}
+
 		if ( self::has_active_plugin(
 			$active_plugins,
 			array(

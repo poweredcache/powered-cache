@@ -196,6 +196,21 @@ class SettingsSchema_Tests extends TestCase {
 	}
 
 	/**
+	 * It keeps managed image delivery disabled on local sites.
+	 */
+	public function test_recommended_settings_disable_image_delivery_on_local_sites() {
+		$recommended = SettingsSchema::recommended(
+			array(
+				'is_apache'     => false,
+				'is_local_site' => true,
+			),
+			true
+		);
+
+		$this->assertFalse( $recommended['enable_image_optimization'] );
+	}
+
+	/**
 	 * It avoids overlapping optimization layers in the recommended setup profile.
 	 */
 	public function test_recommended_settings_respect_active_optimizer_layers() {
