@@ -82,6 +82,9 @@ spl_autoload_register(
 	}
 );
 
+// Keep pre-4.0 Premium releases loadable while sites complete a staggered update.
+require_once POWERED_CACHE_COMPAT_DIR . 'legacy-async.php';
+
 // Include files.
 require_once POWERED_CACHE_INC . 'constants.php';
 require_once POWERED_CACHE_INC . 'utils.php';

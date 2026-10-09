@@ -107,6 +107,24 @@ abstract class ActionSchedulerProcess {
 	 * @return void
 	 */
 	public function cancel_process() {
+		$this->cancel_scheduled_actions();
+	}
+
+	/**
+	 * Cancel scheduled items using the previous queue API name.
+	 *
+	 * @return void
+	 */
+	public function cancel() {
+		$this->cancel_scheduled_actions();
+	}
+
+	/**
+	 * Cancel buffered and scheduled items.
+	 *
+	 * @return void
+	 */
+	private function cancel_scheduled_actions() {
 		$this->data = array();
 
 		if ( ! function_exists( 'as_unschedule_all_actions' ) || ! $this->is_action_scheduler_ready() ) {
@@ -118,12 +136,14 @@ abstract class ActionSchedulerProcess {
 	}
 
 	/**
-	 * Cancel scheduled items.
+	 * Whether the queue has no buffered or scheduled items.
 	 *
-	 * @return void
+	 * Kept for older callers that used the previous async queue API.
+	 *
+	 * @return bool
 	 */
-	public function cancel() {
-		$this->cancel_process();
+	protected function is_queue_empty() {
+		return empty( $this->data ) && ! $this->is_process_running();
 	}
 
 	/**
