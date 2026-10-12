@@ -262,6 +262,8 @@ class Install {
 			return;
 		}
 
+		$this->cleanup_legacy_async_jobs();
+
 		$settings = $network_wide ? get_site_option( SETTING_OPTION, array() ) : get_option( SETTING_OPTION, array() );
 
 		if ( ! is_array( $settings ) || ! SettingsRepository::has_legacy_settings( $settings ) ) {
@@ -271,6 +273,43 @@ class Install {
 		$this->save_settings( SettingsRepository::migrate_legacy_settings( $settings ), $network_wide );
 
 		\PoweredCache\Utils\log( 'Upgraded to version 4.0' );
+	}
+
+	/**
+	 * Remove queues and cron events left by the retired background processor.
+	 *
+	 * @return void
+	 */
+	protected function cleanup_legacy_async_jobs() {
+		global $wpdb;
+
+		$identifiers = array(
+			'wp_powered_cache_preload',
+			'wp_powered_cache_purger',
+			'wp_powered_cache_db_optimizer',
+			'wp_powered_cache_critical_css',
+			'wp_powered_cache_ucss',
+			'wp_powered_cache_sitemap_preload',
+		);
+
+		foreach ( $identifiers as $identifier ) {
+			delete_site_option( $identifier . '_status' );
+			delete_site_transient( $identifier . '_process_lock' );
+			wp_clear_scheduled_hook( $identifier . '_cron' );
+
+			$batch_pattern = $wpdb->esc_like( $identifier . '_batch_' ) . '%';
+			if ( is_multisite() ) {
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$batch_keys = $wpdb->get_col( $wpdb->prepare( "SELECT meta_key FROM {$wpdb->sitemeta} WHERE meta_key LIKE %s AND site_id = %d", $batch_pattern, get_current_network_id() ) );
+			} else {
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$batch_keys = $wpdb->get_col( $wpdb->prepare( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s", $batch_pattern ) );
+			}
+
+			foreach ( $batch_keys as $batch_key ) {
+				delete_site_option( $batch_key );
+			}
+		}
 	}
 
 	/**

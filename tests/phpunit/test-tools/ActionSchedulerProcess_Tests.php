@@ -55,6 +55,20 @@ class ActionSchedulerProcess_Test_Process extends ActionSchedulerProcess {
 	protected $action = 'powered_cache_test_process';
 
 	/**
+	 * Task result.
+	 *
+	 * @var mixed
+	 */
+	private $task_result = false;
+
+	/**
+	 * Whether completion ran.
+	 *
+	 * @var bool
+	 */
+	private $completed = false;
+
+	/**
 	 * Process one queue item.
 	 *
 	 * @param mixed $item Queue item.
@@ -62,7 +76,36 @@ class ActionSchedulerProcess_Test_Process extends ActionSchedulerProcess {
 	 * @return mixed
 	 */
 	protected function task( $item ) {
-		return $item;
+		return $this->task_result;
+	}
+
+	/**
+	 * Set the task result.
+	 *
+	 * @param mixed $result Task result.
+	 *
+	 * @return void
+	 */
+	public function set_task_result( $result ) {
+		$this->task_result = $result;
+	}
+
+	/**
+	 * Record completion.
+	 *
+	 * @return void
+	 */
+	protected function complete() {
+		$this->completed = true;
+	}
+
+	/**
+	 * Whether completion ran.
+	 *
+	 * @return bool
+	 */
+	public function is_completed() {
+		return $this->completed;
 	}
 
 	/**
@@ -109,6 +152,130 @@ class ActionSchedulerProcess_Tests extends TestCase {
 			->dispatch();
 
 		$this->assertTrue( $result );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * It reports an Action Scheduler enqueue failure and retains failed items.
+	 */
+	public function test_dispatch_reports_enqueue_failure() {
+		\WP_Mock::userFunction(
+			'as_enqueue_async_action',
+			array(
+				'times'  => 1,
+				'return' => 0,
+			)
+		);
+
+		$process = new ActionSchedulerProcess_Test_Process();
+		$result  = $process->push_to_queue( 'failed' )->dispatch();
+
+		$this->assertFalse( $result );
+		$this->assertSame( array( 'failed' ), $process->get_buffered_data() );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * It reschedules task results returned for retry.
+	 */
+	public function test_process_scheduled_item_reschedules_retry_result() {
+		\WP_Mock::userFunction(
+			'as_schedule_single_action',
+			array(
+				'times'  => 1,
+				'return' => function ( $timestamp, $hook, $args, $group, $unique = false ) {
+					$this->assertFalse( $unique );
+
+					return 1;
+				},
+			)
+		);
+
+		$process = new ActionSchedulerProcess_Test_Process();
+		$process->set_task_result( 'retry' );
+
+		$this->assertSame( 'retry', $process->process_scheduled_item( 'item' ) );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * It passes the next attempt number to the retry action.
+	 */
+	public function test_process_scheduled_item_increments_retry_attempt() {
+		\WP_Mock::userFunction(
+			'as_schedule_single_action',
+			array(
+				'times'  => 1,
+				'return' => function ( $timestamp, $hook, $args ) {
+					$this->assertSame( array( 'retry', 3 ), $args );
+
+					return 1;
+				},
+			)
+		);
+
+		$process = new ActionSchedulerProcess_Test_Process();
+		$process->set_task_result( 'retry' );
+
+		$process->process_scheduled_item( 'item', 2 );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * It stops retrying once the retry limit is reached.
+	 */
+	public function test_process_scheduled_item_stops_after_max_retries() {
+		\WP_Mock::userFunction( 'as_schedule_single_action', array( 'times' => 0 ) );
+		\WP_Mock::userFunction( 'as_enqueue_async_action', array( 'times' => 0 ) );
+
+		$process = new ActionSchedulerProcess_Test_Process();
+		$process->set_task_result( 'retry' );
+
+		$this->assertSame( 'retry', $process->process_scheduled_item( 'item', ActionSchedulerProcess::MAX_RETRIES ) );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * It does not retry tasks that return null.
+	 */
+	public function test_process_scheduled_item_does_not_retry_null_result() {
+		\WP_Mock::userFunction( 'as_schedule_single_action', array( 'times' => 0 ) );
+		\WP_Mock::userFunction( 'as_enqueue_async_action', array( 'times' => 0 ) );
+
+		$process = new ActionSchedulerProcess_Test_Process();
+		$process->set_task_result( null );
+
+		$this->assertNull( $process->process_scheduled_item( 'item' ) );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * It delays completion while queue items remain scheduled.
+	 */
+	public function test_process_complete_waits_for_scheduled_items() {
+		\WP_Mock::userFunction(
+			'as_has_scheduled_action',
+			array(
+				'times'  => 1,
+				'return' => true,
+			)
+		);
+		\WP_Mock::userFunction(
+			'as_schedule_single_action',
+			array(
+				'times'  => 1,
+				'return' => function ( $timestamp, $hook, $args, $group, $unique = false ) {
+					$this->assertFalse( $unique );
+
+					return 1;
+				},
+			)
+		);
+
+		$process = new ActionSchedulerProcess_Test_Process();
+		$process->process_complete();
+
+		$this->assertFalse( $process->is_completed() );
 		$this->assertConditionsMet();
 	}
 

@@ -47,7 +47,7 @@ class CachePurger extends ActionSchedulerProcess {
 		$this->settings = \PoweredCache\Utils\get_settings();
 
 		if ( empty( $item['call'] ) ) {
-			return;
+			return false;
 		}
 
 		\PoweredCache\Utils\log( sprintf( 'Call: %s', $item['call'] ) );

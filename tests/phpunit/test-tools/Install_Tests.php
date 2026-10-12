@@ -64,6 +64,7 @@ class Install_Tests extends TestCase {
 		$install = new Testable_Install();
 		$install->upgrade_40();
 
+		$this->assertSame( 1, $install->legacy_async_cleanup_count );
 		$this->assertCount( 1, $install->saved_settings );
 		$this->assertFalse( $install->saved_settings[0]['network_wide'] );
 		$this->assertSame( 'utm_source', $install->saved_settings[0]['settings']['accepted_query_strings'] );
@@ -89,6 +90,7 @@ class Install_Tests extends TestCase {
 		$install = new Testable_Install();
 		$install->upgrade_40();
 
+		$this->assertSame( 0, $install->legacy_async_cleanup_count );
 		$this->assertSame( array(), $install->saved_settings );
 	}
 
@@ -126,6 +128,7 @@ class Install_Tests extends TestCase {
 		$install = new Testable_Install();
 		$install->upgrade_40( true );
 
+		$this->assertSame( 1, $install->legacy_async_cleanup_count );
 		$this->assertCount( 1, $install->saved_settings );
 		$this->assertTrue( $install->saved_settings[0]['network_wide'] );
 		$this->assertSame( 'utm_campaign', $install->saved_settings[0]['settings']['ignored_query_strings'] );
@@ -194,6 +197,13 @@ class Testable_Install extends Install {
 	 */
 	public $saved_settings = array();
 
+	/**
+	 * Number of legacy async cleanup calls.
+	 *
+	 * @var int
+	 */
+	public $legacy_async_cleanup_count = 0;
+
 	// Skip earlier migration routines so entrypoint coverage can isolate 4.0 behavior.
 	public function maybe_migrate_from_1x() {
 	}
@@ -208,6 +218,15 @@ class Testable_Install extends Install {
 	}
 
 	public function upgrade_34( $network_wide = false ) {
+	}
+
+	/**
+	 * Capture legacy async cleanup without touching WordPress storage.
+	 *
+	 * @return void
+	 */
+	protected function cleanup_legacy_async_jobs() {
+		++$this->legacy_async_cleanup_count;
 	}
 
 	/**

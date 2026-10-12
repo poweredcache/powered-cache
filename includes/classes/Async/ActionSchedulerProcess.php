@@ -13,6 +13,8 @@ namespace PoweredCache\Async;
 abstract class ActionSchedulerProcess {
 
 	const ACTION_SCHEDULER_GROUP = 'powered-cache';
+	const RETRY_DELAY           = 60;
+	const MAX_RETRIES           = 5;
 
 	/**
 	 * Queue items waiting for dispatch.
@@ -32,7 +34,7 @@ abstract class ActionSchedulerProcess {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( $this->get_action_hook(), array( $this, 'process_scheduled_item' ), 10, 1 );
+		add_action( $this->get_action_hook(), array( $this, 'process_scheduled_item' ), 10, 2 );
 		add_action( $this->get_complete_hook(), array( $this, 'process_complete' ), 10, 0 );
 	}
 
@@ -68,15 +70,29 @@ abstract class ActionSchedulerProcess {
 			return false;
 		}
 
+		$remaining  = array();
+		$dispatched = false;
+
 		foreach ( $this->data as $item ) {
-			as_enqueue_async_action( $this->get_action_hook(), array( $item ), self::ACTION_SCHEDULER_GROUP );
+			$action_id = as_enqueue_async_action( $this->get_action_hook(), array( $item ), self::ACTION_SCHEDULER_GROUP );
+
+			if ( ! $action_id ) {
+				$remaining[] = $item;
+				continue;
+			}
+
+			$dispatched = true;
 		}
 
-		if ( ! empty( $this->data ) ) {
-			as_enqueue_async_action( $this->get_complete_hook(), array(), self::ACTION_SCHEDULER_GROUP );
+		$this->data = $remaining;
+
+		if ( ! empty( $remaining ) ) {
+			return false;
 		}
 
-		$this->data = array();
+		if ( $dispatched && ! as_enqueue_async_action( $this->get_complete_hook(), array(), self::ACTION_SCHEDULER_GROUP ) ) {
+			return false;
+		}
 
 		return true;
 	}
@@ -84,12 +100,30 @@ abstract class ActionSchedulerProcess {
 	/**
 	 * Process one scheduled item.
 	 *
-	 * @param mixed $item Queue item.
+	 * @param mixed $item    Queue item.
+	 * @param int   $attempt Number of retries already made for this item.
 	 *
 	 * @return mixed
 	 */
-	public function process_scheduled_item( $item ) {
-		return $this->task( $item );
+	public function process_scheduled_item( $item, $attempt = 0 ) {
+		$result  = $this->task( $item );
+		$attempt = max( 0, (int) $attempt );
+
+		if ( false === $result || null === $result ) {
+			return $result;
+		}
+
+		if ( $attempt >= self::MAX_RETRIES ) {
+			if ( function_exists( '\\PoweredCache\\Utils\\log' ) ) {
+				\PoweredCache\Utils\log( sprintf( 'Dropping %s item after %d retries.', $this->get_action_hook(), $attempt ) );
+			}
+
+			return $result;
+		}
+
+		$this->schedule_retry( $result, $attempt + 1 );
+
+		return $result;
 	}
 
 	/**
@@ -98,7 +132,65 @@ abstract class ActionSchedulerProcess {
 	 * @return void
 	 */
 	public function process_complete() {
+		if ( $this->has_scheduled_items() ) {
+			$this->schedule_completion();
+
+			return;
+		}
+
 		$this->complete();
+	}
+
+	/**
+	 * Schedule a queue item for a later retry.
+	 *
+	 * @param mixed $item    Queue item.
+	 * @param int   $attempt Retry attempt number.
+	 *
+	 * @return void
+	 */
+	private function schedule_retry( $item, $attempt ) {
+		$args = array( $item, $attempt );
+
+		if ( function_exists( 'as_schedule_single_action' ) ) {
+			as_schedule_single_action( time() + self::RETRY_DELAY, $this->get_action_hook(), $args, self::ACTION_SCHEDULER_GROUP );
+
+			return;
+		}
+
+		if ( function_exists( 'as_enqueue_async_action' ) ) {
+			as_enqueue_async_action( $this->get_action_hook(), $args, self::ACTION_SCHEDULER_GROUP );
+		}
+	}
+
+	/**
+	 * Delay completion until all queue items have finished.
+	 *
+	 * @return void
+	 */
+	private function schedule_completion() {
+		if ( function_exists( 'as_schedule_single_action' ) ) {
+			as_schedule_single_action( time() + self::RETRY_DELAY, $this->get_complete_hook(), array(), self::ACTION_SCHEDULER_GROUP );
+
+			return;
+		}
+
+		if ( function_exists( 'as_enqueue_async_action' ) ) {
+			as_enqueue_async_action( $this->get_complete_hook(), array(), self::ACTION_SCHEDULER_GROUP );
+		}
+	}
+
+	/**
+	 * Whether queue item actions remain scheduled.
+	 *
+	 * @return bool
+	 */
+	private function has_scheduled_items() {
+		if ( ! function_exists( 'as_has_scheduled_action' ) || ! $this->is_action_scheduler_ready() ) {
+			return false;
+		}
+
+		return (bool) as_has_scheduled_action( $this->get_action_hook(), null, self::ACTION_SCHEDULER_GROUP );
 	}
 
 	/**

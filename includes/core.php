@@ -103,6 +103,8 @@ function deactivate( $network_wide ) {
 	$cache_preloader->cancel_process();
 	$db_optimizer = DatabaseOptimizer::factory();
 	$db_optimizer->cancel_process();
+	$cache_purger = CachePurger::factory();
+	$cache_purger->cancel_process();
 
 	// cleanup transients
 	delete_site_transient( DB_CLEANUP_COUNT_CACHE_KEY );
