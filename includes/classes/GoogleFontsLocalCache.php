@@ -18,6 +18,7 @@ class GoogleFontsLocalCache {
 
 	const CSS_MAX_BYTES  = 200000;
 	const FONT_MAX_BYTES = 3000000;
+	const FAILURE_TTL    = 300;
 
 	/**
 	 * Cache a Google Fonts stylesheet and return the local URL.
@@ -189,32 +190,60 @@ class GoogleFontsLocalCache {
 			return '';
 		}
 
+		$failure_key = 'powered_cache_font_fetch_' . md5( $url );
+		if ( function_exists( 'get_transient' ) && get_transient( $failure_key ) ) {
+			return '';
+		}
+
 		$response = wp_remote_get(
 			$url,
 			array(
 				'timeout'     => 5,
 				'redirection' => 2,
-				'user-agent'  => 'Mozilla/5.0 (compatible; Powered Cache Google Fonts Cache)',
+				'user-agent'  => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
 			)
 		);
 
 		if ( function_exists( 'is_wp_error' ) && is_wp_error( $response ) ) {
+			$this->cache_fetch_failure( $failure_key );
+
 			return '';
 		}
 
 		$code = function_exists( 'wp_remote_retrieve_response_code' ) ? (int) wp_remote_retrieve_response_code( $response ) : 0;
 
 		if ( 200 > $code || 300 <= $code ) {
+			$this->cache_fetch_failure( $failure_key );
+
 			return '';
 		}
 
 		$body = function_exists( 'wp_remote_retrieve_body' ) ? wp_remote_retrieve_body( $response ) : '';
 
 		if ( ! is_string( $body ) || '' === $body || strlen( $body ) > $max_bytes ) {
+			$this->cache_fetch_failure( $failure_key );
+
 			return '';
 		}
 
+		if ( function_exists( 'delete_transient' ) ) {
+			delete_transient( $failure_key );
+		}
+
 		return $body;
+	}
+
+	/**
+	 * Cache a short-lived remote fetch failure.
+	 *
+	 * @param string $key Failure cache key.
+	 *
+	 * @return void
+	 */
+	private function cache_fetch_failure( $key ) {
+		if ( function_exists( 'set_transient' ) ) {
+			set_transient( $key, 1, self::FAILURE_TTL );
+		}
 	}
 
 	/**
@@ -300,7 +329,7 @@ class GoogleFontsLocalCache {
 	 * @return string
 	 */
 	private function normalize_url( $url ) {
-		$url = trim( (string) $url );
+		$url = html_entity_decode( trim( (string) $url ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
 
 		if ( 0 === strpos( $url, '//' ) ) {
 			$url = 'https:' . $url;

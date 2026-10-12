@@ -38,7 +38,9 @@ class GoogleFontsLocalCache_Tests extends TestCase {
 			'wp_remote_get',
 			array(
 				'times'  => 2,
-				'return' => function ( $url ) use ( $stylesheet_url, $font_url, $stylesheet ) {
+				'return' => function ( $url, $args ) use ( $stylesheet_url, $font_url, $stylesheet ) {
+					$this->assertStringContainsString( 'Chrome/', $args['user-agent'] );
+
 					if ( $stylesheet_url === $url ) {
 						return array( 'body' => $stylesheet );
 					}
@@ -51,6 +53,8 @@ class GoogleFontsLocalCache_Tests extends TestCase {
 				},
 			)
 		);
+		\WP_Mock::userFunction( 'get_transient', array( 'times' => 2, 'return' => false ) );
+		\WP_Mock::userFunction( 'delete_transient', array( 'times' => 2, 'return' => true ) );
 		\WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
 		\WP_Mock::userFunction( 'wp_remote_retrieve_response_code', array( 'return' => 200 ) );
 		\WP_Mock::userFunction(
@@ -85,6 +89,62 @@ class GoogleFontsLocalCache_Tests extends TestCase {
 		$url   = 'https://example.com/css?family=Inter';
 
 		$this->assertSame( $url, $cache->get_stylesheet_url( $url ) );
+	}
+
+	/**
+	 * It decodes HTML entities before requesting a stylesheet.
+	 */
+	public function test_normalize_url_decodes_html_entities() {
+		$cache  = new GoogleFontsLocalCache();
+		$method = new \ReflectionMethod( GoogleFontsLocalCache::class, 'normalize_url' );
+
+		if ( PHP_VERSION_ID < 80100 ) {
+			$method->setAccessible( true );
+		}
+
+		$this->assertSame(
+			'https://fonts.googleapis.com/css2?family=Inter&display=swap',
+			$method->invoke( $cache, 'https://fonts.googleapis.com/css2?family=Inter&#038;display=swap' )
+		);
+	}
+
+	/**
+	 * It temporarily caches failed remote requests.
+	 */
+	public function test_failed_remote_requests_are_negatively_cached() {
+		$this->mock_filesystem_helpers();
+		$this->clean_cache_dir();
+
+		$failed = false;
+		\WP_Mock::userFunction(
+			'get_transient',
+			array(
+				'times'  => 2,
+				'return' => function () use ( &$failed ) {
+					return $failed;
+				},
+			)
+		);
+		\WP_Mock::userFunction(
+			'set_transient',
+			array(
+				'times'  => 1,
+				'return' => function () use ( &$failed ) {
+					$failed = true;
+
+					return true;
+				},
+			)
+		);
+		\WP_Mock::userFunction( 'wp_remote_get', array( 'times' => 1, 'return' => (object) array( 'error' => 'failed' ) ) );
+		\WP_Mock::userFunction( 'is_wp_error', array( 'return' => true ) );
+
+		$cache = new GoogleFontsLocalCache();
+		$url   = 'https://fonts.googleapis.com/css2?family=Inter';
+
+		$this->assertSame( $url, $cache->get_stylesheet_url( $url ) );
+		$this->assertSame( $url, $cache->get_stylesheet_url( $url ) );
+		$this->assertConditionsMet();
 	}
 
 	/**
