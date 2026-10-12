@@ -32,6 +32,14 @@ class DashboardSettingsImport_Tests extends TestCase {
 	public function test_prepare_import_options_preserves_legacy_keys() {
 		$defaults = SettingsSchema::defaults( array( 'is_apache' => false ) );
 
+		\WP_Mock::userFunction(
+			'PoweredCache\Utils\wp_strip_all_tags',
+			array(
+				'return' => static function ( $value ) {
+					return strip_tags( $value );
+				},
+			)
+		);
 		\WP_Mock::onFilter( 'powered_cache_default_settings' )->with( $defaults )->reply( $defaults );
 
 		\WP_Mock::userFunction(

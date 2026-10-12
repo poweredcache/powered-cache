@@ -163,6 +163,8 @@ class SettingsManifest_Tests extends TestCase {
 		$this->assertSame( 'preload-fonts', $fields['preload_fonts']['docs_path'] );
 		$this->assertStringContainsString( '.woff2', $fields['preload_fonts']['placeholder'] );
 		$this->assertSame( 'https://dash.cloudflare.com/profile/api-tokens', $fields['cloudflare_api_token']['docs_url'] );
+		$this->assertTrue( $fields['cloudflare_api_token']['sensitive'] );
+		$this->assertFalse( $fields['cloudflare_zone']['sensitive'] );
 	}
 
 	/**

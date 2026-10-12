@@ -158,6 +158,7 @@ class SettingsManifest {
 			'order'         => $order,
 			'sanitizer'     => $field['sanitizer'],
 			'premium'       => (bool) $field['premium'],
+			'sensitive'     => in_array( $key, SettingsRepository::sensitive_keys(), true ),
 			'editable'      => $editable,
 			'locked'        => ! $editable,
 			'lock_reason'   => SettingsSchema::lock_reason( $key, $context ),

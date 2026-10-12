@@ -228,11 +228,9 @@ function settings_page() {
  */
 function process_form_submit() {
 
-	if ( POWERED_CACHE_IS_NETWORK && ! current_user_can( 'manage_network' ) ) {
-		return;
-	}
+	$capability = POWERED_CACHE_IS_NETWORK ? 'manage_network' : 'manage_options';
 
-	if ( ! current_user_can( 'manage_options' ) ) {
+	if ( ! current_user_can( $capability ) ) {
 		return;
 	}
 
@@ -240,9 +238,26 @@ function process_form_submit() {
 	if ( wp_verify_nonce( $nonce, 'powered_cache_update_settings' ) ) {
 		$settings_repository = SettingsRepository::factory( POWERED_CACHE_IS_NETWORK );
 		$settings_service    = SettingsSaveService::factory( $settings_repository, POWERED_CACHE_IS_NETWORK );
-		$action              = isset( $_POST['powered_cache_form_action'] ) ? sanitize_text_field( wp_unslash( $_POST['powered_cache_form_action'] ) ) : 'save_settings';
+		$action              = isset( $_POST['powered_cache_form_action'] ) ? sanitize_text_field( wp_unslash( $_POST['powered_cache_form_action'] ) ) : '';
+		$supported_actions   = array(
+			'reset_settings',
+			'export_settings',
+			'import_settings',
+			'enable_dev_mode',
+			'disable_dev_mode',
+			'optimize_database',
+			'save_settings_and_optimize',
+			'save_settings_and_clear_cache',
+			'save_settings',
+		);
+
+		if ( ! in_array( $action, $supported_actions, true ) ) {
+			return;
+		}
+
 		$old_options         = $settings_repository->all();
 		$options             = $old_options;
+		$should_save_options = true;
 
 		switch ( $action ) {
 			case 'reset_settings':
@@ -283,6 +298,10 @@ function process_form_submit() {
 			case 'disable_dev_mode':
 				$options['dev_mode'] = false;
 				break;
+			case 'optimize_database':
+				db_optimize( $old_options );
+				$should_save_options = false;
+				break;
 			case 'save_settings_and_optimize':
 				$options = maybe_process_sensitive_settings( sanitize_options( $_POST ) );
 				db_optimize( $options );
@@ -297,7 +316,9 @@ function process_form_submit() {
 				break;
 		}
 
-		$options = $settings_service->save( $options, $old_options );
+		if ( $should_save_options ) {
+			$options = $settings_service->save( $options, $old_options );
+		}
 
 		$redirect_url = wp_get_referer();
 

@@ -351,6 +351,10 @@ class SettingsRepository {
 				return $value;
 			case SettingsSchema::SANITIZE_TEXTAREA:
 				return $this->sanitize_textarea( $value );
+			case SettingsSchema::SANITIZE_CSS:
+				$value = is_scalar( $value ) ? (string) $value : '';
+
+				return \PoweredCache\Utils\sanitize_css( $value );
 			case SettingsSchema::SANITIZE_TEXT:
 			default:
 				return $this->sanitize_text( $value );

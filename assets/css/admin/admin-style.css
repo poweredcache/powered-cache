@@ -1120,6 +1120,17 @@
 	min-height: 96px;
 }
 
+.pc-settings-sensitive-control {
+	align-items: flex-start;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.pc-settings-sensitive-control .components-base-control {
+	width: 100%;
+}
+
 .pc-settings-duration-control {
 	column-gap: 12px;
 	display: grid;

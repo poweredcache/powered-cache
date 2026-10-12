@@ -22,6 +22,22 @@ class SettingsRepository_Tests extends TestCase {
 	);
 
 	/**
+	 * Set up WordPress sanitization helpers used by the repository.
+	 */
+	public function setUp(): void {
+		parent::setUp();
+
+		\WP_Mock::userFunction(
+			'PoweredCache\Utils\wp_strip_all_tags',
+			array(
+				'return' => static function ( $value ) {
+					return strip_tags( $value );
+				},
+			)
+		);
+	}
+
+	/**
 	 * It reads single-site settings and fills missing defaults.
 	 */
 	public function test_all_reads_and_normalizes_single_site_settings() {
@@ -124,6 +140,7 @@ class SettingsRepository_Tests extends TestCase {
 				'cache_timeout'           => '-45',
 				'object_cache'            => 'memcached',
 				'cdn_hostname'            => array( ' cdn.example.com ', '<b>assets.example.com</b>' ),
+				'critical_css_fallback'   => '.icon{background:url("data:image/svg+xml,%3Csvg%3E")}',
 				'rejected_uri'            => "<script>alert('x')</script>\n/cart/",
 				'custom_legacy_key'       => '<b>untouched</b>',
 				'auto_configure_htaccess' => '',
@@ -134,6 +151,7 @@ class SettingsRepository_Tests extends TestCase {
 		$this->assertSame( 45, $settings['cache_timeout'] );
 		$this->assertSame( 'off', $settings['object_cache'] );
 		$this->assertSame( array( 'cdn.example.com', 'assets.example.com' ), $settings['cdn_hostname'] );
+		$this->assertSame( '.icon{background:url("data:image/svg+xml,%3Csvg%3E")}', $settings['critical_css_fallback'] );
 		$this->assertSame( "alert('x')\n/cart/", $settings['rejected_uri'] );
 		$this->assertSame( '<b>untouched</b>', $settings['custom_legacy_key'] );
 		$this->assertFalse( $settings['auto_configure_htaccess'] );

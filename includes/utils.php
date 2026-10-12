@@ -184,24 +184,25 @@ function can_configure_htaccess() {
 }
 
 /**
- * Whether current user capable to do any configuration changes
+ * Whether the current user can manage settings for the active plugin scope.
+ *
+ * Site administrators can manage site-level settings when the plugin is
+ * activated per site on multisite. Network-wide activation requires a network
+ * administrator. Settings that affect the whole installation, such as object
+ * cache and .htaccess configuration, must still use their dedicated capability
+ * checks.
  *
  * @return bool
+ *
+ * @see can_configure_object_cache()
+ * @see can_configure_htaccess()
  */
 function can_control_all_settings() {
-	if ( is_multisite() ) {
-		if ( current_user_can( 'manage_network' ) ) {
-			return true;
-		}
-
-		return false;
+	if ( POWERED_CACHE_IS_NETWORK ) {
+		return current_user_can( 'manage_network' );
 	}
 
-	if ( current_user_can( 'manage_options' ) ) {
-		return true;
-	}
-
-	return false;
+	return current_user_can( 'manage_options' );
 }
 
 

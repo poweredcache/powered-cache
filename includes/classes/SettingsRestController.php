@@ -220,7 +220,19 @@ class SettingsRestController {
 			}
 		}
 
-		return SettingsSchema::enforce_editable( $settings, $current );
+		$settings = SettingsSchema::enforce_editable( $settings, $current );
+
+		/**
+		 * Filters sanitized options saved through the settings REST API.
+		 *
+		 * @hook powered_cache_sanitized_options
+		 *
+		 * @param {array} $settings Sanitized settings.
+		 * @param {array} $changes  Raw changed settings.
+		 *
+		 * @return {array} New value.
+		 */
+		return apply_filters( 'powered_cache_sanitized_options', $settings, $changes );
 	}
 
 	/**

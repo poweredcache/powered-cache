@@ -65,14 +65,6 @@ class SettingsRestController_Tests extends TestCase {
 		$controller = new SettingsRestController();
 
 		\WP_Mock::userFunction(
-			'is_multisite',
-			array(
-				'times'  => 1,
-				'return' => false,
-			)
-		);
-
-		\WP_Mock::userFunction(
 			'current_user_can',
 			array(
 				'times'  => 1,
@@ -318,6 +310,25 @@ class SettingsRestController_Tests extends TestCase {
 		$this->assertFalse( $settings['enable_page_cache'] );
 		$this->assertFalse( $settings['enable_image_optimization'] );
 		$this->assertTrue( $settings['critical_css'] );
+	}
+
+	/**
+	 * It preserves the public sanitized options filter in REST saves.
+	 */
+	public function test_prepare_update_settings_applies_sanitized_options_filter() {
+		$controller = new SettingsRestController();
+		$changes    = array( 'enable_page_cache' => false );
+
+		\WP_Mock::onFilter( 'powered_cache_sanitized_options' )
+			->with( array( 'enable_page_cache' => false ), $changes )
+			->reply( array( 'enable_page_cache' => true ) );
+
+		$settings = $controller->prepare_update_settings(
+			$changes,
+			array( 'enable_page_cache' => true )
+		);
+
+		$this->assertTrue( $settings['enable_page_cache'] );
 	}
 
 	/**

@@ -30,6 +30,7 @@ class SettingsSchema {
 	const SANITIZE_TEXTAREA = 'textarea';
 	const SANITIZE_ARRAY    = 'array';
 	const SANITIZE_ENUM     = 'enum';
+	const SANITIZE_CSS      = 'css';
 
 	/**
 	 * Return the schema for all current settings.
@@ -72,8 +73,8 @@ class SettingsSchema {
 			'critical_css'                     => self::field( self::TYPE_BOOLEAN, false, 'file_optimization', self::SANITIZE_BOOLEAN, true ),
 			'critical_css_additional_files'    => self::field( self::TYPE_STRING, '', 'file_optimization', self::SANITIZE_TEXTAREA, true, array( 'critical_css' ) ),
 			'critical_css_excluded_files'      => self::field( self::TYPE_STRING, '', 'file_optimization', self::SANITIZE_TEXTAREA, true, array( 'critical_css' ) ),
-			'critical_css_appended_content'    => self::field( self::TYPE_STRING, '', 'file_optimization', self::SANITIZE_TEXTAREA, true, array( 'critical_css' ) ),
-			'critical_css_fallback'            => self::field( self::TYPE_STRING, '', 'file_optimization', self::SANITIZE_TEXTAREA, true, array( 'critical_css' ) ),
+			'critical_css_appended_content'    => self::field( self::TYPE_STRING, '', 'file_optimization', self::SANITIZE_CSS, true, array( 'critical_css' ) ),
+			'critical_css_fallback'            => self::field( self::TYPE_STRING, '', 'file_optimization', self::SANITIZE_CSS, true, array( 'critical_css' ) ),
 			'excluded_css_files'               => self::field( self::TYPE_STRING, '', 'file_optimization', self::SANITIZE_TEXTAREA ),
 			'remove_unused_css'                => self::field( self::TYPE_BOOLEAN, false, 'file_optimization', self::SANITIZE_BOOLEAN, true ),
 			'ucss_safelist'                    => self::field( self::TYPE_STRING, '', 'file_optimization', self::SANITIZE_TEXTAREA, true, array( 'remove_unused_css' ) ),

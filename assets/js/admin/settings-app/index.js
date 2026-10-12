@@ -1654,7 +1654,26 @@ const SettingsField = ({ field, issues = [], settings, onChange }) => {
 			break;
 		case 'text':
 		default:
-			control = (
+			control = field.sensitive ? (
+				<div className="pc-settings-sensitive-control">
+					<TextControl
+						{...controlProps}
+						aria-describedby={descriptionId}
+						autoComplete="off"
+						label={field.label}
+						onChange={updateValue}
+						value={displayValue(value, field)}
+					/>
+					<Button
+						disabled={!isDependencyMet}
+						onClick={() => onChange(field.key, null)}
+						type="button"
+						variant="link"
+					>
+						{__('Clear saved value', 'powered-cache')}
+					</Button>
+				</div>
+			) : (
 				<TextControl
 					{...controlProps}
 					aria-describedby={descriptionId}
@@ -1939,6 +1958,29 @@ const SettingsToolsActions = () => {
 				<Button href={appConfig.purgeAllUrl || '#'} variant="secondary">
 					{__('Purge All Cache', 'powered-cache')}
 				</Button>
+			</div>
+
+			<div className="pc-settings-tool-card">
+				<div>
+					<strong>{__('Optimize Database', 'powered-cache')}</strong>
+					<p>
+						{__(
+							'Run the cleanup tasks selected in Database settings.',
+							'powered-cache',
+						)}
+					</p>
+				</div>
+				<form action={formUrl} method="post">
+					<input name="powered_cache_settings_nonce" type="hidden" value={nonce} />
+					<Button
+						name="powered_cache_form_action"
+						type="submit"
+						value="optimize_database"
+						variant="secondary"
+					>
+						{__('Run Cleanup', 'powered-cache')}
+					</Button>
+				</form>
 			</div>
 
 			<div className="pc-settings-tool-card pc-settings-tool-card--danger">
