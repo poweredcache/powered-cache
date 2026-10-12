@@ -105,6 +105,15 @@ class LazyLoad_Tests extends TestCase {
 	}
 
 	/**
+	 * It does not overwrite lazy-load metadata already assigned to an image.
+	 */
+	public function test_filter_background_images_preserves_existing_lazy_type(): void {
+		$html = '<img data-lazy-type="image" data-lazy-src="hero.jpg" style="background-image:url(placeholder.jpg)">';
+
+		$this->assertSame( $html, LazyLoad::filter_background_images( $html ) );
+	}
+
+	/**
 	 * It rewrites regular iframes but preserves Gravity Forms iframes.
 	 */
 	public function test_filter_iframes_rewrites_regular_iframes_and_skips_gravity_forms(): void {

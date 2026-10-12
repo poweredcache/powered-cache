@@ -25,7 +25,7 @@ class CompatibilityRules_Tests extends TestCase {
 		$this->assertContains( 'pay.google.com/gp/p/js/pay', $rules->rules( 'delay_exclusions' ) );
 		$this->assertContains( 'accounts.google.com/gsi/client', $rules->rules( 'delay_exclusions' ) );
 		$this->assertContains( 'selectors.core.image.lightboxObjectFit', $rules->rules( 'lazy_load_exclusions' ) );
-		$this->assertContains( 'wp-post-image', $rules->rules( 'lazy_load_exclusions' ) );
+		$this->assertNotContains( 'wp-post-image', $rules->rules( 'lazy_load_exclusions' ) );
 	}
 
 	/**
@@ -394,7 +394,6 @@ class CompatibilityRules_Tests extends TestCase {
 				'skip-lazy',
 				'no-lazy',
 				'woocommerce-product-gallery__image',
-				'wp-post-image',
 			),
 			$rules->add_lazy_load_exclusions( array() )
 		);

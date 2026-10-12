@@ -30,8 +30,7 @@
       "data-no-lazy",
       "skip-lazy",
       "no-lazy",
-      "woocommerce-product-gallery__image",
-      "wp-post-image"
+      "woocommerce-product-gallery__image"
     ]
   },
   "settings_issues": [

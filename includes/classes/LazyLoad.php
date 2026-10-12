@@ -410,7 +410,7 @@ class LazyLoad {
 		$replace = array();
 
 		foreach ( $matches[0] as $tag_html ) {
-			if ( self::is_excluded( $tag_html ) || false !== stripos( $tag_html, 'data-lazy-style=' ) ) {
+			if ( self::is_excluded( $tag_html ) || false !== stripos( $tag_html, 'data-lazy-style=' ) || false !== stripos( $tag_html, 'data-lazy-type=' ) ) {
 				continue;
 			}
 

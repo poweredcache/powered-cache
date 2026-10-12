@@ -8,6 +8,7 @@ const PCLL = (function () {
 		_checkDebounceTimeoutRunning: false,
 		_earlyLoadedCount: 0,
 		_observer: null,
+		_mutationObserver: null,
 
 		init() {
 			PCLL.threshold = PCLL.getOptionIntValue('threshold', 200);
@@ -31,6 +32,7 @@ const PCLL = (function () {
 				threshold: 0,
 			});
 			PCLL.observe();
+			PCLL.initMutationObserver(PCLL.observe);
 
 			window.addEventListener('load', PCLL.observe, false);
 
@@ -42,6 +44,7 @@ const PCLL = (function () {
 
 		initFallback() {
 			PCLL.checkRecurring();
+			PCLL.initMutationObserver(PCLL.check);
 			window.addEventListener('load', PCLL.check, false);
 			window.addEventListener('scroll', PCLL.check, false);
 			window.addEventListener('resize', PCLL.check, false);
@@ -52,10 +55,43 @@ const PCLL = (function () {
 			}
 		},
 
-		observe() {
-			const els = document.getElementsByClassName('lazy-hidden');
+		initMutationObserver(callback) {
+			if (!('MutationObserver' in window)) {
+				return;
+			}
 
-			[].forEach.call(els, function (el) {
+			const observeBody = function () {
+				if (!document.body || PCLL._mutationObserver) {
+					return;
+				}
+
+				PCLL._mutationObserver = new MutationObserver(function (mutations) {
+					if (
+						mutations.some(function (mutation) {
+							return mutation.addedNodes.length > 0;
+						})
+					) {
+						callback();
+					}
+				});
+
+				PCLL._mutationObserver.observe(document.body, {
+					childList: true,
+					subtree: true,
+				});
+			};
+
+			if (document.body) {
+				observeBody();
+			} else {
+				document.addEventListener('DOMContentLoaded', observeBody, { once: true });
+			}
+		},
+
+		observe() {
+			const els = Array.from(document.getElementsByClassName('lazy-hidden'));
+
+			els.forEach(function (el) {
 				if (el.getAttribute('data-lazy-observed') === '1') {
 					return;
 				}
@@ -97,10 +133,10 @@ const PCLL = (function () {
 			PCLL._lastCheckTs = tstamp;
 
 			const winH = document.documentElement.clientHeight || document.body.clientHeight;
-			const els = document.getElementsByClassName('lazy-hidden');
+			const els = Array.from(document.getElementsByClassName('lazy-hidden'));
 			updated = false;
 
-			[].forEach.call(els, function (el) {
+			els.forEach(function (el) {
 				const elemRect = el.getBoundingClientRect();
 
 				if (!elemRect.width || !elemRect.height) {
