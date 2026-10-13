@@ -8,6 +8,7 @@
 namespace PoweredCache;
 
 use PoweredCache\Async\CachePurger;
+use PoweredCache\Optimizer\Helper;
 use const PoweredCache\Constants\POST_META_DISABLE_CACHE_KEY;
 use function PoweredCache\Utils\clean_page_cache_dir;
 use function PoweredCache\Utils\clean_site_cache_dir;
@@ -455,7 +456,7 @@ class AdvancedCache {
 		 * @return {array} Rejected cookie list
 		 * @since  2.0
 		 */
-		return apply_filters( 'powered_cache_rejected_cookies', $wp_cookies );
+		return self::filter_valid_exclusion_patterns( apply_filters( 'powered_cache_rejected_cookies', $wp_cookies ) );
 	}
 
 	/**
@@ -538,7 +539,7 @@ class AdvancedCache {
 		 * @return {array} Rejected user agent list.
 		 * @since  2.0
 		 */
-		return apply_filters( 'powered_cache_rejected_user_agents', $rejected_user_agents );
+		return self::filter_valid_exclusion_patterns( apply_filters( 'powered_cache_rejected_user_agents', $rejected_user_agents ) );
 	}
 
 	/**
@@ -565,7 +566,28 @@ class AdvancedCache {
 		 * @return {array} New value
 		 * @since  2.0
 		 */
-		return apply_filters( 'powered_cache_rejected_uri_list', $rejected_uri_list );
+		return self::filter_valid_exclusion_patterns( apply_filters( 'powered_cache_rejected_uri_list', $rejected_uri_list ) );
+	}
+
+	/**
+	 * Remove malformed regex fragments before they reach cache runtime and server rules.
+	 *
+	 * @param mixed $patterns Exclusion patterns.
+	 *
+	 * @return array
+	 */
+	private static function filter_valid_exclusion_patterns( $patterns ) {
+		$valid_patterns = [];
+
+		foreach ( (array) $patterns as $pattern ) {
+			$pattern = trim( (string) $pattern );
+
+			if ( '' !== $pattern && Helper::is_valid_exclusion_pattern( $pattern ) ) {
+				$valid_patterns[] = $pattern;
+			}
+		}
+
+		return array_values( array_unique( $valid_patterns ) );
 	}
 
 

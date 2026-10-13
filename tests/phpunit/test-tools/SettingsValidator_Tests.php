@@ -266,6 +266,21 @@ class SettingsValidator_Tests extends TestCase {
 	}
 
 	/**
+	 * It accepts literal referrer fragments that are not standalone regex patterns.
+	 */
+	public function test_does_not_treat_literal_referrers_as_regex_patterns() {
+		$validator = new SettingsValidator( array(), true );
+		$report    = $validator->report(
+			array(
+				'rejected_referrers' => '#comments',
+			)
+		);
+
+		$this->assertTrue( $report['valid'] );
+		$this->assertSame( 0, $report['counts'][ SettingsValidator::SEVERITY_WARNING ] );
+	}
+
+	/**
 	 * It skips pattern warnings for settings whose parent toggle is disabled.
 	 */
 	public function test_skips_pattern_warnings_for_inactive_settings() {

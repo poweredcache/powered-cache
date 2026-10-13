@@ -33,7 +33,6 @@ class SettingsValidator {
 		'rejected_uri',
 		'rejected_user_agents',
 		'rejected_cookies',
-		'rejected_referrers',
 		'excluded_css_files',
 		'excluded_js_files',
 		'js_defer_exclusions',

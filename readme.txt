@@ -171,6 +171,22 @@ Yes, it’s compatible with PHP 8+
 
 == Changelog ==
 
+= 4.x =
+- [Added] A redesigned React-based settings experience with dedicated sections, direct links, contextual documentation, and accessible controls.
+- [Added] Site-aware recommended defaults and an Optimization Advisor that adapts guidance to the active hosting environment, plugins, and site configuration.
+- [Added] Action Scheduler as the foundation for reliable cache purging, preloading, database cleanup, and CSS optimization jobs.
+- [Added] Environment and plugin compatibility safeguards with support for remotely refreshed rule definitions.
+- [Added] Improved CDN zone management for assigning different hostnames to specific asset types.
+- [Added] Sucuri cache integration and expanded external cache compatibility guidance.
+- [Improved] Upgrades from 3.x now preserve existing settings while migrating data and removing retired background-processing jobs.
+- [Improved] Lazy loading now handles dynamically inserted content and background images more reliably.
+- [Improved] Local Google Fonts caching with safer requests, temporary failure caching, and broader stylesheet URL support.
+- [Improved] Object cache choices are limited to drivers supported by the current PHP environment.
+- [Improved] Sensitive settings, imports, REST updates, and administrative actions are handled more securely.
+- [Fixed] Compatibility notices no longer report inactive parent settings or empty CDN zone placeholders as problems.
+- [Fixed] Malformed cache exclusion lines no longer disable otherwise valid cookie, user-agent, or URL rules.
+- [Changed] The minimum supported WordPress version is now 6.5.
+
 = 3.7.3 (April 22, 2026) =
 - [Fixed] Regex warnings in page cache drop-in.
 - [Fixed] PHP 8.2 warning when the site URL is unavailable in local or mocked environments.

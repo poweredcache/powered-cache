@@ -21,6 +21,7 @@ class OptimizerHelperExclusions_Tests extends TestCase {
 	 */
 	protected $testFiles = array( // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 		'classes/Optimizer/Helper.php',
+		'classes/AdvancedCache.php',
 	);
 
 	/**
@@ -51,6 +52,7 @@ class OptimizerHelperExclusions_Tests extends TestCase {
 	 */
 	public function test_empty_exclusion_list_matches_nothing() {
 		$this->assertSame( '', Helper::build_exclusion_regex( array() ) );
+		// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet -- HTML fixture, not rendered output.
 		$this->assertFalse( Helper::matches_exclusion( array(), '<link rel="stylesheet" href="style.css">' ) );
 		$this->assertFalse( Helper::matches_exclusion( array( 'hero-(image' ), 'hero-(image' ) );
 	}
@@ -80,5 +82,43 @@ class OptimizerHelperExclusions_Tests extends TestCase {
 
 		$this->assertTrue( Helper::is_excluded_js( 'https://example.test/vendor/jquery.js' ) );
 		$this->assertFalse( Helper::is_excluded_js( 'https://example.test/app.js' ) );
+	}
+
+	/**
+	 * It removes malformed fragments before writing page-cache and server rules.
+	 */
+	public function test_advanced_cache_exclusions_ignore_malformed_lines() {
+		$settings        = array(
+			'rejected_cookies'     => "valid_cookie\nbroken-(cookie",
+			'rejected_user_agents' => "ValidBot\nbroken-(agent",
+			'rejected_uri'         => "private/.*\nbroken-(uri",
+		);
+		$cookie_patterns = array(
+			'valid_cookie',
+			'broken-(cookie',
+			'wp-postpass',
+			'wordpressuser_',
+			'wordpresspass_',
+			'wordpress_sec_',
+			'wordpress_logged_in_',
+			'powered_cache_commented_posts',
+			'comment_author_',
+			'comment_author_email_',
+			'comment_author_url_',
+		);
+		$user_agents     = array( 'ValidBot', 'broken-(agent', 'facebookexternalhit' );
+		$uri_patterns    = array( 'private/.*', 'broken-(uri' );
+
+		\WP_Mock::userFunction( 'PoweredCache\Utils\get_settings', array( 'return' => $settings ) );
+		\WP_Mock::onFilter( 'powered_cache_rejected_cookies' )->with( $cookie_patterns )->reply( $cookie_patterns );
+		\WP_Mock::onFilter( 'powered_cache_rejected_user_agents' )->with( $user_agents )->reply( $user_agents );
+		\WP_Mock::onFilter( 'powered_cache_rejected_uri_list' )->with( $uri_patterns )->reply( $uri_patterns );
+
+		$cookies = AdvancedCache::get_rejected_cookies();
+
+		$this->assertContains( 'valid_cookie', $cookies );
+		$this->assertNotContains( 'broken-(cookie', $cookies );
+		$this->assertSame( array( 'ValidBot', 'facebookexternalhit' ), AdvancedCache::get_rejected_user_agents() );
+		$this->assertSame( array( 'private/.*' ), AdvancedCache::get_rejected_uri() );
 	}
 }
