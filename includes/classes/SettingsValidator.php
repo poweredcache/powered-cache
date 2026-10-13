@@ -204,13 +204,13 @@ class SettingsValidator {
 			$invalid_patterns = $this->invalid_patterns( $value );
 
 			if ( ! empty( $invalid_patterns ) ) {
-				// Warning rather than error: the value is still saved and invalid lines are skipped at runtime.
+				// Informational only: these lines still match as plain text.
 				$issues[] = $this->issue(
 					$key,
-					self::SEVERITY_WARNING,
-					'invalid_pattern',
+					self::SEVERITY_INFO,
+					'pattern_as_text',
 					sprintf(
-						'These lines are not valid patterns and will be ignored: %s. Use * as a wildcard, or escape regex characters such as ( ) [ ] + ? and # with a backslash.',
+						'These lines are not valid regular expressions, so they are matched as plain text: %s. Use * as a wildcard, or escape regex characters such as ( ) [ ] + ? and # with a backslash.',
 						implode( ', ', $invalid_patterns )
 					)
 				);
@@ -241,7 +241,7 @@ class SettingsValidator {
 	}
 
 	/**
-	 * Find the lines of a multi-line setting that do not compile as regex fragments.
+	 * Find the lines of a multi-line setting that are neither wildcards nor valid regex fragments.
 	 *
 	 * @param string $value Multi-line setting value.
 	 *

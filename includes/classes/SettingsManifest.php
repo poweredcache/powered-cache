@@ -333,7 +333,7 @@ class SettingsManifest {
 			),
 			'rejected_uri'                   => array(
 				'label'         => 'Never Cache URLs',
-				'description'   => 'Exclude matching paths or regex patterns from page cache, one per line. Use * as a wildcard, for example /cart* or *preview=*.',
+				'description'   => 'Exclude pages from page cache, one path or regex per line. Each rule must match the whole path, so use * as a wildcard, for example /cart* or *preview=*.',
 				'group'         => 'Cache exclusions',
 				'docs_path'     => '/advanced-options/',
 				'docs_fragment' => 'ignored-pages',

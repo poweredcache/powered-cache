@@ -25,7 +25,7 @@ class OptimizerHelperExclusions_Tests extends TestCase {
 	);
 
 	/**
-	 * It accepts plain strings and regex fragments, and rejects malformed ones.
+	 * It reports whether a line works as written: plain text, regex or wildcard.
 	 */
 	public function test_validates_exclusion_patterns() {
 		$this->assertTrue( Helper::is_valid_exclusion_pattern( 'jquery.min.js' ) );
@@ -33,20 +33,21 @@ class OptimizerHelperExclusions_Tests extends TestCase {
 		$this->assertFalse( Helper::is_valid_exclusion_pattern( 'hero-(image' ) );
 		$this->assertFalse( Helper::is_valid_exclusion_pattern( '#comments' ) );
 		$this->assertFalse( Helper::is_valid_exclusion_pattern( '(*' ) );
+		$this->assertTrue( Helper::is_valid_exclusion_pattern( '*elementor*' ) );
 	}
 
 	/**
-	 * It skips empty and malformed patterns when building the combined regex.
+	 * It skips empty lines, removes duplicates and keeps malformed lines as plain text.
 	 */
-	public function test_build_exclusion_regex_skips_invalid_patterns() {
+	public function test_build_exclusion_regex_keeps_malformed_lines_as_text() {
 		$this->assertSame(
-			'#(jquery\.js|skip-lazy)#',
-			Helper::build_exclusion_regex( array( 'jquery\.js', '', '  ', 'hero-(image', 'skip-lazy', 'skip-lazy' ) )
+			'#(skip-lazy|hero\-\(image)#',
+			Helper::build_exclusion_regex( array( '', '  ', 'skip-lazy', 'hero-(image', 'skip-lazy' ) )
 		);
 	}
 
 	/**
-	 * It never matches when no usable pattern remains.
+	 * It never matches with an empty list.
 	 *
 	 * A naive implode of an empty list builds `#()#`, which matches every subject.
 	 */
@@ -54,11 +55,33 @@ class OptimizerHelperExclusions_Tests extends TestCase {
 		$this->assertSame( '', Helper::build_exclusion_regex( array() ) );
 		// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet -- HTML fixture, not rendered output.
 		$this->assertFalse( Helper::matches_exclusion( array(), '<link rel="stylesheet" href="style.css">' ) );
-		$this->assertFalse( Helper::matches_exclusion( array( 'hero-(image' ), 'hero-(image' ) );
+		$this->assertFalse( Helper::matches_exclusion( array( '', '  ' ), 'anything' ) );
 	}
 
 	/**
-	 * It keeps matching valid patterns when another line is malformed.
+	 * It matches lines that are not valid regex as plain text.
+	 */
+	public function test_malformed_lines_match_as_plain_text() {
+		$this->assertTrue( Helper::matches_exclusion( array( 'hero-(image' ), '<img class="hero-(image">' ) );
+		$this->assertTrue( Helper::matches_exclusion( array( '#comments' ), '/post/#comments' ) );
+		$this->assertFalse( Helper::matches_exclusion( array( 'hero-(image' ), '<img class="hero-image">' ) );
+	}
+
+	/**
+	 * It matches the exact text of a regex line as well as the regex itself.
+	 *
+	 * "app.js?ver=2" is valid regex where "?" makes the "s" optional, so as a regex
+	 * alone it would never match the URL it was copied from.
+	 */
+	public function test_regex_lines_also_match_their_literal_text() {
+		$this->assertTrue( Helper::matches_exclusion( array( 'app.js?ver=2' ), 'https://example.test/app.js?ver=2' ) );
+		$this->assertTrue( Helper::matches_exclusion( array( 'app.js?ver=2' ), 'https://example.test/app.jver=2' ) );
+		$this->assertTrue( Helper::matches_exclusion( array( '/product/(.*)' ), '/product/shoes' ) );
+		$this->assertFalse( Helper::matches_exclusion( array( 'app.js?ver=2' ), 'https://example.test/app.js?ver=3' ) );
+	}
+
+	/**
+	 * It keeps matching other lines when one line is malformed.
 	 */
 	public function test_valid_patterns_still_match_next_to_invalid_ones() {
 		$patterns = array( 'hero-(image', 'skip-lazy' );
@@ -70,7 +93,7 @@ class OptimizerHelperExclusions_Tests extends TestCase {
 	/**
 	 * It applies the exclusion helper to script exclusions.
 	 */
-	public function test_is_excluded_js_ignores_malformed_lines() {
+	public function test_is_excluded_js_tolerates_malformed_lines() {
 		\WP_Mock::userFunction(
 			'PoweredCache\Utils\get_settings',
 			array(
@@ -81,13 +104,14 @@ class OptimizerHelperExclusions_Tests extends TestCase {
 		);
 
 		$this->assertTrue( Helper::is_excluded_js( 'https://example.test/vendor/jquery.js' ) );
+		$this->assertTrue( Helper::is_excluded_js( 'https://example.test/analytics-(broken.js' ) );
 		$this->assertFalse( Helper::is_excluded_js( 'https://example.test/app.js' ) );
 	}
 
 	/**
-	 * It removes malformed fragments before writing page-cache and server rules.
+	 * It escapes malformed lines before writing page-cache and server rules.
 	 */
-	public function test_advanced_cache_exclusions_ignore_malformed_lines() {
+	public function test_advanced_cache_exclusions_escape_malformed_lines() {
 		$settings        = array(
 			'rejected_cookies'     => "valid_cookie\nbroken-(cookie",
 			'rejected_user_agents' => "ValidBot\nbroken-(agent",
@@ -117,9 +141,15 @@ class OptimizerHelperExclusions_Tests extends TestCase {
 		$cookies = AdvancedCache::get_rejected_cookies();
 
 		$this->assertContains( 'valid_cookie', $cookies );
+		$this->assertContains( 'broken\-\(cookie', $cookies );
 		$this->assertNotContains( 'broken-(cookie', $cookies );
-		$this->assertSame( array( 'ValidBot', 'facebookexternalhit' ), AdvancedCache::get_rejected_user_agents() );
-		$this->assertSame( array( 'private/.*' ), AdvancedCache::get_rejected_uri() );
+		$this->assertSame( array( 'ValidBot', 'broken\-\(agent', 'facebookexternalhit' ), AdvancedCache::get_rejected_user_agents() );
+		$this->assertSame( array( 'private/.*', 'broken\-\(uri' ), AdvancedCache::get_rejected_uri() );
+
+		// Every generated fragment must compile, because the drop-in and server rules combine them.
+		foreach ( array_merge( $cookies, AdvancedCache::get_rejected_user_agents(), AdvancedCache::get_rejected_uri() ) as $fragment ) {
+			$this->assertNotFalse( preg_match( '#(' . $fragment . ')#', '' ), $fragment );
+		}
 	}
 
 	/**
@@ -171,11 +201,16 @@ class OptimizerHelperExclusions_Tests extends TestCase {
 		// Regex users writing ".*" get the same result in both modes.
 		$this->assertSame( 'private/.*', Helper::normalize_exclusion_pattern( 'private/.*' ) );
 
-		// Lines without "*" or with regex-only characters stay regex.
+		// Plain paths stay as they are.
 		$this->assertSame( '/wishlist', Helper::normalize_exclusion_pattern( '/wishlist' ) );
+
+		// Regex lines that already match their own text stay as they are.
+		$this->assertSame( 'jquery.min.js', Helper::normalize_exclusion_pattern( 'jquery.min.js' ) );
 		$this->assertSame( '/product/(.*)', Helper::normalize_exclusion_pattern( '/product/(.*)' ) );
-		$this->assertSame( '^/shop/.*$', Helper::normalize_exclusion_pattern( '^/shop/.*$' ) );
-		$this->assertSame( '\d+*', Helper::normalize_exclusion_pattern( '\d+*' ) );
+
+		// Other regex lines get their literal text as an alternative.
+		$this->assertSame( 'app.js?ver=2|app\.js\?ver\=2', Helper::normalize_exclusion_pattern( 'app.js?ver=2' ) );
+		$this->assertSame( '^/shop/.+$|\^/shop/\.\+\$', Helper::normalize_exclusion_pattern( '^/shop/.+$' ) );
 	}
 
 	/**

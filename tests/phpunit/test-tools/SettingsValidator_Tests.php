@@ -243,9 +243,9 @@ class SettingsValidator_Tests extends TestCase {
 	}
 
 	/**
-	 * It warns about exclusion lines that are not valid patterns.
+	 * It tells users which exclusion lines are matched as plain text.
 	 */
-	public function test_warns_about_invalid_exclusion_patterns() {
+	public function test_reports_exclusion_lines_matched_as_text() {
 		$validator = new SettingsValidator( array(), true );
 		$report    = $validator->report(
 			array(
@@ -256,8 +256,9 @@ class SettingsValidator_Tests extends TestCase {
 		);
 
 		$this->assertTrue( $report['valid'] );
-		$this->assertIssueExists( 'lazy_load_exclusions', 'invalid_pattern', $report['issues'] );
-		$this->assertIssueExists( 'excluded_js_files', 'invalid_pattern', $report['issues'] );
+		$this->assertSame( 0, $report['counts'][ SettingsValidator::SEVERITY_WARNING ] );
+		$this->assertIssueExists( 'lazy_load_exclusions', 'pattern_as_text', $report['issues'] );
+		$this->assertIssueExists( 'excluded_js_files', 'pattern_as_text', $report['issues'] );
 
 		$messages = implode( ' ', array_column( $report['issues'], 'message' ) );
 		$this->assertStringContainsString( 'hero-(image', $messages );

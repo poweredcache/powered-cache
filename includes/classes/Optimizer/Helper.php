@@ -151,46 +151,62 @@ class Helper {
 	}
 
 	/**
-	 * Convert a wildcard exclusion line into a regex fragment.
+	 * Convert one exclusion line into a regex fragment.
 	 *
-	 * Exclusion settings have always been matched as regular expressions, but many
-	 * sites enter shell-style wildcards such as `*elementor*` or `/?preview=*`.
-	 * Those lines are either invalid regex (a leading `*`) or mean something else
-	 * (`elementor*` repeats the final "r"), so they never matched as intended.
+	 * Exclusion lines are written in three styles, and all of them should match
+	 * what the user typed:
 	 *
-	 * A line is treated as a wildcard pattern when it contains `*` and none of the
-	 * characters that only make sense in a regex: ( ) [ ] { } | ^ $ + \
-	 * In that case `*` matches any sequence of characters and everything else is
-	 * matched literally, including `.` and `?`. A `.*` written by regex users is
-	 * kept as "any sequence", so `/private/.*` behaves the same in both modes.
-	 * Every other line is returned unchanged and keeps working as a regex.
+	 * - Wildcards such as `*elementor*` or `/?preview=*`: used when the line has a
+	 *   `*` and none of the regex-only characters ( ) [ ] { } | ^ $ + \
+	 *   `*` matches any sequence and everything else, including `.` and `?`, is
+	 *   literal. A `.*` written by regex users is kept as "any sequence".
+	 * - Regular expressions such as `/product/(.*)`: kept as they are. When the
+	 *   regex does not match its own text, the exact text is accepted as well.
+	 *   That way a literal entry such as `app.js?ver=2`, where `?` would
+	 *   otherwise act as a quantifier, still matches the URL it was copied from.
+	 * - Lines that are not valid regex, such as `hero-(image`: matched as plain
+	 *   text instead of breaking the combined pattern.
+	 *
+	 * The result has no delimiters. It is safe inside `#(...)#` for "contains"
+	 * checks and inside `#^(...)$#` for the anchored Never Cache URL check.
 	 *
 	 * @param string $pattern Pattern as entered by the user.
 	 *
-	 * @return string Regex fragment, without delimiters.
+	 * @return string Regex fragment, or an empty string for an empty line.
 	 * @since 4.0
 	 */
 	public static function normalize_exclusion_pattern( $pattern ) {
 		$pattern = trim( (string) $pattern );
 
-		if ( ! self::is_wildcard_exclusion_pattern( $pattern ) ) {
+		if ( '' === $pattern ) {
+			return '';
+		}
+
+		if ( self::is_wildcard_exclusion_pattern( $pattern ) ) {
+			$pattern = str_replace( '.*', '*', $pattern );
+			$pattern = preg_replace( '/\*+/', '*', $pattern );
+
+			return str_replace( '\*', '.*', preg_quote( $pattern, '#' ) );
+		}
+
+		if ( ! self::is_regex_fragment( $pattern ) ) {
+			return preg_quote( $pattern, '#' );
+		}
+
+		// Most regex lines already match their own text, e.g. "jquery.min.js" or "/product/(.*)".
+		if ( 1 === preg_match( '#^(?:' . $pattern . ')$#', $pattern ) ) {
 			return $pattern;
 		}
 
-		$pattern = str_replace( '.*', '*', $pattern );
-		$pattern = preg_replace( '/\*+/', '*', $pattern );
-
-		return str_replace( '\\*', '.*', preg_quote( $pattern, '#' ) );
+		return $pattern . '|' . preg_quote( $pattern, '#' );
 	}
 
 	/**
-	 * Whether a user supplied exclusion pattern compiles as a regex fragment.
+	 * Whether an exclusion line works the way it is written.
 	 *
-	 * Exclusion settings accept regular expressions (and wildcard lines, see
-	 * normalize_exclusion_pattern()), and each line is wrapped as `#(line)#` before
-	 * matching. A malformed line (for example an unbalanced parenthesis or an
-	 * unescaped `#`) would make the whole combined pattern fail, emit a warning on
-	 * every match attempt, and silently disable the exclusion list.
+	 * True for wildcard lines and for lines that compile as a regex fragment.
+	 * Other lines still match as plain text (see normalize_exclusion_pattern()),
+	 * so this is only used to tell users that regex syntax was not applied.
 	 *
 	 * @param string $pattern Pattern as entered by the user.
 	 *
@@ -198,64 +214,72 @@ class Helper {
 	 * @since 4.0
 	 */
 	public static function is_valid_exclusion_pattern( $pattern ) {
-		static $results = array();
+		$pattern = trim( (string) $pattern );
 
-		$pattern = self::normalize_exclusion_pattern( $pattern );
-
-		if ( ! isset( $results[ $pattern ] ) ) {
-			// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- The warning is the signal we are testing for.
-			$results[ $pattern ] = false !== @preg_match( '#(' . $pattern . ')#', '' );
-		}
-
-		return $results[ $pattern ];
+		return self::is_wildcard_exclusion_pattern( $pattern ) || self::is_regex_fragment( $pattern );
 	}
 
 	/**
-	 * Normalize exclusion lines into unique, valid regex fragments.
+	 * Whether a fragment compiles when wrapped as `#(fragment)#`.
 	 *
-	 * Wildcard lines are converted, and empty or malformed lines are dropped.
+	 * @param string $fragment Regex fragment without delimiters.
+	 *
+	 * @return bool
+	 */
+	private static function is_regex_fragment( $fragment ) {
+		static $results = array();
+
+		if ( ! isset( $results[ $fragment ] ) ) {
+			// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- The warning is the signal we are testing for.
+			$results[ $fragment ] = false !== @preg_match( '#(' . $fragment . ')#', '' );
+		}
+
+		return $results[ $fragment ];
+	}
+
+	/**
+	 * Normalize exclusion lines into unique regex fragments.
 	 *
 	 * @param array $patterns Patterns as entered by the user, usually one per settings line.
 	 *
-	 * @return string[] Regex fragments, without delimiters.
+	 * @return string[] Regex fragments without delimiters. Empty lines are dropped.
+	 * @see   Helper::normalize_exclusion_pattern()
 	 * @since 4.0
 	 */
 	public static function normalize_exclusion_patterns( $patterns ) {
-		$valid = array();
+		$fragments = array();
 
 		foreach ( (array) $patterns as $pattern ) {
-			$pattern = self::normalize_exclusion_pattern( $pattern );
+			$fragment = self::normalize_exclusion_pattern( $pattern );
 
-			if ( '' === $pattern || ! self::is_valid_exclusion_pattern( $pattern ) ) {
-				continue;
+			if ( '' !== $fragment ) {
+				$fragments[] = $fragment;
 			}
-
-			$valid[] = $pattern;
 		}
 
-		return array_values( array_unique( $valid ) );
+		return array_values( array_unique( $fragments ) );
 	}
 
 	/**
 	 * Build one regex that matches any of the given exclusion patterns.
 	 *
-	 * Wildcard lines are converted, and empty and malformed patterns are skipped so that a single bad line does not
-	 * break the rest of the list. Without this, an empty list would also produce
-	 * `#()#`, which matches every subject.
+	 * Each line is normalized first, so a malformed line cannot break the rest of
+	 * the list. An empty list returns an empty string instead of `#()#`, which
+	 * would match every subject.
 	 *
 	 * @param array $patterns Pattern fragments, usually one per settings line.
 	 *
-	 * @return string Complete regex including delimiters, or an empty string when no usable pattern remains.
+	 * @return string Complete regex including delimiters, or an empty string when the list is empty.
 	 * @since 4.0
 	 */
 	public static function build_exclusion_regex( $patterns ) {
-		$valid = self::normalize_exclusion_patterns( $patterns );
+		$fragments = self::normalize_exclusion_patterns( $patterns );
 
-		if ( empty( $valid ) ) {
+		if ( empty( $fragments ) ) {
 			return '';
 		}
 
-		return '#(' . implode( '|', $valid ) . ')#';
+		return '#(' . implode( '|', $fragments ) . ')#';
 	}
 
 	/**

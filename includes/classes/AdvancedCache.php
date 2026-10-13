@@ -594,7 +594,8 @@ class AdvancedCache {
 	 * Normalize exclusion patterns before they reach cache runtime and server rules.
 	 *
 	 * Wildcard lines such as `*elementor*` are converted to regex fragments, and
-	 * malformed lines are dropped so they cannot break the combined pattern.
+	 * lines that are not valid regex are matched as plain text, so a single line
+	 * cannot break the combined pattern.
 	 *
 	 * @param mixed $patterns Exclusion patterns.
 	 *

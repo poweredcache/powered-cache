@@ -377,15 +377,16 @@ class Htaccess {
 			$site_root = isset( $site_root['path'] ) ? trailingslashit( $site_root['path'] ) : '';
 
 			// reject user agent
+			// Match anywhere in the user agent, like the page cache drop-in and nginx rules do.
 			$rejected_user_agents = (array) AdvancedCache::get_rejected_user_agents();
 			if ( ! empty( $rejected_user_agents ) ) {
-				$rules .= '    RewriteCond %{HTTP_USER_AGENT} !^(' . implode( '|', $rejected_user_agents ) . ').* [NC]' . PHP_EOL;
+				$rules .= '    RewriteCond %{HTTP_USER_AGENT} !(' . self::rewrite_cond_alternation( $rejected_user_agents ) . ') [NC]' . PHP_EOL;
 			}
 
 			// rejected cookies
 			$rejected_cookies = AdvancedCache::get_rejected_cookies();
 			if ( ! empty( $rejected_cookies ) ) {
-				$rules .= '    RewriteCond %{HTTP:Cookie} !(' . implode( '|', $rejected_cookies ) . ') [NC]' . PHP_EOL;
+				$rules .= '    RewriteCond %{HTTP:Cookie} !(' . self::rewrite_cond_alternation( $rejected_cookies ) . ') [NC]' . PHP_EOL;
 			}
 
 			// dont cache fbexternal
@@ -593,6 +594,19 @@ class Htaccess {
 		return $rules;
 	}
 
+	/**
+	 * Join exclusion fragments into a RewriteCond pattern.
+	 *
+	 * Fragments come from AdvancedCache and are already valid PCRE. A RewriteCond
+	 * pattern ends at the first unescaped space, so unescaped spaces (for example
+	 * in a user agent rule such as "Mozilla Foo*") are written as \s.
+	 *
+	 * @param array $fragments Regex fragments without delimiters.
+	 *
+	 * @return string
+	 * @since 4.0
+	 */
+	private static function rewrite_cond_alternation( array $fragments ) {
+		return preg_replace( '/(?<!\\\\) /', '\\s', implode( '|', $fragments ) );
+	}
 }
-
-
