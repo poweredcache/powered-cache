@@ -12,6 +12,7 @@ use function PoweredCache\Utils\can_configure_object_cache;
 use function PoweredCache\Utils\can_control_all_settings;
 use function PoweredCache\Utils\get_object_cache_dropins;
 use function PoweredCache\Utils\is_premium;
+use const PoweredCache\Constants\MINIMUM_PREMIUM_VERSION;
 use const PoweredCache\Constants\PURGE_CACHE_PLUGIN_NOTICE_TRANSIENT;
 
 /**
@@ -27,6 +28,7 @@ function setup() {
 		add_action( 'network_admin_notices', __NAMESPACE__ . '\\maybe_display_htaccess_notice' );
 		add_action( 'network_admin_notices', __NAMESPACE__ . '\\maybe_display_purge_cache_plugin_notice' );
 		add_action( 'network_admin_notices', __NAMESPACE__ . '\\maybe_display_dev_mode_notice' );
+		add_action( 'network_admin_notices', __NAMESPACE__ . '\\maybe_display_premium_version_notice' );
 	} else {
 		add_action( 'admin_notices', __NAMESPACE__ . '\\maybe_display_plugin_compatibility_notices' );
 		add_action( 'admin_notices', __NAMESPACE__ . '\\maybe_display_advanced_cache_notices' );
@@ -34,6 +36,7 @@ function setup() {
 		add_action( 'admin_notices', __NAMESPACE__ . '\\maybe_display_htaccess_notice' );
 		add_action( 'admin_notices', __NAMESPACE__ . '\\maybe_display_purge_cache_plugin_notice' );
 		add_action( 'admin_notices', __NAMESPACE__ . '\\maybe_display_dev_mode_notice' );
+		add_action( 'admin_notices', __NAMESPACE__ . '\\maybe_display_premium_version_notice' );
 	}
 
 	add_action( 'activated_plugin', __NAMESPACE__ . '\\observe_plugin_changes', 10, 2 );
@@ -517,6 +520,66 @@ function maybe_display_dev_mode_notice() {
 	<div class="notice notice-warning is-dismissible">
 		<p><strong><?php esc_html_e( 'Development Mode is active.', 'powered-cache' ); ?></strong>
 			<?php esc_html_e( 'Caching and optimizations are currently disabled. Don’t forget to disable it when done.', 'powered-cache' ); ?>
+		</p>
+	</div>
+	<?php
+}
+
+/**
+ * Whether the active Powered Cache Premium release is older than the supported minimum.
+ *
+ * Pre-release suffixes such as "-beta.1" are ignored, so 4.0.0-beta.1 counts as 4.0.0.
+ *
+ * @param string $premium_version Premium version, usually POWERED_CACHE_PREMIUM_VERSION.
+ *
+ * @return bool
+ * @since 4.0
+ */
+function is_premium_version_outdated( $premium_version ) {
+	$premium_version = preg_replace( '/[^0-9.].*$/', '', (string) $premium_version );
+
+	if ( '' === $premium_version ) {
+		return false;
+	}
+
+	return version_compare( $premium_version, MINIMUM_PREMIUM_VERSION, '<' );
+}
+
+/**
+ * Ask admins to update Powered Cache Premium when an incompatible release is active.
+ *
+ * Premium releases before 4.0 keep running, but their license section no longer
+ * appears in the settings app. Without this notice the license looks lost after
+ * updating only the free plugin.
+ *
+ * @return void
+ * @since 4.0
+ */
+function maybe_display_premium_version_notice() {
+	if ( ! is_premium() || ! defined( 'POWERED_CACHE_PREMIUM_VERSION' ) ) {
+		return;
+	}
+
+	if ( ! is_premium_version_outdated( POWERED_CACHE_PREMIUM_VERSION ) ) {
+		return;
+	}
+
+	if ( ! current_user_can( 'update_plugins' ) ) {
+		return;
+	}
+
+	$message = sprintf(
+		/* translators: 1: Installed Premium version, 2: Minimum Premium version, 3: Plugins screen URL */
+		__( 'Powered Cache Premium %1$s is not fully compatible with this version of Powered Cache. Please <a href="%3$s">update Powered Cache Premium</a> to %2$s or later. Your license and Premium settings are kept, and the license section returns after the update.', 'powered-cache' ),
+		esc_html( POWERED_CACHE_PREMIUM_VERSION ),
+		esc_html( MINIMUM_PREMIUM_VERSION ),
+		esc_url( self_admin_url( 'plugins.php' ) )
+	);
+
+	?>
+	<div class="notice notice-warning">
+		<p><strong><?php esc_html_e( 'Powered Cache:', 'powered-cache' ); ?></strong>
+			<?php echo wp_kses_post( $message ); ?>
 		</p>
 	</div>
 	<?php

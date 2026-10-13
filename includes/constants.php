@@ -29,6 +29,14 @@ const DB_VERSION_OPTION_NAME              = 'powered_cache_db_version';
 const DB_CLEANUP_COUNT_CACHE_KEY          = 'powered_cache_db_cleanup_counts';
 const PURGE_CACHE_PLUGIN_NOTICE_TRANSIENT = 'powered_cache_purge_cache_plugin_notice';
 
+/**
+ * Oldest Powered Cache Premium release that works with this version.
+ *
+ * Earlier Premium releases render their license screen through settings page hooks
+ * that were removed with the 4.0 settings app.
+ */
+const MINIMUM_PREMIUM_VERSION = '4.0';
+
 const ALLOPTIONS_CRITICAL_THRESHOLD = 900000; // 900KB
 const ALLOPTIONS_WARNING_THRESHOLD  = 700000; // 700KB
 
