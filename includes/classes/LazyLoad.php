@@ -9,6 +9,7 @@
 
 namespace PoweredCache;
 
+use PoweredCache\Optimizer\Helper;
 use const PoweredCache\Constants\POST_META_DISABLE_LAZYLOAD_KEY;
 
 // phpcs:disable WordPressVIPMinimum.Security.ProperEscapingFunction.hrefSrcEscUrl
@@ -786,14 +787,7 @@ class LazyLoad {
 	 * @since 3.4
 	 */
 	public static function is_excluded( $tag ) {
-		$excluded_files = self::get_exclusions();
-		$excluded_files = implode( '|', $excluded_files );
-
-		if ( ! empty( $excluded_files ) && preg_match( '#(' . $excluded_files . ')#', $tag ) ) {
-			return true;
-		}
-
-		return false;
+		return Helper::matches_exclusion( self::get_exclusions(), $tag );
 	}
 
 }

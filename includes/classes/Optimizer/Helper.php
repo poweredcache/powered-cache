@@ -136,6 +136,80 @@ class Helper {
 	}
 
 	/**
+	 * Whether a user supplied exclusion pattern compiles as a regex fragment.
+	 *
+	 * Exclusion settings intentionally accept regular expressions, and each line is
+	 * wrapped as `#(line)#` before matching. A malformed line (for example an
+	 * unbalanced parenthesis or an unescaped `#`) would make the whole combined
+	 * pattern fail, emit a warning on every match attempt, and silently disable the
+	 * exclusion list.
+	 *
+	 * @param string $pattern Pattern fragment as entered by the user.
+	 *
+	 * @return bool
+	 * @since 4.0
+	 */
+	public static function is_valid_exclusion_pattern( $pattern ) {
+		static $results = array();
+
+		$pattern = (string) $pattern;
+
+		if ( ! isset( $results[ $pattern ] ) ) {
+			// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- The warning is the signal we are testing for.
+			$results[ $pattern ] = false !== @preg_match( '#(' . $pattern . ')#', '' );
+		}
+
+		return $results[ $pattern ];
+	}
+
+	/**
+	 * Build one regex that matches any of the given exclusion patterns.
+	 *
+	 * Empty and malformed patterns are skipped so that a single bad line does not
+	 * break the rest of the list. Without this, an empty list would also produce
+	 * `#()#`, which matches every subject.
+	 *
+	 * @param array $patterns Pattern fragments, usually one per settings line.
+	 *
+	 * @return string Complete regex including delimiters, or an empty string when no usable pattern remains.
+	 * @since 4.0
+	 */
+	public static function build_exclusion_regex( $patterns ) {
+		$valid = array();
+
+		foreach ( (array) $patterns as $pattern ) {
+			$pattern = trim( (string) $pattern );
+
+			if ( '' === $pattern || ! self::is_valid_exclusion_pattern( $pattern ) ) {
+				continue;
+			}
+
+			$valid[] = $pattern;
+		}
+
+		if ( empty( $valid ) ) {
+			return '';
+		}
+
+		return '#(' . implode( '|', array_unique( $valid ) ) . ')#';
+	}
+
+	/**
+	 * Whether the subject matches any of the given exclusion patterns.
+	 *
+	 * @param array  $patterns Pattern fragments.
+	 * @param string $subject  URL or HTML tag to test.
+	 *
+	 * @return bool
+	 * @since 4.0
+	 */
+	public static function matches_exclusion( $patterns, $subject ) {
+		$regex = self::build_exclusion_regex( $patterns );
+
+		return '' !== $regex && 1 === preg_match( $regex, (string) $subject );
+	}
+
+	/**
 	 * Check if the given SRC excluded
 	 *
 	 * @param string $src URL
@@ -143,14 +217,7 @@ class Helper {
 	 * @return bool
 	 */
 	public static function is_excluded_js( $src ) {
-		$excluded_files = self::get_excluded_js();
-		$excluded_files = implode( '|', $excluded_files );
-
-		if ( ! empty( $excluded_files ) && preg_match( '#(' . $excluded_files . ')#', $src ) ) {
-			return true;
-		}
-
-		return false;
+		return self::matches_exclusion( self::get_excluded_js(), $src );
 	}
 
 	/**
@@ -161,14 +228,7 @@ class Helper {
 	 * @return bool
 	 */
 	public static function is_excluded_css( $src ) {
-		$excluded_files = self::get_excluded_css();
-		$excluded_files = implode( '|', $excluded_files );
-
-		if ( ! empty( $excluded_files ) && preg_match( '#(' . $excluded_files . ')#', $src ) ) {
-			return true;
-		}
-
-		return false;
+		return self::matches_exclusion( self::get_excluded_css(), $src );
 	}
 
 	/**
@@ -179,18 +239,11 @@ class Helper {
 	 * @return bool
 	 */
 	public static function is_defer_excluded( $tag ) {
-		$excluded_files = self::get_defer_exclusions();
-		$excluded_files = implode( '|', $excluded_files );
-
 		if ( false !== stripos( $tag, 'data-no-defer' ) ) {
 			return true;
 		}
 
-		if ( ! empty( $excluded_files ) && preg_match( '#(' . $excluded_files . ')#', $tag ) ) {
-			return true;
-		}
-
-		return false;
+		return self::matches_exclusion( self::get_defer_exclusions(), $tag );
 	}
 
 	/**
@@ -201,18 +254,11 @@ class Helper {
 	 * @return bool
 	 */
 	public static function is_delay_excluded( $tag ) {
-		$excluded_files = self::get_delay_exclusions();
-		$excluded_files = implode( '|', $excluded_files );
-
 		if ( false !== stripos( $tag, 'data-no-delay' ) ) {
 			return true;
 		}
 
-		if ( ! empty( $excluded_files ) && preg_match( '#(' . $excluded_files . ')#', $tag ) ) {
-			return true;
-		}
-
-		return false;
+		return self::matches_exclusion( self::get_delay_exclusions(), $tag );
 	}
 
 	/**

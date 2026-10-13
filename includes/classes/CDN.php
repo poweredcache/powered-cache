@@ -8,6 +8,7 @@
 namespace PoweredCache;
 
 use \DOMDocument as DOMDocument;
+use PoweredCache\Optimizer\Helper;
 use function PoweredCache\Utils\cdn_addresses;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -245,9 +246,8 @@ class CDN {
 		// rejected file
 		if ( ! empty( $settings['cdn_rejected_files'] ) ) {
 			$cdn_rejected_files = preg_split( '#(\r\n|\r|\n)#', $settings['cdn_rejected_files'], - 1, PREG_SPLIT_NO_EMPTY );
-			$cdn_rejected_files = implode( '|', $cdn_rejected_files );
 
-			if ( preg_match( '#(' . $cdn_rejected_files . ')#', $file_url ) ) {
+			if ( Helper::matches_exclusion( $cdn_rejected_files, $file_url ) ) {
 				return true;
 			}
 		}

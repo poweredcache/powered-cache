@@ -243,6 +243,44 @@ class SettingsValidator_Tests extends TestCase {
 	}
 
 	/**
+	 * It warns about exclusion lines that are not valid patterns.
+	 */
+	public function test_warns_about_invalid_exclusion_patterns() {
+		$validator = new SettingsValidator( array(), true );
+		$report    = $validator->report(
+			array(
+				'enable_lazy_load'     => true,
+				'lazy_load_exclusions' => "skip-lazy\nhero-(image\nlogo\\.png",
+				'excluded_js_files'    => "jquery.min.js\n#comments",
+			)
+		);
+
+		$this->assertTrue( $report['valid'] );
+		$this->assertIssueExists( 'lazy_load_exclusions', 'invalid_pattern', $report['issues'] );
+		$this->assertIssueExists( 'excluded_js_files', 'invalid_pattern', $report['issues'] );
+
+		$messages = implode( ' ', array_column( $report['issues'], 'message' ) );
+		$this->assertStringContainsString( 'hero-(image', $messages );
+		$this->assertStringContainsString( '#comments', $messages );
+		$this->assertStringNotContainsString( 'logo\\.png', $messages );
+	}
+
+	/**
+	 * It skips pattern warnings for settings whose parent toggle is disabled.
+	 */
+	public function test_skips_pattern_warnings_for_inactive_settings() {
+		$validator = new SettingsValidator( array(), true );
+		$report    = $validator->report(
+			array(
+				'enable_lazy_load'     => false,
+				'lazy_load_exclusions' => 'hero-(image',
+			)
+		);
+
+		$this->assertSame( 0, $report['counts'][ SettingsValidator::SEVERITY_WARNING ] );
+	}
+
+	/**
 	 * Assert that a validation issue exists.
 	 *
 	 * @param string $key Setting key.

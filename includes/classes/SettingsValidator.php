@@ -7,6 +7,8 @@
 
 namespace PoweredCache;
 
+use PoweredCache\Optimizer\Helper;
+
 /**
  * Builds non-blocking validation reports for settings payloads.
  *
@@ -17,6 +19,29 @@ class SettingsValidator {
 	const SEVERITY_ERROR   = 'error';
 	const SEVERITY_WARNING = 'warning';
 	const SEVERITY_INFO    = 'info';
+
+	/**
+	 * Settings whose lines are matched as regular expression fragments.
+	 *
+	 * Keep this list in sync with the places that build `#(line|line)#` patterns from
+	 * these settings: Optimizer\Helper, LazyLoad, CDN, AdvancedCache, the page cache
+	 * drop-in, and Premium's unused CSS exclusions.
+	 *
+	 * @var string[]
+	 */
+	const REGEX_FIELDS = array(
+		'rejected_uri',
+		'rejected_user_agents',
+		'rejected_cookies',
+		'rejected_referrers',
+		'excluded_css_files',
+		'excluded_js_files',
+		'js_defer_exclusions',
+		'js_delay_exclusions',
+		'lazy_load_exclusions',
+		'cdn_rejected_files',
+		'ucss_excluded_files',
+	);
 
 	/**
 	 * Runtime context for schema metadata.
@@ -176,7 +201,66 @@ class SettingsValidator {
 			);
 		}
 
+		if ( in_array( $key, self::REGEX_FIELDS, true ) && is_string( $value ) && $this->dependencies_met( $field, $settings ) ) {
+			$invalid_patterns = $this->invalid_patterns( $value );
+
+			if ( ! empty( $invalid_patterns ) ) {
+				// Warning rather than error: the value is still saved and invalid lines are skipped at runtime.
+				$issues[] = $this->issue(
+					$key,
+					self::SEVERITY_WARNING,
+					'invalid_pattern',
+					sprintf(
+						'These lines are not valid patterns and will be ignored: %s. Escape special characters such as ( ) [ ] + ? * and # with a backslash.',
+						implode( ', ', $invalid_patterns )
+					)
+				);
+			}
+		}
+
 		return $issues;
+	}
+
+	/**
+	 * Whether every parent toggle of a field is enabled.
+	 *
+	 * Values of inactive settings are kept but not used, so they should not raise warnings.
+	 *
+	 * @param array $field    Schema field.
+	 * @param array $settings Full settings payload.
+	 *
+	 * @return bool
+	 */
+	private function dependencies_met( array $field, array $settings ) {
+		foreach ( (array) ( $field['dependencies'] ?? array() ) as $dependency ) {
+			if ( empty( $settings[ $dependency ] ) ) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Find the lines of a multi-line setting that do not compile as regex fragments.
+	 *
+	 * @param string $value Multi-line setting value.
+	 *
+	 * @return string[] Invalid lines, trimmed.
+	 */
+	private function invalid_patterns( $value ) {
+		$invalid = array();
+		$lines   = preg_split( '#(\r\n|\r|\n)#', $value, -1, PREG_SPLIT_NO_EMPTY );
+
+		foreach ( (array) $lines as $line ) {
+			$line = trim( $line );
+
+			if ( '' !== $line && ! Helper::is_valid_exclusion_pattern( $line ) ) {
+				$invalid[] = $line;
+			}
+		}
+
+		return array_values( array_unique( $invalid ) );
 	}
 
 	/**
