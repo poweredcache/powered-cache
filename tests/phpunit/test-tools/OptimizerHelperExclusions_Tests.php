@@ -121,4 +121,119 @@ class OptimizerHelperExclusions_Tests extends TestCase {
 		$this->assertSame( array( 'ValidBot', 'facebookexternalhit' ), AdvancedCache::get_rejected_user_agents() );
 		$this->assertSame( array( 'private/.*' ), AdvancedCache::get_rejected_uri() );
 	}
+
+	/**
+	 * Never Cache URL rules as entered on real sites, mixing paths and wildcards.
+	 *
+	 * @return array
+	 */
+	private function wildcard_uri_rules() {
+		return array(
+			'/wp-admin/',
+			'/wp-json/',
+			'/?elementor-preview=*',
+			'*elementor*',
+			'*elementor-pro*',
+			'/wp-content/plugins/elementor*',
+			'/wp-content/plugins/elementor-pro*',
+			'*action=elementor',
+			'/wishlist',
+		);
+	}
+
+	/**
+	 * Match a request URI the way the page cache drop-in does: each rule is anchored.
+	 *
+	 * @param array  $rules Normalized rules.
+	 * @param string $uri   Request URI.
+	 *
+	 * @return bool
+	 */
+	private function drop_in_rejects( array $rules, $uri ) {
+		foreach ( $rules as $rule ) {
+			if ( preg_match( '#^(' . $rule . ')$#', $uri ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * It converts wildcard lines and leaves regex lines untouched.
+	 */
+	public function test_normalizes_wildcard_patterns() {
+		$this->assertSame( '.*elementor.*', Helper::normalize_exclusion_pattern( '*elementor*' ) );
+		$this->assertSame( '/\?elementor\-preview\=.*', Helper::normalize_exclusion_pattern( '/?elementor-preview=*' ) );
+		$this->assertSame( '/wp\-content/plugins/elementor.*', Helper::normalize_exclusion_pattern( '/wp-content/plugins/elementor*' ) );
+		$this->assertSame( '.*\#comments', Helper::normalize_exclusion_pattern( '*#comments' ) );
+
+		// Regex users writing ".*" get the same result in both modes.
+		$this->assertSame( 'private/.*', Helper::normalize_exclusion_pattern( 'private/.*' ) );
+
+		// Lines without "*" or with regex-only characters stay regex.
+		$this->assertSame( '/wishlist', Helper::normalize_exclusion_pattern( '/wishlist' ) );
+		$this->assertSame( '/product/(.*)', Helper::normalize_exclusion_pattern( '/product/(.*)' ) );
+		$this->assertSame( '^/shop/.*$', Helper::normalize_exclusion_pattern( '^/shop/.*$' ) );
+		$this->assertSame( '\d+*', Helper::normalize_exclusion_pattern( '\d+*' ) );
+	}
+
+	/**
+	 * It accepts wildcard rules that are not valid regex on their own.
+	 */
+	public function test_wildcard_rules_are_valid_patterns() {
+		foreach ( $this->wildcard_uri_rules() as $rule ) {
+			$this->assertTrue( Helper::is_valid_exclusion_pattern( $rule ), $rule );
+		}
+
+		$this->assertTrue( Helper::is_wildcard_exclusion_pattern( '*elementor*' ) );
+		$this->assertFalse( Helper::is_wildcard_exclusion_pattern( '/product/(.*)' ) );
+		$this->assertFalse( Helper::is_wildcard_exclusion_pattern( '/wishlist' ) );
+	}
+
+	/**
+	 * It rejects the URLs that wildcard Never Cache rules were written for.
+	 */
+	public function test_wildcard_uri_rules_match_intended_urls() {
+		$rules = Helper::normalize_exclusion_patterns( $this->wildcard_uri_rules() );
+
+		$this->assertCount( 9, $rules );
+
+		foreach ( array(
+			'/wp-admin/',
+			'/wp-json/',
+			'/?elementor-preview=123&ver=1',
+			'/sample-page/?elementor-preview=5',
+			'/elementor-library/foo/',
+			'/wp-content/plugins/elementor/assets/x.js',
+			'/wp-content/plugins/elementor-pro/assets/y.js',
+			'/shop/?action=elementor',
+			'/wishlist',
+		) as $uri ) {
+			$this->assertTrue( $this->drop_in_rejects( $rules, $uri ), $uri );
+		}
+
+		foreach ( array( '/', '/blog/hello-world/', '/wishlist/', '/shop/' ) as $uri ) {
+			$this->assertFalse( $this->drop_in_rejects( $rules, $uri ), $uri );
+		}
+	}
+
+	/**
+	 * It keeps the query of full-URL wildcard rules, and keeps path-only matching for regex rules.
+	 */
+	public function test_full_url_rejected_uri_rules() {
+		$rules = array(
+			'https://example.test/?preview=*',
+			'https://example.test/checkout/?step=2',
+		);
+
+		\WP_Mock::userFunction( 'PoweredCache\Utils\get_settings', array( 'return' => array( 'rejected_uri' => implode( "\n", $rules ) ) ) );
+		\WP_Mock::onFilter( 'powered_cache_rejected_uri_list' )->with( $rules )->reply( $rules );
+
+		$normalized = AdvancedCache::get_rejected_uri();
+
+		$this->assertSame( array( '/\?preview\=.*', '/checkout/' ), $normalized );
+		$this->assertTrue( $this->drop_in_rejects( $normalized, '/?preview=abc' ) );
+		$this->assertFalse( $this->drop_in_rejects( $normalized, '/' ) );
+	}
 }

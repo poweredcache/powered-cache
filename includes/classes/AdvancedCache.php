@@ -566,28 +566,43 @@ class AdvancedCache {
 		 * @return {array} New value
 		 * @since  2.0
 		 */
-		return self::filter_valid_exclusion_patterns( apply_filters( 'powered_cache_rejected_uri_list', $rejected_uri_list ) );
+		$rejected_uri_list = (array) apply_filters( 'powered_cache_rejected_uri_list', $rejected_uri_list );
+
+		foreach ( $rejected_uri_list as $index => $rejected_uri ) {
+			$rejected_uri = trim( (string) $rejected_uri );
+
+			// The drop-in matches the request URI, so reduce full URLs before wildcard
+			// conversion escapes "://". Regex lines keep the historical path-only match.
+			// Wildcard lines keep their query, otherwise "https://example.com/?preview=*"
+			// would become "/" and reject the home page.
+			if ( preg_match( '#^https?://#i', $rejected_uri ) ) {
+				$parts        = function_exists( 'wp_parse_url' ) ? wp_parse_url( $rejected_uri ) : parse_url( $rejected_uri ); // phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url
+				$rejected_uri = isset( $parts['path'] ) ? $parts['path'] : '/';
+
+				if ( isset( $parts['query'] ) && Helper::is_wildcard_exclusion_pattern( $parts['query'] ) ) {
+					$rejected_uri .= '?' . $parts['query'];
+				}
+			}
+
+			$rejected_uri_list[ $index ] = $rejected_uri;
+		}
+
+		return self::filter_valid_exclusion_patterns( $rejected_uri_list );
 	}
 
 	/**
-	 * Remove malformed regex fragments before they reach cache runtime and server rules.
+	 * Normalize exclusion patterns before they reach cache runtime and server rules.
+	 *
+	 * Wildcard lines such as `*elementor*` are converted to regex fragments, and
+	 * malformed lines are dropped so they cannot break the combined pattern.
 	 *
 	 * @param mixed $patterns Exclusion patterns.
 	 *
 	 * @return array
+	 * @see   Helper::normalize_exclusion_pattern()
 	 */
 	private static function filter_valid_exclusion_patterns( $patterns ) {
-		$valid_patterns = [];
-
-		foreach ( (array) $patterns as $pattern ) {
-			$pattern = trim( (string) $pattern );
-
-			if ( '' !== $pattern && Helper::is_valid_exclusion_pattern( $pattern ) ) {
-				$valid_patterns[] = $pattern;
-			}
-		}
-
-		return array_values( array_unique( $valid_patterns ) );
+		return Helper::normalize_exclusion_patterns( $patterns );
 	}
 
 

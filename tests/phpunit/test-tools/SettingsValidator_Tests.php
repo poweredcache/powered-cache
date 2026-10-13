@@ -281,6 +281,20 @@ class SettingsValidator_Tests extends TestCase {
 	}
 
 	/**
+	 * It accepts wildcard Never Cache rules.
+	 */
+	public function test_accepts_wildcard_rejected_uri_rules() {
+		$validator = new SettingsValidator( array(), true );
+		$report    = $validator->report(
+			array(
+				'rejected_uri' => "/wp-admin/\n/?elementor-preview=*\n*elementor*\n/wp-content/plugins/elementor*\n*action=elementor\n/wishlist",
+			)
+		);
+
+		$this->assertSame( 0, $report['counts'][ SettingsValidator::SEVERITY_WARNING ] );
+	}
+
+	/**
 	 * It skips pattern warnings for settings whose parent toggle is disabled.
 	 */
 	public function test_skips_pattern_warnings_for_inactive_settings() {

@@ -210,7 +210,7 @@ class SettingsValidator {
 					self::SEVERITY_WARNING,
 					'invalid_pattern',
 					sprintf(
-						'These lines are not valid patterns and will be ignored: %s. Escape special characters such as ( ) [ ] + ? * and # with a backslash.',
+						'These lines are not valid patterns and will be ignored: %s. Use * as a wildcard, or escape regex characters such as ( ) [ ] + ? and # with a backslash.',
 						implode( ', ', $invalid_patterns )
 					)
 				);
