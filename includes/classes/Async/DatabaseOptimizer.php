@@ -78,7 +78,6 @@ class DatabaseOptimizer extends ActionSchedulerProcess {
 					$db_cleanup_trashed_comments   += $wpdb->get_var( "SELECT count(comment_ID) FROM $wpdb->comments WHERE (comment_approved = 'trash' OR comment_approved = 'post-trashed')" );
 					$db_cleanup_expired_transients += $wpdb->get_var( "SELECT count(option_name) FROM {$wpdb->options} WHERE option_name LIKE '\_transient\_timeout\__%%' AND option_value < UNIX_TIMESTAMP()" );
 					$db_cleanup_all_transients     += $wpdb->get_var( "SELECT count(option_name) FROM $wpdb->options WHERE option_name LIKE '%_transient_%'" );
-					$db_cleanup_optimize_tables    += $wpdb->get_var( $wpdb->prepare( "SELECT count(*) FROM information_schema.tables WHERE table_schema = %s and Engine <> 'InnoDB' and data_free > 0", DB_NAME ) );
 					restore_current_blog();
 				}
 			} else {
@@ -89,8 +88,10 @@ class DatabaseOptimizer extends ActionSchedulerProcess {
 				$db_cleanup_trashed_comments   = $wpdb->get_var( "SELECT count(comment_ID) FROM $wpdb->comments WHERE (comment_approved = 'trash' OR comment_approved = 'post-trashed')" );
 				$db_cleanup_expired_transients = $wpdb->get_var( "SELECT count(option_name) FROM {$wpdb->options} WHERE option_name LIKE '\_transient\_timeout\__%%' AND option_value < UNIX_TIMESTAMP()" );
 				$db_cleanup_all_transients     = $wpdb->get_var( "SELECT count(option_name) FROM $wpdb->options WHERE option_name LIKE '%_transient_%'" );
-				$db_cleanup_optimize_tables    = $wpdb->get_var( $wpdb->prepare( "SELECT count(*) FROM information_schema.tables WHERE table_schema = %s and Engine <> 'InnoDB' and data_free > 0", DB_NAME ) );
 			}
+
+			// Tables are shared by every site of a network, so count them only once.
+			$db_cleanup_optimize_tables = count( self::get_fragmented_tables() );
 
 			$count = [
 				'db_cleanup_post_revisions'     => $db_cleanup_post_revisions,
@@ -113,6 +114,36 @@ class DatabaseOptimizer extends ActionSchedulerProcess {
 		return $count;
 	}
 
+
+	/**
+	 * Get fragmented tables that can be reclaimed with OPTIMIZE TABLE.
+	 *
+	 * Only non-InnoDB tables with free space are returned; InnoDB tables are rebuilt
+	 * by OPTIMIZE TABLE, which is slow and rarely useful. The lookup is limited to the
+	 * WordPress base prefix so tables of other applications sharing the database are
+	 * left alone. The base prefix also covers every site of a multisite network.
+	 *
+	 * The table name is read positionally with get_col() because information_schema
+	 * returns upper-case column names on MySQL 8 (TABLE_NAME), but lower-case ones
+	 * on older MySQL and MariaDB versions.
+	 *
+	 * @since 4.0
+	 *
+	 * @return string[] Table names.
+	 */
+	public static function get_fragmented_tables() {
+		global $wpdb;
+
+		$tables = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT table_name FROM information_schema.tables WHERE table_schema = %s AND table_name LIKE %s AND engine <> 'InnoDB' AND data_free > 0",
+				DB_NAME,
+				$wpdb->esc_like( $wpdb->base_prefix ) . '%'
+			)
+		);
+
+		return array_values( array_filter( array_map( 'strval', (array) $tables ) ) );
+	}
 
 	/**
 	 * Perform DB cleanup tasks.
@@ -204,13 +235,13 @@ class DatabaseOptimizer extends ActionSchedulerProcess {
 				}
 				break;
 			case 'db_cleanup_optimize_tables':
-				$query = $wpdb->get_results( $wpdb->prepare( "SELECT table_name, data_free FROM information_schema.tables WHERE table_schema = %s and Engine <> 'InnoDB' and data_free > 0", DB_NAME ) );
-				if ( $query ) {
-					foreach ( $query as $table ) {
-						if ( ! empty( $table->table_name ) ) {
-							$wpdb->query( 'OPTIMIZE TABLE `' . esc_sql( $table->table_name ) . '`' ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-						}
-					}
+				// Network tables share one base prefix, so the main site optimizes them once for every site.
+				if ( is_multisite() && ! is_main_site() ) {
+					break;
+				}
+
+				foreach ( self::get_fragmented_tables() as $table_name ) {
+					$wpdb->query( 'OPTIMIZE TABLE `' . esc_sql( $table_name ) . '`' ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				}
 				break;
 		}
