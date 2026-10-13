@@ -9,6 +9,7 @@ const PCLL = (function () {
 		_earlyLoadedCount: 0,
 		_observer: null,
 		_mutationObserver: null,
+		_mutationFramePending: false,
 
 		init() {
 			PCLL.threshold = PCLL.getOptionIntValue('threshold', 200);
@@ -66,12 +67,27 @@ const PCLL = (function () {
 				}
 
 				PCLL._mutationObserver = new MutationObserver(function (mutations) {
-					if (
-						mutations.some(function (mutation) {
-							return mutation.addedNodes.length > 0;
-						})
-					) {
+					const hasAddedNodes = mutations.some(function (mutation) {
+						return mutation.addedNodes.length > 0;
+					});
+
+					if (!hasAddedNodes || PCLL._mutationFramePending) {
+						return;
+					}
+
+					// Sliders, ads and chat widgets can mutate the DOM many times per frame.
+					// Rescan at most once per frame instead of once per mutation batch.
+					PCLL._mutationFramePending = true;
+
+					const run = function () {
+						PCLL._mutationFramePending = false;
 						callback();
+					};
+
+					if (typeof window.requestAnimationFrame === 'function') {
+						window.requestAnimationFrame(run);
+					} else {
+						setTimeout(run, 16);
 					}
 				});
 

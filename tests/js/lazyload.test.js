@@ -18,7 +18,8 @@ describe('lazy-load runtime initialization', () => {
 
 	beforeEach(() => {
 		jest.resetModules();
-		document.body.innerHTML = '';
+		// Swap in a fresh body so MutationObservers from earlier runtime instances stop receiving events.
+		document.documentElement.replaceChild(document.createElement('body'), document.body);
 		window.PCLL_options = {};
 		observe = jest.fn();
 		window.IntersectionObserver = jest.fn(() => ({
@@ -73,5 +74,35 @@ describe('lazy-load runtime initialization', () => {
 
 		expect(addEventListener).toHaveBeenCalledWith('scroll', expect.any(Function), false);
 		expect(addEventListener).toHaveBeenCalledWith('resize', expect.any(Function), false);
+	});
+
+	test('rescans dynamically added images at most once per animation frame', async () => {
+		setDocumentReadyState('complete');
+		window.PCLL_options.immediate_load_count = 0;
+		const frames = [];
+		const requestAnimationFrame = jest
+			.spyOn(window, 'requestAnimationFrame')
+			.mockImplementation((callback) => frames.push(callback));
+
+		loadRuntime();
+
+		const first = document.createElement('img');
+		first.className = 'lazy lazy-hidden';
+		document.body.appendChild(first);
+		// MutationObserver callbacks are delivered as microtasks.
+		await Promise.resolve();
+
+		const second = document.createElement('img');
+		second.className = 'lazy lazy-hidden';
+		document.body.appendChild(second);
+		await Promise.resolve();
+
+		expect(requestAnimationFrame).toHaveBeenCalledTimes(1);
+		expect(observe).not.toHaveBeenCalledWith(first);
+
+		frames.forEach((callback) => callback());
+
+		expect(observe).toHaveBeenCalledWith(first);
+		expect(observe).toHaveBeenCalledWith(second);
 	});
 });
