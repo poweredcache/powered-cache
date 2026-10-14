@@ -121,8 +121,17 @@ jobs:
       - name: Run JavaScript lint
         run: npm run lint-js
 
+      - name: Run stylesheet lint
+        run: npm run lint-style
+
+      - name: Run JavaScript unit tests
+        run: npm test -- --runInBand
+
       - name: Build assets
         run: npm run build
+
+      - name: Verify generated assets
+        run: git diff --exit-code -- dist
 
       - name: Validate settings E2E runner
         run: npm run e2e:settings -- --help
