@@ -178,13 +178,19 @@ Yes, it’s compatible with PHP 8+
 - [Added] Environment and plugin compatibility safeguards with support for remotely refreshed rule definitions.
 - [Added] Improved CDN zone management for assigning different hostnames to specific asset types.
 - [Added] Sucuri cache integration and expanded external cache compatibility guidance.
+- [Added] Wildcard (`*`) support in exclusion rules, including Never Cache URLs, file optimization, lazy load, and CDN exclusions. Re-save settings once after upgrading so existing page cache rules use the new matching.
+- [Added] Manual database cleanup from the Tools section.
+- [Added] An admin notice when Powered Cache Premium is older than 4.0.
 - [Improved] Upgrades from 3.x now preserve existing settings while migrating data and removing retired background-processing jobs.
 - [Improved] Lazy loading now handles dynamically inserted content and background images more reliably.
 - [Improved] Local Google Fonts caching with safer requests, temporary failure caching, and broader stylesheet URL support.
 - [Improved] Object cache choices are limited to drivers supported by the current PHP environment.
 - [Improved] Sensitive settings, imports, REST updates, and administrative actions are handled more securely.
 - [Fixed] Compatibility notices no longer report inactive parent settings or empty CDN zone placeholders as problems.
-- [Fixed] Malformed cache exclusion lines no longer disable otherwise valid cookie, user-agent, or URL rules.
+- [Fixed] Malformed cache exclusion lines no longer disable otherwise valid cookie, user-agent, or URL rules. Lines that are not valid regular expressions are matched as plain text.
+- [Fixed] Exclusion rules copied from URLs, such as `app.js?ver=2`, now match their exact text.
+- [Fixed] Database table optimization on MySQL 8. Optimization is now limited to WordPress tables.
+- [Fixed] Rejected user agents in `.htaccess` rules now match anywhere in the user agent, consistent with nginx and the page cache drop-in.
 - [Changed] The minimum supported WordPress version is now 6.5.
 
 = 3.7.3 (April 22, 2026) =
@@ -397,6 +403,10 @@ Yes, it’s compatible with PHP 8+
 Detailed changelog located in [changelog page](https://poweredcache.com/changelog)
 
 == Upgrade notice ==
+
+= 4.0 =
+ - Major update with a new settings experience and Action Scheduler based background processing. Update Powered Cache and Powered Cache Premium together.
+ - Exclusion rules now support `*` wildcards. Re-save settings once after upgrading so existing page cache rules use the new matching.
 
 = 3.3.2 =
  - Contains a bug fix related to CDN integration. If you enabled CDN integration, please [search-replace](https://developer.wordpress.org/cli/commands/search-replace/) command to update your CDN hostname(s) with the original URL in the database.
