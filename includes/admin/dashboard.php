@@ -151,7 +151,7 @@ function admin_menu_icon_styles() {
 			content: "";
 			display: inline-block;
 			height: 20px;
-			margin-top: 7px;
+			margin: 0;
 			mask: url("<?php echo esc_attr( ICON_BASE64 ); ?>") center / 20px 20px no-repeat;
 			width: 20px;
 			-webkit-mask: url("<?php echo esc_attr( ICON_BASE64 ); ?>") center / 20px 20px no-repeat;
