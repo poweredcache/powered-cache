@@ -2633,9 +2633,11 @@ const SettingsApp = () => {
 			</header>
 
 			{notice && (
-				<Notice onRemove={() => setNotice(null)} status={notice.status}>
-					{notice.message}
-				</Notice>
+				<div className="pc-settings-feedback">
+					<Notice onRemove={() => setNotice(null)} status={notice.status}>
+						{notice.message}
+					</Notice>
+				</div>
 			)}
 
 			<ValidationSummary

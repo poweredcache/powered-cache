@@ -104,6 +104,14 @@
 	line-height: 1.4;
 }
 
+.pc-settings-feedback {
+	margin: 0 0 18px;
+}
+
+.pc-settings-feedback .components-notice {
+	margin: 0;
+}
+
 .pc-settings-overview {
 	column-gap: 12px;
 	display: grid;
