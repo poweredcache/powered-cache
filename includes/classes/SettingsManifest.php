@@ -742,7 +742,7 @@ class SettingsManifest {
 				'upgrade_description' => 'Premium can automatically clean selected database overhead on a recurring schedule.',
 			),
 			'scheduled_db_cleanup_frequency' => array(
-				'label'               => 'Cleanup Frequency',
+				'label'               => 'Database Cleanup Frequency',
 				'description'         => 'Choose how often scheduled database cleanups should run.',
 				'group'               => 'Scheduling',
 				'upgrade_description' => 'Premium can run automatic database cleanups hourly, daily, weekly, or monthly.',
@@ -843,7 +843,7 @@ class SettingsManifest {
 			'enable_heartbeat'               => array(
 				'label'         => 'Heartbeat Control',
 				'control_label' => 'Manage Heartbeat activity',
-				'description'   => 'Adjust WordPress Heartbeat behavior in admin, editor, and frontend contexts.',
+				'description'   => 'Adjust WordPress Heartbeat behavior in the dashboard, editor, and site front end.',
 				'group'         => 'WordPress runtime',
 			),
 			'heartbeat_dashboard_status'     => array(

@@ -1,4 +1,4 @@
-const { __, sprintf } = wp.i18n;
+const { __, _n, sprintf } = wp.i18n;
 const { createRoot, render, useCallback, useEffect, useMemo, useState } = wp.element;
 const { Button, Notice, SelectControl, Spinner, TextControl, TextareaControl, ToggleControl } =
 	wp.components;
@@ -587,16 +587,16 @@ const RecommendedSetupPanel = ({ disabled = false, onApply = () => {}, profile =
 		.slice(0, 3);
 	const buttonLabel = disabled
 		? __('Applying...', 'powered-cache')
-		: __('Apply Site Defaults', 'powered-cache');
+		: __('Apply Recommended Settings', 'powered-cache');
 
 	return (
 		<section className="pc-settings-recommended-setup">
 			<div>
 				<span className="pc-settings-badge">{__('Quick setup', 'powered-cache')}</span>
-				<h2>{__('Apply site-aware defaults', 'powered-cache')}</h2>
+				<h2>{__('Apply recommended settings', 'powered-cache')}</h2>
 				<p>
 					{__(
-						'Use a conservative starting point based on this site. You can change any setting afterward.',
+						'Start with safe settings chosen for this site. You can change them anytime.',
 						'powered-cache',
 					)}
 				</p>
@@ -604,7 +604,7 @@ const RecommendedSetupPanel = ({ disabled = false, onApply = () => {}, profile =
 					<p className="pc-settings-recommended-setup__context">
 						{sprintf(
 							/* translators: %s: detected site signals. */
-							__('Adjusted for detected site signals: %s.', 'powered-cache'),
+							__('Recommended for this site: %s.', 'powered-cache'),
 							detectedLabels.join(', '),
 						)}
 					</p>
@@ -1206,13 +1206,23 @@ const ValidationSummary = ({ fields = {}, onSelectSection = () => {}, validation
 
 	const message = errors
 		? sprintf(
-				/* translators: %d: number of settings. */
-				__('%d settings need attention before they can be used reliably.', 'powered-cache'),
+				/* translators: %d: number of settings requiring attention. */
+				_n(
+					'%d setting needs attention before it can be used reliably.',
+					'%d settings need attention before they can be used reliably.',
+					errors,
+					'powered-cache',
+				),
 				errors,
 			)
 		: sprintf(
-				/* translators: %d: number of settings. */
-				__('%d settings have compatibility notes.', 'powered-cache'),
+				/* translators: %d: number of settings with notes. */
+				_n(
+					'%d setting has a note.',
+					'%d settings have notes.',
+					totalIssues,
+					'powered-cache',
+				),
 				totalIssues,
 			);
 
@@ -1926,7 +1936,7 @@ const SettingsToolsActions = () => {
 					<strong>{__('Import Settings', 'powered-cache')}</strong>
 					<p>
 						{__(
-							'Restore a Powered Cache JSON export while preserving legacy extension data.',
+							'Restore a Powered Cache JSON export without removing data added by extensions.',
 							'powered-cache',
 						)}
 					</p>
@@ -2599,7 +2609,10 @@ const SettingsApp = () => {
 										'Advanced optimization controls are unlocked.',
 										'powered-cache',
 									)
-								: __('Premium controls stay visible in context.', 'powered-cache')}
+								: __(
+										'Premium features are shown next to related settings.',
+										'powered-cache',
+									)}
 						</span>
 					</div>
 				</div>
@@ -2685,7 +2698,7 @@ const SettingsApp = () => {
 											'powered-cache',
 										)
 									: __(
-											'Locked controls are shown in context across the settings.',
+											'Premium features are shown next to related settings.',
 											'powered-cache',
 										)
 							}
@@ -2723,7 +2736,7 @@ const SettingsApp = () => {
 						<h2>{__('Unlock the high-impact optimization layer', 'powered-cache')}</h2>
 						<p>
 							{__(
-								'Critical CSS, unused CSS cleanup, LCP optimization, and image delivery are shown where they belong so upgrading feels like enabling the next layer rather than learning a different product.',
+								'Add Critical CSS, unused CSS cleanup, LCP optimization, and image delivery without changing how you manage the plugin.',
 								'powered-cache',
 							)}
 						</p>

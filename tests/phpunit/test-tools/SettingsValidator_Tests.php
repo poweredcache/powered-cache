@@ -68,25 +68,25 @@ class SettingsValidator_Tests extends TestCase {
 	}
 
 	/**
-	 * It reports locked Premium values without making the report invalid.
+	 * It silently preserves locked Premium values.
 	 */
-	public function test_reports_locked_premium_values() {
+	public function test_ignores_locked_premium_values() {
 		$validator = new SettingsValidator( array(), false );
 		$report    = $validator->report(
 			array(
-				'critical_css' => true,
+				'scheduled_db_cleanup_frequency' => 'weekly',
 			)
 		);
 
 		$this->assertTrue( $report['valid'] );
-		$this->assertSame( 1, $report['counts'][ SettingsValidator::SEVERITY_INFO ] );
-		$this->assertIssueExists( 'critical_css', 'locked_setting_preserved', $report['issues'] );
+		$this->assertSame( 0, $report['counts'][ SettingsValidator::SEVERITY_INFO ] );
+		$this->assertSame( array(), $report['issues'] );
 	}
 
 	/**
-	 * It reports unknown settings as compatibility info.
+	 * It silently preserves unknown settings.
 	 */
-	public function test_reports_unknown_settings_as_info() {
+	public function test_ignores_unknown_settings() {
 		$validator = new SettingsValidator( array(), true );
 		$report    = $validator->report(
 			array(
@@ -95,8 +95,8 @@ class SettingsValidator_Tests extends TestCase {
 		);
 
 		$this->assertTrue( $report['valid'] );
-		$this->assertSame( 1, $report['counts'][ SettingsValidator::SEVERITY_INFO ] );
-		$this->assertIssueExists( 'custom_extension_key', 'unknown_setting', $report['issues'] );
+		$this->assertSame( 0, $report['counts'][ SettingsValidator::SEVERITY_INFO ] );
+		$this->assertSame( array(), $report['issues'] );
 	}
 
 	/**

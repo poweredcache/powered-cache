@@ -92,13 +92,6 @@ class SettingsValidator {
 
 		foreach ( $settings as $key => $value ) {
 			if ( ! isset( $fields[ $key ] ) ) {
-				$issues[] = $this->issue(
-					$key,
-					self::SEVERITY_INFO,
-					'unknown_setting',
-					'This setting is not defined in the current schema and will be preserved for compatibility.'
-				);
-
 				continue;
 			}
 
@@ -163,15 +156,6 @@ class SettingsValidator {
 	 */
 	private function validate_field( $key, $value, array $field, array $settings ) {
 		$issues = array();
-
-		if ( ! SettingsSchema::can_edit( $key, $this->context, $this->premium_available ) && $this->has_value( $value, $field ) ) {
-			$issues[] = $this->issue(
-				$key,
-				self::SEVERITY_INFO,
-				'locked_setting_preserved',
-				'This setting is preserved but cannot be edited in the current product context.'
-			);
-		}
 
 		if ( SettingsSchema::TYPE_ENUM === $field['type'] && ! empty( $field['enum'] ) && ! in_array( $value, $field['enum'], true ) ) {
 			$issues[] = $this->issue(
