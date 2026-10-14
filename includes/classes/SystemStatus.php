@@ -118,7 +118,7 @@ class SystemStatus {
 				self::STATUS_WARNING,
 				'Page cache',
 				'WP_CACHE is not enabled.',
-				'Add define( "WP_CACHE", true ) to wp-config.php, then save settings to refresh the drop-in.',
+				'Use Fix configuration in Tools to add WP_CACHE to wp-config.php, or add define( "WP_CACHE", true ) manually.',
 				'cache'
 			);
 		}
@@ -129,7 +129,7 @@ class SystemStatus {
 				self::STATUS_WARNING,
 				'Page cache',
 				'The page cache drop-in is not active.',
-				'Save settings to recreate the configuration files, then verify advanced-cache.php is writable.',
+				'Use Fix configuration in Tools to recreate the configuration files, then verify advanced-cache.php is writable.',
 				'cache'
 			);
 		}
@@ -260,7 +260,7 @@ class SystemStatus {
 				self::STATUS_WARNING,
 				'Object cache',
 				'Object cache drop-in needs attention.',
-				'Save settings to recreate object-cache.php, then verify the file is writable.',
+				'Use Fix configuration in Tools to recreate object-cache.php, then verify the file is writable.',
 				'cache'
 			);
 		}

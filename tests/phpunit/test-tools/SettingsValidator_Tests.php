@@ -159,6 +159,7 @@ class SettingsValidator_Tests extends TestCase {
 		$this->assertTrue( $report['valid'] );
 		$this->assertSame( 1, $report['counts'][ SettingsValidator::SEVERITY_WARNING ] );
 		$this->assertIssueExists( 'enable_page_cache', 'wp_cache_disabled', $report['issues'] );
+		$this->assertSame( SettingsValidator::ACTION_REGENERATE_CONFIGURATION, $report['issues'][0]['action'] );
 	}
 
 	/**
@@ -182,6 +183,11 @@ class SettingsValidator_Tests extends TestCase {
 		$this->assertTrue( $report['valid'] );
 		$this->assertSame( 2, $report['counts'][ SettingsValidator::SEVERITY_WARNING ] );
 		$this->assertIssueExists( 'object_cache', 'object_cache_dropin_missing', $report['issues'] );
+
+		$actions = array_column( $report['issues'], 'action', 'code' );
+		$this->assertSame( SettingsValidator::ACTION_REGENERATE_CONFIGURATION, $actions['object_cache_dropin_missing'] );
+		// Regenerating cannot fix a drop-in that fails to load inside the plugin directory.
+		$this->assertArrayNotHasKey( 'object_cache_dropin_unavailable', $actions );
 		$this->assertIssueExists( 'object_cache', 'object_cache_dropin_unavailable', $report['issues'] );
 	}
 

@@ -246,6 +246,7 @@ function process_form_submit() {
 			'enable_dev_mode',
 			'disable_dev_mode',
 			'optimize_database',
+			'regenerate_configuration',
 			'save_settings_and_optimize',
 			'save_settings_and_clear_cache',
 			'save_settings',
@@ -300,6 +301,12 @@ function process_form_submit() {
 				break;
 			case 'optimize_database':
 				db_optimize( $old_options );
+				$should_save_options = false;
+				break;
+			case 'regenerate_configuration':
+				// Repair config files without touching settings, e.g. after another cache plugin removed WP_CACHE.
+				$problems            = Config::factory()->regenerate_configuration( $old_options, POWERED_CACHE_IS_NETWORK );
+				$action              = empty( $problems ) ? 'regenerate_configuration' : 'regenerate_configuration_failed';
 				$should_save_options = false;
 				break;
 			case 'save_settings_and_optimize':
@@ -584,8 +591,6 @@ function maybe_display_message() {
 		return;
 	}
 
-	$screen = get_current_screen();
-
 	$success_messages = [
 		'purge_image_optimizer_cache'   => esc_html__( 'Image optimizer cache purged successfully!', 'powered-cache' ),
 		'flush_page_cache_network'      => esc_html__( 'Page cache deleted for all websites!', 'powered-cache' ),
@@ -603,6 +608,8 @@ function maybe_display_message() {
 		'save_settings_and_optimize'    => esc_html__( 'Settings saved and database being optimized...', 'powered-cache' ),
 		'save_settings_and_clear_cache' => esc_html__( 'Settings have been successfully saved, and all cache has been cleared.', 'powered-cache' ),
 		'save_settings'                 => esc_html__( 'Settings saved.', 'powered-cache' ),
+		'optimize_database'             => esc_html__( 'Database cleanup has started in the background.', 'powered-cache' ),
+		'regenerate_configuration'      => esc_html__( 'Configuration files have been regenerated.', 'powered-cache' ),
 	];
 
 	if ( isset( $_GET['language'] ) ) {
@@ -625,25 +632,19 @@ function maybe_display_message() {
 		'start_critical_err_license'              => esc_html__( 'Your license key does not seem valid. A valid license is required for the Critical CSS!', 'powered-cache' ),
 		'start_ucss_err_license'                  => esc_html__( 'Your license key does not seem valid. A valid license is required for removing unused CSS!', 'powered-cache' ),
 		'flush_cf_cache_failed'                   => esc_html__( 'Could not flush Cloudflare cache. Please make sure you entered the correct credentials and zone id!', 'powered-cache' ),
+		'regenerate_configuration_failed'         => sprintf(
+			/* translators: %s: WP_CACHE definition */
+			esc_html__( 'Some configuration files could not be updated. Make sure wp-config.php and the wp-content directory are writable, or add %s to wp-config.php manually.', 'powered-cache' ),
+			'<code>define( \'WP_CACHE\', true );</code>'
+		),
 	];
 
+	// The settings app has no settings_errors() area, so use standard admin notices on every screen.
 	if ( isset( $success_messages[ $_GET['pc_action'] ] ) ) {
-		if ( MENU_SLUG === $screen->parent_base ) { // display with shared-ui on plugin page
-			add_settings_error( $screen->parent_file, MENU_SLUG, $success_messages[ $_GET['pc_action'] ], 'success' ); // phpcs:ignore
-
-			return;
-		}
-
 		printf( '<div class="notice notice-success is-dismissible"><p>%s</p></div>', $success_messages[ $_GET['pc_action'] ] ); // phpcs:ignore
 	}
 
 	if ( isset( $err_messages[ $_GET['pc_action'] ] ) ) {
-		if ( MENU_SLUG === $screen->parent_base ) { // display with shared-ui on plugin page
-			add_settings_error( $screen->parent_file, MENU_SLUG, $err_messages[ $_GET['pc_action'] ], 'error' ); // phpcs:ignore
-
-			return;
-		}
-
 		printf( '<div class="notice notice-error is-dismissible"><p>%s</p></div>', $err_messages[ $_GET['pc_action'] ] ); // phpcs:ignore
 	}
 	// phpcs:enable WordPress.Security.NonceVerification.Recommended

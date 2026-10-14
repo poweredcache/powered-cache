@@ -750,6 +750,95 @@ class Config {
 	}
 
 	/**
+	 * Rewrite configuration files from the stored settings without changing them.
+	 *
+	 * Other plugins can remove WP_CACHE or replace the drop-ins, for example when
+	 * another cache plugin is deactivated. Saving settings used to repair that as
+	 * a side effect; this runs the same step on demand.
+	 *
+	 * @param array $settings     Current plugin settings.
+	 * @param bool  $network_wide Whether the plugin is network activated.
+	 *
+	 * @return string[] Problems left after rewriting, see get_configuration_problems().
+	 * @since 4.0
+	 */
+	public function regenerate_configuration( $settings, $network_wide = false ) {
+		$this->save_configuration( $settings, $network_wide );
+
+		/**
+		 * Fires after configuration files are regenerated on demand.
+		 *
+		 * @hook  powered_cache_configuration_regenerated
+		 *
+		 * @param {array} $settings     Current plugin settings.
+		 * @param {bool}  $network_wide Whether the plugin is network activated.
+		 *
+		 * @since 4.0
+		 */
+		do_action( 'powered_cache_configuration_regenerated', $settings, $network_wide );
+
+		return $this->get_configuration_problems( $settings );
+	}
+
+	/**
+	 * Check the configuration files on disk against the given settings.
+	 *
+	 * Reads the files rather than the WP_CACHE or drop-in constants, because those
+	 * only change on the next request after the files are written.
+	 *
+	 * @param array $settings Current plugin settings.
+	 *
+	 * @return string[] Problem codes: `wp_config` (WP_CACHE is not enabled in
+	 *                  wp-config.php), `advanced_cache` (advanced-cache.php does not
+	 *                  load Powered Cache) and `object_cache` (object-cache.php does
+	 *                  not load Powered Cache).
+	 * @since 4.0
+	 */
+	public function get_configuration_problems( $settings ) {
+		$problems = array();
+
+		// Multisite installs always keep page cache wired up, see setup_page_cache().
+		if ( ! empty( $settings['enable_page_cache'] ) || is_multisite() ) {
+			$config_path = $this->find_wp_config_file();
+			$config      = $config_path ? (string) @file_get_contents( $config_path ) : ''; // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+
+			if ( ! preg_match( '/^\s*define\(\s*[\'"]WP_CACHE[\'"]\s*,\s*true\s*\)/mi', $config ) ) {
+				$problems[] = 'wp_config';
+			}
+
+			if ( ! $this->file_contains( untrailingslashit( WP_CONTENT_DIR ) . '/advanced-cache.php', 'POWERED_CACHE_PAGE_CACHING' ) ) {
+				$problems[] = 'advanced_cache';
+			}
+		}
+
+		$object_cache = isset( $settings['object_cache'] ) ? $settings['object_cache'] : 'off';
+
+		if ( 'off' !== $object_cache && empty( $settings['dev_mode'] ) && can_configure_object_cache() ) {
+			if ( ! $this->file_contains( untrailingslashit( WP_CONTENT_DIR ) . '/object-cache.php', 'POWERED_OBJECT_CACHE' ) ) {
+				$problems[] = 'object_cache';
+			}
+		}
+
+		return $problems;
+	}
+
+	/**
+	 * Whether a file exists and contains the given marker.
+	 *
+	 * @param string $file   File path.
+	 * @param string $marker Text to look for.
+	 *
+	 * @return bool
+	 */
+	private function file_contains( $file, $marker ) {
+		if ( ! file_exists( $file ) ) {
+			return false;
+		}
+
+		return false !== strpos( (string) file_get_contents( $file ), $marker ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+	}
+
+	/**
 	 * Clean-up all the configurations and cache related footprints
 	 */
 	public function clean_up() {

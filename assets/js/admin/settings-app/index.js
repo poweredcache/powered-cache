@@ -1183,6 +1183,29 @@ const ValidationIssueList = ({ issues = [] }) => {
 	);
 };
 
+// Matches SettingsValidator::ACTION_REGENERATE_CONFIGURATION.
+const REGENERATE_CONFIGURATION_ACTION = 'regenerate_configuration';
+
+// Rewrites WP_CACHE in wp-config.php, advanced-cache.php and object-cache.php from the
+// saved settings. Settings are not changed, so this works without pending changes.
+const RegenerateConfigurationForm = ({ variant = 'secondary' }) => (
+	<form action={appConfig.settingsFormUrl || window.location.href} method="post">
+		<input
+			name="powered_cache_settings_nonce"
+			type="hidden"
+			value={appConfig.settingsNonce || ''}
+		/>
+		<Button
+			name="powered_cache_form_action"
+			type="submit"
+			value={REGENERATE_CONFIGURATION_ACTION}
+			variant={variant}
+		>
+			{__('Fix configuration', 'powered-cache')}
+		</Button>
+	</form>
+);
+
 const ValidationSummary = ({ fields = {}, onSelectSection = () => {}, validation }) => {
 	const totalIssues = validationIssueCount(validation);
 
@@ -1192,6 +1215,9 @@ const ValidationSummary = ({ fields = {}, onSelectSection = () => {}, validation
 
 	const issues = validationIssues(validation);
 	const visibleIssues = issues.slice(0, 4);
+	const canRegenerateConfiguration = issues.some(
+		(issue) => issue.action === REGENERATE_CONFIGURATION_ACTION,
+	);
 	const remainingIssues = totalIssues - visibleIssues.length;
 	const counts = validation.counts || {};
 	const errors = counts.error || 0;
@@ -1269,6 +1295,11 @@ const ValidationSummary = ({ fields = {}, onSelectSection = () => {}, validation
 						</li>
 					)}
 				</ul>
+				{canRegenerateConfiguration && (
+					<div className="pc-settings-validation-summary__fix">
+						<RegenerateConfigurationForm variant="primary" />
+					</div>
+				)}
 			</Notice>
 		</div>
 	);
@@ -1968,6 +1999,19 @@ const SettingsToolsActions = () => {
 				<Button href={appConfig.purgeAllUrl || '#'} variant="secondary">
 					{__('Purge All Cache', 'powered-cache')}
 				</Button>
+			</div>
+
+			<div className="pc-settings-tool-card">
+				<div>
+					<strong>{__('Regenerate Configuration', 'powered-cache')}</strong>
+					<p>
+						{__(
+							'Rewrite WP_CACHE, advanced-cache.php and object-cache.php from the saved settings, for example after another cache plugin was removed.',
+							'powered-cache',
+						)}
+					</p>
+				</div>
+				<RegenerateConfigurationForm />
 			</div>
 
 			<div className="pc-settings-tool-card">

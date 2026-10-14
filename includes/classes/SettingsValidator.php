@@ -21,6 +21,13 @@ class SettingsValidator {
 	const SEVERITY_INFO    = 'info';
 
 	/**
+	 * Issue action: rewrite configuration files from the saved settings.
+	 *
+	 * The settings app shows a "Fix configuration" button for issues with this action.
+	 */
+	const ACTION_REGENERATE_CONFIGURATION = 'regenerate_configuration';
+
+	/**
 	 * Settings whose lines are matched as regular expression fragments.
 	 *
 	 * Keep this list in sync with the places that build `#(line|line)#` patterns from
@@ -262,7 +269,8 @@ class SettingsValidator {
 					'enable_page_cache',
 					self::SEVERITY_WARNING,
 					'wp_cache_disabled',
-					'Page cache needs WP_CACHE enabled in wp-config.php before cached pages can be served.'
+					'Page cache needs WP_CACHE enabled in wp-config.php before cached pages can be served. Use Fix configuration to add it.',
+					self::ACTION_REGENERATE_CONFIGURATION
 				);
 			}
 
@@ -271,7 +279,8 @@ class SettingsValidator {
 					'enable_page_cache',
 					self::SEVERITY_WARNING,
 					'advanced_cache_dropin_inactive',
-					'The advanced-cache.php drop-in is not loading Powered Cache page caching. Save settings to recreate the configuration files.'
+					'The advanced-cache.php drop-in is not loading Powered Cache page caching. Use Fix configuration to recreate it.',
+					self::ACTION_REGENERATE_CONFIGURATION
 				);
 			}
 
@@ -291,7 +300,8 @@ class SettingsValidator {
 					'object_cache',
 					self::SEVERITY_WARNING,
 					'object_cache_dropin_missing',
-					'Object cache is enabled, but wp-content/object-cache.php is missing or not accessible.'
+					'Object cache is enabled, but wp-content/object-cache.php is missing or not accessible. Use Fix configuration to recreate it.',
+					self::ACTION_REGENERATE_CONFIGURATION
 				);
 			}
 
@@ -394,15 +404,22 @@ class SettingsValidator {
 	 * @param string $severity Issue severity.
 	 * @param string $code Issue code.
 	 * @param string $message Human-readable message.
+	 * @param string $action Optional action the settings app can offer, e.g. ACTION_REGENERATE_CONFIGURATION.
 	 *
 	 * @return array
 	 */
-	private function issue( $key, $severity, $code, $message ) {
-		return array(
+	private function issue( $key, $severity, $code, $message, $action = '' ) {
+		$issue = array(
 			'key'      => $key,
 			'severity' => $severity,
 			'code'     => $code,
 			'message'  => $message,
 		);
+
+		if ( '' !== $action ) {
+			$issue['action'] = $action;
+		}
+
+		return $issue;
 	}
 }

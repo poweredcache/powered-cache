@@ -832,6 +832,10 @@
 	gap: 8px;
 }
 
+.pc-settings-validation-summary__fix {
+	margin-top: 12px;
+}
+
 .pc-settings-validation-summary__issues {
 	flex-basis: 100%;
 	list-style: none;

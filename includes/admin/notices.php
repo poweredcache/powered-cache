@@ -170,7 +170,7 @@ function maybe_display_advanced_cache_notices() {
 
 	if ( defined( 'WP_CACHE' ) && WP_CACHE && ( ! defined( 'POWERED_CACHE_PAGE_CACHING' ) || true !== POWERED_CACHE_PAGE_CACHING ) ) {
 		/* translators: %s: advanced-cache.php drop-in path */
-		$err['powered_cache_page_cache'] = sprintf( __( '<code>%s</code> file was edited or deleted. You can recreate the correct configuration files by saving Powered Cache settings.', 'powered-cache' ), basename( WP_CONTENT_DIR ) . '/advanced-cache.php' );
+		$err['powered_cache_page_cache'] = sprintf( __( '<code>%s</code> file was edited or deleted.', 'powered-cache' ), basename( WP_CONTENT_DIR ) . '/advanced-cache.php' );
 	}
 
 	if ( defined( 'POWERED_CACHE_PAGE_CACHING_HAS_PROBLEM' ) && POWERED_CACHE_PAGE_CACHING_HAS_PROBLEM ) {
@@ -201,6 +201,12 @@ function maybe_display_advanced_cache_notices() {
 		<?php foreach ( $err as $error_msg ) : ?>
 			<p><?php echo wp_kses_post( $error_msg ); ?></p>
 		<?php endforeach; ?>
+		<?php
+		// Regenerating cannot help when the drop-in inside the plugin directory is missing.
+		if ( isset( $err['wp_cache'] ) || isset( $err['powered_cache_page_cache'] ) ) {
+			render_regenerate_configuration_button();
+		}
+		?>
 	</div>
 	<?php
 
@@ -244,6 +250,7 @@ function maybe_display_object_cache_notices() {
 			<p><strong><?php esc_html_e( 'Powered Cache:', 'powered-cache' ); ?></strong>
 				<?php echo wp_kses_post( $message ); ?>
 			</p>
+			<?php render_regenerate_configuration_button(); ?>
 		</div>
 		<?php
 		return;
@@ -582,5 +589,24 @@ function maybe_display_premium_version_notice() {
 			<?php echo wp_kses_post( $message ); ?>
 		</p>
 	</div>
+	<?php
+}
+
+/**
+ * Render a button that rewrites the configuration files from the saved settings.
+ *
+ * Posts to the current admin screen; PoweredCache\Admin\Dashboard\process_form_submit()
+ * handles the request on admin_init and redirects back with the result.
+ *
+ * @return void
+ * @since 4.0
+ */
+function render_regenerate_configuration_button() {
+	?>
+	<form method="post" style="margin: 0.5em 0 1em;">
+		<?php wp_nonce_field( 'powered_cache_update_settings', 'powered_cache_settings_nonce' ); ?>
+		<input type="hidden" name="powered_cache_form_action" value="regenerate_configuration" />
+		<?php submit_button( __( 'Fix configuration', 'powered-cache' ), 'primary', 'submit', false ); ?>
+	</form>
 	<?php
 }

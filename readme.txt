@@ -180,6 +180,7 @@ Yes, it’s compatible with PHP 8+
 - [Added] Sucuri cache integration and expanded external cache compatibility guidance.
 - [Added] Wildcard (`*`) support in exclusion rules, including Never Cache URLs, file optimization, lazy load, and CDN exclusions. Re-save settings once after upgrading so existing page cache rules use the new matching.
 - [Added] Manual database cleanup from the Tools section.
+- [Added] A "Fix configuration" action in admin notices, the settings check, and Tools that rewrites `WP_CACHE`, `advanced-cache.php`, and `object-cache.php` from the saved settings, for example after another cache plugin was removed.
 - [Added] An admin notice when Powered Cache Premium is older than 4.0.
 - [Improved] Upgrades from 3.x now preserve existing settings while migrating data and removing retired background-processing jobs.
 - [Improved] Lazy loading now handles dynamically inserted content and background images more reliably.
@@ -191,6 +192,7 @@ Yes, it’s compatible with PHP 8+
 - [Fixed] Exclusion rules copied from URLs, such as `app.js?ver=2`, now match their exact text.
 - [Fixed] Database table optimization on MySQL 8. Optimization is now limited to WordPress tables.
 - [Fixed] Rejected user agents in `.htaccess` rules now match anywhere in the user agent, consistent with nginx and the page cache drop-in.
+- [Fixed] Confirmation and error messages for cache purge, reset, import, and other tools are shown again on the settings page.
 - [Changed] The minimum supported WordPress version is now 6.5.
 
 = 3.7.3 (April 22, 2026) =
