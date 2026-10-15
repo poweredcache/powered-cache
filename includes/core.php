@@ -245,7 +245,7 @@ function admin_scripts( $hook ) {
 		'settingsNonce'   => wp_create_nonce( 'powered_cache_update_settings' ),
 		'purgeAllUrl'     => wp_nonce_url( self_admin_url( 'admin-post.php?action=powered_cache_purge_all_cache' ), 'powered_cache_purge_all_cache' ),
 		'isPremium'       => \PoweredCache\Utils\is_premium(),
-		'upgradeUrl'      => 'https://poweredcache.com/?utm_source=poweredcache&utm_medium=plugin&utm_campaign=settings_upgrade',
+		'upgradeUrl'      => 'https://poweredcache.com/pricing/?utm_source=poweredcache&utm_medium=plugin&utm_campaign=settings_upgrade',
 		'docsUrl'         => \PoweredCache\Utils\get_doc_url( '/' ),
 	];
 

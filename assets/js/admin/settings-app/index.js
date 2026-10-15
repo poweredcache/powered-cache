@@ -1,7 +1,15 @@
 const { __, _n, sprintf } = wp.i18n;
 const { createRoot, render, useCallback, useEffect, useMemo, useState } = wp.element;
-const { Button, Notice, SelectControl, Spinner, TextControl, TextareaControl, ToggleControl } =
-	wp.components;
+const {
+	Button,
+	Modal,
+	Notice,
+	SelectControl,
+	Spinner,
+	TextControl,
+	TextareaControl,
+	ToggleControl,
+} = wp.components;
 const { apiFetch } = wp;
 
 const appConfig = window.poweredCacheSettingsApp || {};
@@ -1411,7 +1419,8 @@ const LockedControlPreview = ({ field }) => {
 						)}
 					</p>
 					<Button
-						href={appConfig.upgradeUrl || 'https://poweredcache.com/'}
+						href={appConfig.upgradeUrl || 'https://poweredcache.com/pricing/'}
+						rel="noopener noreferrer"
 						target="_blank"
 						variant="primary"
 					>
@@ -2071,6 +2080,73 @@ const AdvisorSection = ({ onSelectSection = () => {}, profile = {}, systemStatus
 	</section>
 );
 
+const PremiumComparisonModal = ({ onClose }) => (
+	<Modal
+		className="pc-settings-premium-modal"
+		onRequestClose={onClose}
+		title={__('Unlock more performance with Premium', 'powered-cache')}
+	>
+		<p className="pc-settings-premium-modal__intro">
+			{__(
+				'Keep the familiar Powered Cache workflow while Premium automates the most time-consuming optimization work.',
+				'powered-cache',
+			)}
+		</p>
+		<div className="pc-settings-premium-comparison">
+			<section className="pc-settings-premium-comparison__free">
+				<h3>{__('Powered Cache Free', 'powered-cache')}</h3>
+				<ul>
+					<li>{__('Full-page caching and cache delivery controls', 'powered-cache')}</li>
+					<li>{__('File, media, CDN, and database tools', 'powered-cache')}</li>
+					<li>
+						{__('Manual control over essential performance settings', 'powered-cache')}
+					</li>
+				</ul>
+			</section>
+			<section className="pc-settings-premium-comparison__premium">
+				<h3>{__('Premium Features', 'powered-cache')}</h3>
+				<ul>
+					<li>
+						{__(
+							'Generate Critical CSS and remove unused CSS automatically',
+							'powered-cache',
+						)}
+					</li>
+					<li>{__('Detect and prioritize LCP resources', 'powered-cache')}</li>
+					<li>
+						{__(
+							'Optimize and deliver images globally without using your server resources',
+							'powered-cache',
+						)}
+					</li>
+					<li>{__('Discover and preload URLs from XML sitemaps', 'powered-cache')}</li>
+					<li>{__('Run database cleanups on a schedule', 'powered-cache')}</li>
+					<li>{__('Unlock Premium integrations', 'powered-cache')}</li>
+					<li>
+						{__('Get priority support from the Powered Cache team', 'powered-cache')}
+					</li>
+				</ul>
+			</section>
+		</div>
+		<div className="pc-settings-premium-modal__actions">
+			<p>{__('Every Premium plan includes all features listed above.', 'powered-cache')}</p>
+			<div className="pc-settings-premium-modal__buttons">
+				<Button onClick={onClose} variant="tertiary">
+					{__('Close', 'powered-cache')}
+				</Button>
+				<Button
+					href={appConfig.upgradeUrl || 'https://poweredcache.com/pricing/'}
+					rel="noopener noreferrer"
+					target="_blank"
+					variant="primary"
+				>
+					{__('Get Powered Cache Premium', 'powered-cache')}
+				</Button>
+			</div>
+		</div>
+	</Modal>
+);
+
 const SettingsApp = () => {
 	const [manifest, setManifest] = useState(null);
 	const [settings, setSettings] = useState({});
@@ -2087,6 +2163,7 @@ const SettingsApp = () => {
 	const [premiumInfo, setPremiumInfo] = useState(appConfig.premium || {});
 	const [generatingCssService, setGeneratingCssService] = useState('');
 	const [updatingCompatibilitySource, setUpdatingCompatibilitySource] = useState('');
+	const [isPremiumComparisonOpen, setIsPremiumComparisonOpen] = useState(false);
 
 	useEffect(() => {
 		Promise.all([
@@ -2667,6 +2744,7 @@ const SettingsApp = () => {
 					{!appConfig.isPremium && (
 						<Button
 							href={appConfig.upgradeUrl || '#'}
+							rel="noopener noreferrer"
 							target="_blank"
 							variant="primary"
 						>
@@ -2787,10 +2865,18 @@ const SettingsApp = () => {
 							)}
 						</p>
 					</div>
-					<Button href={appConfig.upgradeUrl || '#'} target="_blank" variant="primary">
+					<Button
+						aria-haspopup="dialog"
+						onClick={() => setIsPremiumComparisonOpen(true)}
+						variant="primary"
+					>
 						{__('Compare Premium', 'powered-cache')}
 					</Button>
 				</div>
+			)}
+
+			{isPremiumComparisonOpen && (
+				<PremiumComparisonModal onClose={() => setIsPremiumComparisonOpen(false)} />
 			)}
 
 			<div className="pc-settings-layout pc-settings-layout--nav-hidden">

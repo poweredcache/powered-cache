@@ -891,7 +891,7 @@ function deactivate_plugin() {
 function action_links( $actions ) {
 
 	$settings_url      = POWERED_CACHE_IS_NETWORK ? network_admin_url( 'admin.php?page=powered-cache' ) : admin_url( 'admin.php?page=powered-cache' );
-	$powered_cache_url = 'https://poweredcache.com/?utm_source=wp_admin&utm_medium=plugin&utm_campaign=plugin_action_links';
+	$powered_cache_url = 'https://poweredcache.com/pricing/?utm_source=wp_admin&utm_medium=plugin&utm_campaign=plugin_action_links';
 
 	$actions['powered_settings'] = sprintf( '<a href="%s">%s</a>', esc_url( $settings_url ), esc_html__( 'Settings', 'powered-cache' ) );
 
