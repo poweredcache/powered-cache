@@ -564,9 +564,12 @@
 }
 
 .pc-settings-safeguards__item {
+	align-items: baseline;
 	background: var(--pc-admin-white);
 	border: 1px solid #c5d9ec;
 	border-radius: 4px;
+	display: flex;
+	gap: 4px;
 	min-width: 138px;
 	padding: 8px 10px;
 }

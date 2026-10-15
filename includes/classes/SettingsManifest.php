@@ -429,12 +429,14 @@ class SettingsManifest {
 				'label'       => 'Append to Critical CSS',
 				'description' => 'Append CSS that must always be included with generated Critical CSS.',
 				'group'       => 'CSS',
+				'control'     => 'textarea',
 				'docs_path'   => 'critical-css',
 			),
 			'critical_css_fallback'          => array(
 				'label'       => 'Fallback Critical CSS',
 				'description' => 'Use this CSS when generated Critical CSS is unavailable for a page.',
 				'group'       => 'CSS',
+				'control'     => 'textarea',
 				'docs_path'   => 'critical-css',
 			),
 			'excluded_css_files'             => array(

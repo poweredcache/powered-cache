@@ -752,7 +752,7 @@ const cssCompatibilityServiceItems = (compatibility = {}) =>
 			const disabledBy = compactLabelList(service.disabledBy || [], 2);
 			let value = sprintf(
 				/* translators: %d: compatibility rule count. */
-				__('%d rules', 'powered-cache'),
+				_n('%d rule', '%d rules', ruleCount, 'powered-cache'),
 				ruleCount,
 			);
 

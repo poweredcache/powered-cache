@@ -86,6 +86,8 @@ class SettingsManifest_Tests extends TestCase {
 		$this->assertSame( 'select', $fields['object_cache']['control'] );
 		$this->assertSame( 'object-caching', $fields['object_cache']['docs_path'] );
 		$this->assertSame( 'duration', $fields['cache_timeout']['control'] );
+		$this->assertSame( 'textarea', $fields['critical_css_appended_content']['control'] );
+		$this->assertSame( 'textarea', $fields['critical_css_fallback']['control'] );
 		$this->assertSame( 'Set how long cached pages stay fresh.', $fields['cache_timeout']['description'] );
 		$this->assertSame( 'Create separate cache variants when these cookies are present.', $fields['vary_cookies']['description'] );
 		$this->assertSame( '/advanced-options/', $fields['vary_cookies']['docs_path'] );
