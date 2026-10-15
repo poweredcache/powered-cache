@@ -1410,7 +1410,9 @@ const LockedControlPreview = ({ field }) => {
 			<div className="pc-settings-locked-control__preview">{control}</div>
 			<div className="pc-settings-locked-control__overlay">
 				<div className="pc-settings-locked-control__panel">
-					<span>{__('Available in Premium', 'powered-cache')}</span>
+					<span className="pc-settings-locked-control__badge">
+						{__('Available in Premium', 'powered-cache')}
+					</span>
 					<strong>{upgradeLabel(field)}</strong>
 					<p>
 						{__(

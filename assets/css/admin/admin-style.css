@@ -1402,7 +1402,7 @@
 	width: 100%;
 }
 
-.pc-settings-locked-control__panel span {
+.pc-settings-locked-control__badge {
 	background: #f0f6fc;
 	border: 1px solid #c5d9ed;
 	border-radius: 999px;
