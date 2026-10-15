@@ -466,7 +466,7 @@ const SystemStatusPanel = ({ onSelectSection = () => {}, systemStatus = {} }) =>
 					>
 						{statusLabel[summaryStatus] || statusLabel.info}
 					</span>
-					<span>
+					<span className="pc-settings-system__count">
 						{sprintf(
 							/* translators: 1: warning count, 2: ready count. */
 							__('%1$d attention, %2$d ready', 'powered-cache'),
@@ -1949,7 +1949,7 @@ const SettingsToolsActions = () => {
 			aria-label={__('Settings tools', 'powered-cache')}
 		>
 			<div className="pc-settings-tool-card">
-				<div>
+				<div className="pc-settings-tool-card__body">
 					<strong>{__('Export Settings', 'powered-cache')}</strong>
 					<p>
 						{__(
@@ -1972,7 +1972,7 @@ const SettingsToolsActions = () => {
 			</div>
 
 			<div className="pc-settings-tool-card">
-				<div>
+				<div className="pc-settings-tool-card__body">
 					<strong>{__('Import Settings', 'powered-cache')}</strong>
 					<p>
 						{__(
@@ -1996,7 +1996,7 @@ const SettingsToolsActions = () => {
 			</div>
 
 			<div className="pc-settings-tool-card">
-				<div>
+				<div className="pc-settings-tool-card__body">
 					<strong>{__('Purge Cache', 'powered-cache')}</strong>
 					<p>
 						{__(
@@ -2011,7 +2011,7 @@ const SettingsToolsActions = () => {
 			</div>
 
 			<div className="pc-settings-tool-card">
-				<div>
+				<div className="pc-settings-tool-card__body">
 					<strong>{__('Regenerate Configuration', 'powered-cache')}</strong>
 					<p>
 						{__(
@@ -2024,7 +2024,7 @@ const SettingsToolsActions = () => {
 			</div>
 
 			<div className="pc-settings-tool-card">
-				<div>
+				<div className="pc-settings-tool-card__body">
 					<strong>{__('Optimize Database', 'powered-cache')}</strong>
 					<p>
 						{__(
@@ -2047,7 +2047,7 @@ const SettingsToolsActions = () => {
 			</div>
 
 			<div className="pc-settings-tool-card pc-settings-tool-card--danger">
-				<div>
+				<div className="pc-settings-tool-card__body">
 					<strong>{__('Reset Settings', 'powered-cache')}</strong>
 					<p>
 						{__(

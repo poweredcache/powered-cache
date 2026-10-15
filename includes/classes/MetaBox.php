@@ -146,7 +146,7 @@ class MetaBox {
 		$is_cache_disabled = (bool) get_post_meta( $post->ID, POST_META_DISABLE_CACHE_KEY, true );
 
 		?>
-		<div id="powered-cache-meta-box">
+		<div id="powered-cache-meta-box" class="powered-cache-meta-box">
 			<?php wp_nonce_field( 'powered_cache_post_meta', 'powered_cache_post_meta_nonce' ); ?>
 			<?php if ( $settings['enable_page_cache'] ) : ?>
 				<fieldset>

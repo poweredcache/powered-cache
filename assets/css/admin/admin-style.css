@@ -3,11 +3,11 @@
  */
 @import url("@wpmudev/shared-ui/dist/css/shared-ui.css");
 
-#powered-cache-meta-box label {
+.powered-cache-meta-box label {
 	vertical-align: middle;
 }
 
-#powered-cache-meta-box input[type="checkbox"] {
+.powered-cache-meta-box input[type="checkbox"] {
 	margin: unset;
 }
 
@@ -298,11 +298,11 @@
 	max-width: 760px;
 }
 
-.pc-settings-recommended-setup__context {
-	color: var(--pc-admin-info-text) !important;
+.pc-settings-recommended-setup .pc-settings-recommended-setup__context {
+	color: var(--pc-admin-info-text);
 	font-size: 12px;
 	font-weight: 600;
-	margin-top: 8px !important;
+	margin-top: 8px;
 }
 
 .pc-settings-recommended-setup .components-button {
@@ -651,25 +651,25 @@
 	margin: 4px 0 0;
 }
 
-.pc-settings-service-card__message {
+.pc-settings-service-card .pc-settings-service-card__message {
 	background: #fff8e5;
 	border-left: 3px solid var(--pc-admin-warning-border);
 	color: var(--pc-admin-warning);
-	margin-top: 12px !important;
+	margin-top: 12px;
 	padding: 8px 10px;
 }
 
-.pc-settings-service-card__compatibility {
+.pc-settings-service-card .pc-settings-service-card__compatibility {
 	background: #eef6ff;
 	border-left: 3px solid var(--pc-admin-primary);
 	color: var(--pc-admin-info-text);
-	margin-top: 10px !important;
+	margin-top: 10px;
 	padding: 8px 10px;
 }
 
-.pc-settings-service-card__url {
+.pc-settings-service-card .pc-settings-service-card__url {
 	font-family: Consolas, Monaco, monospace;
-	margin-top: 10px !important;
+	margin-top: 10px;
 	overflow-wrap: anywhere;
 }
 
@@ -820,7 +820,7 @@
 	white-space: nowrap;
 }
 
-.pc-settings-system__summary > span:last-child {
+.pc-settings-system__count {
 	color: var(--pc-admin-muted);
 	font-size: 12px;
 }
@@ -868,8 +868,8 @@
 	margin: 8px 0 0;
 }
 
-.pc-settings-system-check__message {
-	color: var(--pc-admin-text) !important;
+.pc-settings-system-check .pc-settings-system-check__message {
+	color: var(--pc-admin-text);
 	font-weight: 600;
 }
 
@@ -1007,7 +1007,7 @@
 	box-shadow: 0 0 0 2px var(--pc-admin-primary);
 }
 
-.pc-settings-nav button.is-active {
+.pc-settings-nav .is-active {
 	background: var(--pc-admin-primary);
 	color: var(--pc-admin-white);
 	font-weight: 600;
@@ -1097,10 +1097,6 @@
 	background: #fcfcfd;
 }
 
-.pc-settings-field--locked .pc-settings-field__label {
-	margin-bottom: 0;
-}
-
 .pc-settings-field__heading {
 	align-items: center;
 	display: flex;
@@ -1113,6 +1109,10 @@
 	font-size: 14px;
 	font-weight: 600;
 	margin-bottom: 6px;
+}
+
+.pc-settings-field--locked .pc-settings-field__label {
+	margin-bottom: 0;
 }
 
 .pc-settings-field__description,
@@ -1248,7 +1248,7 @@
 	width: 100%;
 }
 
-.wp-core-ui .pc-settings-duration-control select.pc-settings-duration-control__input {
+.wp-core-ui .pc-settings-duration-control__input {
 	max-width: none;
 }
 
@@ -1335,7 +1335,7 @@
 	padding: 18px 22px;
 }
 
-.pc-settings-tool-card > div {
+.pc-settings-tool-card__body {
 	flex: 1 1 auto;
 }
 

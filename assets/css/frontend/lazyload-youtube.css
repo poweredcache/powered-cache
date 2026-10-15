@@ -1,3 +1,11 @@
+.pcll-youtube-player {
+	height: 0;
+	max-width: 100%;
+	overflow: hidden;
+	padding-bottom: 56.23%;
+	position: relative;
+}
+
 .wp-has-aspect-ratio .pcll-youtube-player {
 	bottom: 0;
 	height: 100%;
@@ -7,14 +15,6 @@
 	right: 0;
 	top: 0;
 	width: 100%;
-}
-
-.pcll-youtube-player {
-	height: 0;
-	max-width: 100%;
-	overflow: hidden;
-	padding-bottom: 56.23%;
-	position: relative;
 }
 
 .pcll-youtube-player iframe {
