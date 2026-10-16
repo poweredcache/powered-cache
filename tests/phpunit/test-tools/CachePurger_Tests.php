@@ -18,6 +18,8 @@ class CachePurger_Tests extends TestCase {
 	 * @var array
 	 */
 	protected $testFiles = array( // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+		'constants.php',
+		'utils.php',
 		'classes/Async/ActionSchedulerProcess.php',
 		'classes/Async/CachePurger.php',
 	);
@@ -74,6 +76,45 @@ class CachePurger_Tests extends TestCase {
 		$purger = new Async\CachePurger();
 		$purger->cancel_process();
 
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * It processes cache purge items immediately when scheduling fails.
+	 */
+	public function test_dispatch_falls_back_to_immediate_cache_purge() {
+		$item = array(
+			'call' => 'powered_cache_flush',
+		);
+
+		\WP_Mock::userFunction(
+			'as_enqueue_async_action',
+			array(
+				'times'  => 1,
+				'return' => false,
+			)
+		);
+
+		\WP_Mock::userFunction( 'PoweredCache\\Utils\\get_settings', array( 'return' => array() ) );
+		\WP_Mock::userFunction(
+			'PoweredCache\\Utils\\log',
+			array(
+				'times'  => 1,
+				'return' => null,
+			)
+		);
+		\WP_Mock::userFunction(
+			'PoweredCache\\Utils\\powered_cache_flush',
+			array(
+				'times'  => 1,
+				'return' => null,
+			)
+		);
+
+		$purger = new Async\CachePurger();
+		$result = $purger->push_to_queue( $item )->save()->dispatch();
+
+		$this->assertTrue( $result );
 		$this->assertConditionsMet();
 	}
 }

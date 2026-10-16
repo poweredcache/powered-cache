@@ -179,6 +179,7 @@ class SettingsSchema_Tests extends TestCase {
 		$this->assertTrue( $recommended['enable_lazy_load'] );
 		$this->assertFalse( $recommended['lazy_load_background_images'] );
 		$this->assertTrue( $recommended['enable_cache_preload'] );
+		$this->assertFalse( $recommended['async_cache_cleaning'] );
 		$this->assertArrayNotHasKey( 'critical_css', $recommended );
 		$this->assertArrayNotHasKey( 'remove_unused_css', $recommended );
 	}

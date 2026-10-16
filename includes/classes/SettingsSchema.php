@@ -227,7 +227,7 @@ class SettingsSchema {
 			'preload_public_tax'           => true,
 			'preload_request_interval'     => 2,
 			'cache_footprint'              => true,
-			'async_cache_cleaning'         => true,
+			'async_cache_cleaning'         => false,
 		);
 
 		if ( self::premium_available( $premium_available ) ) {

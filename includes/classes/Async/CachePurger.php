@@ -69,7 +69,7 @@ class CachePurger extends ActionSchedulerProcess {
 
 				break;
 			case 'delete_page_cache':
-				$urls = $item['urls'];
+				$urls = (array) $item['urls'];
 				if ( ! empty( $urls ) ) {
 					foreach ( $urls as $url ) {
 						\PoweredCache\Utils\log( sprintf( 'delete_page_cache - URL: %s', $url ) );
@@ -80,6 +80,31 @@ class CachePurger extends ActionSchedulerProcess {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Dispatch queued cache purge items.
+	 *
+	 * Cache invalidation must not be dropped when Action Scheduler is not ready
+	 * or cannot persist an action. Process any undispatched items immediately.
+	 *
+	 * @return bool
+	 */
+	public function dispatch() {
+		$dispatched = parent::dispatch();
+
+		if ( $dispatched || empty( $this->data ) ) {
+			return $dispatched;
+		}
+
+		$items      = $this->data;
+		$this->data = array();
+
+		foreach ( $items as $item ) {
+			$this->task( $item );
+		}
+
+		return true;
 	}
 
 
