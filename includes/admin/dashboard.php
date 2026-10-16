@@ -56,7 +56,6 @@ function setup() {
 	add_action( 'network_admin_head', __NAMESPACE__ . '\\admin_menu_icon_styles' );
 
 	add_action( 'admin_init', __NAMESPACE__ . '\\process_form_submit' );
-	add_filter( 'admin_body_class', __NAMESPACE__ . '\\add_sui_admin_body_class' );
 	add_action( 'admin_bar_menu', __NAMESPACE__ . '\\admin_bar_menu', 999 );
 	add_action( 'admin_bar_menu', __NAMESPACE__ . '\\purge_all_admin_bar_menu' );
 	add_action( 'admin_post_powered_cache_purge_all_cache', __NAMESPACE__ . '\\purge_all_cache_action' );
@@ -66,20 +65,6 @@ function setup() {
 	add_filter( 'plugin_action_links_' . plugin_basename( POWERED_CACHE_PLUGIN_FILE ), __NAMESPACE__ . '\\action_links' );
 	add_filter( 'network_admin_plugin_action_links_' . plugin_basename( POWERED_CACHE_PLUGIN_FILE ), __NAMESPACE__ . '\\action_links' );
 	add_filter( 'submenu_file', __NAMESPACE__ . '\\highlight_settings_section_submenu' );
-}
-
-/**
- * Add required class for shared UI
- *
- * @param string $classes css classes for admin area
- *
- * @return string
- * @see https://wpmudev.github.io/shared-ui/installation/
- */
-function add_sui_admin_body_class( $classes ) {
-	$classes .= ' sui-2-12-24 ';
-
-	return $classes;
 }
 
 /**

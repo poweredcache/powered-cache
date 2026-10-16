@@ -116,7 +116,6 @@ We have used code or ideas from the following projects:
 * [WP Redis](https://wordpress.org/plugins/wp-redis/) for redis drop-in.
 * [APCu](https://github.com/l3rady/WordPress-APCu-Object-Cache) for APCu drop-in.
 * [10up Toolkit](https://github.com/10up/10up-toolkit) for building tools.
-* [Shared UI](https://github.com/wpmudev/shared-ui) for admin UI.
 * [Mozart](https://github.com/coenjacobs/mozart) for wrapping dependencies.
 * [CDN Enabler](https://github.com/keycdn/cdn-enabler) for some CDN functionalities.
 * [HtmlMin](https://github.com/voku/HtmlMin) for HTML minification.
