@@ -47,6 +47,7 @@
       "dep_directory": "/includes/classes/Dependencies/",
       "classmap_directory": "/includes/package/",
       "classmap_prefix": "Powered_Cache_",
+      "delete_vendor_directories": false,
       "packages": [
         "matthiasmullie/minify",
         "voku/html-min"
