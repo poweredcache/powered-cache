@@ -981,7 +981,9 @@ const CssOptimizationPanel = ({
 	settings = {},
 	updatingCompatibilitySource = '',
 }) => {
-	const services = Object.entries(cssOptimization.services || {});
+	const services = Object.entries(cssOptimization.services || {}).filter(
+		([, service]) => !service.setting || Boolean(settings[service.setting]),
+	);
 
 	if (!services.length) {
 		return null;
