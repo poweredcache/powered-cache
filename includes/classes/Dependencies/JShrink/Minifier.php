@@ -640,7 +640,7 @@ class Minifier
             if ($this->a === '/' && !$character_class) {
                 break;
             }
-
+            
             if ($this->a === '[') {
                 $character_class = true;
                 $character_class_index = $this->index;
