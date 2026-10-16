@@ -33,7 +33,10 @@ class HtaccessExclusions_Tests extends TestCase {
 	 */
 	private function alternation( array $fragments ) {
 		$method = new \ReflectionMethod( Htaccess::class, 'rewrite_cond_alternation' );
-		$method->setAccessible( true );
+
+		if ( PHP_VERSION_ID < 80100 ) {
+			$method->setAccessible( true );
+		}
 
 		return $method->invoke( null, $fragments );
 	}

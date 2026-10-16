@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace PoweredCache\Dependencies\voku\helper;
 
 /**
- * @noinspection PhpHierarchyChecksInspection
- *
  * {@inheritdoc}
  *
  * @implements \IteratorAggregate<int, \DOMNode>
@@ -14,8 +12,8 @@ namespace PoweredCache\Dependencies\voku\helper;
 class SimpleHtmlDomBlank extends AbstractSimpleHtmlDom implements \IteratorAggregate, SimpleHtmlDomInterface
 {
     /**
-     * @param string $name
-     * @param array  $arguments
+     * @param string       $name
+     * @param array<mixed> $arguments
      *
      * @throws \BadMethodCallException
      *
@@ -26,7 +24,9 @@ class SimpleHtmlDomBlank extends AbstractSimpleHtmlDom implements \IteratorAggre
         $name = \strtolower($name);
 
         if (isset(self::$functionAliases[$name])) {
-            return \call_user_func_array([$this, self::$functionAliases[$name]], $arguments);
+            $method = self::$functionAliases[$name];
+
+            return $this->{$method}(...$arguments);
         }
 
         throw new \BadMethodCallException('Method does not exist');
@@ -43,6 +43,30 @@ class SimpleHtmlDomBlank extends AbstractSimpleHtmlDom implements \IteratorAggre
     public function find(string $selector, $idx = null)
     {
         return new SimpleHtmlDomNodeBlank();
+    }
+
+    /**
+     * Find nodes with a CSS selector or null, if no element is found.
+     *
+     * @param string $selector
+     *
+     * @return null
+     */
+    public function findMultiOrNull(string $selector)
+    {
+        return null;
+    }
+
+    /**
+     * Find one node with a CSS selector or null, if no element is found.
+     *
+     * @param string $selector
+     *
+     * @return null
+     */
+    public function findOneOrNull(string $selector)
+    {
+        return null;
     }
 
     public function getTag(): string
@@ -147,7 +171,7 @@ class SimpleHtmlDomBlank extends AbstractSimpleHtmlDom implements \IteratorAggre
      */
     protected function replaceChildWithString(string $string, bool $putBrokenReplacedBack = true): SimpleHtmlDomInterface
     {
-        return new static();
+        return $this->blankInstance();
     }
 
     /**
@@ -157,7 +181,7 @@ class SimpleHtmlDomBlank extends AbstractSimpleHtmlDom implements \IteratorAggre
      */
     protected function replaceNodeWithString(string $string): SimpleHtmlDomInterface
     {
-        return new static();
+        return $this->blankInstance();
     }
 
     /**
@@ -167,7 +191,7 @@ class SimpleHtmlDomBlank extends AbstractSimpleHtmlDom implements \IteratorAggre
      */
     protected function replaceTextWithString($string): SimpleHtmlDomInterface
     {
-        return new static();
+        return $this->blankInstance();
     }
 
     /**
@@ -242,7 +266,7 @@ class SimpleHtmlDomBlank extends AbstractSimpleHtmlDom implements \IteratorAggre
      */
     public function findOne(string $selector): SimpleHtmlDomInterface
     {
-        return new static();
+        return $this->blankInstance();
     }
 
     /**
@@ -288,7 +312,7 @@ class SimpleHtmlDomBlank extends AbstractSimpleHtmlDom implements \IteratorAggre
      */
     public function getElementById(string $id): SimpleHtmlDomInterface
     {
-        return new static();
+        return $this->blankInstance();
     }
 
     /**
@@ -300,7 +324,7 @@ class SimpleHtmlDomBlank extends AbstractSimpleHtmlDom implements \IteratorAggre
      */
     public function getElementByTagName(string $name): SimpleHtmlDomInterface
     {
-        return new static();
+        return $this->blankInstance();
     }
 
     /**
@@ -406,7 +430,7 @@ class SimpleHtmlDomBlank extends AbstractSimpleHtmlDom implements \IteratorAggre
      */
     public function parentNode(): ?SimpleHtmlDomInterface
     {
-        return new static();
+        return $this->blankInstance();
     }
 
     /**
@@ -448,6 +472,12 @@ class SimpleHtmlDomBlank extends AbstractSimpleHtmlDom implements \IteratorAggre
         return new SimpleHtmlDomNodeBlank();
     }
 
+    private function blankInstance(): self
+    {
+        // @phpstan-ignore new.static (blank wrappers intentionally preserve late static binding)
+        return new static();
+    }
+
     /**
      * Get dom node's inner xml.
      *
@@ -461,12 +491,22 @@ class SimpleHtmlDomBlank extends AbstractSimpleHtmlDom implements \IteratorAggre
     }
 
     /**
-     * Delete
+     * Remove this node from the DOM
      *
      * @return void
      */
     public function delete()
     {
         $this->outertext='';
+    }
+
+    /**
+     * Remove this node from the DOM (alias for delete).
+     *
+     * @return void
+     */
+    public function remove()
+    {
+        $this->delete();
     }
 }
