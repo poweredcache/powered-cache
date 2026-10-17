@@ -3,7 +3,7 @@ Contributors:  poweredcache, wphandle, skopco, m_uysl
 Tags: cache, web vitals, performance, page speed, optimize
 Requires at least:  6.5
 Tested up to:  7.1
-Stable tag:  3.7.3
+Stable tag:  4.0
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -171,7 +171,7 @@ Yes, it’s compatible with PHP 8+
 
 == Changelog ==
 
-= 4.x =
+= 4.0 (October 17, 2026) =
 - [Added] A redesigned React-based settings experience with dedicated sections, direct links, contextual documentation, and accessible controls.
 - [Added] Site-aware recommended defaults and an Optimization Advisor that adapts guidance to the active hosting environment, plugins, and site configuration.
 - [Added] Action Scheduler as the foundation for reliable cache purging, preloading, database cleanup, and CSS optimization jobs.
@@ -194,6 +194,7 @@ Yes, it’s compatible with PHP 8+
 - [Fixed] Rejected user agents in `.htaccess` rules now match anywhere in the user agent, consistent with nginx and the page cache drop-in.
 - [Fixed] Confirmation and error messages for cache purge, reset, import, and other tools are shown again on the settings page.
 - [Changed] The minimum supported WordPress version is now 6.5.
+- [Read the Powered Cache 4.0 announcement](https://poweredcache.com/blog/powered-cache-4-0/)
 
 = 3.7.3 (April 22, 2026) =
 - [Fixed] Regex warnings in page cache drop-in.
