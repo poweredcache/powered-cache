@@ -1209,6 +1209,20 @@
 	width: 100%;
 }
 
+.pc-settings-sensitive-control__status {
+	border-left: 3px solid var(--pc-admin-info-border);
+	color: var(--pc-admin-muted);
+	font-size: 12px;
+	line-height: 1.5;
+	margin: 0;
+	padding-left: 10px;
+}
+
+.pc-settings-sensitive-control__status--warning {
+	border-left-color: var(--pc-admin-warning-border);
+	color: var(--pc-admin-warning);
+}
+
 .pc-settings-duration-control {
 	column-gap: 12px;
 	display: grid;

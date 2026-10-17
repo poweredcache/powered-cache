@@ -115,13 +115,14 @@ class SettingsRestController {
 		$settings   = $repository->all();
 
 		return array(
-			'format'         => self::STATE_FORMAT,
-			'format_version' => SettingsManifest::FORMAT_VERSION,
-			'plugin_version' => defined( 'POWERED_CACHE_VERSION' ) ? POWERED_CACHE_VERSION : '',
-			'settings'       => SettingsRepository::redact_sensitive( $settings ),
-			'validation'     => SettingsValidator::factory( $context )->report( $settings ),
-			'system_status'  => SystemStatus::factory( $settings, $context )->report(),
-			'setup_profile'  => $this->setup_profile( $settings, $context ),
+			'format'             => self::STATE_FORMAT,
+			'format_version'     => SettingsManifest::FORMAT_VERSION,
+			'plugin_version'     => defined( 'POWERED_CACHE_VERSION' ) ? POWERED_CACHE_VERSION : '',
+			'settings'           => SettingsRepository::redact_sensitive( $settings ),
+			'sensitive_settings' => SettingsRepository::sensitive_value_status( $settings ),
+			'validation'         => SettingsValidator::factory( $context )->report( $settings ),
+			'system_status'      => SystemStatus::factory( $settings, $context )->report(),
+			'setup_profile'      => $this->setup_profile( $settings, $context ),
 		);
 	}
 
@@ -147,13 +148,14 @@ class SettingsRestController {
 		$settings     = $save_service->save( $settings, $old_settings );
 
 		return array(
-			'format'         => self::STATE_FORMAT,
-			'format_version' => SettingsManifest::FORMAT_VERSION,
-			'plugin_version' => defined( 'POWERED_CACHE_VERSION' ) ? POWERED_CACHE_VERSION : '',
-			'settings'       => SettingsRepository::redact_sensitive( $settings ),
-			'validation'     => SettingsValidator::factory( $context )->report( $settings ),
-			'system_status'  => SystemStatus::factory( $settings, $context )->report(),
-			'setup_profile'  => $this->setup_profile( $settings, $context ),
+			'format'             => self::STATE_FORMAT,
+			'format_version'     => SettingsManifest::FORMAT_VERSION,
+			'plugin_version'     => defined( 'POWERED_CACHE_VERSION' ) ? POWERED_CACHE_VERSION : '',
+			'settings'           => SettingsRepository::redact_sensitive( $settings ),
+			'sensitive_settings' => SettingsRepository::sensitive_value_status( $settings ),
+			'validation'         => SettingsValidator::factory( $context )->report( $settings ),
+			'system_status'      => SystemStatus::factory( $settings, $context )->report(),
+			'setup_profile'      => $this->setup_profile( $settings, $context ),
 		);
 	}
 
@@ -178,14 +180,15 @@ class SettingsRestController {
 		$this->mark_site_defaults_applied();
 
 		return array(
-			'format'         => self::STATE_FORMAT,
-			'format_version' => SettingsManifest::FORMAT_VERSION,
-			'plugin_version' => defined( 'POWERED_CACHE_VERSION' ) ? POWERED_CACHE_VERSION : '',
-			'settings'       => SettingsRepository::redact_sensitive( $settings ),
-			'validation'     => SettingsValidator::factory( $context )->report( $settings ),
-			'system_status'  => SystemStatus::factory( $settings, $context )->report(),
-			'setup_profile'  => $this->setup_profile( $settings, $context, true ),
-			'applied'        => array_keys( $changes ),
+			'format'             => self::STATE_FORMAT,
+			'format_version'     => SettingsManifest::FORMAT_VERSION,
+			'plugin_version'     => defined( 'POWERED_CACHE_VERSION' ) ? POWERED_CACHE_VERSION : '',
+			'settings'           => SettingsRepository::redact_sensitive( $settings ),
+			'sensitive_settings' => SettingsRepository::sensitive_value_status( $settings ),
+			'validation'         => SettingsValidator::factory( $context )->report( $settings ),
+			'system_status'      => SystemStatus::factory( $settings, $context )->report(),
+			'setup_profile'      => $this->setup_profile( $settings, $context, true ),
+			'applied'            => array_keys( $changes ),
 		);
 	}
 

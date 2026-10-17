@@ -1566,7 +1566,7 @@ const CdnHostnamesControl = ({ disabled, field, settings, onChange }) => {
 	);
 };
 
-const SettingsField = ({ field, issues = [], settings, onChange }) => {
+const SettingsField = ({ field, issues = [], sensitiveSettings = {}, settings, onChange }) => {
 	if (field.control === 'hidden') {
 		return null;
 	}
@@ -1582,6 +1582,28 @@ const SettingsField = ({ field, issues = [], settings, onChange }) => {
 	const value = settings[field.key];
 	const fieldId = `powered-cache-setting-${field.key}`;
 	const descriptionId = `${fieldId}-description`;
+	const sensitiveStatusId = `${fieldId}-saved-status`;
+	const hasSavedSensitiveValue = field.sensitive && !!sensitiveSettings[field.key];
+	const isSensitiveValueMarkedForClear = field.sensitive && value === null;
+	const hasSensitiveReplacement =
+		field.sensitive && typeof value === 'string' && value.length > 0;
+	let sensitiveStatus = '';
+
+	if (hasSavedSensitiveValue) {
+		if (isSensitiveValueMarkedForClear) {
+			sensitiveStatus = __('The saved value will be cleared when you save.', 'powered-cache');
+		} else if (hasSensitiveReplacement) {
+			sensitiveStatus = __(
+				'A new value will replace the saved value when you save.',
+				'powered-cache',
+			);
+		} else {
+			sensitiveStatus = __(
+				'Saved value. It is hidden and will remain unchanged unless you replace or clear it.',
+				'powered-cache',
+			);
+		}
+	}
 
 	if (isLocked) {
 		return <LockedField field={field} issues={issues} />;
@@ -1712,20 +1734,48 @@ const SettingsField = ({ field, issues = [], settings, onChange }) => {
 				<div className="pc-settings-sensitive-control">
 					<TextControl
 						{...controlProps}
-						aria-describedby={descriptionId}
+						aria-describedby={
+							sensitiveStatus
+								? `${descriptionId} ${sensitiveStatusId}`
+								: descriptionId
+						}
 						autoComplete="off"
 						label={field.label}
 						onChange={updateValue}
+						placeholder={
+							hasSavedSensitiveValue && !isSensitiveValueMarkedForClear
+								? __('Enter a new value to replace it', 'powered-cache')
+								: field.placeholder || ''
+						}
+						type={field.input_type || 'text'}
 						value={displayValue(value, field)}
 					/>
-					<Button
-						disabled={!isDependencyMet}
-						onClick={() => onChange(field.key, null)}
-						type="button"
-						variant="link"
-					>
-						{__('Clear saved value', 'powered-cache')}
-					</Button>
+					{sensitiveStatus && (
+						<p
+							className={`pc-settings-sensitive-control__status${
+								isSensitiveValueMarkedForClear
+									? ' pc-settings-sensitive-control__status--warning'
+									: ''
+							}`}
+							id={sensitiveStatusId}
+						>
+							{sensitiveStatus}
+						</p>
+					)}
+					{hasSavedSensitiveValue && (
+						<Button
+							disabled={!isDependencyMet}
+							onClick={() =>
+								onChange(field.key, isSensitiveValueMarkedForClear ? '' : null)
+							}
+							type="button"
+							variant="link"
+						>
+							{isSensitiveValueMarkedForClear
+								? __('Keep saved value', 'powered-cache')
+								: __('Clear saved value', 'powered-cache')}
+						</Button>
+					)}
 				</div>
 			) : (
 				<TextControl
@@ -1756,7 +1806,14 @@ const SettingsField = ({ field, issues = [], settings, onChange }) => {
 	);
 };
 
-const SettingsGroup = ({ groupName, fields, issuesBySetting, settings, onChange }) => (
+const SettingsGroup = ({
+	groupName,
+	fields,
+	issuesBySetting,
+	sensitiveSettings,
+	settings,
+	onChange,
+}) => (
 	<div className="pc-settings-group">
 		<h3>{groupName}</h3>
 		<div className="pc-settings-group__body">
@@ -1766,6 +1823,7 @@ const SettingsGroup = ({ groupName, fields, issuesBySetting, settings, onChange 
 					issues={issuesBySetting[field.key] || []}
 					key={field.key}
 					onChange={onChange}
+					sensitiveSettings={sensitiveSettings}
 					settings={settings}
 				/>
 			))}
@@ -1778,6 +1836,7 @@ const SettingsSection = ({
 	section,
 	fields,
 	issuesBySetting = {},
+	sensitiveSettings,
 	settings,
 	onChange,
 }) => {
@@ -1836,6 +1895,7 @@ const SettingsSection = ({
 						issuesBySetting={issuesBySetting}
 						key={groupName}
 						onChange={onChange}
+						sensitiveSettings={sensitiveSettings}
 						settings={settings}
 					/>
 				))}
@@ -2155,6 +2215,7 @@ const SettingsApp = () => {
 	const [manifest, setManifest] = useState(null);
 	const [settings, setSettings] = useState({});
 	const [initialSettings, setInitialSettings] = useState({});
+	const [sensitiveSettings, setSensitiveSettings] = useState({});
 	const [validation, setValidation] = useState(null);
 	const [systemStatus, setSystemStatus] = useState(null);
 	const [setupProfile, setSetupProfile] = useState(null);
@@ -2178,6 +2239,7 @@ const SettingsApp = () => {
 				setManifest(manifestResponse);
 				setSettings(stateResponse.settings || {});
 				setInitialSettings(stateResponse.settings || {});
+				setSensitiveSettings(stateResponse.sensitive_settings || {});
 				setValidation(stateResponse.validation || null);
 				setSystemStatus(stateResponse.system_status || null);
 				setSetupProfile(stateResponse.setup_profile || null);
@@ -2437,6 +2499,7 @@ const SettingsApp = () => {
 
 				setSettings(nextSettings);
 				setInitialSettings(nextSettings);
+				setSensitiveSettings(response.sensitive_settings || {});
 				setValidation(response.validation || null);
 				setSystemStatus(response.system_status || null);
 				setSetupProfile(response.setup_profile || null);
@@ -2484,6 +2547,7 @@ const SettingsApp = () => {
 
 				setSettings(nextSettings);
 				setInitialSettings(nextSettings);
+				setSensitiveSettings(response.sensitive_settings || {});
 				setValidation(response.validation || null);
 				setSystemStatus(response.system_status || null);
 				setSetupProfile(response.setup_profile || null);
@@ -2684,6 +2748,7 @@ const SettingsApp = () => {
 				onChange={updateSetting}
 				section={activeSectionData}
 				sectionKey={activeSection}
+				sensitiveSettings={sensitiveSettings}
 				settings={settings}
 			/>
 			{activeSection === 'misc' && <SettingsToolsActions />}

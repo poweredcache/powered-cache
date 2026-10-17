@@ -166,6 +166,11 @@ class SettingsManifest_Tests extends TestCase {
 		$this->assertStringContainsString( '.woff2', $fields['preload_fonts']['placeholder'] );
 		$this->assertSame( 'https://dash.cloudflare.com/profile/api-tokens', $fields['cloudflare_api_token']['docs_url'] );
 		$this->assertTrue( $fields['cloudflare_api_token']['sensitive'] );
+		$this->assertSame( 'password', $fields['cloudflare_api_token']['input_type'] );
+		$this->assertArrayNotHasKey( 'input_type', $fields['cloudflare_email'] );
+		$this->assertSame( 'password', $fields['cloudflare_api_key']['input_type'] );
+		$this->assertSame( 'password', $fields['sucuri_api_key']['input_type'] );
+		$this->assertSame( 'password', $fields['sucuri_api_secret']['input_type'] );
 		$this->assertFalse( $fields['cloudflare_zone']['sensitive'] );
 	}
 

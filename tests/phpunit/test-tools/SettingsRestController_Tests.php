@@ -161,6 +161,11 @@ class SettingsRestController_Tests extends TestCase {
 		$this->assertSame( '', $response['settings']['cloudflare_api_token'] );
 		$this->assertSame( '', $response['settings']['sucuri_api_key'] );
 		$this->assertSame( '', $response['settings']['sucuri_api_secret'] );
+		$this->assertTrue( $response['sensitive_settings']['cloudflare_email'] );
+		$this->assertTrue( $response['sensitive_settings']['cloudflare_api_key'] );
+		$this->assertTrue( $response['sensitive_settings']['cloudflare_api_token'] );
+		$this->assertTrue( $response['sensitive_settings']['sucuri_api_key'] );
+		$this->assertTrue( $response['sensitive_settings']['sucuri_api_secret'] );
 		$this->assertArrayHasKey( 'setup_profile', $response );
 		$this->assertSame( 0, $response['setup_profile']['plugin_count'] );
 		$this->assertFalse( $response['setup_profile']['site_defaults_applied'] );

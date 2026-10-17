@@ -398,6 +398,26 @@ class SettingsRepository_Tests extends TestCase {
 	}
 
 	/**
+	 * It reports saved sensitive values without exposing their contents.
+	 */
+	public function test_sensitive_value_status_reports_presence_only() {
+		$status = SettingsRepository::sensitive_value_status(
+			array(
+				'cloudflare_email'     => 'admin@example.test',
+				'cloudflare_api_key'   => '',
+				'cloudflare_api_token' => 'encrypted-token',
+				'sucuri_api_key'       => null,
+			)
+		);
+
+		$this->assertTrue( $status['cloudflare_email'] );
+		$this->assertFalse( $status['cloudflare_api_key'] );
+		$this->assertTrue( $status['cloudflare_api_token'] );
+		$this->assertFalse( $status['sucuri_api_key'] );
+		$this->assertFalse( $status['sucuri_api_secret'] );
+	}
+
+	/**
 	 * It exposes the sensitive key list for REST and export payloads.
 	 */
 	public function test_sensitive_keys_are_shared_by_settings_consumers() {

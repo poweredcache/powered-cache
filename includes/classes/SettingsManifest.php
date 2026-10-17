@@ -168,7 +168,7 @@ class SettingsManifest {
 			'deprecated'    => (bool) $field['deprecated'],
 		);
 
-		foreach ( array( 'docs_fragment', 'docs_path', 'docs_url', 'max', 'min', 'options', 'placeholder', 'visible_when', 'zone_key', 'zone_options' ) as $metadata_key ) {
+		foreach ( array( 'docs_fragment', 'docs_path', 'docs_url', 'input_type', 'max', 'min', 'options', 'placeholder', 'visible_when', 'zone_key', 'zone_options' ) as $metadata_key ) {
 			if ( isset( $metadata[ $metadata_key ] ) ) {
 				$manifest[ $metadata_key ] = $metadata[ $metadata_key ];
 			}
@@ -809,6 +809,7 @@ class SettingsManifest {
 				'description' => 'Use a scoped API token for Cloudflare cache purge requests.',
 				'group'       => 'CDN and proxy',
 				'docs_url'    => 'https://dash.cloudflare.com/profile/api-tokens',
+				'input_type'  => 'password',
 			),
 			'cloudflare_email'               => array(
 				'label'       => 'Cloudflare Email',
@@ -819,6 +820,7 @@ class SettingsManifest {
 				'label'       => 'Cloudflare API Key',
 				'description' => 'Legacy Cloudflare global API key. Prefer an API token when possible.',
 				'group'       => 'CDN and proxy',
+				'input_type'  => 'password',
 			),
 			'cloudflare_zone'                => array(
 				'label'       => 'Cloudflare Zone ID',
@@ -836,11 +838,13 @@ class SettingsManifest {
 				'label'       => 'Sucuri API Key',
 				'description' => 'Enter the Sucuri Website Firewall API key for cache purge requests.',
 				'group'       => 'CDN and proxy',
+				'input_type'  => 'password',
 			),
 			'sucuri_api_secret'              => array(
 				'label'       => 'Sucuri API Secret',
 				'description' => 'Enter the Sucuri Website Firewall API secret. The value is encrypted and hidden after saving.',
 				'group'       => 'CDN and proxy',
+				'input_type'  => 'password',
 			),
 			'enable_heartbeat'               => array(
 				'label'         => 'Heartbeat Control',

@@ -234,6 +234,23 @@ class SettingsRepository {
 	}
 
 	/**
+	 * Report whether sensitive settings have stored values without exposing them.
+	 *
+	 * @param array $settings Settings payload.
+	 *
+	 * @return array
+	 */
+	public static function sensitive_value_status( array $settings ) {
+		$status = array();
+
+		foreach ( self::sensitive_keys() as $key ) {
+			$status[ $key ] = array_key_exists( $key, $settings ) && null !== $settings[ $key ] && '' !== $settings[ $key ];
+		}
+
+		return $status;
+	}
+
+	/**
 	 * Return settings keys that should not be exported with values.
 	 *
 	 * @return array
