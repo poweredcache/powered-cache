@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Powered Cache 4.0\n"
+"Project-Id-Version: Powered Cache 4.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/powered-cache\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-17T09:25:37+00:00\n"
+"POT-Creation-Date: 2026-10-20T11:12:43+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: powered-cache\n"
@@ -21,7 +21,7 @@ msgstr ""
 #: includes/admin/dashboard.php:554
 #: includes/classes/MetaBox.php:127
 #: assets/js/admin/metabox.js:48
-#: assets/js/admin/settings-app/index.js:2713
+#: assets/js/admin/settings-app/index.js:2844
 msgid "Powered Cache"
 msgstr ""
 
@@ -108,7 +108,7 @@ msgid "Settings have been successfully saved, and all cache has been cleared."
 msgstr ""
 
 #: includes/admin/dashboard.php:595
-#: assets/js/admin/settings-app/index.js:2445
+#: assets/js/admin/settings-app/index.js:2555
 msgid "Settings saved."
 msgstr ""
 
@@ -168,7 +168,7 @@ msgid "Some configuration files could not be updated. Make sure wp-config.php an
 msgstr ""
 
 #: includes/admin/dashboard.php:655
-#: assets/js/admin/settings-app/index.js:2013
+#: assets/js/admin/settings-app/index.js:2143
 msgid "Purge All Cache"
 msgstr ""
 
@@ -262,7 +262,7 @@ msgid "<strong>Powered Cache:</strong> One or more plugins have been activated o
 msgstr ""
 
 #: includes/admin/notices.php:387
-#: assets/js/admin/settings-app/index.js:2004
+#: assets/js/admin/settings-app/index.js:2134
 msgid "Purge Cache"
 msgstr ""
 
@@ -297,7 +297,7 @@ msgid "Powered Cache Premium %1$s is not fully compatible with this version of P
 msgstr ""
 
 #: includes/admin/notices.php:609
-#: assets/js/admin/settings-app/index.js:1214
+#: assets/js/admin/settings-app/index.js:1225
 msgid "Fix configuration"
 msgstr ""
 
@@ -461,22 +461,22 @@ msgid "Delayed for user interaction"
 msgstr ""
 
 #: includes/utils.php:270
-#: assets/js/admin/settings-app/index.js:1464
+#: assets/js/admin/settings-app/index.js:1475
 msgid "All files"
 msgstr ""
 
 #: includes/utils.php:271
-#: assets/js/admin/settings-app/index.js:1465
+#: assets/js/admin/settings-app/index.js:1476
 msgid "Images"
 msgstr ""
 
 #: includes/utils.php:272
-#: assets/js/admin/settings-app/index.js:1466
+#: assets/js/admin/settings-app/index.js:1477
 msgid "JavaScript"
 msgstr ""
 
 #: includes/utils.php:273
-#: assets/js/admin/settings-app/index.js:1467
+#: assets/js/admin/settings-app/index.js:1478
 msgid "CSS"
 msgstr ""
 
@@ -508,162 +508,162 @@ msgstr ""
 msgid "Disable UCSS for this post"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:237
+#: assets/js/admin/settings-app/index.js:248
 msgid "Weeks"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:242
+#: assets/js/admin/settings-app/index.js:253
 msgid "Days"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:247
+#: assets/js/admin/settings-app/index.js:258
 msgid "Hours"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:252
+#: assets/js/admin/settings-app/index.js:263
 msgid "Minutes"
 msgstr ""
 
 #. translators: %s: setting label.
-#: assets/js/admin/settings-app/index.js:303
+#: assets/js/admin/settings-app/index.js:314
 #, js-format
 msgid "Enable %s"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:368
+#: assets/js/admin/settings-app/index.js:379
 msgid "Learn more"
 msgstr ""
 
 #. translators: %s: setting label.
-#: assets/js/admin/settings-app/index.js:401
+#: assets/js/admin/settings-app/index.js:412
 #, js-format
 msgid "Unlock %s"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:434
+#: assets/js/admin/settings-app/index.js:445
 msgid "Ready"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:435
-#: assets/js/admin/settings-app/index.js:997
+#: assets/js/admin/settings-app/index.js:446
+#: assets/js/admin/settings-app/index.js:1008
 msgid "Needs attention"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:436
-#: assets/js/admin/settings-app/index.js:581
+#: assets/js/admin/settings-app/index.js:447
+#: assets/js/admin/settings-app/index.js:592
 msgid "Review"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:437
+#: assets/js/admin/settings-app/index.js:448
 msgid "Idle"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:454
+#: assets/js/admin/settings-app/index.js:465
 msgid "System check"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:455
+#: assets/js/admin/settings-app/index.js:466
 msgid "Optimization Advisor"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:457
+#: assets/js/admin/settings-app/index.js:468
 msgid "Verify the runtime pieces that keep cache, preload, and background optimization jobs reliable."
 msgstr ""
 
 #. translators: 1: warning count, 2: ready count.
-#: assets/js/admin/settings-app/index.js:472
+#: assets/js/admin/settings-app/index.js:483
 #, js-format
 msgid "%1$d attention, %2$d ready"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:505
+#: assets/js/admin/settings-app/index.js:516
 msgid "Review setting"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:532
+#: assets/js/admin/settings-app/index.js:543
 msgid "Recommended setup"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:534
+#: assets/js/admin/settings-app/index.js:545
 msgid "Suggested setup path"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:536
+#: assets/js/admin/settings-app/index.js:547
 msgid "Powered Cache detected site signals and highlighted the next settings worth reviewing."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:544
+#: assets/js/admin/settings-app/index.js:555
 msgid "Detected site signals"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:567
+#: assets/js/admin/settings-app/index.js:578
 msgid "Priority"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:597
+#: assets/js/admin/settings-app/index.js:608
 msgid "Applying..."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:598
+#: assets/js/admin/settings-app/index.js:609
 msgid "Apply Recommended Settings"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:603
+#: assets/js/admin/settings-app/index.js:614
 msgid "Quick setup"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:604
+#: assets/js/admin/settings-app/index.js:615
 msgid "Apply recommended settings"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:606
+#: assets/js/admin/settings-app/index.js:617
 msgid "Start with safe settings chosen for this site. You can change them anytime."
 msgstr ""
 
 #. translators: %s: detected site signals.
-#: assets/js/admin/settings-app/index.js:615
+#: assets/js/admin/settings-app/index.js:626
 #, js-format
 msgid "Recommended for this site: %s."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:628
-#: assets/js/admin/settings-app/index.js:636
+#: assets/js/admin/settings-app/index.js:639
+#: assets/js/admin/settings-app/index.js:647
 msgid "Not available"
 msgstr ""
 
 #. translators: %d: byte count.
-#: assets/js/admin/settings-app/index.js:646
+#: assets/js/admin/settings-app/index.js:657
 #, js-format
 msgid "%d B"
 msgstr ""
 
 #. translators: %s: kilobyte count.
-#: assets/js/admin/settings-app/index.js:654
+#: assets/js/admin/settings-app/index.js:665
 #, js-format
 msgid "%s KB"
 msgstr ""
 
 #. translators: %s: megabyte count.
-#: assets/js/admin/settings-app/index.js:661
+#: assets/js/admin/settings-app/index.js:672
 #, js-format
 msgid "%s MB"
 msgstr ""
 
 #. translators: 1: comma-separated labels, 2: remaining label count.
-#: assets/js/admin/settings-app/index.js:700
-#: assets/js/admin/settings-app/index.js:719
+#: assets/js/admin/settings-app/index.js:711
+#: assets/js/admin/settings-app/index.js:730
 #, js-format
 msgid "%1$s, and %2$d more"
 msgstr ""
 
 #. translators: 1: rule count, 2: source summary.
-#: assets/js/admin/settings-app/index.js:737
+#: assets/js/admin/settings-app/index.js:748
 #, js-format
 msgid "%1$d compatibility rule(s) active from %2$s."
 msgstr ""
 
 #. translators: %d: compatibility rule count.
-#: assets/js/admin/settings-app/index.js:755
+#: assets/js/admin/settings-app/index.js:766
 #, js-format
 msgid "%d rule"
 msgid_plural "%d rules"
@@ -671,196 +671,196 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s: compatibility source labels.
-#: assets/js/admin/settings-app/index.js:763
+#: assets/js/admin/settings-app/index.js:774
 #, js-format
 msgid "Paused by %s"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:766
+#: assets/js/admin/settings-app/index.js:777
 msgid "Paused automatically"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:798
-#: assets/js/admin/settings-app/index.js:802
+#: assets/js/admin/settings-app/index.js:809
+#: assets/js/admin/settings-app/index.js:813
 msgid "Applied safeguards"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:805
+#: assets/js/admin/settings-app/index.js:816
 msgid "Automatic compatibility protections are active"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:808
+#: assets/js/admin/settings-app/index.js:819
 msgid "Built-in and detected rules are applied in the background to protect dynamic layouts, forms, checkout, and consent UI. No extra setup is required."
 msgstr ""
 
 #. translators: 1: compatibility rule count, 2: active source count, 3: compatibility source labels.
-#: assets/js/admin/settings-app/index.js:817
+#: assets/js/admin/settings-app/index.js:828
 #, js-format
 msgid "%1$d rules from %2$d source(s): %3$s"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:841
+#: assets/js/admin/settings-app/index.js:852
 msgid "Paused"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:854
+#: assets/js/admin/settings-app/index.js:865
 msgid "Resume"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:855
+#: assets/js/admin/settings-app/index.js:866
 msgid "Pause"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:885
+#: assets/js/admin/settings-app/index.js:896
 msgid "Not run yet"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:895
+#: assets/js/admin/settings-app/index.js:906
 msgid "Auto"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:907
+#: assets/js/admin/settings-app/index.js:918
 msgid "Premium delivery"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:910
+#: assets/js/admin/settings-app/index.js:921
 msgid "Image Delivery"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:912
+#: assets/js/admin/settings-app/index.js:923
 msgid "Serve optimized WebP/AVIF images through the Powered Cache delivery network while keeping the workflow inside your existing media settings."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:925
+#: assets/js/admin/settings-app/index.js:936
 msgid "Delivering optimized images"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:926
+#: assets/js/admin/settings-app/index.js:937
 msgid "Ready to enable"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:930
+#: assets/js/admin/settings-app/index.js:941
 msgid "Purge Image Cache"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:937
+#: assets/js/admin/settings-app/index.js:948
 msgid "Service"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:940
-#: assets/js/admin/settings-app/index.js:2790
+#: assets/js/admin/settings-app/index.js:951
+#: assets/js/admin/settings-app/index.js:2921
 msgid "Enabled"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:941
-#: assets/js/admin/settings-app/index.js:2791
+#: assets/js/admin/settings-app/index.js:952
+#: assets/js/admin/settings-app/index.js:2922
 msgid "Disabled"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:945
+#: assets/js/admin/settings-app/index.js:956
 msgid "Image requests are routed through the optimizer."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:949
+#: assets/js/admin/settings-app/index.js:960
 msgid "Enable image optimization below when the site is ready."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:956
+#: assets/js/admin/settings-app/index.js:967
 msgid "Delivery Domain"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:958
+#: assets/js/admin/settings-app/index.js:969
 msgid "Managed delivery endpoint for optimized images."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:961
+#: assets/js/admin/settings-app/index.js:972
 msgid "Preferred Format"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:964
+#: assets/js/admin/settings-app/index.js:975
 msgid "The best supported output format is selected automatically."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:995
+#: assets/js/admin/settings-app/index.js:1006
 msgid "Healthy"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:996
+#: assets/js/admin/settings-app/index.js:1007
 msgid "Processing"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:998
+#: assets/js/admin/settings-app/index.js:1009
 msgid "Unavailable"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:999
+#: assets/js/admin/settings-app/index.js:1010
 msgid "Waiting for first run"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1007
+#: assets/js/admin/settings-app/index.js:1018
 msgid "Optimization services"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1009
+#: assets/js/admin/settings-app/index.js:1020
 msgid "CSS Optimization Status"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1011
+#: assets/js/admin/settings-app/index.js:1022
 msgid "Track the latest Critical CSS and Used CSS generation results without storing page HTML or CSS payloads."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1018
+#: assets/js/admin/settings-app/index.js:1029
 msgid "Troubleshooting"
 msgstr ""
 
 #. translators: 1: pending queue count, 2: running queue count.
-#: assets/js/admin/settings-app/index.js:1045
+#: assets/js/admin/settings-app/index.js:1056
 #, js-format
 msgid "%1$d queued item(s), %2$d currently running."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1057
+#: assets/js/admin/settings-app/index.js:1068
 msgid "Enable and save the related setting before regenerating."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1070
+#: assets/js/admin/settings-app/index.js:1081
 msgid "Regenerate"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1073
+#: assets/js/admin/settings-app/index.js:1084
 msgid "Generating"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1075
+#: assets/js/admin/settings-app/index.js:1086
 msgid "Retry generation"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1093
+#: assets/js/admin/settings-app/index.js:1104
 msgid "Last run"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1097
+#: assets/js/admin/settings-app/index.js:1108
 msgid "Successful runs"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1101
+#: assets/js/admin/settings-app/index.js:1112
 msgid "Errors"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1105
+#: assets/js/admin/settings-app/index.js:1116
 msgid "Queued"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1109
+#: assets/js/admin/settings-app/index.js:1120
 msgid "HTTP"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1119
+#: assets/js/admin/settings-app/index.js:1130
 msgid "CSS size"
 msgstr ""
 
 #. translators: %d: number of settings requiring attention.
-#: assets/js/admin/settings-app/index.js:1246
+#: assets/js/admin/settings-app/index.js:1257
 #, js-format
 msgid "%d setting needs attention before it can be used reliably."
 msgid_plural "%d settings need attention before they can be used reliably."
@@ -868,424 +868,452 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of settings with notes.
-#: assets/js/admin/settings-app/index.js:1256
+#: assets/js/admin/settings-app/index.js:1267
 #, js-format
 msgid "%d setting has a note."
 msgid_plural "%d settings have notes."
 msgstr[0] ""
 msgstr[1] ""
 
-#: assets/js/admin/settings-app/index.js:1268
+#: assets/js/admin/settings-app/index.js:1279
 msgid "Settings check"
 msgstr ""
 
 #. translators: %d: number of settings.
-#: assets/js/admin/settings-app/index.js:1299
+#: assets/js/admin/settings-app/index.js:1310
 #, js-format
 msgid "%d more checks are shown next to their settings."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1374
-#: assets/js/admin/settings-app/index.js:1663
+#: assets/js/admin/settings-app/index.js:1385
+#: assets/js/admin/settings-app/index.js:1696
 msgid "Unit"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1416
+#: assets/js/admin/settings-app/index.js:1427
 msgid "Available in Premium"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1420
+#: assets/js/admin/settings-app/index.js:1431
 msgid "Upgrade to enable this control and the full Premium optimization toolkit."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1431
-#: assets/js/admin/settings-app/index.js:2755
+#: assets/js/admin/settings-app/index.js:1442
+#: assets/js/admin/settings-app/index.js:2886
 msgid "Upgrade"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1444
-#: assets/js/admin/settings-app/index.js:1821
-#: assets/js/admin/settings-app/index.js:2863
+#: assets/js/admin/settings-app/index.js:1455
+#: assets/js/admin/settings-app/index.js:1892
+#: assets/js/admin/settings-app/index.js:2994
 msgid "Premium"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1503
+#: assets/js/admin/settings-app/index.js:1514
 msgid "Hostname"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1504
+#: assets/js/admin/settings-app/index.js:1515
 msgid "Applies to"
 msgstr ""
 
 #. translators: %d: CDN route number.
-#: assets/js/admin/settings-app/index.js:1512
+#: assets/js/admin/settings-app/index.js:1523
 #, js-format
 msgid "CDN hostname %d"
 msgstr ""
 
 #. translators: %d: CDN route number.
-#: assets/js/admin/settings-app/index.js:1527
+#: assets/js/admin/settings-app/index.js:1538
 #, js-format
 msgid "CDN scope %d"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1551
+#: assets/js/admin/settings-app/index.js:1562
 msgid "Remove"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1563
+#: assets/js/admin/settings-app/index.js:1574
 msgid "Add Hostname"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1727
+#: assets/js/admin/settings-app/index.js:1605
+msgid "The saved value will be cleared when you save."
+msgstr ""
+
+#: assets/js/admin/settings-app/index.js:1607
+msgid "A new value will replace the saved value when you save."
+msgstr ""
+
+#: assets/js/admin/settings-app/index.js:1612
+msgid "Saved value. It is hidden and will remain unchanged unless you replace or clear it."
+msgstr ""
+
+#: assets/js/admin/settings-app/index.js:1758
+msgid "Enter a new value to replace it"
+msgstr ""
+
+#: assets/js/admin/settings-app/index.js:1786
+msgid "Keep saved value"
+msgstr ""
+
+#: assets/js/admin/settings-app/index.js:1787
 msgid "Clear saved value"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1749
+#: assets/js/admin/settings-app/index.js:1810
 msgid "Enable the parent setting to edit this option."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1814
+#: assets/js/admin/settings-app/index.js:1885
 msgid "Section summary"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1817
+#: assets/js/admin/settings-app/index.js:1888
 msgid "settings"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1826
+#: assets/js/admin/settings-app/index.js:1897
 msgid "checks"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1855
-#: assets/js/admin/settings-app/index.js:2835
+#: assets/js/admin/settings-app/index.js:1928
+#: assets/js/admin/settings-app/index.js:2966
 msgid "License"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1858
+#: assets/js/admin/settings-app/index.js:1931
 msgid "Manage Premium license activation for this site."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1863
+#: assets/js/admin/settings-app/index.js:1936
 msgid "License summary"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1867
+#: assets/js/admin/settings-app/index.js:1940
 msgid "Active"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1868
+#: assets/js/admin/settings-app/index.js:1941
 msgid "Inactive"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1874
+#: assets/js/admin/settings-app/index.js:1947
 msgid "Activation"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1889
-#: assets/js/admin/settings-app/index.js:1908
+#: assets/js/admin/settings-app/index.js:1962
+#: assets/js/admin/settings-app/index.js:1981
 msgid "License Key"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1897
+#: assets/js/admin/settings-app/index.js:1970
 msgid "Enter your Premium license key to receive updates and unlock licensed services."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1920
+#: assets/js/admin/settings-app/index.js:1993
 msgid "Deactivate License"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1921
+#: assets/js/admin/settings-app/index.js:1994
 msgid "Activate License"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:1940
-msgid "Reset Powered Cache settings to their defaults? This cannot be undone."
-msgstr ""
-
-#: assets/js/admin/settings-app/index.js:1953
-msgid "Settings tools"
-msgstr ""
-
-#: assets/js/admin/settings-app/index.js:1957
-msgid "Export Settings"
-msgstr ""
-
-#: assets/js/admin/settings-app/index.js:1959
-msgid "Download a portable JSON backup without sensitive credentials."
-msgstr ""
-
-#: assets/js/admin/settings-app/index.js:1973
-msgid "Export JSON"
-msgstr ""
-
-#: assets/js/admin/settings-app/index.js:1980
-msgid "Import Settings"
-msgstr ""
-
-#: assets/js/admin/settings-app/index.js:1982
-msgid "Restore a Powered Cache JSON export without removing data added by extensions."
-msgstr ""
-
-#: assets/js/admin/settings-app/index.js:1997
-msgid "Import JSON"
-msgstr ""
-
-#: assets/js/admin/settings-app/index.js:2006
-msgid "Clear generated cache files and object cache entries."
-msgstr ""
-
-#: assets/js/admin/settings-app/index.js:2019
-msgid "Regenerate Configuration"
-msgstr ""
-
-#: assets/js/admin/settings-app/index.js:2021
-msgid "Rewrite WP_CACHE, advanced-cache.php and object-cache.php from the saved settings, for example after another cache plugin was removed."
-msgstr ""
-
-#: assets/js/admin/settings-app/index.js:2032
-msgid "Optimize Database"
+#: assets/js/admin/settings-app/index.js:2031
+msgid "Run Database Cleanup"
 msgstr ""
 
 #: assets/js/admin/settings-app/index.js:2034
-msgid "Run the cleanup tasks selected in Database settings."
+msgid "Start the selected cleanup tasks once in the background. Scheduled cleanup is a separate Premium feature."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2048
-msgid "Run Cleanup"
+#: assets/js/admin/settings-app/index.js:2038
+msgid "Select at least one cleanup task above before starting a database cleanup."
 msgstr ""
 
 #: assets/js/admin/settings-app/index.js:2055
-#: assets/js/admin/settings-app/index.js:2072
-msgid "Reset Settings"
+msgid "Save & Run Cleanup"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2057
-msgid "Restore default settings while keeping the plugin installed."
+#: assets/js/admin/settings-app/index.js:2056
+msgid "Run Cleanup Now"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2091
-msgid "Unlock more performance with Premium"
+#: assets/js/admin/settings-app/index.js:2070
+msgid "Reset Powered Cache settings to their defaults? This cannot be undone."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2094
-msgid "Keep the familiar Powered Cache workflow while Premium automates the most time-consuming optimization work."
+#: assets/js/admin/settings-app/index.js:2083
+msgid "Settings tools"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2101
-msgid "Powered Cache Free"
+#: assets/js/admin/settings-app/index.js:2087
+msgid "Export Settings"
+msgstr ""
+
+#: assets/js/admin/settings-app/index.js:2089
+msgid "Download a portable JSON backup without sensitive credentials."
 msgstr ""
 
 #: assets/js/admin/settings-app/index.js:2103
-msgid "Full-page caching and cache delivery controls"
+msgid "Export JSON"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2104
-msgid "File, media, CDN, and database tools"
+#: assets/js/admin/settings-app/index.js:2110
+msgid "Import Settings"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2106
-msgid "Manual control over essential performance settings"
-msgstr ""
-
-#: assets/js/admin/settings-app/index.js:2111
-#: assets/js/admin/settings-app/index.js:2836
-msgid "Premium Features"
-msgstr ""
-
-#: assets/js/admin/settings-app/index.js:2114
-msgid "Generate Critical CSS and remove unused CSS automatically"
-msgstr ""
-
-#: assets/js/admin/settings-app/index.js:2119
-msgid "Detect and prioritize LCP resources"
-msgstr ""
-
-#: assets/js/admin/settings-app/index.js:2121
-msgid "Optimize and deliver images globally without using your server resources"
-msgstr ""
-
-#: assets/js/admin/settings-app/index.js:2126
-msgid "Discover and preload URLs from XML sitemaps"
+#: assets/js/admin/settings-app/index.js:2112
+msgid "Restore a Powered Cache JSON export without removing data added by extensions."
 msgstr ""
 
 #: assets/js/admin/settings-app/index.js:2127
-msgid "Run database cleanups on a schedule"
-msgstr ""
-
-#: assets/js/admin/settings-app/index.js:2128
-msgid "Unlock Premium integrations"
-msgstr ""
-
-#: assets/js/admin/settings-app/index.js:2130
-msgid "Get priority support from the Powered Cache team"
+msgid "Import JSON"
 msgstr ""
 
 #: assets/js/admin/settings-app/index.js:2136
+msgid "Clear generated cache files and object cache entries."
+msgstr ""
+
+#: assets/js/admin/settings-app/index.js:2149
+msgid "Regenerate Configuration"
+msgstr ""
+
+#: assets/js/admin/settings-app/index.js:2151
+msgid "Rewrite WP_CACHE, advanced-cache.php and object-cache.php from the saved settings, for example after another cache plugin was removed."
+msgstr ""
+
+#: assets/js/admin/settings-app/index.js:2162
+#: assets/js/admin/settings-app/index.js:2179
+msgid "Reset Settings"
+msgstr ""
+
+#: assets/js/admin/settings-app/index.js:2164
+msgid "Restore default settings while keeping the plugin installed."
+msgstr ""
+
+#: assets/js/admin/settings-app/index.js:2198
+msgid "Unlock more performance with Premium"
+msgstr ""
+
+#: assets/js/admin/settings-app/index.js:2201
+msgid "Keep the familiar Powered Cache workflow while Premium automates the most time-consuming optimization work."
+msgstr ""
+
+#: assets/js/admin/settings-app/index.js:2208
+msgid "Powered Cache Free"
+msgstr ""
+
+#: assets/js/admin/settings-app/index.js:2210
+msgid "Full-page caching and cache delivery controls"
+msgstr ""
+
+#: assets/js/admin/settings-app/index.js:2211
+msgid "File, media, CDN, and database tools"
+msgstr ""
+
+#: assets/js/admin/settings-app/index.js:2213
+msgid "Manual control over essential performance settings"
+msgstr ""
+
+#: assets/js/admin/settings-app/index.js:2218
+#: assets/js/admin/settings-app/index.js:2967
+msgid "Premium Features"
+msgstr ""
+
+#: assets/js/admin/settings-app/index.js:2221
+msgid "Generate Critical CSS and remove unused CSS automatically"
+msgstr ""
+
+#: assets/js/admin/settings-app/index.js:2226
+msgid "Detect and prioritize LCP resources"
+msgstr ""
+
+#: assets/js/admin/settings-app/index.js:2228
+msgid "Optimize and deliver images globally without using your server resources"
+msgstr ""
+
+#: assets/js/admin/settings-app/index.js:2233
+msgid "Discover and preload URLs from XML sitemaps"
+msgstr ""
+
+#: assets/js/admin/settings-app/index.js:2234
+msgid "Run database cleanups on a schedule"
+msgstr ""
+
+#: assets/js/admin/settings-app/index.js:2235
+msgid "Unlock Premium integrations"
+msgstr ""
+
+#: assets/js/admin/settings-app/index.js:2237
+msgid "Get priority support from the Powered Cache team"
+msgstr ""
+
+#: assets/js/admin/settings-app/index.js:2243
 msgid "Every Premium plan includes all features listed above."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2139
+#: assets/js/admin/settings-app/index.js:2246
 msgid "Close"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2147
+#: assets/js/admin/settings-app/index.js:2254
 msgid "Get Powered Cache Premium"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2196
+#: assets/js/admin/settings-app/index.js:2305
 msgid "Settings could not be loaded."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2301
+#: assets/js/admin/settings-app/index.js:2410
 msgid "Autoloaded options could affect persistent object cache performance."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2316
+#: assets/js/admin/settings-app/index.js:2425
 msgid "Autoloaded options could not be checked before enabling this object cache backend."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2453
+#: assets/js/admin/settings-app/index.js:2563
 msgid "Settings could not be saved."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2466
+#: assets/js/admin/settings-app/index.js:2582
 msgid "Apply site defaults? Unsaved changes will be replaced by the site-aware defaults."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2492
+#: assets/js/admin/settings-app/index.js:2609
 msgid "The site defaults were applied. You can customize any setting."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2503
+#: assets/js/admin/settings-app/index.js:2620
 msgid "The site defaults could not be applied."
 msgstr ""
 
 #. translators: %s: CSS optimization service label.
-#: assets/js/admin/settings-app/index.js:2543
+#: assets/js/admin/settings-app/index.js:2660
 #, js-format
 msgid "%s generation has started."
 msgstr ""
 
 #. translators: %s: CSS optimization service label.
-#: assets/js/admin/settings-app/index.js:2562
+#: assets/js/admin/settings-app/index.js:2679
 #, js-format
 msgid "%s generation could not be started."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2621
+#: assets/js/admin/settings-app/index.js:2738
 msgid "Compatibility safeguard paused."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2622
+#: assets/js/admin/settings-app/index.js:2739
 msgid "Compatibility safeguard resumed."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2628
+#: assets/js/admin/settings-app/index.js:2745
 msgid "Compatibility safeguard could not be updated."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2640
+#: assets/js/admin/settings-app/index.js:2757
 msgid "Loading settings..."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2648
+#: assets/js/admin/settings-app/index.js:2765
 msgid "Settings manifest is not available."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2711
+#: assets/js/admin/settings-app/index.js:2842
 msgid "Performance Control Center"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2715
+#: assets/js/admin/settings-app/index.js:2846
 msgid "Configure cache, optimization, media delivery, and integrations from one focused screen."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2723
+#: assets/js/admin/settings-app/index.js:2854
 msgid "Plan status"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2727
+#: assets/js/admin/settings-app/index.js:2858
 msgid "Premium plan"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2728
+#: assets/js/admin/settings-app/index.js:2859
 msgid "Free plan"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2733
+#: assets/js/admin/settings-app/index.js:2864
 msgid "Advanced optimization controls are unlocked."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2737
-#: assets/js/admin/settings-app/index.js:2828
+#: assets/js/admin/settings-app/index.js:2868
+#: assets/js/admin/settings-app/index.js:2959
 msgid "Premium features are shown next to related settings."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2746
+#: assets/js/admin/settings-app/index.js:2877
 msgid "Documentation"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2779
+#: assets/js/admin/settings-app/index.js:2910
 msgid "Settings overview"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2782
+#: assets/js/admin/settings-app/index.js:2913
 msgid "HTML cache delivery for anonymous visits."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2786
+#: assets/js/admin/settings-app/index.js:2917
 msgid "Page Cache"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2795
+#: assets/js/admin/settings-app/index.js:2926
 msgid "Persistent backend for dynamic WordPress data."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2799
+#: assets/js/admin/settings-app/index.js:2930
 msgid "Object Cache"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2808
+#: assets/js/admin/settings-app/index.js:2939
 msgid "Off"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2812
+#: assets/js/admin/settings-app/index.js:2943
 msgid "Core optimizations currently switched on."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2816
+#: assets/js/admin/settings-app/index.js:2947
 msgid "Active Controls"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2824
+#: assets/js/admin/settings-app/index.js:2955
 msgid "Premium optimizations are available on this site."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2864
+#: assets/js/admin/settings-app/index.js:2995
 msgid "Unlock the high-impact optimization layer"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2866
+#: assets/js/admin/settings-app/index.js:2997
 msgid "Add Critical CSS, unused CSS cleanup, LCP optimization, and image delivery without changing how you manage the plugin."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2877
+#: assets/js/admin/settings-app/index.js:3008
 msgid "Compare Premium"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2889
+#: assets/js/admin/settings-app/index.js:3020
 msgid "Settings sections"
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2930
+#: assets/js/admin/settings-app/index.js:3061
 msgid "You have unsaved changes."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2931
+#: assets/js/admin/settings-app/index.js:3062
 msgid "All changes saved."
 msgstr ""
 
-#: assets/js/admin/settings-app/index.js:2939
+#: assets/js/admin/settings-app/index.js:3070
 msgid "Save Settings"
 msgstr ""
