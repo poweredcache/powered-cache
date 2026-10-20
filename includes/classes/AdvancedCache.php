@@ -357,6 +357,10 @@ class AdvancedCache {
 	 * @since 2.5.3
 	 */
 	public function purge_on_site_update( $new_site, $old_site ) {
+		if ( ! $this->site_update_affects_cache( $new_site, $old_site ) ) {
+			return;
+		}
+
 		switch_to_blog( $old_site->id );
 		if ( $this->settings['async_cache_cleaning'] ) {
 			$this->cache_purger->push_to_queue( [ 'call' => 'clean_site_cache_dir' ] );
@@ -365,6 +369,32 @@ class AdvancedCache {
 			clean_site_cache_dir();
 		}
 		restore_current_blog();
+	}
+
+	/**
+	 * Determine whether a site update can affect its cached pages.
+	 *
+	 * WordPress updates a site's last_updated value after ordinary post changes.
+	 * That timestamp alone must not trigger a site purge or rebuild the preload queue.
+	 *
+	 * @param \WP_Site $new_site New site object.
+	 * @param \WP_Site $old_site Old site object.
+	 *
+	 * @return bool
+	 */
+	protected function site_update_affects_cache( $new_site, $old_site ) {
+		$cache_relevant_fields = array( 'site_id', 'domain', 'path', 'public', 'archived', 'mature', 'spam', 'deleted', 'lang_id' );
+
+		foreach ( $cache_relevant_fields as $field ) {
+			$new_value = isset( $new_site->{$field} ) ? $new_site->{$field} : null;
+			$old_value = isset( $old_site->{$field} ) ? $old_site->{$field} : null;
+
+			if ( (string) $new_value !== (string) $old_value ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
