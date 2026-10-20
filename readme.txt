@@ -3,7 +3,7 @@ Contributors:  poweredcache, wphandle, skopco, m_uysl
 Tags: cache, web vitals, performance, page speed, optimize
 Requires at least:  6.5
 Tested up to:  7.1
-Stable tag:  4.0
+Stable tag:  4.0.1
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -159,17 +159,25 @@ Yes, it’s compatible with PHP 8+
 
 
 == Screenshots ==
-1. Basic Options
+1. Cache Configuration
 2. Advanced Options
 3. File Optimization
 4. Media Optimization
 5. CDN Integration
 6. Preload Options
 7. Database Optimization
-8. Extensions
+8. Integrations
+9. Optimization Advisor
+10. Tools
 
 
 == Changelog ==
+
+= 4.0.1 (October 20, 2026) =
+- [Improved] Made one-time database cleanup clearer with a dedicated save-and-run action in Database settings.
+- [Improved] Saved integration credentials now show a clear saved state without returning their contents to the browser.
+- [Fixed] Prevented ordinary post updates on multisite installations from triggering a full site purge and preload queue rebuild.
+- [Fixed] Prevented Action Scheduler function conflicts when another plugin loads its bundled copy first.
 
 = 4.0 (October 17, 2026) =
 - [Added] A redesigned React-based settings experience with dedicated sections, direct links, contextual documentation, and accessible controls.
