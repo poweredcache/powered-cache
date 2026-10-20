@@ -1,5 +1,5 @@
 const { __, _n, sprintf } = wp.i18n;
-const { createRoot, render, useCallback, useEffect, useMemo, useState } = wp.element;
+const { createRoot, render, useCallback, useEffect, useMemo, useRef, useState } = wp.element;
 const {
 	Button,
 	Modal,
@@ -28,6 +28,17 @@ if (appConfig.restNonce && apiFetch.createNonceMiddleware) {
 const route = (path) => `/${appConfig.namespace || 'powered-cache/v1'}${path}`;
 
 const sectionParam = 'section';
+
+const databaseCleanupSettingKeys = [
+	'db_cleanup_post_revisions',
+	'db_cleanup_auto_drafts',
+	'db_cleanup_trashed_posts',
+	'db_cleanup_spam_comments',
+	'db_cleanup_trashed_comments',
+	'db_cleanup_expired_transients',
+	'db_cleanup_all_transients',
+	'db_cleanup_optimize_tables',
+];
 
 /**
  * Build a readable fallback label.
@@ -1835,6 +1846,7 @@ const SettingsSection = ({
 	sectionKey,
 	section,
 	fields,
+	footer = null,
 	issuesBySetting = {},
 	sensitiveSettings,
 	settings,
@@ -1900,6 +1912,7 @@ const SettingsSection = ({
 					/>
 				))}
 			</div>
+			{footer}
 		</section>
 	);
 };
@@ -1987,6 +2000,63 @@ const LicenseSection = ({ section, premiumInfo }) => {
 				</div>
 			</div>
 		</section>
+	);
+};
+
+const DatabaseCleanupPanel = ({ hasSelectedTasks, isDirty, isSaving, onSave }) => {
+	const formRef = useRef(null);
+	const [isStarting, setIsStarting] = useState(false);
+	const formUrl = appConfig.settingsFormUrl || window.location.href;
+	const nonce = appConfig.settingsNonce || '';
+
+	const runCleanup = () => {
+		setIsStarting(true);
+
+		const saveRequest = isDirty ? onSave() : Promise.resolve();
+
+		saveRequest
+			.then(() => {
+				if (formRef.current) {
+					formRef.current.submit();
+				}
+			})
+			.catch(() => {
+				setIsStarting(false);
+			});
+	};
+
+	return (
+		<div className="pc-settings-section-action">
+			<div className="pc-settings-section-action__body">
+				<strong>{__('Run Database Cleanup', 'powered-cache')}</strong>
+				<p>
+					{hasSelectedTasks
+						? __(
+								'Start the selected cleanup tasks once in the background. Scheduled cleanup is a separate Premium feature.',
+								'powered-cache',
+							)
+						: __(
+								'Select at least one cleanup task above before starting a database cleanup.',
+								'powered-cache',
+							)}
+				</p>
+			</div>
+			<form action={formUrl} method="post" ref={formRef}>
+				<input name="powered_cache_settings_nonce" type="hidden" value={nonce} />
+				<input name="powered_cache_form_action" type="hidden" value="optimize_database" />
+				<Button
+					disabled={!hasSelectedTasks || isSaving || isStarting}
+					isBusy={isStarting}
+					onClick={runCleanup}
+					type="button"
+					variant="primary"
+				>
+					{isDirty
+						? __('Save & Run Cleanup', 'powered-cache')
+						: __('Run Cleanup Now', 'powered-cache')}
+				</Button>
+			</form>
+		</div>
 	);
 };
 
@@ -2085,29 +2155,6 @@ const SettingsToolsActions = () => {
 					</p>
 				</div>
 				<RegenerateConfigurationForm />
-			</div>
-
-			<div className="pc-settings-tool-card">
-				<div className="pc-settings-tool-card__body">
-					<strong>{__('Optimize Database', 'powered-cache')}</strong>
-					<p>
-						{__(
-							'Run the cleanup tasks selected in Database settings.',
-							'powered-cache',
-						)}
-					</p>
-				</div>
-				<form action={formUrl} method="post">
-					<input name="powered_cache_settings_nonce" type="hidden" value={nonce} />
-					<Button
-						name="powered_cache_form_action"
-						type="submit"
-						value="optimize_database"
-						variant="secondary"
-					>
-						{__('Run Cleanup', 'powered-cache')}
-					</Button>
-				</form>
 			</div>
 
 			<div className="pc-settings-tool-card pc-settings-tool-card--danger">
@@ -2483,11 +2530,11 @@ const SettingsApp = () => {
 			.catch(() => {});
 	};
 
-	const saveSettings = () => {
+	const persistSettings = () => {
 		setIsSaving(true);
 		setNotice(null);
 
-		apiFetch({
+		return apiFetch({
 			path: route('/settings'),
 			method: 'POST',
 			data: {
@@ -2510,15 +2557,21 @@ const SettingsApp = () => {
 
 				refreshCssOptimizationStatus();
 			})
-			.catch(() => {
+			.catch((error) => {
 				setNotice({
 					status: 'error',
 					message: __('Settings could not be saved.', 'powered-cache'),
 				});
+
+				throw error;
 			})
 			.finally(() => {
 				setIsSaving(false);
 			});
+	};
+
+	const saveSettings = () => {
+		persistSettings().catch(() => {});
 	};
 
 	const applyRecommendedSetup = () => {
@@ -2740,6 +2793,9 @@ const SettingsApp = () => {
 		settings.enable_cache_preload,
 	].filter(Boolean).length;
 	const isAdvisorSection = activeSection === 'advisor';
+	const hasSelectedDatabaseCleanupTasks = databaseCleanupSettingKeys.some(
+		(key) => !!settings[key],
+	);
 	let mainSection = (
 		<>
 			<SettingsSection
@@ -2750,6 +2806,16 @@ const SettingsApp = () => {
 				sectionKey={activeSection}
 				sensitiveSettings={sensitiveSettings}
 				settings={settings}
+				footer={
+					activeSection === 'database' ? (
+						<DatabaseCleanupPanel
+							hasSelectedTasks={hasSelectedDatabaseCleanupTasks}
+							isDirty={isDirty}
+							isSaving={isSaving}
+							onSave={persistSettings}
+						/>
+					) : null
+				}
 			/>
 			{activeSection === 'misc' && <SettingsToolsActions />}
 		</>

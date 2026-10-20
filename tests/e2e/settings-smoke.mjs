@@ -184,6 +184,23 @@ const assertAdvisorSection = async (page) => {
 	assert(savebarCount === 0, 'Advisor section should not show the sticky Save Settings bar.');
 };
 
+const assertDatabaseCleanupAction = async (page) => {
+	await openSection(page, 'database');
+	assert((await activeSubmenuText(page)) === 'Database', 'Database submenu item is not active.');
+
+	const cleanupAction = page.locator('.pc-settings-section-action');
+	await cleanupAction.waitFor();
+
+	assert(
+		(await cleanupAction.locator('text=Run Database Cleanup').count()) === 1,
+		'Database cleanup action was not found.',
+	);
+	assert(
+		(await cleanupAction.locator('button:has-text("Run Cleanup Now")').count()) === 1,
+		'Database cleanup button does not describe its one-time behavior.',
+	);
+};
+
 const assertLicenseSection = async (page) => {
 	await openSection(page, 'license');
 
@@ -239,6 +256,7 @@ const run = async () => {
 		await assertNoLegacyCssGenerationLinks(page);
 
 		await assertMediaLazyLoadControls(page);
+		await assertDatabaseCleanupAction(page);
 		await assertAdvisorSection(page);
 
 		await maybeAssertLicenseSection(page);

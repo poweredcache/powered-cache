@@ -1060,6 +1060,36 @@
 	display: block;
 }
 
+.pc-settings-section-action {
+	align-items: center;
+	background: #f6f7f7;
+	border-top: 1px solid #dcdcde;
+	display: flex;
+	gap: 24px;
+	justify-content: space-between;
+	padding: 18px 22px;
+}
+
+.pc-settings-section-action__body {
+	flex: 1 1 auto;
+}
+
+.pc-settings-section-action strong {
+	color: var(--pc-admin-text);
+	display: block;
+	font-size: 14px;
+	margin-bottom: 6px;
+}
+
+.pc-settings-section-action p {
+	color: var(--pc-admin-muted);
+	margin: 0;
+}
+
+.pc-settings-section-action form {
+	flex: 0 0 auto;
+}
+
 .pc-settings-group {
 	border-bottom: 1px solid #dcdcde;
 }
@@ -1620,6 +1650,12 @@
 	.pc-settings-tool-card {
 		align-items: stretch;
 		flex-direction: column;
+	}
+
+	.pc-settings-section-action {
+		align-items: stretch;
+		flex-direction: column;
+		gap: 14px;
 	}
 
 	.pc-settings-tool-card form {
