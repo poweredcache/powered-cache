@@ -48,8 +48,27 @@ if ( file_exists( POWERED_CACHE_PATH . 'vendor/autoload.php' ) ) {
 	require_once POWERED_CACHE_PATH . 'vendor/autoload.php';
 }
 
-// load packages
-require_once POWERED_CACHE_PACKAGE_DIR . 'woocommerce/action-scheduler/action-scheduler.php';
+/**
+ * Load the bundled Action Scheduler when another plugin has not already provided its API.
+ *
+ * Loading at a negative plugins_loaded priority lets all plugin files register their
+ * bundled copy first while still meeting Action Scheduler's load-order contract.
+ *
+ * @return void
+ */
+function load_action_scheduler() {
+	if ( function_exists( 'as_enqueue_async_action' ) ) {
+		return;
+	}
+
+	require_once POWERED_CACHE_PACKAGE_DIR . 'woocommerce/action-scheduler/action-scheduler.php';
+}
+
+if ( did_action( 'plugins_loaded' ) && ! doing_action( 'plugins_loaded' ) ) {
+	load_action_scheduler();
+} else {
+	add_action( 'plugins_loaded', __NAMESPACE__ . '\\load_action_scheduler', -10 );
+}
 
 /**
  * PSR-4-ish autoloading

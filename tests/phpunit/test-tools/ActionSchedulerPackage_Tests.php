@@ -43,11 +43,27 @@ class ActionSchedulerPackage_Tests extends TestCase {
 		$main_plugin_file = PROJECT . '../powered-cache.php';
 		$contents         = file_get_contents( $main_plugin_file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 
+		$guard_position     = strpos( $contents, "function_exists( 'as_enqueue_async_action' )" );
 		$package_position   = strpos( $contents, "require_once POWERED_CACHE_PACKAGE_DIR . 'woocommerce/action-scheduler/action-scheduler.php';" );
 		$bootstrap_position = strpos( $contents, 'Core\\setup();' );
 
+		$this->assertIsInt( $guard_position );
 		$this->assertIsInt( $package_position );
 		$this->assertIsInt( $bootstrap_position );
+		$this->assertLessThan( $package_position, $guard_position );
 		$this->assertLessThan( $bootstrap_position, $package_position );
+	}
+
+	/**
+	 * It waits until all plugin files load before choosing the bundled scheduler.
+	 */
+	public function test_action_scheduler_loader_allows_an_existing_api_to_win() {
+		$main_plugin_file = PROJECT . '../powered-cache.php';
+		$contents         = file_get_contents( $main_plugin_file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+
+		$this->assertStringContainsString(
+			"add_action( 'plugins_loaded', __NAMESPACE__ . '\\\\load_action_scheduler', -10 );",
+			$contents
+		);
 	}
 }
