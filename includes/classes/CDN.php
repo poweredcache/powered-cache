@@ -269,7 +269,7 @@ class CDN {
 	 * @return mixed
 	 */
 	public function cdn_optimizer_url( $optimized_url, $path ) {
-		if ( '-' === $path[0] ) {
+		if ( isset( $path[0] ) && '-' === $path[0] ) {
 			$path = @gzuncompress( base64_decode( substr( $path, 1 ) ) ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged,WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 		}
 

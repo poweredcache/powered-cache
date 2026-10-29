@@ -76,6 +76,29 @@ class CDN_Tests extends TestCase {
 		$this->assertSame( '//css.example.test/wp-content/cache/min/app.css', $optimized_url );
 	}
 
+	/**
+	 * Empty optimizer paths use the default CDN hostname without a PHP warning.
+	 */
+	public function test_cdn_optimizer_url_uses_default_hostname_when_path_is_empty(): void {
+		$cdn = new CDN();
+
+		$optimized_url = $cdn->cdn_optimizer_url( 'https://example.test/wp-content/cache/min/app.js', '' );
+
+		$this->assertSame( '//cdn.example.test/wp-content/cache/min/app.js', $optimized_url );
+	}
+
+	/**
+	 * Compressed optimizer paths retain their file-specific CDN hostname.
+	 */
+	public function test_cdn_optimizer_url_uses_zone_specific_hostname_for_compressed_path(): void {
+		$cdn  = new CDN();
+		$path = '-' . base64_encode( gzcompress( 'app.css' ) );
+
+		$optimized_url = $cdn->cdn_optimizer_url( 'https://example.test/wp-content/cache/min/app.css', $path );
+
+		$this->assertSame( '//css.example.test/wp-content/cache/min/app.css', $optimized_url );
+	}
+
 	public function tearDown(): void {
 		unset( $_SERVER['HTTP_HOST'], $GLOBALS['powered_cache_cdn_addresses'] );
 
