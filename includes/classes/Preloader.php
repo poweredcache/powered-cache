@@ -661,7 +661,8 @@ class Preloader {
 		if ( 0 === strpos( $font_url, '//' ) ) {
 			$font_url = 'https:' . $font_url;
 		} elseif ( 0 === strpos( $font_url, '/' ) ) {
-			$font_url = home_url( $font_url );
+			// Root-relative assets belong to the origin, without a language or install path.
+			$font_url = preg_replace( '#^(https?://[^/]+).*$#i', '$1', home_url( '/' ) ) . $font_url;
 		} elseif ( ! preg_match( '#^https?://#i', $font_url ) ) {
 			return '';
 		}

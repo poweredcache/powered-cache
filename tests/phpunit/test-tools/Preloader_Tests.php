@@ -189,6 +189,45 @@ class Preloader_Tests extends TestCase {
 	}
 
 	/**
+	 * Root-relative fonts use the current origin, including mapped domains and ports.
+	 *
+	 * @dataProvider font_origin_provider
+	 *
+	 * @param string $home_url Language-specific home URL.
+	 * @param string $origin   Expected asset origin.
+	 */
+	public function test_root_relative_font_ignores_language_and_install_paths( $home_url, $origin ) {
+		$this->mock_preload_font_settings();
+		\WP_Mock::userFunction(
+			'home_url',
+			array(
+				'args'   => array( '/' ),
+				'return' => $home_url,
+			)
+		);
+
+		$preloader = new Preloader();
+		$fonts     = $preloader->get_preload_fonts();
+
+		$this->assertContains( $origin . '/wp-content/uploads/local.woff', $fonts );
+		$this->assertContains( 'https://cdn.example.test/fonts/app.woff2', $fonts );
+	}
+
+	/**
+	 * Language and WordPress installation paths must not prefix root-relative assets.
+	 *
+	 * @return array
+	 */
+	public function font_origin_provider() {
+		return array(
+			'directory language' => array( 'https://example.test/es/', 'https://example.test' ),
+			'subdirectory'       => array( 'https://example.test/blog/es/', 'https://example.test' ),
+			'mapped domain'      => array( 'https://es.example.test/', 'https://es.example.test' ),
+			'custom port'        => array( 'http://example.test:8080/es/', 'http://example.test:8080' ),
+		);
+	}
+
+	/**
 	 * Mock stored settings with representative font preload values.
 	 */
 	private function mock_preload_font_settings() {

@@ -23,6 +23,64 @@ if ( class_exists( '\SitePress' ) ) {
 	add_action( 'admin_bar_menu', __NAMESPACE__ . '\\admin_bar_preload_cache_menu' );
 	add_action( 'admin_post_powered_cache_purge_page_cache_for_lang', __NAMESPACE__ . '\\purge_page_cache' );
 	add_filter( 'populate_preload_queue_urls', __NAMESPACE__ . '\\add_language_urls_to_queue' );
+	add_filter( 'powered_cache_post_related_urls', __NAMESPACE__ . '\\add_post_language_urls', 10, 2 );
+	add_action( 'wpml_after_save_post', __NAMESPACE__ . '\\purge_translated_post' );
+	add_action( 'wpml_pro_translation_completed', __NAMESPACE__ . '\\purge_translated_post' );
+
+	/**
+	 * Include the saved post's language archives and its other translations in purges.
+	 *
+	 * @param array $urls    Related URLs.
+	 * @param int   $post_id Post ID.
+	 *
+	 * @return array
+	 */
+	function add_post_language_urls( $urls, $post_id = 0 ) {
+		if ( ! $post_id ) {
+			return $urls;
+		}
+
+		$language = apply_filters( 'wpml_post_language_details', null, $post_id );
+
+		if ( is_array( $language ) && ! empty( $language['language_code'] ) ) {
+			foreach ( $urls as $url ) {
+				if ( is_string( $url ) && '' !== $url ) {
+					$urls[] = apply_filters( 'wpml_permalink', $url, $language['language_code'], true );
+				}
+			}
+		}
+
+		$element_type = 'post_' . get_post_type( $post_id );
+		$trid         = apply_filters( 'wpml_element_trid', null, $post_id, $element_type );
+
+		if ( $trid ) {
+			$translations = apply_filters( 'wpml_get_element_translations', null, $trid, $element_type );
+			foreach ( (array) $translations as $translation ) {
+				if ( empty( $translation->element_id ) || (int) $translation->element_id === (int) $post_id || 'publish' !== get_post_status( $translation->element_id ) ) {
+					continue;
+				}
+
+				$url = get_permalink( $translation->element_id );
+				if ( $url && ! empty( $translation->language_code ) ) {
+					$urls[] = apply_filters( 'wpml_permalink', $url, $translation->language_code, true );
+				}
+			}
+		}
+
+		return array_values( array_unique( array_filter( $urls ) ) );
+	}
+
+	/**
+	 * Purge after WPML has attached a newly saved translation to its language group.
+	 *
+	 * @param int $post_id Saved translation ID.
+	 */
+	function purge_translated_post( $post_id ) {
+		$settings = \PoweredCache\Utils\get_settings();
+		if ( $settings['enable_page_cache'] && 'publish' === get_post_status( $post_id ) ) {
+			\PoweredCache\AdvancedCache::factory()->purge_post( $post_id );
+		}
+	}
 
 	/**
 	 * Create separate configurations when WPML used in domain mapping mode
@@ -277,10 +335,10 @@ if ( class_exists( '\SitePress' ) ) {
 		// preload particular language
 		if ( isset( $_GET['lang_code'] ) && 'all' !== $_GET['lang_code'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			foreach ( $urls as $url ) {
-				$lang_urls[] = apply_filters( 'wpml_permalink', $url, sanitize_key( $_GET['lang_code'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				$lang_urls[] = apply_filters( 'wpml_permalink', $url, sanitize_key( $_GET['lang_code'] ), true ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			}
 
-			return $lang_urls;
+			return array_values( array_unique( array_filter( $lang_urls ) ) );
 		}
 
 		if ( ! method_exists( $sitepress, 'get_active_languages' ) ) {
@@ -290,11 +348,11 @@ if ( class_exists( '\SitePress' ) ) {
 		// preload all languages
 		foreach ( $sitepress->get_active_languages() as $lang ) {
 			foreach ( $urls as $url ) {
-				$lang_urls[] = apply_filters( 'wpml_permalink', $url, $lang['code'] );
+				$lang_urls[] = apply_filters( 'wpml_permalink', $url, $lang['code'], true );
 			}
 		}
 		$urls = array_merge( $urls, $lang_urls );
 
-		return $urls;
+		return array_values( array_unique( array_filter( $urls ) ) );
 	}
 }
