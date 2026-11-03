@@ -3,7 +3,7 @@ Contributors:  poweredcache, wphandle, skopco, m_uysl
 Tags: cache, web vitals, performance, page speed, optimize
 Requires at least:  6.5
 Tested up to:  7.1
-Stable tag:  4.0.1
+Stable tag:  4.0.2
 License: GPLv2 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://poweredcache.com/donate/
@@ -172,6 +172,13 @@ Yes, it’s compatible with PHP 8+
 
 
 == Changelog ==
+
+= 4.0.2 (November 03, 2026) =
+- [Fixed] Prevented a PHP warning when CDN URL rewriting receives an empty optimized asset path.
+- [Fixed] WPML post updates now also purge the home page and related archives in the post's language.
+- [Fixed] Saving or publishing a WPML translation now purges other published translations so hreflang links and language switchers stay current.
+- [Fixed] Root-relative font preload URLs no longer include language or WordPress installation directory prefixes.
+- [Fixed] WPML cache preloading now resolves translated post and taxonomy slugs instead of only changing the language prefix.
 
 = 4.0.1 (October 20, 2026) =
 - [Improved] Made one-time database cleanup clearer with a dedicated save-and-run action in Database settings.
