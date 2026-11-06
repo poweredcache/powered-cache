@@ -28,6 +28,100 @@ if ( class_exists( '\SitePress' ) ) {
 	add_action( 'wpml_pro_translation_completed', __NAMESPACE__ . '\\purge_translated_post' );
 
 	/**
+	 * Resolve translated slugs, falling back to language conversion for non-object URLs.
+	 *
+	 * @param string $url            Original URL.
+	 * @param string $language_code  Target language code.
+	 * @param bool   $allow_fallback Whether unchanged URLs may use ordinary language conversion.
+	 *
+	 * @return string
+	 */
+	function resolve_language_url( $url, $language_code, $allow_fallback = true ) {
+		global $wpml_url_converter;
+
+		$translated_url = apply_filters( 'wpml_permalink', $url, $language_code, true );
+
+		// Full resolution leaves home and archive URLs unchanged when no object is found.
+		if ( $allow_fallback && untrailingslashit( (string) $translated_url ) === untrailingslashit( $url ) ) {
+			$translated_url = apply_filters( 'wpml_permalink', $url, $language_code, false );
+
+			// Editor REST requests can make WPML detect every URL's language from the referrer.
+			// Its configured strategy converts the actual URL without changing request state.
+			if ( untrailingslashit( (string) $translated_url ) === untrailingslashit( $url ) && is_object( $wpml_url_converter ) && is_callable( array( $wpml_url_converter, 'get_strategy' ) ) ) {
+				$strategy = $wpml_url_converter->get_strategy();
+				if ( is_object( $strategy ) && is_callable( array( $strategy, 'convert_url_string' ) ) ) {
+					$converted_url = $strategy->convert_url_string( $url, $language_code );
+					if ( is_string( $converted_url ) && '' !== $converted_url ) {
+						$translated_url = esc_url_raw( $converted_url );
+					}
+				}
+			}
+		}
+
+		return $translated_url;
+	}
+
+	/**
+	 * Collect the saved post's taxonomy URLs without editor-language ID adjustment.
+	 *
+	 * @param int    $post_id       Post ID.
+	 * @param string $language_code Post language code.
+	 *
+	 * @return array
+	 */
+	function get_post_taxonomy_urls( $post_id, $language_code ) {
+		$taxonomies = array_filter(
+			get_object_taxonomies( get_post_type( $post_id ), 'objects' ),
+			function ( $taxonomy ) {
+				return $taxonomy->public;
+			}
+		);
+		if ( ! $taxonomies ) {
+			return [];
+		}
+
+		$keep_term_ids = static function () {
+			return true;
+		};
+		add_filter( 'wpml_disable_term_adjust_id', $keep_term_ids, PHP_INT_MAX );
+		try {
+			$terms = wp_get_object_terms(
+				$post_id,
+				array_keys( $taxonomies ),
+				array(
+					'suppress_filters' => true,
+					'wpml_skip_filters' => true,
+					'lang'              => 'all',
+				)
+			);
+			if ( is_wp_error( $terms ) ) {
+				return [];
+			}
+
+			$urls = [];
+			foreach ( $terms as $term ) {
+				$term_id  = apply_filters( 'wpml_object_id', $term->term_id, $term->taxonomy, true, $language_code );
+				if ( ! $term_id ) {
+					continue;
+				}
+				$term_ids = [ $term_id ];
+				if ( $taxonomies[ $term->taxonomy ]->hierarchical ) {
+					$term_ids = array_merge( $term_ids, get_ancestors( $term_id, $term->taxonomy, 'taxonomy' ) );
+				}
+				foreach ( $term_ids as $related_id ) {
+					$url = get_term_link( (int) $related_id, $term->taxonomy );
+					if ( ! is_wp_error( $url ) ) {
+						$urls[] = resolve_language_url( $url, $language_code );
+					}
+				}
+			}
+			return $urls;
+		} finally {
+			remove_filter( 'wpml_disable_term_adjust_id', $keep_term_ids, PHP_INT_MAX );
+		}
+	}
+
+	/**
 	 * Include the saved post's language archives and its other translations in purges.
 	 *
 	 * @param array $urls    Related URLs.
@@ -45,7 +139,20 @@ if ( class_exists( '\SitePress' ) ) {
 		if ( is_array( $language ) && ! empty( $language['language_code'] ) ) {
 			foreach ( $urls as $url ) {
 				if ( is_string( $url ) && '' !== $url ) {
-					$urls[] = apply_filters( 'wpml_permalink', $url, $language['language_code'], true );
+					$urls[] = resolve_language_url( $url, $language['language_code'] );
+				}
+			}
+			if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+				$urls = array_merge( $urls, get_post_taxonomy_urls( $post_id, $language['language_code'] ) );
+				// WPML also adjusts the posts-page option to the editor's language.
+				if ( 'page' === get_option( 'show_on_front' ) ) {
+					$posts_page_id = get_option( 'page_for_posts' );
+					if ( $posts_page_id ) {
+						$posts_page_id = apply_filters( 'wpml_object_id', $posts_page_id, 'page', true, $language['language_code'] );
+						if ( $posts_page_id ) {
+							$urls[] = resolve_language_url( get_permalink( $posts_page_id ), $language['language_code'] );
+						}
+					}
 				}
 			}
 		}
@@ -62,7 +169,7 @@ if ( class_exists( '\SitePress' ) ) {
 
 				$url = get_permalink( $translation->element_id );
 				if ( $url && ! empty( $translation->language_code ) ) {
-					$urls[] = apply_filters( 'wpml_permalink', $url, $translation->language_code, true );
+					$urls[] = resolve_language_url( $url, $translation->language_code );
 				}
 			}
 		}
@@ -92,6 +199,8 @@ if ( class_exists( '\SitePress' ) ) {
 	 * @since 2.2.2
 	 */
 	function generate_configuration_for_domains( $config_file, $config_file_string, $network_wide ) {
+		global $sitepress;
+
 		if ( $network_wide ) {
 			return;
 		}
@@ -100,7 +209,11 @@ if ( class_exists( '\SitePress' ) ) {
 			return;
 		}
 
-		$sitepress     = new \SitePress();
+		// Reuse WPML's instance: constructing another one registers duplicate query filters.
+		if ( ! $sitepress ) {
+			return;
+		}
+
 		$is_per_domain = WPML_LANGUAGE_NEGOTIATION_TYPE_DOMAIN === (int) $sitepress->get_setting( 'language_negotiation_type' );
 		if ( ! $is_per_domain ) {
 			return;
@@ -332,10 +445,12 @@ if ( class_exists( '\SitePress' ) ) {
 		}
 
 		$lang_urls = [];
+		$home_url  = untrailingslashit( home_url( '/' ) );
+		// Only homes need the preload fallback; missing post/term translations must not get invented URLs.
 		// preload particular language
 		if ( isset( $_GET['lang_code'] ) && 'all' !== $_GET['lang_code'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			foreach ( $urls as $url ) {
-				$lang_urls[] = apply_filters( 'wpml_permalink', $url, sanitize_key( $_GET['lang_code'] ), true ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				$lang_urls[] = resolve_language_url( $url, sanitize_key( $_GET['lang_code'] ), untrailingslashit( $url ) === $home_url ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			}
 
 			return array_values( array_unique( array_filter( $lang_urls ) ) );
@@ -348,7 +463,7 @@ if ( class_exists( '\SitePress' ) ) {
 		// preload all languages
 		foreach ( $sitepress->get_active_languages() as $lang ) {
 			foreach ( $urls as $url ) {
-				$lang_urls[] = apply_filters( 'wpml_permalink', $url, $lang['code'], true );
+				$lang_urls[] = resolve_language_url( $url, $lang['code'], untrailingslashit( $url ) === $home_url );
 			}
 		}
 		$urls = array_merge( $urls, $lang_urls );
