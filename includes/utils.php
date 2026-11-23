@@ -900,9 +900,11 @@ function get_expired_files( $path, $lifespan = 0 ) {
 /**
  * Flush object cache and clean cache directory
  *
+ * @param bool $rebuild_preload_queue Whether this is a full purge that should start preloading.
+ *
  * @since 1.0
  */
-function powered_cache_flush() {
+function powered_cache_flush( $rebuild_preload_queue = false ) {
 	if ( function_exists( 'wp_cache_flush' ) ) {
 		wp_cache_flush();
 	}
@@ -916,6 +918,13 @@ function powered_cache_flush() {
 	 * @since  1.0
 	 */
 	do_action( 'powered_cache_flushed' );
+
+	if ( $rebuild_preload_queue ) {
+		/**
+		 * Fires after the synchronous or background full purge finishes.
+		 */
+		do_action( 'powered_cache_full_purge_completed' );
+	}
 }
 
 /**

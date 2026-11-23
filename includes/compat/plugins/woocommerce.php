@@ -17,7 +17,60 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( class_exists( 'WooCommerce' ) ) {
 	add_filter( 'powered_cache_cache_query_strings', __NAMESPACE__ . '\\maybe_add_version_query_string' );
+	add_filter( 'powered_cache_preload_add_url_to_queue', __NAMESPACE__ . '\\exclude_dynamic_pages_from_preload', 10, 2 );
 	add_action( 'woocommerce_settings_saved', __NAMESPACE__ . '\\update_config' );
+}
+
+/**
+ * Skip the store's configured cart, checkout, and account pages.
+ *
+ * @param bool   $preload Whether to preload the URL.
+ * @param string $url     Candidate URL.
+ * @return bool
+ */
+function exclude_dynamic_pages_from_preload( $preload, $url ) {
+	if ( ! $preload || ! function_exists( 'wc_get_page_id' ) ) {
+		return $preload;
+	}
+
+	static $page_urls = [];
+	$site_id = get_current_blog_id();
+	if ( ! isset( $page_urls[ $site_id ] ) ) {
+		$page_urls[ $site_id ] = [];
+		foreach ( [ 'cart', 'checkout', 'myaccount' ] as $page ) {
+			$page_id   = wc_get_page_id( $page );
+			$permalink = $page_id > 0 ? get_permalink( $page_id ) : false;
+			$page_url  = $permalink ? wp_parse_url( $permalink ) : false;
+			if ( empty( $page_url['host'] ) ) {
+				continue;
+			}
+			parse_str( $page_url['query'] ?? '', $page_query );
+			ksort( $page_query );
+			$page_url['query_args']  = $page_query;
+			$page_urls[ $site_id ][] = $page_url;
+		}
+	}
+
+	$parts = wp_parse_url( $url );
+	$path  = rtrim( $parts['path'] ?? '/', '/' );
+	$query = [];
+	if ( isset( $parts['query'] ) ) {
+		parse_str( $parts['query'], $query );
+		ksort( $query );
+	}
+
+	foreach ( $page_urls[ $site_id ] as $page_url ) {
+		$page_path = rtrim( $page_url['path'] ?? '/', '/' );
+		if ( ( $page_url['host'] ?? '' ) !== ( $parts['host'] ?? '' ) || ( $page_url['port'] ?? null ) !== ( $parts['port'] ?? null ) ) {
+			continue;
+		}
+
+		if ( ( $page_path === $path || ( '' !== $page_path && 0 === strpos( $path, $page_path . '/' ) ) ) && array_intersect_key( $query, $page_url['query_args'] ) === $page_url['query_args'] ) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 

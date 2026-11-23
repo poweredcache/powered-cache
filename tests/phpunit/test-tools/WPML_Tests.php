@@ -328,10 +328,11 @@ class WPML_Tests extends TestCase {
 		\WP_Mock::onFilter( 'wpml_permalink' )->with( 'https://example.test/category/news/', 'es', true )->reply( 'https://example.test/es/category/noticias/' );
 
 		try {
-			$this->assertSame(
-				array( 'https://example.test/es/hola/', 'https://example.test/es/category/noticias/' ),
-				add_language_urls_to_queue( array( 'https://example.test/hello/', 'https://example.test/category/news/', 'https://example.test/hello/' ) )
-			);
+			$expected = array( 'https://example.test/es/hola/', 'https://example.test/es/category/noticias/' );
+			$urls     = array( 'https://example.test/hello/', 'https://example.test/category/news/', 'https://example.test/hello/' );
+			$this->assertSame( $expected, add_language_urls_to_queue( $urls ) );
+			unset( $_GET['lang_code'] );
+			$this->assertSame( $expected, add_language_urls_to_queue( $urls, 'es' ) );
 		} finally {
 			unset( $_GET['lang_code'], $GLOBALS['sitepress'] );
 		}

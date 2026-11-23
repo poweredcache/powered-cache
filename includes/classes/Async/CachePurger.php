@@ -54,7 +54,7 @@ class CachePurger extends ActionSchedulerProcess {
 
 		switch ( $item['call'] ) {
 			case 'powered_cache_flush':
-				powered_cache_flush();
+				powered_cache_flush( true );
 				break;
 			case 'clean_page_cache_dir':
 				clean_page_cache_dir();

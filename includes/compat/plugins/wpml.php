@@ -22,7 +22,7 @@ if ( class_exists( '\SitePress' ) ) {
 	add_action( 'admin_bar_menu', __NAMESPACE__ . '\\admin_bar_purge_cache_menu' );
 	add_action( 'admin_bar_menu', __NAMESPACE__ . '\\admin_bar_preload_cache_menu' );
 	add_action( 'admin_post_powered_cache_purge_page_cache_for_lang', __NAMESPACE__ . '\\purge_page_cache' );
-	add_filter( 'populate_preload_queue_urls', __NAMESPACE__ . '\\add_language_urls_to_queue' );
+	add_filter( 'populate_preload_queue_urls', __NAMESPACE__ . '\\add_language_urls_to_queue', 10, 2 );
 	add_filter( 'powered_cache_post_related_urls', __NAMESPACE__ . '\\add_post_language_urls', 10, 2 );
 	add_action( 'wpml_after_save_post', __NAMESPACE__ . '\\purge_translated_post' );
 	add_action( 'wpml_pro_translation_completed', __NAMESPACE__ . '\\purge_translated_post' );
@@ -432,12 +432,13 @@ if ( class_exists( '\SitePress' ) ) {
 	/**
 	 * Modify preload queue for the language(s)
 	 *
-	 * @param array $urls Preload Urls in original language
+	 * @param array       $urls     Preload URLs in the original language.
+	 * @param string|null $language Selected language, with null for legacy callers.
 	 *
 	 * @return array $urls The list of preload urls
 	 * @since 2.4
 	 */
-	function add_language_urls_to_queue( $urls ) {
+	function add_language_urls_to_queue( $urls, $language = null ) {
 		global $sitepress;
 
 		if ( ! $sitepress ) {
@@ -446,11 +447,14 @@ if ( class_exists( '\SitePress' ) ) {
 
 		$lang_urls = [];
 		$home_url  = untrailingslashit( home_url( '/' ) );
+		if ( null === $language ) {
+			$language = isset( $_GET['lang_code'] ) ? sanitize_key( $_GET['lang_code'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		}
+
 		// Only homes need the preload fallback; missing post/term translations must not get invented URLs.
-		// preload particular language
-		if ( isset( $_GET['lang_code'] ) && 'all' !== $_GET['lang_code'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( '' !== $language && 'all' !== $language ) {
 			foreach ( $urls as $url ) {
-				$lang_urls[] = resolve_language_url( $url, sanitize_key( $_GET['lang_code'] ), untrailingslashit( $url ) === $home_url ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				$lang_urls[] = resolve_language_url( $url, $language, untrailingslashit( $url ) === $home_url );
 			}
 
 			return array_values( array_unique( array_filter( $lang_urls ) ) );

@@ -26,6 +26,337 @@ class Preloader_Tests extends TestCase {
 	);
 
 	/**
+	 * The admin request queues preparation and redirects without discovering any URLs.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 * @dataProvider manual_preload_queue_statuses
+	 *
+	 * @param bool $already_queued Whether an action already exists for the language.
+	 * @param int  $action_id      Action Scheduler enqueue result.
+	 * @param bool $has_referrer   Whether the admin request has a referrer.
+	 */
+	public function test_admin_preload_redirects_after_scheduling( $already_queued, $action_id, $has_referrer ) {
+		$referrer   = $has_referrer ? 'https://example.test/wp-admin/' : false;
+		$fallback   = 'https://example.test/wp-admin/admin.php?page=powered-cache';
+		$return_url = $has_referrer ? $referrer : $fallback;
+		$status     = $already_queued || $action_id ? 'start_preload' : 'start_preload_err_queue';
+		$expected   = $return_url . ( $has_referrer ? '?' : '&' ) . 'pc_action=' . $status;
+		$_GET       = [
+			'_wpnonce'  => 'test-nonce',
+			'lang_code' => 'es',
+		];
+
+		\WP_Mock::userFunction( 'wp_unslash', [ 'return_arg' => 0 ] );
+		\WP_Mock::userFunction( 'sanitize_text_field', [ 'return_arg' => 0 ] );
+		\WP_Mock::userFunction( 'sanitize_key', [ 'return_arg' => 0 ] );
+		\WP_Mock::userFunction( 'wp_verify_nonce', [ 'return' => true ] );
+		\WP_Mock::userFunction( 'current_user_can', [ 'return' => true ] );
+		\WP_Mock::userFunction( 'wp_get_referer', [ 'return' => $referrer ] );
+		\WP_Mock::userFunction( 'admin_url', [ 'return' => $fallback ] );
+		\WP_Mock::userFunction(
+			'as_has_scheduled_action',
+			[
+				'args'   => [ 'powered_cache_prepare_manual_preload', [ 'es' ], 'powered-cache' ],
+				'return' => $already_queued,
+			]
+		);
+		\WP_Mock::userFunction(
+			'as_enqueue_async_action',
+			[
+				'times'  => $already_queued ? 0 : 1,
+				'args'   => [ 'powered_cache_prepare_manual_preload', [ 'es' ], 'powered-cache', false, 19 ],
+				'return' => $action_id,
+			]
+		);
+		\WP_Mock::userFunction(
+			'add_query_arg',
+			[
+				'args'   => [ 'pc_action', $status, $return_url ],
+				'return' => $expected,
+			]
+		);
+		\WP_Mock::userFunction(
+			'wp_safe_redirect',
+			[
+				'times'  => 1,
+				'args'   => [ $expected ],
+				'return' => static function () {
+					throw new \RuntimeException( 'Redirected' );
+				},
+			]
+		);
+
+		$preloader = \Mockery::mock( Preloader::class )->makePartial();
+		$preloader->shouldNotReceive( 'setup_preload_queue' );
+		$this->expectExceptionMessage( 'Redirected' );
+		$preloader->start_preload();
+	}
+
+	/**
+	 * Manual preload scheduling outcomes.
+	 *
+	 * @return array
+	 */
+	public function manual_preload_queue_statuses() {
+		return [
+			'queued'         => [ false, 17, true ],
+			'already queued' => [ true, 0, true ],
+			'queue failed'   => [ false, 0, false ],
+		];
+	}
+
+	/**
+	 * The scheduled callback passes the requested language while discovering URLs.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function test_scheduled_manual_preload_dispatches_selected_language() {
+		$settings = [
+			'enable_cache_preload'   => true,
+			'enable_page_cache'      => true,
+			'preload_homepage'       => false,
+			'preload_public_posts'   => true,
+			'preload_public_tax'     => false,
+			'enable_sitemap_preload' => false,
+			'rejected_uri'           => '',
+		];
+		$original   = 'https://example.test/product/';
+		$translated = 'https://example.test/es/producto/';
+		\WP_Mock::userFunction( 'PoweredCache\Utils\get_settings', [ 'return' => $settings ] );
+		\WP_Mock::userFunction( 'sanitize_key', [ 'return_arg' => 0 ] );
+		\WP_Mock::userFunction( 'get_current_blog_id', [ 'return' => 1 ] );
+		\WP_Mock::userFunction( 'wp_parse_url', [ 'return' => parse_url( $translated ) ] );
+		\WP_Mock::onFilter( 'populate_preload_queue_urls' )->with( [ $original ], 'es' )->reply( [ $translated ] );
+
+		$preloader = \Mockery::mock( Preloader::class )->makePartial();
+		$preloader->shouldReceive( 'prepare_public_posts_urls' )->once()->andReturn( [ $original ] );
+		$queue = \Mockery::mock( Async\CachePreloader::class );
+		$queue->shouldReceive( 'cancel_process' )->once();
+		$queue->shouldReceive( 'push_to_queue' )->with( $translated )->once();
+		$queue->shouldReceive( 'save' )->once()->andReturnSelf();
+		$queue->shouldReceive( 'dispatch' )->once()->andReturn( true );
+		$property = new \ReflectionProperty( Preloader::class, 'cache_preloader' );
+		$property->setAccessible( true );
+		$property->setValue( $preloader, $queue );
+
+		\WP_Mock::expectActionAdded( 'powered_cache_prepare_manual_preload', [ $preloader, 'run_scheduled_preload' ] );
+		$preloader->setup();
+		$preloader->run_scheduled_preload( 'es' );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * Re-enabling preload and switching off public posts in one save uses the saved sources.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function test_setup_queue_uses_current_settings() {
+		$settings = [
+			'enable_cache_preload'   => false,
+			'enable_page_cache'      => true,
+			'preload_homepage'       => false,
+			'preload_public_posts'   => true,
+			'preload_public_tax'     => false,
+			'enable_sitemap_preload' => false,
+		];
+		\WP_Mock::userFunction(
+			'PoweredCache\Utils\get_settings',
+			[
+				'return' => static function () use ( &$settings ) {
+					return $settings;
+				},
+			]
+		);
+
+		$preloader = \Mockery::mock( Preloader::class )->makePartial();
+		$preloader->shouldNotReceive( 'prepare_public_posts_urls' );
+		$queue = \Mockery::mock( Async\CachePreloader::class );
+		$queue->shouldReceive( 'cancel_process' )->once();
+		$property = new \ReflectionProperty( Preloader::class, 'cache_preloader' );
+		$property->setAccessible( true );
+		$property->setValue( $preloader, $queue );
+		$preloader->setup();
+
+		$settings['enable_cache_preload'] = true;
+		$settings['preload_public_posts'] = false;
+		$preloader->setup_preload_queue();
+		$preloader->dispatch_preload_queue();
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * Full flush rebuilds preload after the cache directory is removed.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 * @dataProvider flush_modes
+	 *
+	 * @param bool $async Whether a background purge worker runs the flush.
+	 */
+	public function test_full_flush_rebuilds_preload_after_removal( $async ) {
+		$settings = [
+			'enable_cache_preload'   => true,
+			'enable_page_cache'      => true,
+			'preload_homepage'       => false,
+			'preload_public_posts'   => true,
+			'preload_public_tax'     => false,
+			'enable_sitemap_preload' => true,
+			'rejected_uri'           => '',
+		];
+		$url       = 'https://example.test/product/';
+		$preloader = \Mockery::mock( Preloader::class )->makePartial();
+		$preloader->shouldReceive( 'prepare_public_posts_urls' )->once()->andReturn( [ $url ] );
+		$queue = \Mockery::mock( Async\CachePreloader::class );
+		$queue->shouldReceive( 'cancel_process' )->once();
+		$queue->shouldReceive( 'push_to_queue' )->with( $url )->once();
+		$queue->shouldReceive( 'save' )->once()->andReturnSelf();
+		$queue->shouldReceive( 'dispatch' )->once()->andReturn( true );
+		$property = new \ReflectionProperty( Preloader::class, 'cache_preloader' );
+		$property->setAccessible( true );
+		$property->setValue( $preloader, $queue );
+
+		\WP_Mock::userFunction( 'PoweredCache\Utils\get_settings', [ 'return' => $settings ] );
+		\WP_Mock::userFunction( 'get_current_blog_id', [ 'return' => 1 ] );
+		\WP_Mock::userFunction( 'wp_parse_url', [ 'return' => parse_url( $url ) ] );
+		\WP_Mock::expectActionAdded( 'powered_cache_full_purge_completed', [ $preloader, 'setup_preload_queue' ] );
+		\WP_Mock::expectActionAdded( 'powered_cache_clean_site_cache_dir', [ $preloader, 'setup_preload_queue' ] );
+		\WP_Mock::expectActionNotAdded( 'powered_cache_flushed', [ $preloader, 'setup_preload_queue' ] );
+		$preloader->setup();
+
+		$removed = false;
+		\WP_Mock::userFunction( 'PoweredCachePremium\Utils\preload_sitemap', [ 'times' => 1 ] );
+		\WP_Mock::userFunction(
+			'PoweredCache\Utils\remove_dir',
+			[
+				'times'  => 1,
+				'return' => static function () use ( &$removed ) {
+					$removed = true;
+				},
+			]
+		);
+		\WP_Mock::onAction( 'powered_cache_full_purge_completed' )->with( null )->perform(
+			function () use ( &$removed, $preloader ) {
+				$this->assertTrue( $removed );
+				$preloader->setup_preload_queue();
+			}
+		);
+
+		if ( $async ) {
+			( new Async\CachePurger() )->process_scheduled_item( [ 'call' => 'powered_cache_flush' ] );
+		} else {
+			require_once PROJECT . 'admin/dashboard.php';
+			\WP_Mock::userFunction( 'delete_transient', [ 'return' => true ] );
+			Admin\Dashboard\purge_all_cache( [ 'async_cache_cleaning' => false ] );
+		}
+		$preloader->dispatch_preload_queue();
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * Flush entry points.
+	 *
+	 * @return array
+	 */
+	public function flush_modes() {
+		return [
+			'synchronous'  => [ false ],
+			'asynchronous' => [ true ],
+		];
+	}
+
+	/**
+	 * Generic flush callers keep their existing behavior.
+	 */
+	public function test_generic_flush_does_not_rebuild_the_preload_queue() {
+		\WP_Mock::userFunction( 'PoweredCache\Utils\remove_dir', [ 'times' => 1 ] );
+		\WP_Mock::expectAction( 'powered_cache_flushed' );
+		\WP_Mock::onAction( 'powered_cache_full_purge_completed' )->with( null )->perform(
+			function () {
+				$this->fail( 'Generic flush should not rebuild the preload queue.' );
+			}
+		);
+
+		Utils\powered_cache_flush();
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * Purge-triggered preload uses the same path and query exclusions as page caching.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function test_queue_skips_rejected_request_uris() {
+		\WP_Mock::userFunction( 'PoweredCache\Utils\get_settings', [ 'return' => [ 'rejected_uri' => '/private/*' ] ] );
+		\WP_Mock::userFunction( 'get_current_blog_id', [ 'return' => 1 ] );
+		\WP_Mock::userFunction( 'get_permalink', [ 'return' => false ] );
+		\WP_Mock::userFunction(
+			'wp_parse_url',
+			[
+				'return' => static function ( $url ) {
+					return parse_url( $url );
+				},
+			]
+		);
+
+		$preloader = new Preloader();
+		$queue     = \Mockery::mock( Async\CachePreloader::class );
+		$queue->shouldReceive( 'push_to_queue' )->with( 'https://example.test/public/' )->once();
+		$property = new \ReflectionProperty( Preloader::class, 'cache_preloader' );
+		$property->setAccessible( true );
+		$property->setValue( $preloader, $queue );
+
+		$preloader->add_purged_urls_to_preload_queue( 123, [ 'https://example.test/private/page/?view=1', 'https://example.test/public/' ] );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * It skips configured WooCommerce URLs with either pretty or plain permalinks.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function test_woocommerce_excludes_configured_dynamic_pages() {
+		require_once PROJECT . 'compat/plugins/woocommerce.php';
+		\WP_Mock::userFunction( 'get_current_blog_id', [ 'return' => 1 ] );
+		\WP_Mock::userFunction(
+			'wc_get_page_id',
+			[
+				'return' => static function ( $page ) {
+					return [
+						'cart' => 42,
+						'checkout' => 54,
+						'myaccount' => 63,
+					][ $page ];
+				},
+			]
+		);
+		\WP_Mock::userFunction(
+			'get_permalink',
+			[
+				'return' => static function ( $id ) {
+					return 42 === $id ? 'https://example.test/store/basket/' : 'https://example.test/?page_id=' . $id;
+				},
+			]
+		);
+		\WP_Mock::userFunction(
+			'wp_parse_url',
+			[
+				'return' => static function ( $url ) {
+					return parse_url( $url );
+				},
+			]
+		);
+		$this->assertFalse( Compat\WooCommerce\exclude_dynamic_pages_from_preload( true, 'https://example.test/store/basket/?utm_source=test' ) );
+		$this->assertFalse( Compat\WooCommerce\exclude_dynamic_pages_from_preload( true, 'https://example.test/?checkout_token=test&page_id=54' ) );
+		$this->assertFalse( Compat\WooCommerce\exclude_dynamic_pages_from_preload( true, 'https://example.test/?page_id=63' ) );
+		$this->assertTrue( Compat\WooCommerce\exclude_dynamic_pages_from_preload( true, 'https://example.test/?page_id=55' ) );
+	}
+
+	/**
 	 * It normalizes configured font preload URLs and rejects unsafe values.
 	 */
 	public function test_get_preload_fonts_normalizes_safe_font_urls() {

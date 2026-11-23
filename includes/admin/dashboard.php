@@ -582,7 +582,7 @@ function maybe_display_message() {
 		'flush_page_cache'              => esc_html__( 'Page cache deleted successfully!', 'powered-cache' ),
 		'flush_object_cache'            => esc_html__( 'Object cache deleted successfully!', 'powered-cache' ),
 		'flush_all_cache'               => esc_html__( 'All cached items flushed successfully!', 'powered-cache' ),
-		'start_preload'                 => esc_html__( 'The cache preloading has been initialized!', 'powered-cache' ),
+		'start_preload'                 => esc_html__( 'Cache preloading has been queued and will run in the background.', 'powered-cache' ),
 		'generate_critical'             => esc_html__( 'The Critical CSS generation process has been initialized!', 'powered-cache' ),
 		'generate_critical_network'     => esc_html__( 'The Critical CSS generation process has been initialized for all sites! This might take a while, depending on the network size.', 'powered-cache' ),
 		'generate_ucss'                 => esc_html__( 'The UCSS generation process has been initialized!', 'powered-cache' ),
@@ -610,6 +610,7 @@ function maybe_display_message() {
 		'flush_object_cache_err_permission'       => esc_html__( 'You don\'t have permission to perform this action!', 'powered-cache' ),
 		'flush_all_cache_err_permission'          => esc_html__( 'You don\'t have permission to perform this action!', 'powered-cache' ),
 		'start_preload_err_permission'            => esc_html__( 'You don\'t have permission to perform this action!', 'powered-cache' ),
+		'start_preload_err_queue'                 => esc_html__( 'Could not queue cache preloading. Please try again.', 'powered-cache' ),
 		'start_critical_err_permission'           => esc_html__( 'You don\'t have permission to perform this action!', 'powered-cache' ),
 		'start_ucss_err_permission'               => esc_html__( 'You don\'t have permission to perform this action!', 'powered-cache' ),
 		'start_critical_err_nonce'                => esc_html__( 'The Critical CSS action link has expired. Please try again.', 'powered-cache' ),
@@ -712,7 +713,7 @@ function purge_all_cache( $settings = array() ) {
 		$cache_purger->push_to_queue( [ 'call' => 'powered_cache_flush' ] );
 		$cache_purger->save()->dispatch();
 	} else {
-		powered_cache_flush();// cleans object cache + page cache dir
+		powered_cache_flush( true );
 	}
 
 	/**

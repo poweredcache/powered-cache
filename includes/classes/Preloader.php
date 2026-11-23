@@ -7,6 +7,7 @@
 
 namespace PoweredCache;
 
+use PoweredCache\Async\ActionSchedulerProcess;
 use PoweredCache\Async\CachePreloader;
 use function PoweredCache\Utils\permalink_structure_has_trailingslash;
 use function PoweredCache\Utils\site_cache_dir;
@@ -16,6 +17,8 @@ use const PoweredCache\Constants\DEFERRED_PRELOAD_QUEUE_CRON_NAME;
  * Class Preloader
  */
 class Preloader {
+	private const MANUAL_PRELOAD_HOOK = 'powered_cache_prepare_manual_preload';
+
 	/**
 	 * Plugin settings
 	 *
@@ -36,6 +39,20 @@ class Preloader {
 	 * @var $queue_dirty
 	 */
 	private $queue_dirty = false;
+
+	/**
+	 * Normalized page-cache exclusion rules keyed by site.
+	 *
+	 * @var array
+	 */
+	private $rejected_uris = [];
+
+	/**
+	 * Language selected for the current manual preload.
+	 *
+	 * @var string
+	 */
+	private $preload_language = '';
 
 	/**
 	 * Return an instance of the current class
@@ -63,6 +80,7 @@ class Preloader {
 		add_filter( 'wp_resource_hints', [ $this, 'dns_prefetch' ], 10, 2 );
 		add_filter( 'wp_resource_hints', [ $this, 'preconnect_resources' ], 10, 2 );
 		add_action( 'wp_head', [ $this, 'preload_fonts' ], 1 );
+		add_action( self::MANUAL_PRELOAD_HOOK, [ $this, 'run_scheduled_preload' ] );
 
 		// bail if the preload not activated
 		if ( ! $this->settings['enable_cache_preload'] ) {
@@ -80,7 +98,7 @@ class Preloader {
 
 		add_action( 'admin_bar_menu', [ $this, 'admin_bar_menu' ] );
 		add_action( 'admin_post_powered_cache_preload_cache', [ $this, 'start_preload' ] );
-		add_action( 'powered_cache_purge_all_cache', [ $this, 'setup_preload_queue' ] );
+		add_action( 'powered_cache_full_purge_completed', [ $this, 'setup_preload_queue' ] );
 		add_action( 'powered_cache_clean_site_cache_dir', [ $this, 'setup_preload_queue' ] );
 		add_action( 'powered_cache_advanced_cache_purge_post', [ $this, 'deferred_preload_queue' ], 10, 3 );
 		add_action( 'powered_cache_expired_files_deleted', [ $this, 'add_expired_urls_to_preload_queue' ], 10, 2 );
@@ -129,7 +147,7 @@ class Preloader {
 	}
 
 	/**
-	 * Add preloading items to queue
+	 * Queue preparation of a manual preload and redirect back to the user.
 	 */
 	public function start_preload() {
 		$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
@@ -149,13 +167,55 @@ class Preloader {
 			exit;
 		}
 
-		\PoweredCache\Utils\log( sprintf( 'Preload triggered from admin bar.' ) );
-
-		$this->setup_preload_queue();
-
-		$redirect_url = add_query_arg( 'pc_action', 'start_preload', wp_get_referer() );
-		wp_safe_redirect( esc_url_raw( $redirect_url ) );
+		$language = isset( $_GET['lang_code'] ) && is_string( $_GET['lang_code'] ) ? sanitize_key( wp_unslash( $_GET['lang_code'] ) ) : '';
+		$queued   = $this->schedule_manual_preload( 'all' === $language ? '' : $language );
+		$referrer = wp_get_referer();
+		if ( ! $referrer ) {
+			$referrer = POWERED_CACHE_IS_NETWORK ? network_admin_url( 'admin.php?page=powered-cache' ) : admin_url( 'admin.php?page=powered-cache' );
+		}
+		wp_safe_redirect( add_query_arg( 'pc_action', $queued ? 'start_preload' : 'start_preload_err_queue', $referrer ) );
 		exit;
+	}
+
+	/**
+	 * Schedule URL discovery outside the admin request, coalescing repeat clicks.
+	 *
+	 * @param string $language Selected language, or an empty string for all languages.
+	 * @return bool
+	 */
+	private function schedule_manual_preload( $language ) {
+		if ( ! function_exists( 'as_enqueue_async_action' ) ) {
+			return false;
+		}
+
+		$args  = [ $language ];
+		$group = ActionSchedulerProcess::ACTION_SCHEDULER_GROUP;
+		if ( function_exists( 'as_has_scheduled_action' ) && as_has_scheduled_action( self::MANUAL_PRELOAD_HOOK, $args, $group ) ) {
+			return true;
+		}
+
+		// Prepare the new queue ahead of preload batches it will replace.
+		$priority = max( 0, CachePreloader::preload_action_priority() - 1 );
+		return (bool) as_enqueue_async_action( self::MANUAL_PRELOAD_HOOK, $args, $group, false, $priority );
+	}
+
+	/**
+	 * Rebuild and dispatch the manual preload queue in Action Scheduler.
+	 *
+	 * @param string $language Selected language, or an empty string for all languages.
+	 * @throws \RuntimeException If the preload URLs could not be queued.
+	 */
+	public function run_scheduled_preload( $language = '' ) {
+		$this->preload_language = sanitize_key( $language );
+		try {
+			$this->setup_preload_queue();
+			$this->dispatch_preload_queue();
+			if ( $this->queue_dirty ) {
+				throw new \RuntimeException( 'Powered Cache could not queue all URLs for the manual preload.' );
+			}
+		} finally {
+			$this->preload_language = '';
+		}
 	}
 
 	/**
@@ -164,6 +224,13 @@ class Preloader {
 	public function setup_preload_queue() {
 		// cancel existing process before populating
 		$this->get_preloader()->cancel_process();
+		$this->settings      = \PoweredCache\Utils\get_settings();
+		$this->rejected_uris = [];
+		$this->queue_dirty   = false;
+
+		if ( empty( $this->settings['enable_cache_preload'] ) || empty( $this->settings['enable_page_cache'] ) ) {
+			return;
+		}
 
 		if ( POWERED_CACHE_IS_NETWORK ) {
 			$sites = get_sites( [ 'fields' => 'ids' ] );
@@ -230,11 +297,12 @@ class Preloader {
 		 * @hook   populate_preload_queue_urls
 		 *
 		 * @param  {array} $preload_urls The list of preload urls
+		 * @param  {string} $language Selected manual preload language, or empty for the default selection.
 		 *
 		 * @return {array} New value.
 		 * @since  2.4
 		 */
-		$preload_urls = apply_filters( 'populate_preload_queue_urls', $preload_urls );
+		$preload_urls = apply_filters( 'populate_preload_queue_urls', $preload_urls, $this->preload_language );
 
 		foreach ( $preload_urls as $url ) {
 			$this->add_url_to_preload_queue( $url );
@@ -747,9 +815,9 @@ class Preloader {
 	}
 
 	/**
-	 * Wait internal between HTTP reqs
+	 * Wait between preload requests.
 	 *
-	 * @param int $delay delay time in microseconds
+	 * @param int $delay Delay in microseconds.
 	 */
 	public static function wait( $delay = 500000 ) {
 		/**
@@ -808,6 +876,44 @@ class Preloader {
 	 * @since 3.4
 	 */
 	protected function add_url_to_preload_queue( $url ) {
+		if ( $this->should_preload_url( $url ) ) {
+			$this->get_preloader()->push_to_queue( $url );
+			$this->queue_dirty = true;
+			\PoweredCache\Utils\log( sprintf( 'URL added to preload queue    : %s', $url ) );
+		}
+	}
+
+	/**
+	 * Check whether a page URL is eligible before submitting it to a preload worker.
+	 *
+	 * @param string $url Page URL.
+	 * @return bool
+	 */
+	public function should_preload_url( $url ) {
+		if ( ! is_string( $url ) || ! filter_var( $url, FILTER_VALIDATE_URL ) ) {
+			return false;
+		}
+
+		$parts = wp_parse_url( $url );
+		if ( ! isset( $parts['host'], $parts['scheme'] ) || ! in_array( strtolower( $parts['scheme'] ), [ 'http', 'https' ], true ) ) {
+			return false;
+		}
+
+		$site_id = get_current_blog_id();
+		if ( ! isset( $this->rejected_uris[ $site_id ] ) ) {
+			$this->rejected_uris[ $site_id ] = AdvancedCache::get_rejected_uri();
+		}
+
+		$uri = $parts['path'] ?? '/';
+		if ( isset( $parts['query'] ) ) {
+			$uri .= '?' . $parts['query'];
+		}
+		foreach ( $this->rejected_uris[ $site_id ] as $pattern ) {
+			if ( 1 === preg_match( '#^(' . $pattern . ')$#', $uri ) ) {
+				return false;
+			}
+		}
+
 		/**
 		 * Filters whether a URL should be added to the preload queue.
 		 *
@@ -819,15 +925,7 @@ class Preloader {
 		 * @return {boolean} Whether to preload the URL.
 		 * @since  3.4
 		 */
-		$do_preload = apply_filters( 'powered_cache_preload_add_url_to_queue', true, $url );
-
-		if ( $do_preload ) {
-			$this->get_preloader()->push_to_queue( $url );
-			$this->queue_dirty = true;
-			\PoweredCache\Utils\log( sprintf( 'URL added to preload queue    : %s', $url ) );
-		} else {
-			\PoweredCache\Utils\log( sprintf( 'URL skipped from preload queue: %s', $url ) );
-		}
+		return (bool) apply_filters( 'powered_cache_preload_add_url_to_queue', true, $url );
 	}
 
 	/**
@@ -841,10 +939,13 @@ class Preloader {
 			return;
 		}
 
-		// This will serialize the queue into the DB and fire off the async request
-		$this->get_preloader()->save()->dispatch();
+		if ( $this->get_preloader()->save()->dispatch() ) {
+			$this->queue_dirty = false;
+			\PoweredCache\Utils\log( 'Dispatched preload queue.' );
+			return;
+		}
 
-		\PoweredCache\Utils\log( 'Dispatched preload queue.' );
+		\PoweredCache\Utils\log( 'Could not dispatch all preload URLs.' );
 	}
 
 }
