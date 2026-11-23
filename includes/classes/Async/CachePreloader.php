@@ -8,13 +8,18 @@
 namespace PoweredCache\Async;
 
 use PoweredCache\Preloader;
-use function PoweredCache\Utils\detect_cpu_cores;
 use function PoweredCache\Utils\is_url_cached;
 
 /**
  * Class CachePreloader
  */
 class CachePreloader extends ActionSchedulerProcess {
+
+	private const MAX_QUEUED_URLS  = 20;
+	private const MAX_URLS_PER_RUN = 5;
+	private const RUN_TIME_BUDGET = 10;
+	// Action Scheduler allows 8,000 bytes of JSON arguments. Leave room for the retry count.
+	private const MAX_BATCH_URL_BYTES = 7980;
 
 	/**
 	 * Plugin settings
@@ -29,6 +34,147 @@ class CachePreloader extends ActionSchedulerProcess {
 	 * @var $action
 	 */
 	protected $action = 'powered_cache_preload';
+
+	/**
+	 * Preloading has no completion work.
+	 *
+	 * @var bool
+	 */
+	protected $schedule_completion_action = false;
+
+	/**
+	 * Let default-priority actions take precedence over preloading.
+	 *
+	 * @return int
+	 */
+	protected function get_action_priority() {
+		return self::preload_action_priority();
+	}
+
+	/**
+	 * Resolve the priority shared by page preloads and sitemap discovery.
+	 *
+	 * @return int
+	 */
+	public static function preload_action_priority() {
+		/**
+		 * Filters the priority of preload actions and retries.
+		 *
+		 * Action Scheduler accepts 0–255. Lower numbers run first.
+		 *
+		 * @param int $priority Preload priority. Default 20.
+		 */
+		$priority = apply_filters( 'powered_cache_preload_action_priority', 20 );
+		return is_numeric( $priority ) ? max( 0, min( 255, (int) $priority ) ) : 20;
+	}
+
+	/**
+	 * Use Action Scheduler's bulk cancellation path for the preload-only hook.
+	 *
+	 * @return string
+	 */
+	protected function get_cancellation_group() {
+		return '';
+	}
+
+	/**
+	 * Let Action Scheduler retain the failed action when a retry cannot be persisted.
+	 *
+	 * @param mixed $item    Pending URLs.
+	 * @param int   $attempt Retry count.
+	 * @return bool
+	 * @throws \RuntimeException When Action Scheduler cannot persist the retry.
+	 */
+	protected function schedule_retry( $item, $attempt ) {
+		if ( ! parent::schedule_retry( $item, $attempt ) ) {
+			throw new \RuntimeException( 'Powered Cache could not schedule a preload retry.' );
+		}
+
+		return true;
+	}
+
+	/**
+	 * Persist compact batches so large preloads do not write one action per URL.
+	 *
+	 * @return bool
+	 */
+	public function dispatch() {
+		if ( empty( $this->data ) ) {
+			return parent::dispatch();
+		}
+
+		$this->data = $this->batch_urls();
+		$dispatched = parent::dispatch();
+
+		// Restore URLs from any batches that Action Scheduler did not accept.
+		$this->data = $this->flatten_queue_items( $this->data );
+
+		return $dispatched;
+	}
+
+	/**
+	 * Build queue items within Action Scheduler's argument size limit.
+	 *
+	 * @return array
+	 */
+	private function batch_urls() {
+		$batches = [];
+		$batch   = [];
+		$bytes   = 0;
+		foreach ( array_unique( $this->data ) as $url ) {
+			$url_bytes = strlen( (string) wp_json_encode( $url ) ) + 1;
+			if ( $batch && ( count( $batch ) >= self::MAX_QUEUED_URLS || $bytes + $url_bytes > self::MAX_BATCH_URL_BYTES ) ) {
+				$batches[] = $batch;
+				$batch     = [];
+				$bytes     = 0;
+			}
+			if ( $url_bytes > self::MAX_BATCH_URL_BYTES ) {
+				// Keep the original single-URL format when the batch size limit is too small.
+				$batches[] = $url;
+				continue;
+			}
+			$batch[] = $url;
+			$bytes  += $url_bytes;
+		}
+		if ( $batch ) {
+			$batches[] = $batch;
+		}
+
+		return $batches;
+	}
+
+	/**
+	 * Expand a mix of individual URLs and URL batches.
+	 *
+	 * @param array $items Queue items.
+	 * @return array
+	 */
+	private function flatten_queue_items( array $items ) {
+		$batches = [];
+		foreach ( $items as $item ) {
+			$batches[] = (array) $item;
+		}
+		return array_merge( ...$batches );
+	}
+
+	/**
+	 * Keep the queue inspection API returning a flat list of URLs.
+	 *
+	 * @param int $limit Maximum number of URLs to return.
+	 * @return array
+	 */
+	public function get_batches( $limit = 0 ) {
+		$batches = parent::get_batches( $limit );
+
+		if ( empty( $batches ) ) {
+			return $batches;
+		}
+
+		$urls             = $this->flatten_queue_items( $batches[0]->data );
+		$batches[0]->data = $limit > 0 ? array_slice( $urls, 0, $limit ) : $urls;
+
+		return $batches;
+	}
 
 	/**
 	 * Supported preloading options
@@ -61,14 +207,36 @@ class CachePreloader extends ActionSchedulerProcess {
 			return false;
 		}
 
-		// Stop early if system load is too high
-		if ( ! $this->should_continue() ) {
-			\PoweredCache\Utils\log( 'Preload task aborted early due to system load' );
-			return $item;
+		$delay    = absint( $this->settings['preload_request_interval'] ) * 1000000; // convert to microseconds
+		$urls     = array_values( (array) $item );
+		$deadline = microtime( true ) + self::RUN_TIME_BUDGET;
+
+		foreach ( $urls as $index => $url ) {
+			if ( ! $this->should_continue() ) {
+				\PoweredCache\Utils\log( 'Preload task aborted early due to system load' );
+				return is_array( $item ) ? array_slice( $urls, $index ) : $item;
+			}
+
+			if ( $index > 0 && ( $index >= self::MAX_URLS_PER_RUN || microtime( true ) >= $deadline ) ) {
+				// If the continuation cannot be enqueued, retry only the unprocessed URLs.
+				$remaining = array_slice( $urls, $index );
+				$action_id = as_enqueue_async_action( $this->get_action_hook(), [ $remaining ], self::ACTION_SCHEDULER_GROUP, false, $this->get_action_priority() );
+				return $action_id ? false : $remaining;
+			}
+
+			$this->preload_url( $url, $delay );
 		}
 
-		$delay = absint( $this->settings['preload_request_interval'] ) * 1000000; // convert to microseconds
+		return false;
+	}
 
+	/**
+	 * Warm the applicable cache variants of one URL.
+	 *
+	 * @param string $item  URL to warm.
+	 * @param int    $delay Delay between requests in microseconds.
+	 */
+	private function preload_url( $item, $delay ) {
 		\PoweredCache\Utils\log( sprintf( 'Preloading..: %s', $item ) );
 
 		if ( filter_var( $item, FILTER_VALIDATE_URL ) ) {
@@ -88,19 +256,6 @@ class CachePreloader extends ActionSchedulerProcess {
 		}
 
 		\PoweredCache\Utils\log( sprintf( 'Preloaded...: %s', $item ) );
-
-		return false;
-	}
-
-
-	/**
-	 * Complete
-	 *
-	 * Override if applicable, but ensure that the below actions are
-	 * performed, or, call parent::complete().
-	 */
-	protected function complete() { // phpcs:ignore Generic.CodeAnalysis.UselessOverridingMethod.Found
-		parent::complete();
 	}
 
 	/**

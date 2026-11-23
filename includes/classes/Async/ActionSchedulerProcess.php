@@ -31,6 +31,13 @@ abstract class ActionSchedulerProcess {
 	protected $action = '';
 
 	/**
+	 * Whether this process needs a completion callback.
+	 *
+	 * @var bool
+	 */
+	protected $schedule_completion_action = true;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -72,9 +79,10 @@ abstract class ActionSchedulerProcess {
 
 		$remaining  = array();
 		$dispatched = false;
+		$priority   = $this->get_action_priority();
 
 		foreach ( $this->data as $item ) {
-			$action_id = as_enqueue_async_action( $this->get_action_hook(), array( $item ), self::ACTION_SCHEDULER_GROUP );
+			$action_id = as_enqueue_async_action( $this->get_action_hook(), array( $item ), self::ACTION_SCHEDULER_GROUP, false, $priority );
 
 			if ( ! $action_id ) {
 				$remaining[] = $item;
@@ -90,7 +98,7 @@ abstract class ActionSchedulerProcess {
 			return false;
 		}
 
-		if ( $dispatched && ! as_enqueue_async_action( $this->get_complete_hook(), array(), self::ACTION_SCHEDULER_GROUP ) ) {
+		if ( $this->schedule_completion_action && $dispatched && ! as_enqueue_async_action( $this->get_complete_hook(), array(), self::ACTION_SCHEDULER_GROUP, false, $priority ) ) {
 			return false;
 		}
 
@@ -132,6 +140,10 @@ abstract class ActionSchedulerProcess {
 	 * @return void
 	 */
 	public function process_complete() {
+		if ( ! $this->schedule_completion_action ) {
+			return;
+		}
+
 		if ( $this->has_scheduled_items() ) {
 			$this->schedule_completion();
 
@@ -147,20 +159,20 @@ abstract class ActionSchedulerProcess {
 	 * @param mixed $item    Queue item.
 	 * @param int   $attempt Retry attempt number.
 	 *
-	 * @return void
+	 * @return bool Whether the retry was queued.
 	 */
-	private function schedule_retry( $item, $attempt ) {
+	protected function schedule_retry( $item, $attempt ) {
 		$args = array( $item, $attempt );
 
 		if ( function_exists( 'as_schedule_single_action' ) ) {
-			as_schedule_single_action( time() + self::RETRY_DELAY, $this->get_action_hook(), $args, self::ACTION_SCHEDULER_GROUP );
-
-			return;
+			return (bool) as_schedule_single_action( time() + self::RETRY_DELAY, $this->get_action_hook(), $args, self::ACTION_SCHEDULER_GROUP, false, $this->get_action_priority() );
 		}
 
 		if ( function_exists( 'as_enqueue_async_action' ) ) {
-			as_enqueue_async_action( $this->get_action_hook(), $args, self::ACTION_SCHEDULER_GROUP );
+			return (bool) as_enqueue_async_action( $this->get_action_hook(), $args, self::ACTION_SCHEDULER_GROUP, false, $this->get_action_priority() );
 		}
+
+		return false;
 	}
 
 	/**
@@ -170,13 +182,13 @@ abstract class ActionSchedulerProcess {
 	 */
 	private function schedule_completion() {
 		if ( function_exists( 'as_schedule_single_action' ) ) {
-			as_schedule_single_action( time() + self::RETRY_DELAY, $this->get_complete_hook(), array(), self::ACTION_SCHEDULER_GROUP );
+			as_schedule_single_action( time() + self::RETRY_DELAY, $this->get_complete_hook(), array(), self::ACTION_SCHEDULER_GROUP, false, $this->get_action_priority() );
 
 			return;
 		}
 
 		if ( function_exists( 'as_enqueue_async_action' ) ) {
-			as_enqueue_async_action( $this->get_complete_hook(), array(), self::ACTION_SCHEDULER_GROUP );
+			as_enqueue_async_action( $this->get_complete_hook(), array(), self::ACTION_SCHEDULER_GROUP, false, $this->get_action_priority() );
 		}
 	}
 
@@ -223,8 +235,9 @@ abstract class ActionSchedulerProcess {
 			return;
 		}
 
-		as_unschedule_all_actions( $this->get_action_hook(), null, self::ACTION_SCHEDULER_GROUP );
-		as_unschedule_all_actions( $this->get_complete_hook(), null, self::ACTION_SCHEDULER_GROUP );
+		$group = $this->get_cancellation_group();
+		as_unschedule_all_actions( $this->get_action_hook(), null, $group );
+		as_unschedule_all_actions( $this->get_complete_hook(), null, $group );
 	}
 
 	/**
@@ -335,6 +348,24 @@ abstract class ActionSchedulerProcess {
 	 */
 	protected function get_action_hook() {
 		return $this->action;
+	}
+
+	/**
+	 * Return the Action Scheduler priority. Lower numbers run first.
+	 *
+	 * @return int
+	 */
+	protected function get_action_priority() {
+		return 10;
+	}
+
+	/**
+	 * Return the group used to cancel this process's actions.
+	 *
+	 * @return string
+	 */
+	protected function get_cancellation_group() {
+		return self::ACTION_SCHEDULER_GROUP;
 	}
 
 	/**
