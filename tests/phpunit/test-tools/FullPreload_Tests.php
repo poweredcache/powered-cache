@@ -337,9 +337,11 @@ class FullPreload_Tests extends TestCase {
 
 		try {
 			$new_state = new \ReflectionMethod( FullPreload::class, 'new_state' );
-			$new_state->setAccessible( true );
-			$discover = new \ReflectionMethod( FullPreload::class, 'discover' );
-			$discover->setAccessible( true );
+			$discover  = new \ReflectionMethod( FullPreload::class, 'discover' );
+			if ( PHP_VERSION_ID < 80100 ) {
+				$new_state->setAccessible( true );
+				$discover->setAccessible( true );
+			}
 			$state          = $new_state->invoke( null, '', true );
 			$state['phase'] = 'posts';
 			$settings       = [ 'preload_public_posts' => true ];

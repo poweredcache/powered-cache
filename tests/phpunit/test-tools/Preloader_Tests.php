@@ -247,7 +247,9 @@ class Preloader_Tests extends TestCase {
 		$queue     = \Mockery::mock( Async\CachePreloader::class );
 		$queue->shouldReceive( 'push_to_queue' )->with( 'https://example.test/public/' )->once();
 		$property = new \ReflectionProperty( Preloader::class, 'cache_preloader' );
-		$property->setAccessible( true );
+		if ( PHP_VERSION_ID < 80100 ) {
+			$property->setAccessible( true );
+		}
 		$property->setValue( $preloader, $queue );
 
 		$preloader->add_purged_urls_to_preload_queue( 123, [ 'https://example.test/private/page/?view=1', 'https://example.test/public/' ] );
