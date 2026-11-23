@@ -374,6 +374,33 @@ class Preloader {
 	 * @return array
 	 */
 	public function prepare_public_posts_page( $page_offset, $page_size, $after_id = 0 ) {
+		list( $urls ) = $this->get_public_posts_page( $page_offset, $page_size, $after_id, null );
+		return $urls;
+	}
+
+	/**
+	 * Discover published posts newest first, returning URLs keyed by ID and the last post date.
+	 *
+	 * @param int    $page_offset Number of posts already discovered.
+	 * @param int    $page_size Maximum number of rows for this step.
+	 * @param int    $after_id Last discovered post ID.
+	 * @param string $after_date Last discovered post date, or an empty string for the first page.
+	 * @return array
+	 */
+	public function prepare_recent_public_posts_page( $page_offset, $page_size, $after_id, $after_date ) {
+		return $this->get_public_posts_page( $page_offset, $page_size, $after_id, $after_date );
+	}
+
+	/**
+	 * Prepare a page of post URLs using an ID or publication-date cursor.
+	 *
+	 * @param int         $page_offset Number of posts already discovered.
+	 * @param int|null    $page_size Maximum number of rows for this step.
+	 * @param int         $after_id Last discovered post ID.
+	 * @param string|null $after_date Publication-date cursor, or null for ascending ID order.
+	 * @return array
+	 */
+	private function get_public_posts_page( $page_offset, $page_size, $after_id, $after_date ) {
 		global $wpdb;
 
 		$public_posts_url = [];
@@ -393,7 +420,7 @@ class Preloader {
 			$max_preload_item = min( $max_preload_item, $page_size );
 		}
 		if ( ! $max_preload_item ) {
-			return [];
+			return [ [], $after_date ];
 		}
 
 		\PoweredCache\Utils\log( sprintf( 'Adding public posts to queue' ) );
@@ -422,9 +449,17 @@ class Preloader {
 			)
 		);
 
-		$types = array_map( 'esc_sql', $types );
-		$types = "'" . implode( "','", $types ) . "'";
-		$posts = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE ID > %d AND post_type IN ( $types ) AND post_status = 'publish' ORDER BY ID ASC LIMIT %d,%d", $after_id, $offset, $max_preload_item ) ); // phpcs:ignore
+		if ( null === $after_date ) {
+			$types = array_map( 'esc_sql', $types );
+			$types = "'" . implode( "','", $types ) . "'";
+			$posts = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE ID > %d AND post_type IN ( $types ) AND post_status = 'publish' ORDER BY ID ASC LIMIT %d,%d", $after_id, $offset, $max_preload_item ) ); // phpcs:ignore
+		} else {
+			$rows  = $this->query_recent_public_posts( $types, $after_id, $after_date, $offset, $max_preload_item );
+			$posts = array_column( $rows, 'ID' );
+			if ( $rows ) {
+				$after_date = end( $rows )['post_date'];
+			}
+		}
 
 		\PoweredCache\Utils\log( sprintf( 'Found posts: %s', count( $posts ) ) );
 
@@ -435,7 +470,43 @@ class Preloader {
 			$public_posts_url[ (int) $post_id ] = get_permalink( $post_id );
 		}
 
-		return $public_posts_url;
+		return [ $public_posts_url, $after_date ];
+	}
+
+	/**
+	 * Read a bounded set of candidates from each post type using WordPress's type_status_date index.
+	 *
+	 * @param array  $types Post types included in the preload.
+	 * @param int    $after_id Last discovered post ID.
+	 * @param string $after_date Last discovered post date.
+	 * @param int    $offset Number of rows to skip.
+	 * @param int    $limit Maximum number of rows to return.
+	 * @return array
+	 */
+	private function query_recent_public_posts( array $types, $after_id, $after_date, $offset, $limit ) {
+		global $wpdb;
+
+		if ( ! $types ) {
+			return [];
+		}
+
+		$cursor = '' === $after_date ? '' : $wpdb->prepare( ' AND ( post_date < %s OR ( post_date = %s AND ID < %d ) )', $after_date, $after_date, $after_id );
+		$order  = 'ORDER BY post_date DESC, ID DESC';
+		$pages  = [];
+		foreach ( array_unique( $types ) as $type ) {
+			$pages[] = $wpdb->prepare( "SELECT ID, post_date FROM {$wpdb->posts} WHERE post_type = %s AND post_status = 'publish'", $type ) . $cursor . ' ' . $order;
+		}
+
+		$query = reset( $pages );
+		if ( count( $pages ) > 1 ) {
+			// Each type needs at most offset + limit rows for the final ordered page.
+			$type_limit = $wpdb->prepare( ' LIMIT %d', $offset + $limit );
+			$union      = '(' . implode( $type_limit . ') UNION ALL (', $pages ) . $type_limit . ')';
+			$query      = "SELECT ID, post_date FROM ($union) AS candidates $order";
+		}
+		$query .= $wpdb->prepare( ' LIMIT %d,%d', $offset, $limit );
+
+		return $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 	/**

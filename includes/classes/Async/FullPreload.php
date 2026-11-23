@@ -447,7 +447,12 @@ class FullPreload {
 				break;
 			case 'posts':
 				if ( ! empty( $settings['preload_public_posts'] ) ) {
-					$found = $preloader->prepare_public_posts_page( $offset, self::CHUNK_SIZE, $state['post_id'] ?? 0 );
+					// A checkpoint created before date ordering keeps its original ID cursor.
+					if ( $state['automatic'] && isset( $state['post_date'] ) ) {
+						list( $found, $state['post_date'] ) = $preloader->prepare_recent_public_posts_page( $offset, self::CHUNK_SIZE, $state['post_id'], $state['post_date'] );
+					} else {
+						$found = $preloader->prepare_public_posts_page( $offset, self::CHUNK_SIZE, $state['post_id'] ?? 0 );
+					}
 					if ( $found ) {
 						$state['post_id'] = array_key_last( $found );
 					}
@@ -633,6 +638,7 @@ class FullPreload {
 			'blog_id'    => 0,
 			'offset'     => 0,
 			'post_id'    => 0,
+			'post_date'  => '',
 			'chunk_slot' => 0,
 			'chunk_set'  => 0,
 			'chunks'     => 0,

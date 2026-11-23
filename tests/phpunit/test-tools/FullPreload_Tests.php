@@ -311,6 +311,59 @@ class FullPreload_Tests extends TestCase {
 	}
 
 	/**
+	 * Automatic discovery resumes from both cursor fields, including when posts share a date.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function test_automatic_discovery_resumes_with_the_publication_date_cursor() {
+		\WP_Mock::userFunction( 'wp_generate_uuid4', [ 'return' => 'test-run' ] );
+		\WP_Mock::userFunction( 'has_filter', [ 'return' => false ] );
+
+		$date  = '2026-10-17 12:00:00';
+		$urls  = array_fill_keys( range( 100, 51 ), 'https://example.test/post' );
+		$older = [ 50 => 'https://example.test/older' ];
+
+		$preloader = \Mockery::mock( Preloader::class );
+		$preloader->shouldReceive( 'prepare_recent_public_posts_page' )->once()->with( 0, 50, 0, '' )->andReturn( [ $urls, $date ] );
+		$preloader->shouldReceive( 'prepare_recent_public_posts_page' )->once()->with( 50, 50, 51, $date )->andReturn( [ $older, $date ] );
+		$preloader->shouldReceive( 'prepare_public_posts_page' )->once()->with( 50, 50, 55 )->andReturn( [ 56 => 'https://example.test/next' ] );
+		$factory = \Patchwork\redefine(
+			Preloader::class . '::factory',
+			static function () use ( $preloader ) {
+				return $preloader;
+			}
+		);
+
+		try {
+			$new_state = new \ReflectionMethod( FullPreload::class, 'new_state' );
+			$new_state->setAccessible( true );
+			$discover = new \ReflectionMethod( FullPreload::class, 'discover' );
+			$discover->setAccessible( true );
+			$state          = $new_state->invoke( null, '', true );
+			$state['phase'] = 'posts';
+			$settings       = [ 'preload_public_posts' => true ];
+
+			list( $state ) = $discover->invoke( null, $state, [], $settings, false );
+			$this->assertSame( 51, $state['post_id'] );
+			$this->assertSame( $date, $state['post_date'] );
+			list( $next, $found ) = $discover->invoke( null, $state, [], $settings, false );
+			$this->assertSame( 'terms', $next['phase'] );
+			$this->assertSame( array_values( $older ), $found );
+
+			// A run already using ascending IDs finishes discovery in that order after updating.
+			unset( $state['post_date'] );
+			$state['post_id'] = 55;
+			list( $next ) = $discover->invoke( null, $state, [], $settings, false );
+			$this->assertSame( 56, $next['post_id'] );
+			$this->assertArrayNotHasKey( 'post_date', $next );
+			$this->assertConditionsMet();
+		} finally {
+			\Patchwork\restore( $factory );
+		}
+	}
+
+	/**
 	 * The daily event uses the site timezone rather than a fixed UTC time.
 	 *
 	 * @runInSeparateProcess
