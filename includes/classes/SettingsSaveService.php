@@ -68,6 +68,10 @@ class SettingsSaveService {
 			$old_settings = $this->repository->all();
 		}
 
+		$settings += array_intersect_key(
+			$old_settings,
+			array_fill_keys( [ 'preload_full_mode', 'preload_schedule_time' ], true )
+		);
 		$settings = SettingsSchema::enforce_editable( $settings, $old_settings );
 
 		$this->repository->save( $settings );
@@ -172,7 +176,6 @@ class SettingsSaveService {
 	protected function start_preloading() {
 		\PoweredCache\Utils\log( 'Enable Preloader - Settings toggle' );
 		Preloader::factory()->setup_preload_queue();
-		Preloader::factory()->dispatch_preload_queue();
 	}
 
 	/**

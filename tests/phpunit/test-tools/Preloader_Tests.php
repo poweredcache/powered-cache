@@ -107,88 +107,42 @@ class Preloader_Tests extends TestCase {
 	}
 
 	/**
-	 * The scheduled callback passes the requested language while discovering URLs.
+	 * Manual preload retains the selected language when automatic preload is disabled.
 	 *
 	 * @runInSeparateProcess
 	 * @preserveGlobalState disabled
 	 */
-	public function test_scheduled_manual_preload_dispatches_selected_language() {
-		$settings = [
-			'enable_cache_preload'   => true,
-			'enable_page_cache'      => true,
-			'preload_homepage'       => false,
-			'preload_public_posts'   => true,
-			'preload_public_tax'     => false,
-			'enable_sitemap_preload' => false,
-			'rejected_uri'           => '',
-		];
-		$original   = 'https://example.test/product/';
-		$translated = 'https://example.test/es/producto/';
-		\WP_Mock::userFunction( 'PoweredCache\Utils\get_settings', [ 'return' => $settings ] );
-		\WP_Mock::userFunction( 'sanitize_key', [ 'return_arg' => 0 ] );
-		\WP_Mock::userFunction( 'get_current_blog_id', [ 'return' => 1 ] );
-		\WP_Mock::userFunction( 'wp_parse_url', [ 'return' => parse_url( $translated ) ] );
-		\WP_Mock::onFilter( 'populate_preload_queue_urls' )->with( [ $original ], 'es' )->reply( [ $translated ] );
-
-		$preloader = \Mockery::mock( Preloader::class )->makePartial();
-		$preloader->shouldReceive( 'prepare_public_posts_urls' )->once()->andReturn( [ $original ] );
-		$queue = \Mockery::mock( Async\CachePreloader::class );
-		$queue->shouldReceive( 'cancel_process' )->once();
-		$queue->shouldReceive( 'push_to_queue' )->with( $translated )->once();
-		$queue->shouldReceive( 'save' )->once()->andReturnSelf();
-		$queue->shouldReceive( 'dispatch' )->once()->andReturn( true );
-		$property = new \ReflectionProperty( Preloader::class, 'cache_preloader' );
-		$property->setAccessible( true );
-		$property->setValue( $preloader, $queue );
-
-		\WP_Mock::expectActionAdded( 'powered_cache_prepare_manual_preload', [ $preloader, 'run_scheduled_preload' ] );
-		$preloader->setup();
-		$preloader->run_scheduled_preload( 'es' );
-		$this->assertConditionsMet();
-	}
-
-	/**
-	 * Re-enabling preload and switching off public posts in one save uses the saved sources.
-	 *
-	 * @runInSeparateProcess
-	 * @preserveGlobalState disabled
-	 */
-	public function test_setup_queue_uses_current_settings() {
-		$settings = [
-			'enable_cache_preload'   => false,
-			'enable_page_cache'      => true,
-			'preload_homepage'       => false,
-			'preload_public_posts'   => true,
-			'preload_public_tax'     => false,
-			'enable_sitemap_preload' => false,
-		];
+	public function test_scheduled_manual_preload_preserves_selected_language() {
 		\WP_Mock::userFunction(
 			'PoweredCache\Utils\get_settings',
 			[
-				'return' => static function () use ( &$settings ) {
-					return $settings;
-				},
+				'return' => [
+					'enable_page_cache' => true,
+					'enable_cache_preload' => false,
+				],
 			]
 		);
+		\WP_Mock::userFunction( 'sanitize_key', [ 'return_arg' => 0 ] );
+		$start = \Patchwork\redefine(
+			Async\FullPreload::class . '::start',
+			function ( $language, $automatic = false ) {
+				$this->assertSame( 'es', $language );
+				$this->assertFalse( $automatic );
+				return true;
+			}
+		);
 
-		$preloader = \Mockery::mock( Preloader::class )->makePartial();
-		$preloader->shouldNotReceive( 'prepare_public_posts_urls' );
-		$queue = \Mockery::mock( Async\CachePreloader::class );
-		$queue->shouldReceive( 'cancel_process' )->once();
-		$property = new \ReflectionProperty( Preloader::class, 'cache_preloader' );
-		$property->setAccessible( true );
-		$property->setValue( $preloader, $queue );
+		$preloader = new Preloader();
+		\WP_Mock::expectActionAdded( 'powered_cache_prepare_manual_preload', [ $preloader, 'run_scheduled_preload' ] );
+		\WP_Mock::expectActionAdded( 'admin_post_powered_cache_preload_cache', [ $preloader, 'start_preload' ] );
 		$preloader->setup();
-
-		$settings['enable_cache_preload'] = true;
-		$settings['preload_public_posts'] = false;
-		$preloader->setup_preload_queue();
-		$preloader->dispatch_preload_queue();
+		$preloader->run_scheduled_preload( 'es' );
+		\Patchwork\restore( $start );
 		$this->assertConditionsMet();
 	}
 
 	/**
-	 * Full flush rebuilds preload after the cache directory is removed.
+	 * Full flush wakes preload after the cache directory is removed.
 	 *
 	 * @runInSeparateProcess
 	 * @preserveGlobalState disabled
@@ -198,36 +152,12 @@ class Preloader_Tests extends TestCase {
 	 */
 	public function test_full_flush_rebuilds_preload_after_removal( $async ) {
 		$settings = [
-			'enable_cache_preload'   => true,
-			'enable_page_cache'      => true,
-			'preload_homepage'       => false,
-			'preload_public_posts'   => true,
-			'preload_public_tax'     => false,
-			'enable_sitemap_preload' => true,
-			'rejected_uri'           => '',
+			'enable_cache_preload' => true,
+			'enable_page_cache' => true,
 		];
-		$url       = 'https://example.test/product/';
-		$preloader = \Mockery::mock( Preloader::class )->makePartial();
-		$preloader->shouldReceive( 'prepare_public_posts_urls' )->once()->andReturn( [ $url ] );
-		$queue = \Mockery::mock( Async\CachePreloader::class );
-		$queue->shouldReceive( 'cancel_process' )->once();
-		$queue->shouldReceive( 'push_to_queue' )->with( $url )->once();
-		$queue->shouldReceive( 'save' )->once()->andReturnSelf();
-		$queue->shouldReceive( 'dispatch' )->once()->andReturn( true );
-		$property = new \ReflectionProperty( Preloader::class, 'cache_preloader' );
-		$property->setAccessible( true );
-		$property->setValue( $preloader, $queue );
-
+		$removed  = false;
+		$enqueued = false;
 		\WP_Mock::userFunction( 'PoweredCache\Utils\get_settings', [ 'return' => $settings ] );
-		\WP_Mock::userFunction( 'get_current_blog_id', [ 'return' => 1 ] );
-		\WP_Mock::userFunction( 'wp_parse_url', [ 'return' => parse_url( $url ) ] );
-		\WP_Mock::expectActionAdded( 'powered_cache_full_purge_completed', [ $preloader, 'setup_preload_queue' ] );
-		\WP_Mock::expectActionAdded( 'powered_cache_clean_site_cache_dir', [ $preloader, 'setup_preload_queue' ] );
-		\WP_Mock::expectActionNotAdded( 'powered_cache_flushed', [ $preloader, 'setup_preload_queue' ] );
-		$preloader->setup();
-
-		$removed = false;
-		\WP_Mock::userFunction( 'PoweredCachePremium\Utils\preload_sitemap', [ 'times' => 1 ] );
 		\WP_Mock::userFunction(
 			'PoweredCache\Utils\remove_dir',
 			[
@@ -237,12 +167,22 @@ class Preloader_Tests extends TestCase {
 				},
 			]
 		);
-		\WP_Mock::onAction( 'powered_cache_full_purge_completed' )->with( null )->perform(
-			function () use ( &$removed, $preloader ) {
+		$start = \Patchwork\redefine(
+			Async\FullPreload::class . '::start',
+			function ( $language, $automatic ) use ( &$removed, &$enqueued ) {
 				$this->assertTrue( $removed );
-				$preloader->setup_preload_queue();
+				$this->assertSame( '', $language );
+				$this->assertTrue( $automatic );
+				$enqueued = true;
+				return true;
 			}
 		);
+		$preloader = new Preloader();
+		\WP_Mock::expectActionAdded( 'powered_cache_full_purge_completed', [ $preloader, 'setup_preload_queue' ] );
+		\WP_Mock::expectActionAdded( 'powered_cache_clean_site_cache_dir', [ $preloader, 'setup_preload_queue' ] );
+		\WP_Mock::expectActionNotAdded( 'powered_cache_flushed', [ $preloader, 'setup_preload_queue' ] );
+		$preloader->setup();
+		\WP_Mock::onAction( 'powered_cache_full_purge_completed' )->with( null )->perform( [ $preloader, 'setup_preload_queue' ] );
 
 		if ( $async ) {
 			( new Async\CachePurger() )->process_scheduled_item( [ 'call' => 'powered_cache_flush' ] );
@@ -251,7 +191,8 @@ class Preloader_Tests extends TestCase {
 			\WP_Mock::userFunction( 'delete_transient', [ 'return' => true ] );
 			Admin\Dashboard\purge_all_cache( [ 'async_cache_cleaning' => false ] );
 		}
-		$preloader->dispatch_preload_queue();
+		\Patchwork\restore( $start );
+		$this->assertTrue( $enqueued );
 		$this->assertConditionsMet();
 	}
 

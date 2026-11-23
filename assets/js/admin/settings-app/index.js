@@ -1794,6 +1794,7 @@ const SettingsField = ({ field, issues = [], sensitiveSettings = {}, settings, o
 					aria-describedby={descriptionId}
 					label={field.label}
 					onChange={updateValue}
+					type={field.input_type || 'text'}
 					value={displayValue(value, field)}
 				/>
 			);

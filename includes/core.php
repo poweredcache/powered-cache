@@ -10,6 +10,7 @@ namespace PoweredCache\Core;
 use PoweredCache\Async\CachePreloader;
 use PoweredCache\Async\CachePurger;
 use PoweredCache\Async\DatabaseOptimizer;
+use PoweredCache\Async\FullPreload;
 use PoweredCache\CompatibilityRules;
 use PoweredCache\Config;
 use PoweredCache\SettingsRestController;
@@ -101,6 +102,7 @@ function deactivate( $network_wide ) {
 	// cancel async jobs
 	$cache_preloader = CachePreloader::factory();
 	$cache_preloader->cancel_process();
+	FullPreload::deactivate();
 	$db_optimizer = DatabaseOptimizer::factory();
 	$db_optimizer->cancel_process();
 	$cache_purger = CachePurger::factory();

@@ -9,6 +9,7 @@ namespace PoweredCache;
 
 use PoweredCache\Async\ActionSchedulerProcess;
 use PoweredCache\Async\CachePreloader;
+use PoweredCache\Async\FullPreload;
 use function PoweredCache\Utils\permalink_structure_has_trailingslash;
 use function PoweredCache\Utils\site_cache_dir;
 use const PoweredCache\Constants\DEFERRED_PRELOAD_QUEUE_CRON_NAME;
@@ -48,13 +49,6 @@ class Preloader {
 	private $rejected_uris = [];
 
 	/**
-	 * Language selected for the current manual preload.
-	 *
-	 * @var string
-	 */
-	private $preload_language = '';
-
-	/**
 	 * Return an instance of the current class
 	 *
 	 * @return Preloader
@@ -81,25 +75,24 @@ class Preloader {
 		add_filter( 'wp_resource_hints', [ $this, 'preconnect_resources' ], 10, 2 );
 		add_action( 'wp_head', [ $this, 'preload_fonts' ], 1 );
 		add_action( self::MANUAL_PRELOAD_HOOK, [ $this, 'run_scheduled_preload' ] );
+		FullPreload::setup();
 
-		// bail if the preload not activated
-		if ( ! $this->settings['enable_cache_preload'] ) {
+		if ( ! empty( $this->settings['enable_page_cache'] ) ) {
+			add_action( 'admin_bar_menu', [ $this, 'admin_bar_menu' ] );
+			add_action( 'admin_post_powered_cache_preload_cache', [ $this, 'start_preload' ] );
+			if ( 'scheduled' === ( $this->settings['preload_full_mode'] ?? 'automatic' ) ) {
+				add_action( 'init', [ FullPreload::class, 'ensure_schedule' ] );
+			}
+		}
+
+		if ( empty( $this->settings['enable_page_cache'] ) || empty( $this->settings['enable_cache_preload'] ) ) {
 			return;
 		}
 
-		$this->get_preloader();
-
-		/**
-		 * Page cache needs to be activated to get benefits of preloading
-		 */
-		if ( ! $this->settings['enable_page_cache'] ) {
-			return;
+		if ( 'automatic' === ( $this->settings['preload_full_mode'] ?? 'automatic' ) ) {
+			add_action( 'powered_cache_full_purge_completed', [ $this, 'setup_preload_queue' ] );
+			add_action( 'powered_cache_clean_site_cache_dir', [ $this, 'setup_preload_queue' ] );
 		}
-
-		add_action( 'admin_bar_menu', [ $this, 'admin_bar_menu' ] );
-		add_action( 'admin_post_powered_cache_preload_cache', [ $this, 'start_preload' ] );
-		add_action( 'powered_cache_full_purge_completed', [ $this, 'setup_preload_queue' ] );
-		add_action( 'powered_cache_clean_site_cache_dir', [ $this, 'setup_preload_queue' ] );
 		add_action( 'powered_cache_advanced_cache_purge_post', [ $this, 'deferred_preload_queue' ], 10, 3 );
 		add_action( 'powered_cache_expired_files_deleted', [ $this, 'add_expired_urls_to_preload_queue' ], 10, 2 );
 		add_action( DEFERRED_PRELOAD_QUEUE_CRON_NAME, [ $this, 'add_purged_urls_to_preload_queue' ], 10, 2 );
@@ -206,91 +199,48 @@ class Preloader {
 	 * @throws \RuntimeException If the preload URLs could not be queued.
 	 */
 	public function run_scheduled_preload( $language = '' ) {
-		$this->preload_language = sanitize_key( $language );
-		try {
-			$this->setup_preload_queue();
-			$this->dispatch_preload_queue();
-			if ( $this->queue_dirty ) {
-				throw new \RuntimeException( 'Powered Cache could not queue all URLs for the manual preload.' );
-			}
-		} finally {
-			$this->preload_language = '';
+		if ( ! empty( \PoweredCache\Utils\get_settings()['enable_page_cache'] ) && ! FullPreload::start( sanitize_key( $language ) ) ) {
+			throw new \RuntimeException( 'Powered Cache could not start the manual preload.' );
 		}
 	}
 
 	/**
 	 * Setup preload
+	 *
+	 * @return bool Whether the run was queued.
 	 */
 	public function setup_preload_queue() {
-		// cancel existing process before populating
-		$this->get_preloader()->cancel_process();
-		$this->settings      = \PoweredCache\Utils\get_settings();
-		$this->rejected_uris = [];
-		$this->queue_dirty   = false;
-
-		if ( empty( $this->settings['enable_cache_preload'] ) || empty( $this->settings['enable_page_cache'] ) ) {
-			return;
-		}
-
-		if ( POWERED_CACHE_IS_NETWORK ) {
-			$sites = get_sites( [ 'fields' => 'ids' ] );
-			foreach ( $sites as $site_id ) {
-				switch_to_blog( $site_id );
-				\PoweredCache\Utils\log( sprintf( 'Populating preload queue for site: %d', $site_id ) );
-				$this->populate_preload_queue();
-				restore_current_blog();
-			}
-		} else {
-			$this->populate_preload_queue();
-		}
-
-		if ( $this->settings['enable_sitemap_preload'] && function_exists( '\PoweredCachePremium\Utils\preload_sitemap' ) ) {
-			\PoweredCachePremium\Utils\preload_sitemap();
-		}
+		return FullPreload::start( '', true );
 	}
 
 	/**
-	 * Populate preload queue based on settings
+	 * Find the home and posts-page URLs for the current site.
+	 *
+	 * @return array
 	 */
-	protected function populate_preload_queue() {
-		$preload_urls = [];
-
-		if ( $this->settings['preload_homepage'] ) {
-			$front_page = get_option( 'page_on_front' );
-			if ( ! empty( $front_page ) ) {
-				$front_page_url = get_permalink( $front_page );
-				$preload_urls[] = $front_page_url;
-				\PoweredCache\Utils\log( sprintf( 'Front page URL added to preload queue: %s', $front_page_url ) );
+	public function prepare_preload_home_urls() {
+		$urls = [];
+		foreach ( [ 'page_on_front', 'page_for_posts' ] as $option ) {
+			$page_id = get_option( $option );
+			if ( $page_id ) {
+				$urls[] = get_permalink( $page_id );
 			}
-
-			$posts_page = get_option( 'page_for_posts' );
-			if ( ! empty( $posts_page ) ) {
-				$posts_page_url = get_permalink( $posts_page );
-				$preload_urls[] = $posts_page_url;
-				\PoweredCache\Utils\log( sprintf( 'Posts Page URL added to preload queue: %s', $posts_page_url ) );
-			}
-
-			/**
-			 * trailingslashit important here,
-			 * likely redirection is not followed for non-blocking preload request
-			 */
-			$home_url       = trailingslashit( get_home_url() );
-			$preload_urls[] = $home_url;
-			\PoweredCache\Utils\log( sprintf( 'Home URL added to preload queue: %s', $home_url ) );
 		}
 
-		if ( $this->settings['preload_public_posts'] ) {
-			$public_post_urls = $this->prepare_public_posts_urls();
-			$preload_urls     = array_merge( $preload_urls, $public_post_urls );
-			\PoweredCache\Utils\log( sprintf( 'Public posts added to preload queue. ' ) );
-		}
+		// Preload requests do not follow redirects in non-blocking mode.
+		$urls[] = trailingslashit( get_home_url() );
 
-		if ( $this->settings['preload_public_tax'] ) {
-			$public_tax_term_urls = $this->prepare_public_tax_terms_urls();
-			$preload_urls         = array_merge( $preload_urls, $public_tax_term_urls );
-			\PoweredCache\Utils\log( sprintf( 'Public tax terms added to preload queue. ' ) );
-		}
+		return $urls;
+	}
 
+	/**
+	 * Apply the full-list preload filter, including WPML language selection.
+	 *
+	 * @param array  $preload_urls URLs discovered for this site.
+	 * @param string $language Selected language.
+	 * @return array
+	 */
+	public function filter_preload_urls( array $preload_urls, $language = '' ) {
 		/**
 		 * Filters preload urls before sending to queue
 		 *
@@ -302,11 +252,7 @@ class Preloader {
 		 * @return {array} New value.
 		 * @since  2.4
 		 */
-		$preload_urls = apply_filters( 'populate_preload_queue_urls', $preload_urls, $this->preload_language );
-
-		foreach ( $preload_urls as $url ) {
-			$this->add_url_to_preload_queue( $url );
-		}
+		return apply_filters( 'populate_preload_queue_urls', $preload_urls, $language );
 	}
 
 	/**
@@ -409,9 +355,13 @@ class Preloader {
 	}
 
 	/**
-	 * Prep. public post urls for preload queue
+	 * Prepare public post URLs, optionally within a page of the configured limit.
+	 *
+	 * @param int      $page_offset Offset within the configured result set.
+	 * @param int|null $page_size Maximum number of rows for this step.
+	 * @return array
 	 */
-	public function prepare_public_posts_urls() {
+	public function prepare_public_posts_urls( $page_offset = 0, $page_size = null ) {
 		global $wpdb;
 
 		$public_posts_url = [];
@@ -425,8 +375,14 @@ class Preloader {
 		 * @return {int} New value.
 		 * @since  2.0
 		 */
-		$offset           = (int) apply_filters( 'powered_cache_preload_public_posts_offset', 0 );
-		$max_preload_item = $this->preload_max_post_count();
+		$offset           = (int) apply_filters( 'powered_cache_preload_public_posts_offset', 0 ) + $page_offset;
+		$max_preload_item = max( 0, (int) $this->preload_max_post_count() - $page_offset );
+		if ( null !== $page_size ) {
+			$max_preload_item = min( $max_preload_item, $page_size );
+		}
+		if ( ! $max_preload_item ) {
+			return [];
+		}
 
 		\PoweredCache\Utils\log( sprintf( 'Adding public posts to queue' ) );
 		\PoweredCache\Utils\log( sprintf( 'OFFSET: %s', $offset ) );
@@ -471,70 +427,115 @@ class Preloader {
 	 * Prep. public tax terms urls for preload queue
 	 */
 	public function prepare_public_tax_terms_urls() {
-		$public_tax_term_urls = [];
-		$taxonomies           = get_taxonomies( [ 'public' => true ] );
+		$urls = [];
+		foreach ( $this->get_preload_taxonomies() as $taxonomy ) {
+			$urls = array_merge( $urls, $this->prepare_preload_taxonomy_urls( $taxonomy ) );
+		}
 
+		return $urls;
+	}
+
+	/**
+	 * Return the public taxonomies configured for preload.
+	 *
+	 * @return array
+	 */
+	public function get_preload_taxonomies() {
 		/**
 		 * Filters public taxonomies.
 		 *
-		 * @hook   powered_cache_preload_taxonomies
-		 *
-		 * @param  {array} $taxonomies Public taxonomies.
-		 *
+		 * @hook powered_cache_preload_taxonomies
+		 * @param {array} $taxonomies Public taxonomies.
 		 * @return {array} New value.
-		 * @since  1.0
+		 * @since 1.0
 		 */
-		$taxonomies = apply_filters( 'powered_cache_preload_taxonomies', $taxonomies );
+		return apply_filters( 'powered_cache_preload_taxonomies', get_taxonomies( [ 'public' => true ] ) );
+	}
 
-		foreach ( $taxonomies as $tax ) {
-			\PoweredCache\Utils\log( sprintf( 'Taxonomy added to queue: %s', $tax ) );
+	/**
+	 * Prepare URLs for one taxonomy, optionally within a page of its result set.
+	 *
+	 * @param string   $taxonomy Taxonomy name.
+	 * @param int      $page_offset Offset within the configured result set.
+	 * @param int|null $page_size Maximum number of terms for this step.
+	 * @return array
+	 */
+	public function prepare_preload_taxonomy_urls( $taxonomy, $page_offset = 0, $page_size = null ) {
+		/**
+		 * Filters taxonomy offset for preload.
+		 *
+		 * @hook powered_cache_preload_public_taxonomies_offset
+		 * @param {int} $offset Taxonomy offset.
+		 * @return {int} New value.
+		 * @since 1.0
+		 */
+		$offset = (int) apply_filters( 'powered_cache_preload_public_taxonomies_offset', 0 );
 
-			/**
-			 * Filters taxonomy offset for preload.
-			 *
-			 * @hook   powered_cache_preload_public_taxonomies_offset
-			 *
-			 * @param  {int} $offset Public taxonomies.
-			 *
-			 * @return {int} New value.
-			 * @since  2.0
-			 */
-			$offset = (int) apply_filters( 'powered_cache_preload_public_taxonomies_offset', 0 );
-			$limit  = $this->preload_max_term_count();
-
-			/**
-			 * Filters term query args.
-			 *
-			 * @hook   powered_cache_preload_tax_term_args
-			 *
-			 * @param  {array} $args Arguments for terms.
-			 *
-			 * @return {array} New value.
-			 * @since  2.0
-			 */
-			$args = apply_filters(
-				'powered_cache_preload_tax_term_args',
-				[
-					'hide_empty' => false,
-					'orderby'    => 'count',
-					'offset'     => $offset,
-					'number'     => $limit,
-				],
-				$tax
-			);
-
-			\PoweredCache\Utils\log( 'Taxonomy preload args: [powered_cache_preload_tax_term_args]:' . print_r( $args, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-
-			$terms = get_terms( $tax, $args );
-
-			foreach ( $terms as $term ) {
-				$public_tax_term_urls[] = get_term_link( $term );
+		/**
+		 * Filters term query args.
+		 *
+		 * @hook powered_cache_preload_tax_term_args
+		 * @param {array} $args Arguments for terms.
+		 * @return {array} New value.
+		 * @since 1.0
+		 */
+		$args = apply_filters(
+			'powered_cache_preload_tax_term_args',
+			[
+				'hide_empty' => false,
+				'orderby'    => 'count',
+				'offset'     => $offset,
+				'number'     => $this->preload_max_term_count(),
+			],
+			$taxonomy
+		);
+		if ( null !== $page_size ) {
+			$limit = absint( $args['number'] ?? 0 );
+			if ( $limit && $limit <= $page_offset ) {
+				return [];
+			}
+			$args['number'] = $limit ? min( $page_size, $limit - $page_offset ) : $page_size;
+			$args['offset'] = absint( $args['offset'] ?? 0 ) + $page_offset;
+			if ( ! isset( $args['hierarchical'] ) && empty( $args['hide_empty'] ) && empty( $args['pad_counts'] ) ) {
+				$args['hierarchical'] = false;
 			}
 		}
 
-		return $public_tax_term_urls;
+		$urls = [];
+		if ( null !== $page_size && 'count' === ( $args['orderby'] ?? '' ) ) {
+			$args['powered_cache_preload_page'] = true;
+			add_filter( 'terms_clauses', [ $this, 'order_paged_preload_terms' ], 10, 3 );
+			try {
+				$terms = get_terms( $taxonomy, $args );
+			} finally {
+				remove_filter( 'terms_clauses', [ $this, 'order_paged_preload_terms' ], 10 );
+			}
+		} else {
+			$terms = get_terms( $taxonomy, $args );
+		}
+		if ( ! is_array( $terms ) ) {
+			return $urls;
+		}
+		foreach ( $terms as $term ) {
+			$urls[] = get_term_link( $term );
+		}
+		return $urls;
 	}
 
+	/**
+	 * Keep terms with the same count in stable order between pages.
+	 *
+	 * @param array $clauses Term SQL clauses.
+	 * @param array $taxonomies Queried taxonomies.
+	 * @param array $args Term query arguments.
+	 * @return array
+	 */
+	public function order_paged_preload_terms( array $clauses, array $taxonomies, array $args ) {
+		if ( ! empty( $args['powered_cache_preload_page'] ) && 'ORDER BY tt.count' === $clauses['orderby'] ) {
+			$clauses['order'] .= ', t.term_id ASC';
+		}
+		return $clauses;
+	}
 
 	/**
 	 * Max number of posts that will preloaded
@@ -815,11 +816,12 @@ class Preloader {
 	}
 
 	/**
-	 * Wait between preload requests.
+	 * Resolve the configured request spacing in microseconds.
 	 *
 	 * @param int $delay Delay in microseconds.
+	 * @return int
 	 */
-	public static function wait( $delay = 500000 ) {
+	public static function get_request_interval( $delay ) {
 		/**
 		 * Filters wait time between preload requests.
 		 *
@@ -830,7 +832,16 @@ class Preloader {
 		 * @return {int} New value.
 		 * @since  2.0
 		 */
-		$delay = absint( apply_filters( 'powered_cache_preload_request_interval', $delay ) );
+		return absint( apply_filters( 'powered_cache_preload_request_interval', $delay ) );
+	}
+
+	/**
+	 * Wait between preload requests.
+	 *
+	 * @param int $delay Delay in microseconds.
+	 */
+	public static function wait( $delay = 500000 ) {
+		$delay = self::get_request_interval( $delay );
 
 		// Convert the delay to seconds and microseconds
 		$seconds      = intdiv( $delay, 1000000 ); // Get full seconds

@@ -31,6 +31,7 @@ class SettingsSchema {
 	const SANITIZE_ARRAY    = 'array';
 	const SANITIZE_ENUM     = 'enum';
 	const SANITIZE_CSS      = 'css';
+	const SANITIZE_TIME     = 'time';
 
 	/**
 	 * Return the schema for all current settings.
@@ -113,9 +114,11 @@ class SettingsSchema {
 			'cdn_zone'                         => self::field( self::TYPE_ARRAY, array( '' ), 'cdn', self::SANITIZE_ARRAY, false, array( 'enable_cdn' ) ),
 			'cdn_rejected_files'               => self::field( self::TYPE_STRING, '', 'cdn', self::SANITIZE_TEXTAREA, false, array( 'enable_cdn' ) ),
 			'enable_cache_preload'             => self::field( self::TYPE_BOOLEAN, false, 'preload', self::SANITIZE_BOOLEAN ),
-			'preload_homepage'                 => self::field( self::TYPE_BOOLEAN, true, 'preload', self::SANITIZE_BOOLEAN, false, array( 'enable_cache_preload' ) ),
-			'preload_public_posts'             => self::field( self::TYPE_BOOLEAN, true, 'preload', self::SANITIZE_BOOLEAN, false, array( 'enable_cache_preload' ) ),
-			'preload_public_tax'               => self::field( self::TYPE_BOOLEAN, true, 'preload', self::SANITIZE_BOOLEAN, false, array( 'enable_cache_preload' ) ),
+			'preload_full_mode'                => self::field( self::TYPE_ENUM, 'automatic', 'preload', self::SANITIZE_ENUM, false, array(), array( 'automatic', 'manual', 'scheduled' ) ),
+			'preload_schedule_time'            => self::field( self::TYPE_STRING, '02:00', 'preload', self::SANITIZE_TIME ),
+			'preload_homepage'                 => self::field( self::TYPE_BOOLEAN, true, 'preload', self::SANITIZE_BOOLEAN ),
+			'preload_public_posts'             => self::field( self::TYPE_BOOLEAN, true, 'preload', self::SANITIZE_BOOLEAN ),
+			'preload_public_tax'               => self::field( self::TYPE_BOOLEAN, true, 'preload', self::SANITIZE_BOOLEAN ),
 			'enable_sitemap_preload'           => self::field( self::TYPE_BOOLEAN, false, 'preload', self::SANITIZE_BOOLEAN, true ),
 			'preload_request_interval'         => self::field( self::TYPE_INTEGER, 2, 'preload', self::SANITIZE_INTEGER ),
 			'preload_sitemap'                  => self::field( self::TYPE_STRING, '', 'preload', self::SANITIZE_TEXTAREA, true, array( 'enable_sitemap_preload' ) ),

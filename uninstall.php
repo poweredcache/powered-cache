@@ -82,6 +82,7 @@ function powered_cache_uninstall_site() {
 	wp_clear_scheduled_hook( \PoweredCache\Constants\PURGE_CACHE_CRON_NAME );
 	wp_clear_scheduled_hook( \PoweredCache\Constants\PURGE_FO_CRON_NAME );
 	wp_clear_scheduled_hook( \PoweredCache\Constants\DEFERRED_PRELOAD_QUEUE_CRON_NAME );
+	\PoweredCache\Async\FullPreload::deactivate();
 
 	delete_site_transient( \PoweredCache\Constants\PURGE_CACHE_PLUGIN_NOTICE_TRANSIENT );
 	delete_transient( \PoweredCache\Constants\PURGE_CACHE_PLUGIN_NOTICE_TRANSIENT );

@@ -661,9 +661,31 @@ class SettingsManifest {
 			'enable_cache_preload'           => array(
 				'label'         => 'Cache Preload',
 				'control_label' => 'Warm cache automatically',
-				'description'   => 'Warm selected URLs before visitors request them.',
+				'description'   => 'Warm URLs after cache expiration or content changes. In Automatic mode, also warm all selected URLs after a full purge.',
 				'group'         => 'Preload',
 				'docs_path'     => 'cache-preload',
+			),
+			'preload_full_mode'              => array(
+				'label'       => 'Full Cache Preload',
+				'description' => 'Choose when to warm all selected URLs. The Preload Cache command is available in every mode.',
+				'group'       => 'Preload',
+				'options'     => array(
+					'automatic' => 'Automatic',
+					'manual'    => 'Manual only',
+					'scheduled' => 'Daily schedule',
+				),
+			),
+			'preload_schedule_time'          => array(
+				'label'        => 'Daily Preload Time',
+				'description'  => 'Uses the WordPress site timezone. The run starts when the scheduler next checks for due work.',
+				'group'        => 'Preload',
+				'input_type'   => 'time',
+				'visible_when' => array(
+					array(
+						'key' => 'preload_full_mode',
+						'value' => 'scheduled',
+					),
+				),
 			),
 			'preload_homepage'               => array(
 				'label'         => 'Preload Homepage',

@@ -368,6 +368,9 @@ class SettingsRepository {
 				return $value;
 			case SettingsSchema::SANITIZE_TEXTAREA:
 				return $this->sanitize_textarea( $value );
+			case SettingsSchema::SANITIZE_TIME:
+				$value = $this->sanitize_text( $value );
+				return preg_match( '/\A(?:[01][0-9]|2[0-3]):[0-5][0-9]\z/', $value ) ? $value : $field['default'];
 			case SettingsSchema::SANITIZE_CSS:
 				$value = is_scalar( $value ) ? (string) $value : '';
 
