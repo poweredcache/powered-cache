@@ -362,6 +362,18 @@ class Preloader {
 	 * @return array
 	 */
 	public function prepare_public_posts_urls( $page_offset = 0, $page_size = null ) {
+		return array_values( $this->prepare_public_posts_page( $page_offset, $page_size ) );
+	}
+
+	/**
+	 * Return a page keyed by post ID, so long runs can advance by ID.
+	 *
+	 * @param int      $page_offset Number of posts already discovered.
+	 * @param int|null $page_size Maximum number of rows for this step.
+	 * @param int      $after_id Last discovered post ID, or zero to use the configured offset.
+	 * @return array
+	 */
+	public function prepare_public_posts_page( $page_offset, $page_size, $after_id = 0 ) {
 		global $wpdb;
 
 		$public_posts_url = [];
@@ -375,7 +387,7 @@ class Preloader {
 		 * @return {int} New value.
 		 * @since  2.0
 		 */
-		$offset           = (int) apply_filters( 'powered_cache_preload_public_posts_offset', 0 ) + $page_offset;
+		$offset           = $after_id > 0 ? 0 : max( 0, (int) apply_filters( 'powered_cache_preload_public_posts_offset', 0 ) + $page_offset );
 		$max_preload_item = max( 0, (int) $this->preload_max_post_count() - $page_offset );
 		if ( null !== $page_size ) {
 			$max_preload_item = min( $max_preload_item, $page_size );
@@ -412,12 +424,15 @@ class Preloader {
 
 		$types = array_map( 'esc_sql', $types );
 		$types = "'" . implode( "','", $types ) . "'";
-		$posts = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE ( post_type IN ( $types ) ) AND post_status = 'publish' ORDER BY ID ASC LIMIT {$offset},{$max_preload_item}" ); // phpcs:ignore
+		$posts = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE ID > %d AND post_type IN ( $types ) AND post_status = 'publish' ORDER BY ID ASC LIMIT %d,%d", $after_id, $offset, $max_preload_item ) ); // phpcs:ignore
 
 		\PoweredCache\Utils\log( sprintf( 'Found posts: %s', count( $posts ) ) );
 
+		if ( $posts && null !== $page_size ) {
+			_prime_post_caches( $posts, false, false );
+		}
 		foreach ( $posts as $post_id ) {
-			$public_posts_url[] = get_permalink( $post_id );
+			$public_posts_url[ (int) $post_id ] = get_permalink( $post_id );
 		}
 
 		return $public_posts_url;

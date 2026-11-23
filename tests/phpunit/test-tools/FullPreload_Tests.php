@@ -38,6 +38,7 @@ class FullPreload_Tests extends TestCase {
 		$actions  = [];
 		$recovery = false;
 		$fail     = false;
+		$retry_delays = [];
 		$fail_checkpoint = false;
 		$settings = [
 			'enable_page_cache'        => true,
@@ -59,6 +60,31 @@ class FullPreload_Tests extends TestCase {
 			}
 		);
 		$wpdb->shouldReceive( 'get_var' )->andReturn( '1' );
+		$wpdb->shouldReceive( 'esc_like' )->andReturnUsing(
+			static function ( $prefix ) {
+				return $prefix;
+			}
+		);
+		$chunk_names = static function () use ( &$options ) {
+			return array_values(
+				array_filter(
+					array_keys( $options ),
+					static function ( $name ) {
+						return 0 === strpos( $name, 'powered_cache_full_preload_chunk_' );
+					}
+				)
+			);
+		};
+		$wpdb->shouldReceive( 'get_col' )->andReturnUsing( $chunk_names );
+		$wpdb->shouldReceive( 'query' )->andReturnUsing(
+			static function () use ( &$options, $chunk_names ) {
+				$names = $chunk_names();
+				foreach ( $names as $name ) {
+					unset( $options[ $name ] );
+				}
+				return count( $names );
+			}
+		);
 		$GLOBALS['wpdb'] = $wpdb;
 
 		\WP_Mock::userFunction( 'PoweredCache\Utils\get_settings', [ 'return' => $settings ] );
@@ -67,12 +93,41 @@ class FullPreload_Tests extends TestCase {
 		\WP_Mock::userFunction( 'absint', [ 'return_arg' => 0 ] );
 		\WP_Mock::userFunction( 'is_wp_error', [ 'return' => false ] );
 		\WP_Mock::userFunction( 'has_filter', [ 'return' => true ] );
+		\WP_Mock::userFunction( 'wp_cache_delete_multiple', [ 'args' => [ \Mockery::type( 'array' ), 'options' ] ] );
+		\WP_Mock::userFunction(
+			'as_get_scheduled_actions',
+			[
+				'times'  => 1,
+				'args'   => [
+					\Mockery::on(
+						static function ( $args ) {
+							return 'pending' === $args['status'] && 1 === $args['per_page'];
+						}
+					),
+					'ids',
+				],
+				'return' => [ 99 ],
+			]
+		);
 
 		\WP_Mock::userFunction(
 			'get_option',
 			[
 				'return' => static function ( $option, $default = false ) use ( &$options ) {
 					return $options[ $option ] ?? $default;
+				},
+			]
+		);
+		\WP_Mock::userFunction(
+			'as_schedule_single_action',
+			[
+				'return' => function ( $timestamp, $hook, $args, $group, $unique, $priority ) use ( &$actions, &$retry_delays ) {
+					$this->assertSame( FullPreload::STEP_HOOK, $hook );
+					$this->assertSame( 20, $priority );
+					$retry_delays[] = $timestamp - time();
+					$actions[]      = $args;
+					$this->assertCount( 1, $actions );
+					return 1;
 				},
 			]
 		);
@@ -155,10 +210,11 @@ class FullPreload_Tests extends TestCase {
 		}
 		$pages = [];
 		$posts = \Patchwork\redefine(
-			Preloader::class . '::prepare_public_posts_urls',
-			function ( $offset, $size ) use ( $urls, &$pages ) {
-				$pages[] = [ $offset, $size ];
-				return array_slice( $urls, $offset, $size );
+			Preloader::class . '::prepare_public_posts_page',
+			function ( $offset, $size, $after_id ) use ( $urls, &$pages ) {
+				$pages[] = [ $offset, $size, $after_id ];
+				$keyed   = array_combine( range( 1, count( $urls ) ), $urls );
+				return array_slice( $keyed, $offset, $size, true );
 			}
 		);
 		$eligible = \Patchwork\redefine(
@@ -167,10 +223,17 @@ class FullPreload_Tests extends TestCase {
 				return true;
 			}
 		);
-		$warmed = [];
+		$warmed      = [];
+		$fail_http   = true;
+		$failed_http = [];
 		$warm   = \Patchwork\redefine(
 			Preloader::class . '::preload_request',
-			static function ( $url ) use ( &$warmed ) {
+			static function ( $url ) use ( &$warmed, &$fail_http, &$failed_http ) {
+				if ( $fail_http ) {
+					$fail_http     = false;
+					$failed_http[] = $url;
+					return [ 'response' => [ 'code' => 503 ] ];
+				}
 				$warmed[] = $url;
 				return [];
 			}
@@ -181,12 +244,19 @@ class FullPreload_Tests extends TestCase {
 				return true;
 			}
 		);
+		$interval = \Patchwork\redefine(
+			Preloader::class . '::get_request_interval',
+			static function () use ( &$warmed ) {
+				// Keep one successful request paced while simulating a due payment action.
+				return 1 === count( $warmed ) ? 2000000 : 0;
+			}
+		);
 		$translated = 'https://example.test/es/inicio';
 		$from_map   = 'https://example.test/es/mapa';
 		$sitemap    = 'https://example.test/sitemap.xml';
 		\WP_Mock::onFilter( 'populate_preload_queue_urls' )->with( $urls, 'es' )->reply( array_merge( [ $translated ], $urls ) );
 		\WP_Mock::onFilter( 'powered_cache_full_preload_sitemaps' )->with( [] )->reply( [ $sitemap ] );
-		\WP_Mock::onFilter( 'powered_cache_full_preload_read_sitemap' )->with( false, $sitemap )->reply( [ 'urls' => [ $from_map ] ] );
+		\WP_Mock::onFilter( 'powered_cache_full_preload_read_sitemap' )->with( false, $sitemap, 0 )->reply( [ 'urls' => [ $from_map ] ] );
 		\WP_Mock::userFunction( 'PoweredCache\Utils\is_url_cached', [ 'return' => false ] );
 
 		try {
@@ -208,10 +278,24 @@ class FullPreload_Tests extends TestCase {
 			FullPreload::recover();
 			$this->assertSame( [ [ 'some-run', 1 ] ], $actions );
 
+			$lost_chunk = false;
 			for ( $step = 0; $actions && $step < 100; ++$step ) {
+				$state = $options['powered_cache_full_preload_state'];
+				if ( ! $lost_chunk && 'warm' === $state['phase'] && $state['chunks'] ) {
+					unset( $options[ 'powered_cache_full_preload_chunk_' . $state['chunk_slot'] . '_0' ] );
+					$lost_chunk = true;
+				}
+				// The scheduled action fires after the clock reaches its due time.
+				$options['powered_cache_full_preload_state']['due'] = 0;
 				FullPreload::run_step( ...array_shift( $actions ) );
 			}
-			$this->assertSame( [ [ 0, 50 ], [ 0, 50 ], [ 50, 50 ] ], $pages );
+			$this->assertTrue( $lost_chunk );
+			$this->assertSame( [ [ 0, 50, 0 ], [ 0, 50, 0 ], [ 50, 50, 50 ], [ 0, 50, 0 ], [ 50, 50, 50 ] ], $pages );
+			$this->assertSame( [ $translated ], $failed_http );
+			$this->assertCount( 3, $retry_delays );
+			$this->assertGreaterThanOrEqual( 59, $retry_delays[0] );
+			$this->assertGreaterThanOrEqual( 14, $retry_delays[1] );
+			$this->assertGreaterThanOrEqual( 1, $retry_delays[2] );
 			$this->assertSame( array_merge( [ $translated ], $urls, [ $from_map ] ), $warmed );
 			$this->assertSame( [], $options );
 			$this->assertFalse( $recovery );
@@ -221,6 +305,7 @@ class FullPreload_Tests extends TestCase {
 			\Patchwork\restore( $eligible );
 			\Patchwork\restore( $warm );
 			\Patchwork\restore( $continue );
+			\Patchwork\restore( $interval );
 			$GLOBALS['wpdb'] = $previous_db;
 		}
 	}

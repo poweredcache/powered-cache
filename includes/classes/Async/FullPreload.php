@@ -20,14 +20,17 @@ class FullPreload {
 	public const STEP_HOOK  = 'powered_cache_full_preload_step';
 	public const DAILY_HOOK = 'powered_cache_daily_preload';
 
-	private const RECOVERY_HOOK = 'powered_cache_recover_full_preload';
-	private const START_HOOK    = 'powered_cache_start_full_preload';
-	private const STATE_OPTION  = 'powered_cache_full_preload_state';
-	private const URLS_OPTION   = 'powered_cache_full_preload_urls';
-	private const WINDOW_OPTION = 'powered_cache_full_preload_window';
-	private const CHUNK_SIZE    = 50;
-	private const INLINE_DELAY  = 2;
-	private const RECOVERY_TIME = 60;
+	private const RECOVERY_HOOK         = 'powered_cache_recover_full_preload';
+	private const START_HOOK            = 'powered_cache_start_full_preload';
+	private const STATE_OPTION          = 'powered_cache_full_preload_state';
+	private const URLS_OPTION           = 'powered_cache_full_preload_urls';
+	private const CHUNKS_PREFIX         = 'powered_cache_full_preload_chunk_';
+	private const CHUNK_SIZE            = 50;
+	private const STORED_CHUNK_SIZE     = 250;
+	private const MAX_REQUESTS_PER_STEP = 4;
+	private const PAGE_RETRY_DELAY      = 15;
+	private const INLINE_DELAY          = 2;
+	private const RECOVERY_TIME         = 60;
 
 	/**
 	 * Register workers on every request, including when automatic preload is off.
@@ -230,6 +233,10 @@ class FullPreload {
 				if ( $state['due'] > microtime( true ) ) {
 					return true;
 				}
+				if ( ! isset( $state['chunks'] ) ) {
+					// Older versions saved one URL list. Rebuild using the saved run settings.
+					$state = self::reset_source( $state );
+				}
 				$state = self::advance( $state, $settings );
 				if ( ! $state ) {
 					$previous = get_option( self::STATE_OPTION, [] );
@@ -246,6 +253,11 @@ class FullPreload {
 					return false;
 				}
 
+				$delay = $state['due'] - microtime( true );
+				if ( $delay <= 0 || $delay > self::INLINE_DELAY ) {
+					return self::queue_step( $state );
+				}
+
 				return $state;
 			}
 		);
@@ -254,8 +266,8 @@ class FullPreload {
 		}
 
 		$delay = $next['due'] - microtime( true );
-		if ( $delay > 0 && $delay <= self::INLINE_DELAY ) {
-			// Preserve the default request spacing while keeping this action short.
+		if ( $delay > 0 && $delay <= self::INLINE_DELAY && ! self::has_due_actions() ) {
+			// Keep the current runner useful only while nothing else is due.
 			usleep( (int) ceil( $delay * 1000000 ) );
 		}
 		self::locked(
@@ -272,7 +284,6 @@ class FullPreload {
 	 * @param array $state Run state.
 	 * @param array $settings Current settings.
 	 * @return array
-	 * @throws \RuntimeException If a URL snapshot cannot be saved.
 	 */
 	private static function advance( array $state, array $settings ) {
 		$site_id = $state['blog_id'];
@@ -284,95 +295,140 @@ class FullPreload {
 		}
 
 		$state['blog_id'] = $site_id;
-		if ( empty( $settings['enable_sitemap_preload'] ) && ( 'sitemap' === $state['phase'] || $state['seen'] ) ) {
-			$state['phase']    = 'warm';
-			$state['offset']   = $state['url_count'];
+		if ( empty( $settings['enable_sitemap_preload'] ) && ( 'sitemap' === $state['phase'] || $state['sitemap_url'] ) ) {
 			$state['sitemaps'] = [];
+			return self::finish_source( $state );
 		}
 
-		$urls     = 'warm' === $state['phase'] ? self::warm_window( $state ) : self::stored_urls( $state );
+		// Chunk options belong to the scheduler site, even when warming another site.
+		$urls = [];
+		if ( 'warm' === $state['phase'] && $state['chunk'] < $state['chunks'] ) {
+			$urls = self::read_chunk( $state, $state['chunk'] );
+			if ( ! isset( $urls[ $state['offset'] ] ) ) {
+				return self::recover_source( $state );
+			}
+		} elseif ( 'terms' === $state['phase'] && ! $state['terms'] && has_filter( 'populate_preload_queue_urls' ) ) {
+			// Preserve the whole-list filter. The usual path never reads the full list.
+			for ( $index = 0; $index < $state['chunks']; ++$index ) {
+				$chunk = self::read_chunk( $state, $index );
+				if ( ! $chunk ) {
+					return self::recover_source( $state );
+				}
+				array_push( $urls, ...$chunk );
+			}
+		}
+
 		$switched = (int) get_current_blog_id() !== $site_id;
 		if ( $switched ) {
 			switch_to_blog( $site_id );
 		}
 		try {
 			if ( 'warm' === $state['phase'] ) {
-				$state = self::warm( $state, $urls, $settings );
-			} else {
-				list( $state, $urls ) = self::discover( $state, $urls, $settings, ! $switched );
+				return self::warm( $state, $urls, $settings );
 			}
+			list( $state, $found ) = self::discover( $state, $urls, $settings, ! $switched );
 		} finally {
 			if ( $switched ) {
 				restore_current_blog();
 			}
 		}
-		if ( ! $state ) {
+
+		return self::save_chunks( $state, $found );
+	}
+
+	/**
+	 * Open a new set of chunks without overwriting the active checkpoint.
+	 *
+	 * @param array $state Run state.
+	 * @return array
+	 */
+	private static function reset_chunks( array $state ) {
+		$state['chunk_slot'] = 1 - $state['chunk_slot'];
+		$state['chunk_set']  = $state['step'] + 1;
+		$state['chunks']     = 0;
+		$state['chunk']      = 0;
+		$state['offset']     = 0;
+		$state['mobile']     = false;
+		return $state;
+	}
+
+	/**
+	 * Restart discovery for the current site or sitemap.
+	 *
+	 * @param array $state Run state.
+	 * @return array
+	 */
+	private static function reset_source( array $state ) {
+		$fresh = self::new_state( $state['language'], $state['automatic'] );
+		$fresh = array_replace( $fresh, array_intersect_key( $state, array_flip( [ 'id', 'step', 'site', 'blog_id', 'restart', 'has_warmed', 'chunk_slot', 'sitemaps', 'seen' ] ) ) );
+		$fresh = self::reset_chunks( $fresh );
+		if ( ! empty( $state['sitemap_url'] ) ) {
+			array_unshift( $fresh['sitemaps'], $state['sitemap_url'] );
+			$fresh['phase'] = 'sitemap';
+		}
+		return $fresh;
+	}
+
+	/**
+	 * Rebuild missing work once, then advance to the next source.
+	 *
+	 * @param array $state Run state.
+	 * @return array
+	 */
+	private static function recover_source( array $state ) {
+		if ( $state['rebuilding'] ) {
+			log( 'A full preload URL chunk was unavailable after rebuilding. Moving to the next source.' );
+			return self::finish_source( $state );
+		}
+		$state = self::reset_source( $state );
+		$state['rebuilding'] = true;
+		$state['due']        = time() + ActionSchedulerProcess::RETRY_DELAY;
+		return $state;
+	}
+
+	/**
+	 * Return a bounded chunk belonging to the current run and source.
+	 *
+	 * @param array $state Run state.
+	 * @param int   $index Chunk index.
+	 * @return array
+	 */
+	private static function read_chunk( array $state, $index ) {
+		$stored = get_option( self::CHUNKS_PREFIX . $state['chunk_slot'] . '_' . $index, [] );
+		if ( ( $stored['owner'] ?? null ) !== [ $state['id'], $state['site'], $state['chunk_set'] ] || ! is_array( $stored['urls'] ?? null ) ) {
 			return [];
 		}
+		return $stored['urls'];
+	}
 
-		if ( isset( $state['save_urls'] ) ) {
-			unset( $state['save_urls'] );
-			// Keep the old URL list until the new checkpoint commits.
-			$state['urls_slot'] = 1 - $state['urls_slot'];
-			$state['url_count'] = count( $urls );
-			$state['snapshot']  = $state['step'];
-			$option             = self::URLS_OPTION . $state['urls_slot'];
-			$stored             = [
-				'id' => $state['id'],
-				'site' => $state['site'],
-				'urls' => $urls,
+	/**
+	 * Write new chunks before publishing the checkpoint that refers to them.
+	 *
+	 * @param array $state Run state.
+	 * @param array $urls Discovered URLs.
+	 * @return array
+	 * @throws \RuntimeException If a chunk cannot be saved.
+	 */
+	private static function save_chunks( array $state, array $urls ) {
+		foreach ( array_chunk( $urls, self::STORED_CHUNK_SIZE ) as $chunk ) {
+			$option = self::CHUNKS_PREFIX . $state['chunk_slot'] . '_' . $state['chunks'];
+			$stored = [
+				'owner' => [ $state['id'], $state['site'], $state['chunk_set'] ],
+				'urls'  => $chunk,
 			];
-			if ( get_option( $option, [] ) !== $stored && ! update_option( $option, $stored, false ) ) {
-				throw new \RuntimeException( 'Powered Cache could not save full preload URLs.' );
+			if ( ! update_option( $option, $stored, false ) && get_option( $option ) !== $stored ) {
+				throw new \RuntimeException( 'Powered Cache could not save a preload URL chunk.' );
 			}
+			++$state['chunks'];
 		}
 		return $state;
 	}
 
 	/**
-	 * Read the active URL snapshot for this site.
-	 *
-	 * @param array $state Current checkpoint.
-	 * @return array
-	 */
-	private static function stored_urls( array $state ) {
-		$stored = get_option( self::URLS_OPTION . $state['urls_slot'], [] );
-		return ( $stored['id'] ?? null ) === $state['id'] && $stored['site'] === $state['site'] ? $stored['urls'] : [];
-	}
-
-	/**
-	 * Read the current window without loading the full URL list for each request.
-	 *
-	 * @param array $state Current checkpoint.
-	 * @return array
-	 */
-	private static function warm_window( array $state ) {
-		if ( $state['offset'] >= $state['url_count'] ) {
-			return [];
-		}
-		$offset  = intdiv( $state['offset'], self::CHUNK_SIZE ) * self::CHUNK_SIZE;
-		$key     = [ $state['id'], $state['snapshot'], $offset ];
-		$current = get_option( self::WINDOW_OPTION, [] );
-		if ( ( $current['key'] ?? null ) === $key ) {
-			return $current['urls'];
-		}
-		$urls = array_slice( self::stored_urls( $state ), $offset, self::CHUNK_SIZE, true );
-		update_option(
-			self::WINDOW_OPTION,
-			[
-				'key' => $key,
-				'urls' => $urls,
-			],
-			false
-		);
-		return $urls;
-	}
-
-	/**
-	 * Discover a page of posts or one taxonomy per step. Apply whole-list filters once.
+	 * Discover a page of posts, terms or sitemap URLs.
 	 *
 	 * @param array $state Run state.
-	 * @param array $urls URLs collected for this site.
+	 * @param array $urls All discovered local URLs when the compatibility filter is present.
 	 * @param array $settings Current settings.
 	 * @param bool  $include_sitemaps Whether to read this request's site's sitemaps.
 	 * @return array
@@ -380,18 +436,24 @@ class FullPreload {
 	private static function discover( array $state, array $urls, array $settings, $include_sitemaps ) {
 		$preloader = Preloader::factory();
 		$offset    = $state['offset'];
-		$state['save_urls'] = true;
+		$found     = [];
 
 		switch ( $state['phase'] ) {
 			case 'home':
-				$urls           = ! empty( $settings['preload_homepage'] ) ? $preloader->prepare_preload_home_urls() : [];
-				$state['phase'] = 'posts';
+				$found             = ! empty( $settings['preload_homepage'] ) ? $preloader->prepare_preload_home_urls() : [];
+				$state['phase']    = 'posts';
+				$state['sitemaps'] = $include_sitemaps && ! empty( $settings['enable_sitemap_preload'] )
+					? array_values( array_unique( apply_filters( 'powered_cache_full_preload_sitemaps', [] ) ) ) : [];
 				break;
 			case 'posts':
-				$page = ! empty( $settings['preload_public_posts'] ) ? $preloader->prepare_public_posts_urls( $offset, self::CHUNK_SIZE ) : [];
-				$urls = array_merge( $urls, $page );
-				$state['offset'] += count( $page );
-				if ( count( $page ) < self::CHUNK_SIZE ) {
+				if ( ! empty( $settings['preload_public_posts'] ) ) {
+					$found = $preloader->prepare_public_posts_page( $offset, self::CHUNK_SIZE, $state['post_id'] ?? 0 );
+					if ( $found ) {
+						$state['post_id'] = array_key_last( $found );
+					}
+				}
+				$state['offset'] += count( $found );
+				if ( count( $found ) < self::CHUNK_SIZE ) {
 					$state['phase']  = 'terms';
 					$state['offset'] = 0;
 					$state['terms']  = ! empty( $settings['preload_public_tax'] ) ? $preloader->get_preload_taxonomies() : [];
@@ -399,11 +461,10 @@ class FullPreload {
 				break;
 			case 'terms':
 				if ( $state['terms'] ) {
-					$tax  = reset( $state['terms'] );
-					$page = $preloader->prepare_preload_taxonomy_urls( $tax, $offset, self::CHUNK_SIZE );
-					$urls = array_merge( $urls, $page );
-					$state['offset'] += count( $page );
-					if ( count( $page ) < self::CHUNK_SIZE ) {
+					$tax   = reset( $state['terms'] );
+					$found = $preloader->prepare_preload_taxonomy_urls( $tax, $offset, self::CHUNK_SIZE );
+					$state['offset'] += count( $found );
+					if ( count( $found ) < self::CHUNK_SIZE ) {
 						array_shift( $state['terms'] );
 						$state['offset'] = 0;
 					}
@@ -411,19 +472,19 @@ class FullPreload {
 				}
 				$state['phase']    = 'warm';
 				$state['offset']   = 0;
-				$state['sitemaps'] = $include_sitemaps && ! empty( $settings['enable_sitemap_preload'] )
-					? array_values( array_unique( apply_filters( 'powered_cache_full_preload_sitemaps', [] ) ) ) : [];
 				if ( $include_sitemaps && ! empty( $settings['enable_sitemap_preload'] ) && ! has_filter( 'powered_cache_full_preload_sitemaps' ) && ! empty( $settings['enable_cache_preload'] ) && function_exists( '\\PoweredCachePremium\\Utils\\preload_sitemap' ) ) {
 					\PoweredCachePremium\Utils\preload_sitemap();
 				}
-				$urls = self::unique_urls( $preloader->filter_preload_urls( $urls, $state['language'] ) );
+				if ( has_filter( 'populate_preload_queue_urls' ) ) {
+					$state = self::reset_chunks( $state );
+					$found = self::unique_urls( $preloader->filter_preload_urls( $urls, $state['language'] ) );
+				}
 				break;
 			case 'sitemap':
-				list( $state, $urls ) = self::discover_sitemap( $state );
-				break;
+				return self::discover_sitemap( $state );
 		}
 
-		return [ $state, $urls ];
+		return [ $state, has_filter( 'populate_preload_queue_urls' ) ? $found : self::unique_urls( $found ) ];
 	}
 
 	/**
@@ -433,8 +494,12 @@ class FullPreload {
 	 * @return array
 	 */
 	private static function discover_sitemap( array $state ) {
+		if ( ! CachePreloader::factory()->should_continue() ) {
+			$state['due'] = time() + ActionSchedulerProcess::RETRY_DELAY;
+			return [ $state, [] ];
+		}
 		$sitemap = reset( $state['sitemaps'] );
-		$result  = apply_filters( 'powered_cache_full_preload_read_sitemap', false, $sitemap );
+		$result  = apply_filters( 'powered_cache_full_preload_read_sitemap', false, $sitemap, $state['attempt'] );
 		if ( null === $result && $state['attempt'] < ActionSchedulerProcess::MAX_RETRIES ) {
 			++$state['attempt'];
 			$state['due'] = time() + ActionSchedulerProcess::RETRY_DELAY;
@@ -443,63 +508,110 @@ class FullPreload {
 		$state['attempt'] = 0;
 		array_shift( $state['sitemaps'] );
 		$state['seen'][ $sitemap ] = true;
+		$pending = array_fill_keys( $state['sitemaps'], true );
 		foreach ( $result['sitemaps'] ?? [] as $child ) {
-			if ( ! isset( $state['seen'][ $child ] ) && ! in_array( $child, $state['sitemaps'], true ) ) {
-				$state['sitemaps'][] = $child;
+			if ( ! isset( $state['seen'][ $child ] ) ) {
+				$pending[ $child ] = true;
 			}
 		}
-		$state['phase']  = 'warm';
-		$state['offset'] = 0;
+		$state['sitemaps']   = array_keys( $pending );
+		$state                = self::reset_chunks( $state );
+		$state['phase']       = 'warm';
+		$state['sitemap_url'] = $sitemap;
 		return [ $state, self::unique_urls( $result['urls'] ?? [] ) ];
 	}
 
 	/**
-	 * Check a bounded number of URLs and send at most one uncached request.
+	 * Send due cache requests within a short action budget. Never exceed the configured rate.
 	 *
 	 * @param array $state Run state.
-	 * @param array $urls URLs for the current site.
+	 * @param array $urls URLs in the active chunk.
 	 * @param array $settings Current settings.
 	 * @return array
 	 */
 	private static function warm( array $state, array $urls, array $settings ) {
 		$preloader = Preloader::factory();
 		$mobile    = ! empty( $settings['cache_mobile'] ) && ! empty( $settings['cache_mobile_separate_file'] );
-		for ( $i = 0; $i < self::CHUNK_SIZE && isset( $urls[ $state['offset'] ] ); ++$i ) {
-			$url           = $urls[ $state['offset'] ];
-			$variant       = $mobile && $state['mobile'];
-			$needs_request = $preloader->should_preload_url( $url ) && ! is_url_cached( $url, $variant, $settings['gzip_compression'] );
-			if ( $needs_request && ! CachePreloader::factory()->should_continue() ) {
-				$state['due'] = time() + ActionSchedulerProcess::RETRY_DELAY;
-				return $state;
+		$deadline  = microtime( true ) + self::INLINE_DELAY;
+		$requests  = 0;
+		for ( $i = 0; $i < self::CHUNK_SIZE && isset( $urls[ $state['offset'] ] ) && microtime( true ) < $deadline; ++$i ) {
+			$url     = $urls[ $state['offset'] ];
+			$variant = $mobile && $state['mobile'];
+			if ( $preloader->should_preload_url( $url ) && ! is_url_cached( $url, $variant, $settings['gzip_compression'] ) ) {
+				if ( $requests >= self::MAX_REQUESTS_PER_STEP || $state['due'] > microtime( true ) || microtime( true ) >= $deadline ) {
+					break;
+				}
+				if ( ! CachePreloader::factory()->should_continue() ) {
+					$state['due'] = time() + ActionSchedulerProcess::RETRY_DELAY;
+					return $state;
+				}
+
+				++$requests;
+				$response      = Preloader::preload_request( $url, $variant ? [ 'user-agent' => Preloader::mobile_user_agent() ] : [] );
+				$state['due']  = microtime( true ) + Preloader::get_request_interval( absint( $settings['preload_request_interval'] ) * 1000000 ) / 1000000;
+				if ( self::is_temporary_http_error( $response ) ) {
+					// Back off across URLs if the origin keeps failing, then resume automatically.
+					$backoff      = self::PAGE_RETRY_DELAY << min( $state['failed_urls'], 3 );
+					$state['due'] = max( $state['due'], time() + $backoff );
+					if ( ! $state['retry_url'] ) {
+						$state['retry_url'] = true;
+						return $state;
+					}
+					++$state['failed_urls'];
+				} else {
+					$state['failed_urls'] = 0;
+				}
 			}
 			if ( $variant || ! $mobile ) {
 				++$state['offset'];
 			}
 			$state['mobile']     = $mobile && ! $variant;
+			$state['retry_url']  = false;
 			$state['has_warmed'] = true;
-			if ( ! $needs_request ) {
-				continue;
-			}
-			$response      = Preloader::preload_request( $url, $variant ? [ 'user-agent' => Preloader::mobile_user_agent() ] : [] );
-			$state['due']  = microtime( true ) + Preloader::get_request_interval( absint( $settings['preload_request_interval'] ) * 1000000 ) / 1000000;
-			if ( is_wp_error( $response ) ) {
-				log( sprintf( 'Full preload HTTP request failed for %s: %s', $url, $response->get_error_message() ) );
-			}
-			return $state;
 		}
 
-		if ( $state['offset'] < $state['url_count'] ) {
+		if ( isset( $urls[ $state['offset'] ] ) ) {
 			return $state;
 		}
-		if ( ! empty( $settings['enable_sitemap_preload'] ) && $state['sitemaps'] ) {
-			$state['phase'] = 'sitemap';
+		if ( ++$state['chunk'] < $state['chunks'] ) {
+			$state['offset'] = 0;
+			return $state;
+		}
+		return self::finish_source( $state );
+	}
+
+	/**
+	 * Check for an HTTP transport error or a status that can succeed on retry.
+	 *
+	 * @param array|\WP_Error $response HTTP response.
+	 * @return bool
+	 */
+	private static function is_temporary_http_error( $response ) {
+		if ( is_wp_error( $response ) ) {
+			return true;
+		}
+		$code = (int) ( $response['response']['code'] ?? 0 );
+		return 408 === $code || 429 === $code || $code >= 500;
+	}
+
+	/**
+	 * Move from local pages to sitemaps or to the next site.
+	 *
+	 * @param array $state Run state.
+	 * @return array
+	 */
+	private static function finish_source( array $state ) {
+		if ( $state['sitemaps'] ) {
+			$state['phase']       = 'sitemap';
+			$state['sitemap_url'] = '';
+			$state['rebuilding']  = false;
 			return $state;
 		}
 		if ( ! POWERED_CACHE_IS_NETWORK ) {
 			return [];
 		}
 		$next = self::new_state( $state['language'], $state['automatic'] );
-		return array_merge( $next, array_intersect_key( $state, array_flip( [ 'id', 'step', 'restart' ] ) ), [ 'site' => $state['site'] + 1 ] );
+		return array_replace( $next, array_intersect_key( $state, array_flip( [ 'id', 'step', 'restart', 'due' ] ) ), [ 'site' => $state['site'] + 1 ] );
 	}
 
 	/**
@@ -520,9 +632,15 @@ class FullPreload {
 			'site'       => 0,
 			'blog_id'    => 0,
 			'offset'     => 0,
-			'urls_slot'  => 0,
-			'url_count'  => 0,
-			'snapshot'   => 0,
+			'post_id'    => 0,
+			'chunk_slot' => 0,
+			'chunk_set'  => 0,
+			'chunks'     => 0,
+			'chunk'      => 0,
+			'sitemap_url' => '',
+			'rebuilding' => false,
+			'retry_url'  => false,
+			'failed_urls' => 0,
 			'terms'      => [],
 			'sitemaps'   => [],
 			'seen'       => [],
@@ -597,6 +715,23 @@ class FullPreload {
 	}
 
 	/**
+	 * Yield the shared runner instead of waiting inline when other work is due.
+	 *
+	 * @return bool
+	 */
+	private static function has_due_actions() {
+		return function_exists( 'as_get_scheduled_actions' ) && (bool) as_get_scheduled_actions(
+			[
+				'status'   => 'pending',
+				'date'     => time(),
+				'per_page' => 1,
+				'orderby'  => 'none',
+			],
+			'ids'
+		);
+	}
+
+	/**
 	 * Remove the pending action for a superseded checkpoint.
 	 *
 	 * @param array $state Checkpoint being cancelled.
@@ -646,8 +781,24 @@ class FullPreload {
 		delete_option( self::STATE_OPTION );
 		delete_option( self::URLS_OPTION . '0' );
 		delete_option( self::URLS_OPTION . '1' );
-		delete_option( self::WINDOW_OPTION );
+		delete_option( 'powered_cache_full_preload_window' );
+		self::clear_chunks();
 		wp_clear_scheduled_hook( self::RECOVERY_HOOK );
+	}
+
+	/**
+	 * Remove both reusable chunk slots and invalidate their non-autoloaded option caches.
+	 */
+	private static function clear_chunks() {
+		global $wpdb;
+
+		$prefix = $wpdb->esc_like( self::CHUNKS_PREFIX ) . '%';
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$names = $wpdb->get_col( $wpdb->prepare( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s", $prefix ) );
+		if ( $names && false !== $wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $prefix ) ) ) {
+			wp_cache_delete_multiple( $names, 'options' );
+		}
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
 
 	/**
