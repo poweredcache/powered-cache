@@ -663,7 +663,7 @@ class SettingsManifest {
 				'control_label' => 'Warm cache automatically',
 				'description'   => 'Warm URLs after cache expiration or content changes. In Automatic mode, also warm all selected URLs after a full purge.',
 				'group'         => 'Preload',
-				'docs_path'     => 'cache-preload',
+				'docs_path'     => 'enable-preloading/',
 			),
 			'preload_full_mode'              => array(
 				'label'       => 'Full Cache Preload',
@@ -710,7 +710,7 @@ class SettingsManifest {
 				'control_label'       => 'Read URLs from sitemaps',
 				'description'         => 'Use sitemap URLs as an additional preload source.',
 				'group'               => 'Preload',
-				'docs_path'           => 'sitemap-preload',
+				'docs_path'           => 'sitemap-preloading/',
 				'upgrade_description' => 'Premium can discover and warm URLs from XML sitemaps automatically.',
 			),
 			'preload_request_interval'       => array(
@@ -723,7 +723,7 @@ class SettingsManifest {
 				'label'       => 'Sitemap URLs',
 				'description' => 'Add XML sitemap URLs that should feed the preload queue.',
 				'group'       => 'Preload',
-				'docs_path'   => 'sitemap-preload',
+				'docs_path'   => 'sitemap-preloading/',
 			),
 			'prefetch_dns'                   => array(
 				'label'       => 'DNS Prefetch',
