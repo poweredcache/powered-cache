@@ -44,6 +44,7 @@ class FullPreload_Tests extends TestCase {
 		$started_at = $clock;
 		$queued_at = 0;
 		$other_action_ready = false;
+		$log_messages = [];
 		$settings = [
 			'enable_page_cache'        => true,
 			'enable_cache_preload'     => false,
@@ -98,6 +99,14 @@ class FullPreload_Tests extends TestCase {
 		\WP_Mock::userFunction( 'is_wp_error', [ 'return' => false ] );
 		\WP_Mock::userFunction( 'has_filter', [ 'return' => true ] );
 		\WP_Mock::userFunction( 'wp_cache_delete_multiple', [ 'args' => [ \Mockery::type( 'array' ), 'options' ] ] );
+		\WP_Mock::userFunction(
+			'PoweredCache\Utils\log',
+			[
+				'return' => static function ( $message ) use ( &$log_messages ) {
+					$log_messages[] = $message;
+				},
+			]
+		);
 		\WP_Mock::userFunction(
 			'as_get_scheduled_actions',
 			[
@@ -356,6 +365,11 @@ class FullPreload_Tests extends TestCase {
 			$this->assertSame( array_merge( [ $translated ], $urls, [ $from_map ] ), $warmed );
 			$this->assertSame( [], $options );
 			$this->assertFalse( $recovery );
+			$log = implode( "\n", $log_messages );
+			$this->assertStringContainsString( 'Full preload some-run step 0 (home): Started on demand or on schedule.', $log );
+			$this->assertMatchesRegularExpression( '/Full preload some-run step \d+ \(warm\): Page request failed \(HTTP 503\)\. Retrying after 15 seconds\./', $log );
+			$this->assertMatchesRegularExpression( '/Full preload some-run step \d+ \(warm\): Yielded to other scheduled actions\./', $log );
+			$this->assertMatchesRegularExpression( '/Full preload some-run step \d+ \(warm\): Finished processing the run\./', $log );
 			$this->assertConditionsMet();
 		} finally {
 			\Patchwork\restore( $posts );

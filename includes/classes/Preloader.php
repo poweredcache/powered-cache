@@ -162,6 +162,7 @@ class Preloader {
 
 		$language = isset( $_GET['lang_code'] ) && is_string( $_GET['lang_code'] ) ? sanitize_key( wp_unslash( $_GET['lang_code'] ) ) : '';
 		$queued   = $this->schedule_manual_preload( 'all' === $language ? '' : $language );
+		\PoweredCache\Utils\log( $queued ? 'Manual preload requested from the admin bar.' : 'Could not queue manual preload from the admin bar.' );
 		$referrer = wp_get_referer();
 		if ( ! $referrer ) {
 			$referrer = POWERED_CACHE_IS_NETWORK ? network_admin_url( 'admin.php?page=powered-cache' ) : admin_url( 'admin.php?page=powered-cache' );

@@ -65,7 +65,12 @@ class FullPreload {
 							$previous = $state;
 							$state = self::new_state( $language, $automatic );
 							if ( ! update_option( self::STATE_OPTION, $state, false ) ) {
+								self::log_run( $state, 'Could not save the run checkpoint.' );
 								return false;
+							}
+							self::log_run( $state, $automatic ? 'Automatic run started.' : 'Started on demand or on schedule.' );
+							if ( $previous ) {
+								self::log_run( $previous, 'Replaced by a new run.' );
 							}
 							if ( $previous && ! $switched ) {
 								self::cancel_step( $previous );
@@ -129,6 +134,9 @@ class FullPreload {
 						$state = get_option( self::STATE_OPTION, [] );
 						if ( ! $automatic_only || ! empty( $state['automatic'] ) ) {
 							self::clear_run();
+							if ( $state ) {
+								self::log_run( $state, 'Cancelled.' );
+							}
 							if ( $state && ! $switched ) {
 								self::cancel_step( $state );
 							}
@@ -198,6 +206,7 @@ class FullPreload {
 			return;
 		}
 		self::schedule_daily( $settings );
+		log( 'Daily full preload requested.' );
 		self::start();
 	}
 
@@ -213,6 +222,7 @@ class FullPreload {
 				}
 				if ( ! self::can_run( get_cache_settings(), $state['automatic'] ) ) {
 					self::clear_run();
+					self::log_run( $state, 'Stopped because current cache settings disable this run.' );
 					return true;
 				}
 				self::schedule_recovery();
@@ -241,6 +251,7 @@ class FullPreload {
 				$settings = get_cache_settings();
 				if ( ! self::can_run( $settings, $state['automatic'] ) ) {
 					self::clear_run();
+					self::log_run( $state, 'Stopped because current cache settings disable this run.' );
 					return true;
 				}
 				self::schedule_recovery();
@@ -251,9 +262,11 @@ class FullPreload {
 					// Older versions saved one URL list. Rebuild using the saved run settings.
 					$state = self::reset_source( $state );
 				}
-				$state = self::advance( $state, $settings );
+				$checkpoint = $state;
+				$state      = self::advance( $state, $settings );
 				if ( ! $state ) {
 					$previous = get_option( self::STATE_OPTION, [] );
+					self::log_run( $checkpoint, 'Finished processing the run.' );
 					if ( ! empty( $previous['restart'] ) && self::can_run( $settings, true ) ) {
 						$state = self::new_state( '', true );
 					} else {
@@ -264,7 +277,15 @@ class FullPreload {
 
 				++$state['step'];
 				if ( ! update_option( self::STATE_OPTION, $state, false ) ) {
+					self::log_run( $state, 'Could not save the run checkpoint.' );
 					return false;
+				}
+				if ( $state['id'] !== $id ) {
+					self::log_run( $state, 'Started the follow-up automatic run.' );
+				} elseif ( $state['phase'] !== $checkpoint['phase'] ) {
+					self::log_run( $state, 'Entered this phase.' );
+				} elseif ( empty( $checkpoint['yielded'] ) && ! empty( $state['yielded'] ) ) {
+					self::log_run( $state, 'Yielded to other scheduled actions.' );
 				}
 
 				return self::queue_step( $state );
@@ -371,9 +392,10 @@ class FullPreload {
 	 */
 	private static function recover_source( array $state ) {
 		if ( $state['rebuilding'] ) {
-			log( 'A full preload URL chunk was unavailable after rebuilding. Moving to the next source.' );
+			self::log_run( $state, 'A URL chunk was unavailable after rebuilding. Moving to the next source.' );
 			return self::finish_source( $state );
 		}
+		self::log_run( $state, 'A URL chunk was unavailable. Rebuilding this source.' );
 		$state = self::reset_source( $state );
 		$state['rebuilding'] = true;
 		$state['due']        = time() + ActionSchedulerProcess::RETRY_DELAY;
@@ -494,6 +516,7 @@ class FullPreload {
 	 */
 	private static function discover_sitemap( array $state ) {
 		if ( ! CachePreloader::factory()->should_continue() ) {
+			self::log_run( $state, 'Deferred by the preload continuation check.' );
 			$state['due'] = time() + ActionSchedulerProcess::RETRY_DELAY;
 			return [ $state, [] ];
 		}
@@ -555,6 +578,7 @@ class FullPreload {
 					}
 				}
 				if ( ! CachePreloader::factory()->should_continue() ) {
+					self::log_run( $state, 'Deferred by the preload continuation check.' );
 					$state['due'] = time() + ActionSchedulerProcess::RETRY_DELAY;
 					return $state;
 				}
@@ -566,10 +590,13 @@ class FullPreload {
 					// Back off across URLs if the origin keeps failing, then resume automatically.
 					$backoff      = self::PAGE_RETRY_DELAY << min( $state['failed_urls'], 3 );
 					$state['due'] = max( $state['due'], time() + $backoff );
+					$error        = $response instanceof \WP_Error ? $response->get_error_code() : sprintf( 'HTTP %d', $response['response']['code'] );
 					if ( ! $state['retry_url'] ) {
+						self::log_run( $state, sprintf( 'Page request failed (%s). Retrying after %d seconds.', $error, (int) ceil( $state['due'] - microtime( true ) ) ) );
 						$state['retry_url'] = true;
 						return $state;
 					}
+					self::log_run( $state, sprintf( 'Page request failed again (%s). Moving to the next request.', $error ) );
 					++$state['failed_urls'];
 				} else {
 					$state['failed_urls'] = 0;
@@ -713,6 +740,7 @@ class FullPreload {
 	 */
 	private static function queue_step( array $state ) {
 		if ( ! function_exists( 'as_enqueue_async_action' ) || ( class_exists( '\ActionScheduler', false ) && ! \ActionScheduler::is_initialized() ) ) {
+			self::log_run( $state, 'Action Scheduler is unavailable to queue this step.' );
 			return false;
 		}
 
@@ -724,9 +752,24 @@ class FullPreload {
 			return true;
 		}
 		if ( self::step_needs_delay( $state ) ) {
-			return (bool) as_schedule_single_action( (int) ceil( $state['due'] ), self::STEP_HOOK, $args, $group, false, $priority );
+			$action = as_schedule_single_action( (int) ceil( $state['due'] ), self::STEP_HOOK, $args, $group, false, $priority );
+		} else {
+			$action = as_enqueue_async_action( self::STEP_HOOK, $args, $group, false, $priority );
 		}
-		return (bool) as_enqueue_async_action( self::STEP_HOOK, $args, $group, false, $priority );
+		if ( ! $action ) {
+			self::log_run( $state, 'Could not queue this step.' );
+		}
+		return (bool) $action;
+	}
+
+	/**
+	 * Include the Action Scheduler arguments in lifecycle log entries.
+	 *
+	 * @param array  $state Run checkpoint.
+	 * @param string $message Debug message.
+	 */
+	private static function log_run( array $state, $message ) {
+		log( sprintf( 'Full preload %s step %d (%s): %s', $state['id'], $state['step'], $state['phase'], $message ) );
 	}
 
 	/**
