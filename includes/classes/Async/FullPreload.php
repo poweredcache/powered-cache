@@ -29,7 +29,8 @@ class FullPreload {
 	private const STORED_CHUNK_SIZE     = 250;
 	private const MAX_REQUESTS_PER_STEP = 4;
 	private const PAGE_RETRY_DELAY      = 15;
-	private const INLINE_DELAY          = 2;
+	private const INLINE_DELAY          = 5;
+	private const WARM_TIME_BUDGET      = 10;
 	private const RECOVERY_TIME         = 60;
 
 	/**
@@ -176,6 +177,19 @@ class FullPreload {
 	}
 
 	/**
+	 * Check whether there is a full run with work left to do.
+	 *
+	 * @return bool
+	 */
+	public static function is_running() {
+		return self::on_scheduler_site(
+			static function () {
+				return (bool) get_option( self::STATE_OPTION, [] );
+			}
+		);
+	}
+
+	/**
 	 * Start today's run and calculate tomorrow's time in the site timezone.
 	 */
 	public static function run_daily() {
@@ -218,7 +232,7 @@ class FullPreload {
 	 * @param int    $step Step number.
 	 */
 	public static function run_step( $id, $step ) {
-		$next = self::locked(
+		self::locked(
 			static function () use ( $id, $step ) {
 				$state = get_option( self::STATE_OPTION, [] );
 				if ( ! $state || $state['id'] !== $id || $state['step'] !== $step ) {
@@ -230,7 +244,7 @@ class FullPreload {
 					return true;
 				}
 				self::schedule_recovery();
-				if ( $state['due'] > microtime( true ) ) {
+				if ( self::step_needs_delay( $state ) ) {
 					return true;
 				}
 				if ( ! isset( $state['chunks'] ) ) {
@@ -253,27 +267,7 @@ class FullPreload {
 					return false;
 				}
 
-				$delay = $state['due'] - microtime( true );
-				if ( $delay <= 0 || $delay > self::INLINE_DELAY ) {
-					return self::queue_step( $state );
-				}
-
-				return $state;
-			}
-		);
-		if ( ! is_array( $next ) ) {
-			return;
-		}
-
-		$delay = $next['due'] - microtime( true );
-		if ( $delay > 0 && $delay <= self::INLINE_DELAY && ! self::has_due_actions() ) {
-			// Keep the current runner useful only while nothing else is due.
-			usleep( (int) ceil( $delay * 1000000 ) );
-		}
-		self::locked(
-			static function () use ( $next ) {
-				$current = get_option( self::STATE_OPTION, [] );
-				return $current && $current['id'] === $next['id'] && $current['step'] === $next['step'] && self::queue_step( $current );
+				return self::queue_step( $state );
 			}
 		);
 	}
@@ -537,14 +531,28 @@ class FullPreload {
 	private static function warm( array $state, array $urls, array $settings ) {
 		$preloader = Preloader::factory();
 		$mobile    = ! empty( $settings['cache_mobile'] ) && ! empty( $settings['cache_mobile_separate_file'] );
-		$deadline  = microtime( true ) + self::INLINE_DELAY;
+		$deadline  = microtime( true ) + self::WARM_TIME_BUDGET;
 		$requests  = 0;
+		$state['yielded'] = false;
 		for ( $i = 0; $i < self::CHUNK_SIZE && isset( $urls[ $state['offset'] ] ) && microtime( true ) < $deadline; ++$i ) {
 			$url     = $urls[ $state['offset'] ];
 			$variant = $mobile && $state['mobile'];
 			if ( $preloader->should_preload_url( $url ) && ! is_url_cached( $url, $variant, $settings['gzip_compression'] ) ) {
-				if ( $requests >= self::MAX_REQUESTS_PER_STEP || $state['due'] > microtime( true ) || microtime( true ) >= $deadline ) {
+				$now   = microtime( true );
+				$delay = $state['due'] - $now;
+				if ( $requests >= self::MAX_REQUESTS_PER_STEP || $delay > self::INLINE_DELAY || max( $now, $state['due'] ) >= $deadline ) {
 					break;
+				}
+				if ( ( $requests || $delay > 0 ) && self::has_due_non_preload_actions() ) {
+					return self::yield_step( $state );
+				}
+				if ( $delay > 0 ) {
+					// Keep short pacing delays inside the batch so minute-based runners can keep working.
+					$seconds = (int) $delay;
+					time_nanosleep( $seconds, (int) ( ( $delay - $seconds ) * 1000000000 ) );
+					if ( self::has_due_non_preload_actions() ) {
+						return self::yield_step( $state );
+					}
 				}
 				if ( ! CachePreloader::factory()->should_continue() ) {
 					$state['due'] = time() + ActionSchedulerProcess::RETRY_DELAY;
@@ -710,30 +718,70 @@ class FullPreload {
 
 		$args     = [ $state['id'], $state['step'] ];
 		$group    = ActionSchedulerProcess::ACTION_SCHEDULER_GROUP;
-		$priority = CachePreloader::preload_action_priority();
+		// Let a full run finish while automatic expiry work is pending.
+		$priority = max( 0, CachePreloader::preload_action_priority() - 1 );
 		if ( as_has_scheduled_action( self::STEP_HOOK, $args, $group ) ) {
 			return true;
 		}
-		if ( $state['due'] > microtime( true ) ) {
+		if ( self::step_needs_delay( $state ) ) {
 			return (bool) as_schedule_single_action( (int) ceil( $state['due'] ), self::STEP_HOOK, $args, $group, false, $priority );
 		}
 		return (bool) as_enqueue_async_action( self::STEP_HOOK, $args, $group, false, $priority );
 	}
 
 	/**
-	 * Yield the shared runner instead of waiting inline when other work is due.
+	 * Defer longer waits to the scheduler. The warming step handles short waits itself.
+	 *
+	 * @param array $state Checkpoint to schedule.
+	 * @return bool
+	 */
+	private static function step_needs_delay( array $state ) {
+		$delay = $state['due'] - microtime( true );
+		return $delay > ( 'warm' === $state['phase'] && empty( $state['yielded'] ) ? self::INLINE_DELAY : 0 );
+	}
+
+	/**
+	 * Give the runner time for other work, including with a zero request interval.
+	 *
+	 * @param array $state Current checkpoint.
+	 * @return array
+	 */
+	private static function yield_step( array $state ) {
+		$state['due']     = max( $state['due'], microtime( true ) + 1 );
+		$state['yielded'] = true;
+		return $state;
+	}
+
+	/**
+	 * Check the shared runner for due work outside the page preload queue.
 	 *
 	 * @return bool
 	 */
-	private static function has_due_actions() {
-		return function_exists( 'as_get_scheduled_actions' ) && (bool) as_get_scheduled_actions(
-			[
-				'status'   => 'pending',
-				'date'     => time(),
-				'per_page' => 1,
-				'orderby'  => 'none',
-			],
-			'ids'
+	private static function has_due_non_preload_actions() {
+		if ( ! function_exists( 'as_get_scheduled_actions' ) ) {
+			return false;
+		}
+
+		return self::on_scheduler_site(
+			static function () {
+				global $wpdb;
+
+				if ( isset( $wpdb->actionscheduler_actions ) && class_exists( '\\ActionScheduler', false ) && \ActionScheduler::store() instanceof \ActionScheduler_DBStore ) {
+					// The public query API cannot exclude hooks. Use the indexed due-date lookup on the DB store.
+					return (bool) $wpdb->get_var( $wpdb->prepare( "SELECT 1 FROM {$wpdb->actionscheduler_actions} WHERE status = 'pending' AND scheduled_date_gmt <= %s AND hook NOT IN (%s, %s) LIMIT 1", gmdate( 'Y-m-d H:i:s', time() ), self::STEP_HOOK, CachePreloader::ACTION_HOOK ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				}
+
+				// On alternate stores, conservatively yield to any due action.
+				return (bool) as_get_scheduled_actions(
+					[
+						'status'   => 'pending',
+						'date'     => time(),
+						'per_page' => 1,
+						'orderby'  => 'none',
+					],
+					'ids'
+				);
+			}
 		);
 	}
 

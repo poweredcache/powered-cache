@@ -312,6 +312,9 @@ class Preloader {
 	 * @param array $expired_files Full path of cached item
 	 */
 	public function add_expired_urls_to_preload_queue( $expired_files ) {
+		if ( ! $expired_files ) {
+			return;
+		}
 
 		/**
 		 * Filters expired urls preloading status
@@ -326,6 +329,12 @@ class Preloader {
 		$preload_expired_urls = apply_filters( 'powered_cache_preload_expired_urls', true );
 
 		if ( true !== $preload_expired_urls ) {
+			return;
+		}
+
+		// Let existing work drain before an expiry sweep adds another wave of URLs.
+		if ( FullPreload::is_running() || $this->get_preloader()->is_process_running() ) {
+			\PoweredCache\Utils\log( 'Skipping automatic warming of expired URLs while the preload queue is busy.' );
 			return;
 		}
 

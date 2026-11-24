@@ -15,6 +15,8 @@ use function PoweredCache\Utils\is_url_cached;
  */
 class CachePreloader extends ActionSchedulerProcess {
 
+	public const ACTION_HOOK = 'powered_cache_preload';
+
 	private const MAX_QUEUED_URLS  = 20;
 	private const MAX_URLS_PER_RUN = 5;
 	private const RUN_TIME_BUDGET = 10;
@@ -33,7 +35,7 @@ class CachePreloader extends ActionSchedulerProcess {
 	 *
 	 * @var $action
 	 */
-	protected $action = 'powered_cache_preload';
+	protected $action = self::ACTION_HOOK;
 
 	/**
 	 * Preloading has no completion work.

@@ -40,6 +40,10 @@ class FullPreload_Tests extends TestCase {
 		$fail     = false;
 		$retry_delays = [];
 		$fail_checkpoint = false;
+		$clock = 1800000000.0;
+		$started_at = $clock;
+		$queued_at = 0;
+		$other_action_ready = false;
 		$settings = [
 			'enable_page_cache'        => true,
 			'enable_cache_preload'     => false,
@@ -47,7 +51,7 @@ class FullPreload_Tests extends TestCase {
 			'preload_public_posts'    => true,
 			'enable_sitemap_preload'   => true,
 			'gzip_compression'        => false,
-			'preload_request_interval' => 0,
+			'preload_request_interval' => 2,
 		];
 
 		$previous_db = $GLOBALS['wpdb'] ?? null;
@@ -97,16 +101,35 @@ class FullPreload_Tests extends TestCase {
 		\WP_Mock::userFunction(
 			'as_get_scheduled_actions',
 			[
-				'times'  => 1,
-				'args'   => [
-					\Mockery::on(
-						static function ( $args ) {
-							return 'pending' === $args['status'] && 1 === $args['per_page'];
-						}
-					),
-					'ids',
-				],
-				'return' => [ 99 ],
+				'return' => static function () use ( &$other_action_ready ) {
+					return $other_action_ready ? [ 99 ] : [];
+				},
+			]
+		);
+		\WP_Mock::userFunction(
+			'PoweredCache\Async\microtime',
+			[
+				'args'   => [ true ],
+				'return' => static function () use ( &$clock ) {
+					return $clock;
+				},
+			]
+		);
+		\WP_Mock::userFunction(
+			'PoweredCache\Async\time',
+			[
+				'return' => static function () use ( &$clock ) {
+					return (int) $clock;
+				},
+			]
+		);
+		\WP_Mock::userFunction(
+			'PoweredCache\Async\time_nanosleep',
+			[
+				'return' => static function ( $seconds, $nanoseconds ) use ( &$clock ) {
+					$clock += $seconds + $nanoseconds / 1000000000;
+					return true;
+				},
 			]
 		);
 
@@ -121,10 +144,11 @@ class FullPreload_Tests extends TestCase {
 		\WP_Mock::userFunction(
 			'as_schedule_single_action',
 			[
-				'return' => function ( $timestamp, $hook, $args, $group, $unique, $priority ) use ( &$actions, &$retry_delays ) {
+				'return' => function ( $timestamp, $hook, $args, $group, $unique, $priority ) use ( &$actions, &$retry_delays, &$queued_at, &$clock ) {
 					$this->assertSame( FullPreload::STEP_HOOK, $hook );
-					$this->assertSame( 20, $priority );
-					$retry_delays[] = $timestamp - time();
+					$this->assertSame( 19, $priority );
+					$retry_delays[] = $timestamp - $clock;
+					$queued_at      = $timestamp;
 					$actions[]      = $args;
 					$this->assertCount( 1, $actions );
 					return 1;
@@ -190,13 +214,14 @@ class FullPreload_Tests extends TestCase {
 		\WP_Mock::userFunction(
 			'as_enqueue_async_action',
 			[
-				'return' => function ( $hook, $args, $group, $unique, $priority ) use ( &$actions, &$fail ) {
+				'return' => function ( $hook, $args, $group, $unique, $priority ) use ( &$actions, &$fail, &$queued_at ) {
 					$this->assertSame( FullPreload::STEP_HOOK, $hook );
-					$this->assertSame( 20, $priority );
+					$this->assertSame( 19, $priority );
 					if ( $fail ) {
 						$fail = false;
 						return 0;
 					}
+					$queued_at = 0;
 					$actions[] = $args;
 					$this->assertCount( 1, $actions );
 					return 1;
@@ -205,7 +230,7 @@ class FullPreload_Tests extends TestCase {
 		);
 
 		$urls = [];
-		for ( $index = 0; $index < 55; ++$index ) {
+		for ( $index = 0; $index < 1000; ++$index ) {
 			$urls[] = 'https://example.test/post-' . $index;
 		}
 		$pages = [];
@@ -226,15 +251,20 @@ class FullPreload_Tests extends TestCase {
 		$warmed      = [];
 		$fail_http   = true;
 		$failed_http = [];
+		$request_times = [];
 		$warm   = \Patchwork\redefine(
 			Preloader::class . '::preload_request',
-			static function ( $url ) use ( &$warmed, &$fail_http, &$failed_http ) {
+			static function ( $url ) use ( &$warmed, &$fail_http, &$failed_http, &$request_times, &$clock, &$other_action_ready ) {
+				$request_times[] = $clock;
 				if ( $fail_http ) {
 					$fail_http     = false;
 					$failed_http[] = $url;
 					return [ 'response' => [ 'code' => 503 ] ];
 				}
 				$warmed[] = $url;
+				if ( 1 === count( $warmed ) ) {
+					$other_action_ready = true;
+				}
 				return [];
 			}
 		);
@@ -246,9 +276,8 @@ class FullPreload_Tests extends TestCase {
 		);
 		$interval = \Patchwork\redefine(
 			Preloader::class . '::get_request_interval',
-			static function () use ( &$warmed ) {
-				// Keep one successful request paced while simulating a due payment action.
-				return 1 === count( $warmed ) ? 2000000 : 0;
+			static function ( $delay ) {
+				return $delay;
 			}
 		);
 		$translated = 'https://example.test/es/inicio';
@@ -279,23 +308,51 @@ class FullPreload_Tests extends TestCase {
 			$this->assertSame( [ [ 'some-run', 1 ] ], $actions );
 
 			$lost_chunk = false;
-			for ( $step = 0; $actions && $step < 100; ++$step ) {
+			$largest_batch = 0;
+			$yielded_to_other_action = false;
+			$runner_started_at = $clock;
+			for ( $step = 0; $actions && $step < 400; ++$step ) {
 				$state = $options['powered_cache_full_preload_state'];
 				if ( ! $lost_chunk && 'warm' === $state['phase'] && $state['chunks'] ) {
 					unset( $options[ 'powered_cache_full_preload_chunk_' . $state['chunk_slot'] . '_0' ] );
 					$lost_chunk = true;
 				}
-				// The scheduled action fires after the clock reaches its due time.
-				$options['powered_cache_full_preload_state']['due'] = 0;
+				// Model a 30-second Action Scheduler runner started by cron once a minute.
+				if ( $queued_at > $clock || $clock - $runner_started_at >= 30 ) {
+					$clock = ceil( max( $runner_started_at + 60, $queued_at ) / 60 ) * 60;
+					$runner_started_at = $clock;
+				}
+				$before = count( $request_times );
 				FullPreload::run_step( ...array_shift( $actions ) );
+				if ( $other_action_ready ) {
+					$this->assertSame( $before + 1, count( $request_times ) );
+					$this->assertTrue( $options['powered_cache_full_preload_state']['yielded'] );
+					$this->assertGreaterThan( $clock, $queued_at );
+					$other_action_ready = false;
+					$yielded_to_other_action = true;
+				}
+				$largest_batch = max( $largest_batch, count( $request_times ) - $before );
 			}
 			$this->assertTrue( $lost_chunk );
-			$this->assertSame( [ [ 0, 50, 0 ], [ 0, 50, 0 ], [ 50, 50, 50 ], [ 0, 50, 0 ], [ 50, 50, 50 ] ], $pages );
+			$expected_pages = [];
+			$url_count      = count( $urls );
+			for ( $offset = 0; $offset <= $url_count; $offset += 50 ) {
+				$expected_pages[] = [ $offset, 50, $offset ];
+			}
+			$this->assertSame( array_merge( [ [ 0, 50, 0 ] ], $expected_pages, $expected_pages ), $pages );
 			$this->assertSame( [ $translated ], $failed_http );
-			$this->assertCount( 3, $retry_delays );
+			$this->assertCount( 4, $retry_delays );
 			$this->assertGreaterThanOrEqual( 59, $retry_delays[0] );
 			$this->assertGreaterThanOrEqual( 14, $retry_delays[1] );
-			$this->assertGreaterThanOrEqual( 1, $retry_delays[2] );
+			$this->assertEquals( 2, $retry_delays[2] ); // Yield to the other scheduled action.
+			$this->assertEquals( 2, $retry_delays[3] ); // The sitemap fetch is a separate step.
+			$this->assertTrue( $yielded_to_other_action );
+			$this->assertSame( 4, $largest_batch );
+			$this->assertLessThan( 7200, $clock - $started_at );
+			$request_count = count( $request_times );
+			for ( $index = 1; $index < $request_count; ++$index ) {
+				$this->assertGreaterThanOrEqual( 2, $request_times[ $index ] - $request_times[ $index - 1 ] );
+			}
 			$this->assertSame( array_merge( [ $translated ], $urls, [ $from_map ] ), $warmed );
 			$this->assertSame( [], $options );
 			$this->assertFalse( $recovery );

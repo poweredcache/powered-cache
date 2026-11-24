@@ -257,6 +257,50 @@ class Preloader_Tests extends TestCase {
 	}
 
 	/**
+	 * Expiry sweeps only enqueue warming when the existing preload work has drained.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function test_expiry_sweeps_do_not_refill_a_busy_preload_queue() {
+		\WP_Mock::userFunction( 'get_current_blog_id', [ 'return' => 1 ] );
+		\WP_Mock::userFunction(
+			'get_option',
+			[
+				'args'            => [ 'powered_cache_full_preload_state', [] ],
+				'return_in_order' => [ [ 'id' => 'active' ], [], [] ],
+			]
+		);
+		\WP_Mock::userFunction( 'PoweredCache\Utils\site_cache_dir', [ 'return' => '/cache/' ] );
+		\WP_Mock::userFunction( 'PoweredCache\Utils\permalink_structure_has_trailingslash', [ 'return' => false ] );
+		\WP_Mock::userFunction( 'get_site_url', [ 'return' => 'https://example.test' ] );
+		\WP_Mock::userFunction(
+			'trailingslashit',
+			[
+				'args'   => [ 'https://example.test' ],
+				'return' => 'https://example.test/',
+			]
+		);
+
+		$queue = \Mockery::mock( Async\CachePreloader::class );
+		$queue->shouldReceive( 'is_process_running' )->twice()->andReturn( true, false );
+		$queue->shouldReceive( 'push_to_queue' )->with( 'https://example.test/post' )->once();
+		$preloader = \Mockery::mock( Preloader::class )->makePartial();
+		$preloader->shouldReceive( 'should_preload_url' )->once()->with( 'https://example.test/post' )->andReturn( true );
+		$property = new \ReflectionProperty( Preloader::class, 'cache_preloader' );
+		if ( PHP_VERSION_ID < 80100 ) {
+			$property->setAccessible( true );
+		}
+		$property->setValue( $preloader, $queue );
+
+		$files = [ '/cache/post/index.html', '/cache/post/meta.php' ];
+		$preloader->add_expired_urls_to_preload_queue( $files ); // Full preload is active.
+		$preloader->add_expired_urls_to_preload_queue( $files ); // Incremental preload is active.
+		$preloader->add_expired_urls_to_preload_queue( $files ); // Both are idle.
+		$this->assertConditionsMet();
+	}
+
+	/**
 	 * It skips configured WooCommerce URLs with either pretty or plain permalinks.
 	 *
 	 * @runInSeparateProcess
